@@ -1,0 +1,49 @@
+body { background: aliceblue; }
+
+div#login-box {
+	background: white;
+	border: 1px solid dodgerblue;
+	box-shadow: 2px 2px 10px rgb(76, 112, 145);
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	width: 400px;
+	height: 160px;
+	margin: auto;
+	display: flex;
+	flex-direction: column;
+	padding: 10px;
+	box-sizing: content-box;
+	-moz-box-sizing: content-box;
+}
+
+div#login-box header {
+	height: 50px;
+	line-height: 50px;
+	font-size: 20px;
+	font-weight: bold;
+	padding: 0px 10px;
+}
+
+div#login-box section {
+	flex-grow: 1;
+	margin: 0px 10px;
+}
+
+div#login-box footer {
+	height: 50px;
+	padding: 5px;
+	text-align: right;
+	box-sizing: border-box;
+	display: flex;
+}
+
+div.spacer {
+	flex-grow: 1;
+}
+
+button {
+	border-style: initial;
+}

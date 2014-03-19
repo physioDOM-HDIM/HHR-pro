@@ -1,0 +1,117 @@
+body { 
+	background: aliceblue;
+	position: absolute;
+	bottom: 0;
+	top: 0;
+	left: 0;
+	right: 0;
+}
+
+section { 
+	position:absolute;
+	top:50px;
+	bottom:30px;
+	left:0;
+	right:0;
+}
+
+nav {
+	position: absolute;
+	left:0;
+	top:0;
+	bottom:0;
+	width:260px;
+	padding: 10px 0px;
+}
+
+nav ul.tree {
+	list-style-type: none;
+	padding: 0px 10px;
+}
+
+article {
+	position:absolute;
+	top:0;
+	bottom:0;
+	left:260px;
+	right:0;
+	overflow: auto;
+	padding:10px;
+}
+
+header.hdr { 
+	/*position:absolute;*/
+	top:0;
+	left:0;
+	right:0;
+	height: 50px !important;
+	padding:10px;
+}
+/*
+header div {
+	position: relative;
+	height: 100%;
+}
+*/
+
+footer {
+	position:absolute;
+	height: 30px;
+	bottom:0;
+	left:0;
+	right:0;
+}
+
+.navbtn {
+	border:none;
+	width: 30px;
+	height: 30px;
+}
+
+@media (max-width: 992px) {
+	nav {
+		top: -50px;
+		bottom: -30px;
+		left:-270px;
+		transition: left .5s ease;
+		z-index: 10;
+	}
+	nav.show {
+		left: 0;
+	}
+	nav header {
+		text-align: right;
+	}
+	article {
+		left:0;
+	}
+}
+
+.ttable {
+	position: relative;
+	width: 100%;
+	display: table;
+	table-layout: fixed;
+}
+.trow {
+	width: 100%;
+	overflow: hidden;
+	border-bottom: 1px solid lavender;
+	/* line-height: 25px; */
+	/* height: 25px; */
+	display: table-row;
+}
+.cell {
+	display: table-cell;
+	/* line-height: 25px; */
+	/* height: 25px; */
+	vertical-align: middle;
+	white-space: nowrap;
+	overflow: hidden;
+	padding: 0px;
+}
+
+/* table with fixed header */
+
+
+/* header.hdr > div { display: inline-block !important; } */
