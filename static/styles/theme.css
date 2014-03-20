@@ -1,6 +1,7 @@
 body       { background: aliceblue; }
-section    { background: coral; }
-nav        { background: crimson; }
-article    { background: coral; }
-header.hdr { background: aqua; }
-footer     { background: darkmagenta; }
+section    { background: white; }
+nav        { background: black; color:white; }
+article    { background: white; }
+header.hdr { background: black; color:white; }
+header.hdr a { text-decoration: none; color:white; }
+footer     { background: Gainsboro; }

@@ -1,0 +1,29 @@
+{
+	"name":"PhysioDOM-server",
+	"preferGlobal":false,
+	"version":"0.0.1",
+	"author":"Telecom Sante <tech@telecomsante.com>",
+	"contributors": [
+		{ "name":"Fabrice Le Coz", "email":"fabrice.lecoz@telecomsante.com"}
+	],
+	"description": "A web portal for professionnal",
+	"scripts": {
+		"start":"node server/server.js -p 8001"
+	},
+	"main":"./server/server.js",
+	"repository": {
+		"type": "git",
+		"url": "http://git.telecomsante.com/physiodom-hdim/physiodom"
+	},
+	"dependencies": {
+		"restify":"2.6.3",
+		"moment":"2.5.1",
+		"commander":"2.1.0",
+		"q":"0.9.7"
+	},
+	"devDependencies": {
+		"mocha": "1.13.0",
+		"should": "2.0.1",
+		"request": "2.27.0"
+	}
+}

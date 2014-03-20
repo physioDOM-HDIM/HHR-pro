@@ -12,6 +12,7 @@ function initUI() {
 }
 
 function toggleNav() {
+	var nav = document.querySelector("nav");
 	nav.classList.toggle("show");
 }
 
@@ -27,3 +28,14 @@ function DOMNodeListToArray(domNodeList) {
 }
 
 window.addEventListener("DOMContentLoaded",initUI,false);
+
+function changeTheme(themeName) {
+	var i, a, style;
+	var styles = document.querySelectorAll("link[title]");
+	
+	for(i=0, a= styles.length; i < a; i++) {
+		style = styles.item(i);
+		style.disabled = true;
+		if(style.getAttribute("title") == themeName) style.disabled = false;
+	}
+}

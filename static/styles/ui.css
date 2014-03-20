@@ -47,12 +47,6 @@ header.hdr {
 	height: 50px !important;
 	padding:10px;
 }
-/*
-header div {
-	position: relative;
-	height: 100%;
-}
-*/
 
 footer {
 	position:absolute;
@@ -60,6 +54,7 @@ footer {
 	bottom:0;
 	left:0;
 	right:0;
+	text-align: right;
 }
 
 .navbtn {
@@ -111,7 +106,20 @@ footer {
 	padding: 0px;
 }
 
-/* table with fixed header */
+ul.tree li label:hover {
+	background: brown;
+	color: white;
+}
 
+ul.dropdown-menu {
+	text-align:left;
+}
 
-/* header.hdr > div { display: inline-block !important; } */
+ul.dropdown-menu li {
+	padding: 0px 5px;
+	width:100%;
+}
+ul.dropdown-menu li:hover {
+	color:white;
+	background: black;
+}
