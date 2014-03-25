@@ -5,6 +5,7 @@ body {
 	top: 0;
 	left: 0;
 	right: 0;
+	overflow: auto;
 }
 
 section { 
@@ -13,6 +14,7 @@ section {
 	bottom:30px;
 	left:0;
 	right:0;
+	overflow-y:hidden;
 }
 
 nav {
@@ -36,7 +38,14 @@ article {
 	left:260px;
 	right:0;
 	overflow: auto;
-	padding:10px;
+}
+
+article > footer {
+	background: none;
+	line-height: 50px;
+	height: 50px;
+	padding: 0px 10px;
+	text-align: right;
 }
 
 header.hdr { 
@@ -57,7 +66,7 @@ footer {
 	text-align: right;
 }
 
-.navbtn {
+.navbtn button {
 	border:none;
 	width: 30px;
 	height: 30px;
@@ -82,6 +91,10 @@ footer {
 	}
 }
 
+@media (min-width: 992px) {
+	.navbtn button { display:none; }
+}
+
 .ttable {
 	position: relative;
 	width: 100%;
@@ -92,14 +105,10 @@ footer {
 	width: 100%;
 	overflow: hidden;
 	border-bottom: 1px solid lavender;
-	/* line-height: 25px; */
-	/* height: 25px; */
 	display: table-row;
 }
 .cell {
-	display: table-cell;
-	/* line-height: 25px; */
-	/* height: 25px; */
+	display: table-cell !important;
 	vertical-align: middle;
 	white-space: nowrap;
 	overflow: hidden;
@@ -122,4 +131,50 @@ ul.dropdown-menu li {
 ul.dropdown-menu li:hover {
 	color:white;
 	background: black;
+}
+div.main {
+	position:absolute;
+	top:0px;
+	bottom:0px;
+	left:0px;
+	right:0px;
+	overflow: hidden;
+	padding:10px;
+}
+
+div.main.footer {
+	bottom:50px;
+}
+
+div.dlg {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: white;
+	height: 300px;
+	width: 600px;
+	border: 1px solid black;
+	border-radius: 5px;
+	padding: 10px;
+	box-shadow: 1px 1px 10px;
+	display: none;
+	margin: auto;
+}
+
+div.dlg > footer {
+	height: 50px;
+	line-height: 50px;
+	padding: 0px 10px;
+}
+
+div#bg {
+	display: none;
+	position: absolute;
+	top: 0px;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	background: rgba(0, 0, 0, 0.6);
 }

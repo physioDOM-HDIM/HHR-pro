@@ -20,135 +20,52 @@
 	<script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
 
 	<link rel="stylesheet" href="styles/ui.css">
-	<link rel="stylesheet" href="styles/mock.css" title="dev">
-	<link rel="alternate stylesheet" href="styles/theme.css" title="theme">
+	<link rel="alternate stylesheet" href="styles/mock.css" title="dev">
+	<link rel="stylesheet" href="styles/theme.css" title="theme">
+	<link rel="stylesheet" href="assets/codebase/dhtmlxscheduler.css" charset="utf-8">
 	 
+	<script src="assets/js/tinymce/tinymce.min.js"></script>
+	<script src="assets/codebase/dhtmlxscheduler.js" type="text/javascript" charset="utf-8"></script>
+	<script src="assets/codebase/ext/dhtmlxscheduler_minical.js" type="text/javascript" charset="utf-8"></script>
+	<script src="assets/js/moment-with-langs.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="assets/highcharts/highcharts.js"></script>
+	<script src="assets/highcharts/modules/exporting.js"></script>
 	<script src="scripts/ui.js" type="text/javascript" ></script>
+	
 </head>
-<body role="document" class="theme-showcase">
+<body role="document" class="theme-showcase" style="overflow: hidden;">
 	<header class="hdr ttable">
 		<div class="trow">
-		<div class="visible-sm cell" style="width:10%">
-			<button class="navbtn btn-info">=</button>
+		<div class="navbtn cell" style="width:50px">
+			<button class=" btn-info">=</button>
 		</div>
-		<div class="cell"></div>
-		<div class="cell" style="width:100px;text-align:right"><a href="login.htm">Déconnexion</a></div>
+		<div class="cell title" style="text-align: center;font-size: 20px;">Search recipient</div>
+			<div class="cell" style="text-align: center; width:250px; text-overflow: ellipsis">recipient : Claire Caledonie</div>
+		<div class="cell" style="width:100px;text-align:right;font-size: 80%;">C. Deveaux<br/><a href="/">Déconnexion</a></div>
 			</div>
 	</header>
 	<section>
 		<nav>
-			<header class="visible-xs visible-sm" style="padding:5px">
+			<header class="visible-xs visible-sm" style="padding:5px;height: 50px;">
 				<button class="navbtn btn-info">=</button>
 			</header>
 			<ul class="tree">
-				<li><label>Création / Sélection du bénéficiaire</label></li>
+				<li><label onclick="show('recipients','Search recipient')">Create / Select recipient</label></li>
 				<li>
-					<label>Dossier Suivi à Domicile</label>
+					<label>Record home monitoring</label>
 					<ul class="tree">
-						<li><label>Item 1</label></li>
-						<li><label>Item 1</label></li>
-						<li><label>Item 1</label></li>
-						<li><label>Item 1</label></li>
+						<li onclick="show('messages','Messages')"><label>Messages</label></li>
+						<li onclick="show('agenda','Agenda')"><label>Agenda</label></li>
+						<li onclick="show('data','Physiological data')"><label>Physiological data</label></li>
 					</ul>
 				</li>
-				<li><label>Annuaire</label></li>
+				<li><label>Directory</label></li>
 			</ul>
 		</nav>
-		<article>
-			<div class="row">
-				<div class="col-xs-6">
-					<label class="col-sm-4 control-label">Nom</label>
-					<input class="col-sm-7" type="text" id="lastname">
-				</div>
-				<div class="col-xs-6">
-					<label class="col-sm-4 control-label">Prénom</label>
-					<input class="col-sm-7" type="text" id="firstname">
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-xs-6">
-					<label class="col-sm-4 control-label">Code Postal</label>
-					<input class="col-sm-7" type="text" id="zipcode">
-				</div>
-				<div class="col-xs-6">
-					<label class="col-sm-4 control-label">Ville</label>
-					<input class="col-sm-7" type="text" id="city">
-				</div>
-			</div>
-			<table class="table table-striped" style="margin-top:30px">
-				<thead>
-					<tr>
-						<th style="min-width:200px">Client</th>
-						<th style="width:200px">Périmètre</th>
-						<th style="width:200px">Date de naissance</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>Marie Zorn</td>
-						<td></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td>Albert ducros</td>
-						<td></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td>Cayce Pollard</td>
-						<td></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td>Marie Zorn</td>
-						<td></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td>Albert ducros</td>
-						<td></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td>Cayce Pollard</td>
-						<td></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td>Marie Zorn</td>
-						<td></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td>Albert ducros</td>
-						<td></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td>Cayce Pollard</td>
-						<td></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td>Marie Zorn</td>
-						<td></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td>Albert ducros</td>
-						<td></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td>Cayce Pollard</td>
-						<td></td>
-						<td></td>
-					</tr>
-				</tbody>
-			</table>
-		</article>
+		<article></article>
 	</section>
 	<footer>
+		<!--
 		<div class="btn-group dropup">
 			<button class="btn">Theme</button>
 			<button class="btn dropdown-toggle" data-toggle="dropdown">
@@ -159,6 +76,11 @@
 				<li onclick="changeTheme('theme')" >theme</li>
 			</ul>
 		</div>
+		-->
 	</footer>
+	<div id="bg"></div>
+	<script>
+		window.addEventListener("DOMContentLoaded", function() { show('recipients','Search recipient'); }, false);
+	</script>
 </body>
 </html>
