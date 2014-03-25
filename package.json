@@ -8,7 +8,7 @@
 	],
 	"description": "A web portal for professionnal",
 	"scripts": {
-		"start":"supervisor -w package.json,server/ -- server/server.js -p 8001"
+		"start":"supervisor -w package.json,server/ -- server/server.js -p 8001 2>&1 > log/app.log"
 	},
 	"main":"./server/server.js",
 	"repository": {
