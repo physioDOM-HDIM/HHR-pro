@@ -1,14 +1,5 @@
 <div class="main">
 
-	<style type="text/css" media="screen">
-		html, body{
-			margin:0px;
-			padding:0px;
-			height:100%;
-			overflow:hidden;
-		}
-	</style>
-
 	<div id="scheduler_here" class="dhx_cal_container" style='width:100%; height:100%;'>
 		<div class="dhx_cal_navline">
 			<div class="dhx_cal_prev_button">&nbsp;</div>

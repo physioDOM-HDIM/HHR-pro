@@ -1,12 +1,16 @@
 (function init() {
+	scheduler.clearAll();
 	scheduler.config.multi_day = true;
 
 	scheduler.config.xml_date="%Y-%m-%d %H:%i";
-	scheduler.init('scheduler_here',new Date(2010,0,10),"week");
-	scheduler.load("./data/events.xml");
+	scheduler.config.first_hour = 8;
+	scheduler.config.last_hour = 21;
+	scheduler.config.hour_size_px = 80;
+	scheduler.init('scheduler_here',null,"week");
+	scheduler.load("./data/events.json","json");
 })();
 
-function show_minical(){
+function show_minical() {
 	if (scheduler.isCalendarVisible())
 		scheduler.destroyCalendar();
 	else
