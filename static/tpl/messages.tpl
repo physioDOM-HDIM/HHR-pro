@@ -73,7 +73,7 @@
 			<div class="ttable">
 				<div class="trow">
 					<div class="cell sendDate" style="width:150px;">2014-03-24 14:26</div>
-					<div class="cell sendBy" style="width:200px;">Deveaux C.</div>
+					<div class="cell sendBy" style="width:200px;">from : Deveaux C.</div>
 					<div class="cell institution">Hopital de Nevers</div>
 				</div>
 			</div>
@@ -95,7 +95,7 @@
 	</ul>
 </div>
 <footer>
-	<button class="btn btn-primary" onclick="showDlg('newMsg')">Nouveau message</button>
+	<button class="btn btn-primary" onclick="showDlg('newMsg')">New message</button>
 </footer>
 <div class="dlg" id="newMsg" style="width: 700px;height: 600px;">
 	<div class="content">
@@ -126,13 +126,13 @@
 				<label class="col-sm-3  control-label" style="text-align: left">Content</label>
 			</div>
 			<div class="form-group" style="margin: 0px 0px;">
-				<div id="contentMsg" style="height: 150px;"></div>
+				<div id="contentMsg" style="height: 150px;" contenteditable="true"></div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3  control-label" style="text-align: left">Comment</label>
 			</div>
 			<div class="form-group" style="margin: 0px 0px;">
-				<div id="commentMsg" style="height: 100px;"></div>
+				<div id="commentMsg" style="height: 100px;"  contenteditable="true"></div>
 			</div>
 		</form>
 	</div>
