@@ -1,6 +1,6 @@
 body       { background: white; }
 section    { background: white; }
-nav        { background: black; color:white; }
+nav        { background: rgb(80, 80, 80); color:white; }
 article    { background: white; }
 header.hdr { background: black; color:white; }
 header.hdr a { text-decoration: none; color:white; }

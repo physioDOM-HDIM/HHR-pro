@@ -95,25 +95,52 @@ footer {
 	.navbtn button { display:none; }
 }
 
+/* div table */
+
 .ttable {
 	position: relative;
 	width: 100%;
 	display: table;
 	table-layout: fixed;
 }
-.trow {
+
+.trow, .thead {
 	width: 100%;
 	overflow: hidden;
-	border-bottom: 1px solid lavender;
+	border-bottom: 1px solid #ccc;
 	display: table-row;
 }
+
+.trow:nth-child(odd) {
+	background:#f9f9f9;
+}
+
+.trow.normal, .thead.normal {
+	height: 30px;
+	line-height: 30px;
+}
+
+.thead {
+	font-weight:bold;
+	border-bottom: 1px solid black;
+}
+
 .cell {
 	display: table-cell !important;
 	vertical-align: middle;
 	white-space: nowrap;
 	overflow: hidden;
 	padding: 0px;
+	text-overflow: ellipsis;
 }
+
+.thead .cell {
+	height:30px;
+	line-height:30px;
+	border-bottom: 1px solid black;
+}
+
+/* ul tree list */
 
 ul.tree li label:hover {
 	background: brown;
