@@ -1,3 +1,5 @@
+var myCalendar;
+
 (function init() {
 
 	chart = new Highcharts.Chart({
@@ -20,7 +22,7 @@
 				year : '%b'
 			},
 			max : moment().valueOf(),
-			min : moment().subtract('days', 4).valueOf()
+			min : moment("2014-03-22","YYYY-MM-DD").valueOf()
 		},
 		yAxis   : [{
 			title    : {
@@ -108,6 +110,6 @@
 			}
 		]
 	});
-	
-	
+
+	myCalendar = new dhtmlXCalendarObject(["calendar1", "calendar2"]);
 })();
