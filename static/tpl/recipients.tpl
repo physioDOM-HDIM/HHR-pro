@@ -23,7 +23,7 @@
 <table class="table table-striped" style="margin-top:30px">
 	<thead>
 	<tr>
-		<th style="min-width:200px">Benificiary</th>
+		<th style="min-width:200px">Beneficiary</th>
 		<th style="width:200px">Perimeter</th>
 		<th style="width:200px">Birth date</th>
 	</tr>
