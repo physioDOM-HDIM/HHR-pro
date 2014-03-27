@@ -40,6 +40,15 @@ div#login-box footer {
 	display: flex;
 }
 
+img#logo {
+	height: 200px;
+	margin: auto;
+	position: absolute;
+	left: 0;
+	right: 0;
+	margin-top: 50px;
+}
+
 div.spacer {
 	flex-grow: 1;
 }

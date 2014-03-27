@@ -5,6 +5,8 @@ function showDetail(btn) {
 }
 
 (function init() {
+	document.querySelector("#beneficiary").style.display = "block";
+	
 	var ul = document.querySelector("ul.messages");
 	console.log(ul);
 	var li = ul.querySelector("li");

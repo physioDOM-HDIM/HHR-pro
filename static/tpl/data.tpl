@@ -23,9 +23,8 @@
 			<div class="cell"></div>
 		</div>
 	</div>
-	<hr/>
 	<!-- table of measure parameters -->
-	<div class="ttable">
+	<div class="ttable topmargin alternate">
 		<div class="thead normal">
 			<div class="cell">Measure type</div>
 			<div class="cell">Minimum value</div>

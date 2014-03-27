@@ -104,6 +104,10 @@ footer {
 	table-layout: fixed;
 }
 
+.ttable.topmargin {
+	margin-top: 30px;
+}
+
 .trow, .thead {
 	width: 100%;
 	overflow: hidden;
@@ -111,13 +115,13 @@ footer {
 	display: table-row;
 }
 
-.trow:nth-child(odd) {
+.ttable.alternate .trow:nth-child(odd) {
 	background:#f9f9f9;
 }
 
 .trow.normal, .thead.normal {
-	height: 30px;
-	line-height: 30px;
+	height: 35px;
+	/* line-height: 30px; */
 }
 
 .thead {

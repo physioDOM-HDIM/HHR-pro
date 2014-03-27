@@ -1,4 +1,6 @@
 (function init() {
+	document.querySelector("#beneficiary").style.display = "block";
+	
 	scheduler.clearAll();
 	scheduler.config.multi_day = true;
 

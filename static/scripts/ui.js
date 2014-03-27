@@ -62,8 +62,9 @@ function show(page, title) {
 		fileref.innerHTML = xhr.responseText;
 		article.appendChild(fileref);
 	}
-	
-	if(window.innerWidth < 993) {
+
+	var nav = document.querySelector("nav");
+	if(window.innerWidth < 993 && nav.classList.contains("show")) {
 		toggleNav();
 	}
 }

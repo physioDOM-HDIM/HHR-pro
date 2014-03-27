@@ -1,7 +1,8 @@
 var myCalendar;
 
 (function init() {
-
+	document.querySelector("#beneficiary").style.display = "block";
+	
 	chart = new Highcharts.Chart({
 		chart   : {
 			renderTo: document.querySelector('#container'),
