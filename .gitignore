@@ -1,2 +1,7 @@
 .DS_Store
 .Idea/
+node_modules/
+keys
+dist/
+log/*.log
+static/test/
