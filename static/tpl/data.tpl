@@ -10,9 +10,31 @@
 		font-family: Tahoma;
 		font-size: 12px;
 	}
+	
+	div#showList {
+		position: absolute !important;
+		z-index: 2;
+	}
+
+	div#showList ul {
+		width:200px
+	}
+	
 </style>
 
 <div class="main">
+
+	<div class="dropdown" id="showList">
+		<button class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown">Show</button>
+		<ul class="tree dropdown-menu">
+			<li><input type="checkbox" checked> Weight</li>
+			<li><input type="checkbox" checked> Pulse</li>
+			<li><input type="checkbox"> Temperature</li>
+			<li><input type="checkbox"> systolic blood pressure</li>
+			<li><input type="checkbox"> diastolic blood pressure</li>
+		</ul>
+	</div>
+
 	<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto; background: aliceblue;"></div>
 
 	<div class="ttable">

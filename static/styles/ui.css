@@ -26,11 +26,6 @@ nav {
 	padding: 10px 0px;
 }
 
-nav ul.tree {
-	list-style-type: none;
-	padding: 0px 10px;
-}
-
 article {
 	position:absolute;
 	top:0;
@@ -145,6 +140,10 @@ footer {
 }
 
 /* ul tree list */
+ul.tree {
+	list-style-type: none;
+	padding: 0px 10px;
+}
 
 ul.tree li label:hover {
 	background: brown;
