@@ -9,6 +9,11 @@ function initUI() {
 	DOMNodeListToArray(navbtns).forEach(function(item) { 
 		item.addEventListener("click",toggleNav,false); 
 	});
+
+	document.querySelector('iframe').addEventListener("load",function () {
+		var doc = this.contentDocument;
+		document.querySelector('header div.title').innerHTML = doc.title;
+	}, false);
 }
 
 function toggleNav() {
@@ -43,25 +48,9 @@ function changeTheme(themeName) {
 function show(page, title) {
 	var article = document.querySelector("article");
 	var header = document.querySelector("header .title");
+	var iframe = document.querySelector("iframe");
 	
-	header.innerHTML = title;
-	var xhr = new XMLHttpRequest();
-	xhr.open("GET",'/tpl/'+page+'.tpl',false);
-	xhr.send();
-	if(xhr.status === 200) {
-		article.innerHTML = xhr.responseText;
-	}
-
-	xhr.open("GET",'/tpl/'+page+'.js',false);
-	xhr.send();
-	if(xhr.status === 200) {
-		var fileref = document.createElement('script');
-		fileref.setAttribute("type", "text/javascript");
-		fileref.setAttribute("language", "javascript");
-		fileref.setAttribute("id","script_"+page);
-		fileref.innerHTML = xhr.responseText;
-		article.appendChild(fileref);
-	}
+	iframe.src= "/tpl/"+page+".htm";
 
 	var nav = document.querySelector("nav");
 	if(window.innerWidth < 993 && nav.classList.contains("show")) {

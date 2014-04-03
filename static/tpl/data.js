@@ -1,7 +1,9 @@
 var myCalendar;
 
 (function init() {
-	document.querySelector("#beneficiary").style.display = "block";
+	$("ul.dropdown-menu").on("click","li", function(e) {
+		e.stopPropagation();
+	});
 	
 	chart = new Highcharts.Chart({
 		chart   : {

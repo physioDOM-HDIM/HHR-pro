@@ -4,11 +4,41 @@ function showDetail(btn) {
 	detail.classList.toggle("show");
 }
 
+function showDlg(dlgID) {
+	var bg = document.querySelector("#bg");
+	bg.style.display = "block";
+	var dlg = document.querySelector("#"+dlgID);
+	insertAfter(dlg,bg);
+	dlg.style.display = "block";
+}
+
+function hideDlg(dlgID) {
+	var bg = document.querySelector("#bg");
+	var dlg = document.querySelector("#"+dlgID);
+	if(dlg) {
+		dlg.style.display = "none";
+	}
+	if(bg) {
+		bg.style.display = "none";
+	}
+}
+
+function insertAfter(newElement,targetElement) {
+	//target is what you want it to go after. Look for this elements parent.
+	var parent = targetElement.parentNode;
+
+	//if the parents lastchild is the targetElement...
+	if(parent.lastchild == targetElement) {
+		//add the newElement after the target element.
+		parent.appendChild(newElement);
+	} else {
+		// else the target has siblings, insert the new element between the target and it's next sibling.
+		parent.insertBefore(newElement, targetElement.nextSibling);
+	}
+}
+
 (function init() {
-	document.querySelector("#beneficiary").style.display = "block";
-	
 	var ul = document.querySelector("ul.messages");
-	console.log(ul);
 	var li = ul.querySelector("li");
 	var newMsg;
 

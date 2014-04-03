@@ -1,15 +1,16 @@
 (function init() {
-	document.querySelector("#beneficiary").style.display = "block";
+	//document.querySelector("#beneficiary").style.display = "block";
 	
 	scheduler.clearAll();
 	scheduler.config.multi_day = true;
 
 	scheduler.config.xml_date="%Y-%m-%d %H:%i";
-	scheduler.config.first_hour = 8;
-	scheduler.config.last_hour = 21;
-	scheduler.config.hour_size_px = 80;
+	//scheduler.config.first_hour = 6;
+	scheduler.config.scroll_hour = 8;
+	//scheduler.config.last_hour = 21;
+	scheduler.config.hour_size_px = 44;
 	scheduler.init('scheduler_here',null,"week");
-	scheduler.load("./data/events.json","json");
+	scheduler.load("/data/events.json","json");
 })();
 
 function show_minical() {

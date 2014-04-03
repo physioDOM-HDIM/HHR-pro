@@ -1,0 +1,48 @@
+/* div table */
+
+.ttable {
+	position: relative;
+	width: 100%;
+	display: table;
+	table-layout: fixed;
+}
+
+.ttable.topmargin {
+	margin-top: 30px;
+}
+
+.trow, .thead {
+	width: 100%;
+	overflow: hidden;
+	border-bottom: 1px solid #ccc;
+	display: table-row;
+}
+
+.ttable.alternate .trow:nth-child(odd) {
+	background:#f9f9f9;
+}
+
+.trow.normal, .thead.normal {
+	height: 35px;
+	/* line-height: 30px; */
+}
+
+.thead {
+	font-weight:bold;
+	border-bottom: 1px solid black;
+}
+
+.cell {
+	display: table-cell !important;
+	vertical-align: middle;
+	white-space: nowrap;
+	overflow: hidden;
+	padding: 0px;
+	text-overflow: ellipsis;
+}
+
+.thead .cell {
+	height:30px;
+	line-height:30px;
+	border-bottom: 1px solid black;
+}
