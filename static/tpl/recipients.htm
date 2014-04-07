@@ -14,6 +14,7 @@
 	<link rel="apple-touch-icon" href="/img/physiodom_favico.png">
 
 	<link rel="stylesheet" href="/styles/iframe.css" charset="UTF-8">
+	<link rel="stylesheet" href="/styles/theme.css" charset="UTF-8">
 
 	<link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="/assets/css/bootstrap-theme.min.css">
@@ -22,11 +23,23 @@
 	<script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
 
 	<link rel="stylesheet" href="/styles/table.css" charset="UTF-8">
-	
+	<link rel="stylesheet" href="/styles/fixedTable.css" charset="UTF-8">
+	<script src="/scripts/common.js"></script>
+
+	<script src="recipients.js"></script>
+
 </head>
 <body>
+<style>
+	div.fixedTable {
+		margin-top: 20px;
+		flex-grow: 1;
+		width: 100%;
+	}
+</style>
 <div class="main">
 
+<div style="">
 	<div class="ttable topmargin">
 		<div class="trow normal">
 			<div class="cell">
@@ -56,55 +69,388 @@
 			</div>
 		</div>
 	</div>
+</div>
 
-	<div class="ttable topmargin alternate">
-		<div class="thead normal">
-			<div class="cell">Beneficiary</div>
-			<div class="cell">Perimeter</div>
-			<div class="cell">Birth date</div>
-		</div>
-		<div class="trow normal">
-			<div class="cell">Claire Calédonie</div>
-			<div class="cell"></div>
-			<div class="cell">1950-06-18</div>
-		</div>
-		<div class="trow normal">
-			<div class="cell">Marie Zorn</div>
-			<div class="cell"></div>
-			<div class="cell">1947-08-14</div>
-		</div>
-		<div class="trow normal">
-			<div class="cell">Cayce Pollard</div>
-			<div class="cell"></div>
-			<div class="cell">1947-08-14</div>
-		</div>
-		<div class="trow normal">
-			<div class="cell">Albert Ducros</div>
-			<div class="cell"></div>
-			<div class="cell">1947-08-14</div>
-		</div>
-		<div class="trow normal">
-			<div class="cell">Claire Calédonie</div>
-			<div class="cell"></div>
-			<div class="cell">1950-06-18</div>
-		</div>
-		<div class="trow normal">
-			<div class="cell">Marie Zorn</div>
-			<div class="cell"></div>
-			<div class="cell">1947-08-14</div>
-		</div>
-		<div class="trow normal">
-			<div class="cell">Cayce Pollard</div>
-			<div class="cell"></div>
-			<div class="cell">1947-08-14</div>
-		</div>
-		<div class="trow normal">
-			<div class="cell">Albert Ducros</div>
-			<div class="cell"></div>
-			<div class="cell">1947-08-14</div>
-		</div>
-	</div>
-
+<div class="fixedTable" style="-ms-flex:1;-webkit-box-flex:1;-webkit-flex-grow: 1">
+<table id="recipients">
+<colgroup>
+	<col>
+	<col style="width:200px">
+	<col style="width:150px">
+	<col style="width:70px">
+</colgroup>
+<thead>
+<tr>
+	<th>Beneficiary</th>
+	<th>Perimeter</th>
+	<th>Birth date</th>
+	<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<td>Calédonie Claire</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="parent.show('recipientDetail','Detail of the beneficiary')">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Zorn Marie</td>
+	<td></td>
+	<td>1947-08-14</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Pollard Cayce</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Calédonie Claire</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Zorn Marie</td>
+	<td></td>
+	<td>1947-08-14</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Pollard Cayce</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Calédonie Claire</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Zorn Marie</td>
+	<td></td>
+	<td>1947-08-14</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Pollard Cayce</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Calédonie Claire</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Zorn Marie</td>
+	<td></td>
+	<td>1947-08-14</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Pollard Cayce</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Calédonie Claire</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Zorn Marie</td>
+	<td></td>
+	<td>1947-08-14</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Pollard Cayce</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Calédonie Claire</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Zorn Marie</td>
+	<td></td>
+	<td>1947-08-14</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Pollard Cayce</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Calédonie Claire</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Zorn Marie</td>
+	<td></td>
+	<td>1947-08-14</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Pollard Cayce</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Calédonie Claire</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Zorn Marie</td>
+	<td></td>
+	<td>1947-08-14</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Pollard Cayce</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Calédonie Claire</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Zorn Marie</td>
+	<td></td>
+	<td>1947-08-14</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Pollard Cayce</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Calédonie Claire</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Zorn Marie</td>
+	<td></td>
+	<td>1947-08-14</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Pollard Cayce</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Calédonie Claire</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Zorn Marie</td>
+	<td></td>
+	<td>1947-08-14</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Pollard Cayce</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Calédonie Claire</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Zorn Marie</td>
+	<td></td>
+	<td>1947-08-14</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Pollard Cayce</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Calédonie Claire</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Zorn Marie</td>
+	<td></td>
+	<td>1947-08-14</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Pollard Cayce</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Calédonie Claire</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Zorn Marie</td>
+	<td></td>
+	<td>1947-08-14</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Pollard Cayce</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Calédonie Claire</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Zorn Marie</td>
+	<td></td>
+	<td>1947-08-14</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+<tr>
+	<td>Pollard Cayce</td>
+	<td></td>
+	<td>1950-06-18</td>
+	<td>
+		<button class="btn btn-primary btn-xs" onclick="">select</button>
+	</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 </body>
 </html>

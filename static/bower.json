@@ -1,0 +1,21 @@
+{
+  "name": "PhysioDOM",
+  "version": "0.0.1",
+  "authors": [
+    "fablec <fabrice.lecoz@telecomsante.com>"
+  ],
+  "main": "index.htm",
+  "license": "Telecom Sante",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#~0.2.2",
+    "platform": "Polymer/platform#~0.2.2",
+    "polymer-ui-accordion": "Polymer/polymer-ui-accordion#~0.2.2"
+  }
+}

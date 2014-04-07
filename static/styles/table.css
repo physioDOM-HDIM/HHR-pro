@@ -18,10 +18,6 @@
 	display: table-row;
 }
 
-.ttable.alternate .trow:nth-child(odd) {
-	background:#f9f9f9;
-}
-
 .trow.normal, .thead.normal {
 	height: 35px;
 	/* line-height: 30px; */

@@ -1,7 +1,11 @@
-body       { background: white; }
-section    { background: white; }
-nav        { background: rgb(80, 80, 80); color:white; }
-article    { background: white; }
-header.hdr { background: black; color:white; }
+body         { background: white; }
+section      { background: white; }
+nav          { background: rgb(80, 80, 80); color:white; }
+article      { background: white; }
+header.hdr   { background: black; color:white; }
 header.hdr a { text-decoration: none; color:white; }
-footer     { background: Gainsboro; }
+
+tr:nth-child(even) { background:#DFDFDF; }
+thead tr     { background: white; }
+table        { width:100%; }
+.ttable.alternate .trow:nth-child(odd) { background:#DFDFDF; }
