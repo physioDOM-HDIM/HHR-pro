@@ -31,12 +31,8 @@ body {
 	padding:10px;
 }
 
-.main.footer {
-	bottom:50px;
-}
-
 footer {
-	position:absolute;
+	/* position:absolute; */
 	height: 30px;
 	bottom:0;
 	left:0;
@@ -67,6 +63,20 @@ div.dlg {
 	box-shadow: 1px 1px 10px;
 	display: none;
 	margin: auto;
+	overflow:hidden;
+	
+	flex-direction: column;
+}
+
+div.dlg.show {
+	display:flex!important;
+}
+
+div.dlg > div.content {
+	width:100%;
+	flex-grow:1;
+	overflow: hidden;
+	overflow-y: auto;
 }
 
 div.dlg > footer {

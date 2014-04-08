@@ -22,96 +22,113 @@
 	<script type="text/javascript" src="/assets/js/jquery-2.1.0.min.js"></script>
 	<script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
 
+	<!-- Accordion -->
+	<script src="/bower_components/platform/platform.js"></script>
+	<link rel="import" href="/bower_components/polymer-ui-accordion/polymer-ui-accordion.html">
+
 	<link rel="stylesheet" href="/styles/table.css" charset="UTF-8">
 	<link rel="stylesheet" href="/styles/fixedTable.css" charset="UTF-8">
 	<script src="/scripts/common.js"></script>
+
+	<style>
+		.span3 {
+			width: 45%;
+			padding: 5px;
+		}
+
+		[class*="span"] {
+			float: left;
+			min-height: 1px;
+			margin-left: 20px;
+		}
+
+		polymer-ui-accordion {
+			border:1px solid #ddd;
+			margin-bottom:20px;
+			border-radius: 3px;
+
+		}
+		
+		.polymer-ui-collapsible-header {
+			background-image: -webkit-linear-gradient(top,#f5f5f5 0,#e8e8e8 100%);
+			background-image: linear-gradient(to bottom,#f5f5f5 0,#e8e8e8 100%);
+			background-repeat: repeat-x;
+			filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff5f5f5', endColorstr='#ffe8e8e8', GradientType=0);
+			color: #333;
+			background-color: #f5f5f5;
+			border-color: #ddd;
+			padding: 10px 15px;
+			border-bottom: 1px solid transparent;
+			border-top-right-radius: 3px;
+			border-top-left-radius: 3px;
+			font-weight:bold;
+			font-size:16px;
+		}
+
+		.content.panel {
+			padding:10px;
+		}
+		
+		.column {
+			-webkit-column-count:2; /* Chrome, Safari, Opera */
+			-moz-column-count:2; /* Firefox */
+			column-count:2;
+		}
+	</style>
 </head>
-<body class="container" style="margin-top:20px">
-<div class="panel panel-default">
-	<div class="panel-heading">
-		<h3 class="panel-title">Identity</h3>
-	</div>
-	<div class="ttable">
-		<div class="trow normal">
-			<div class="cell">
-				<label class="col-xs-4">Last Name</label>
-				<input class="col-xs-7" type="text" id="lastname" value="Calédonie" readonly>
-			</div>
-			<div class="cell">
-				<label class="col-xs-4 ">First Name</label>
-				<input class="col-xs-7" type="text" id="firstname" value="Claire" readonly>
-			</div>
-		</div>
-		<div class="trow normal">
-			<div class="cell">
-				<label class="col-xs-4">Birthdate</label>
-				<input class="col-xs-7" type="text" id="birthdate" value="1950-06-18" readonly>
-			</div>
-			<div class="cell">
-				<label class="col-xs-4 control-label">Social id</label>
-				<input class="col-xs-7" type="text" id="socialID" value="" readonly>
-			</div>
-		</div>
-	</div>
-</div>
-<div class="panel  panel-default">
-	<div class="panel-heading">
-		<h3 class="panel-title">Address</h3>
-	</div>
-	<div class="panel-body ">
-		<div>
-			<label class="col-md-offset-2">152</label> <label>RUE DES JEUX OLYMPIQUES 1968</label>
-		</div>
-		<div>
-			<label class="col-md-offset-2">38250</label> <label>VILLARD DE LANS</label>
-		</div>
-	</div>
-</div>
-</div>
+<body style="margin-top:20px">
 
-<div class="panel panel-default">
-	<div class="panel-heading">
-		<h3 class="panel-title">Cares</h3>
+<polymer-ui-accordion selected="0" notap>
+	<div class="content" style="">
+		<polymer-ui-accordion selected="0" notap style="margin-bottom: 0;float:left;width:50%;">
+			<div class="polymer-ui-collapsible-header">Identity</div>
+			<div class="content panel">
+				<div><label>Calédonie Claire</label></div>
+				<div>Birth date : <label>1950-06-18</label></div>
+				<div>Social id <label></label></div>
+			</div>
+		</polymer-ui-accordion>
+		<polymer-ui-accordion selected="0" notap style="margin-bottom: 0;float:left;width:50%;">
+			<div class="polymer-ui-collapsible-header">Address</div>
+			<div class="content panel">
+				<div>152 RUE DES JEUX OLYMPIQUES 1968</div>
+				<div>38250 VILLARD DE LANS</div>
+			</div>
+		</polymer-ui-accordion>
+		<div style="clear:both"></div>
 	</div>
-	<div class="panel-body" style="border:none">
-		<div class="panel panel-default col-xs-6">
-			<div class="panel-heading">
-				<h3 class="panel-title">Pending requests</h3>
-			</div>
-			<div class="panel-body">
-				<table>
-					<colgroup>
-						<col style="width:30%">
-						<col style="width:30%">
-						<col style="width:30%">
-					</colgroup>
-					<thead>
-					<tr>
-						<th>Last name</th>
-						<th>First name</th>
-						<th>Role</th>
-					</tr>
-					</thead>
-					<tbody>
-					</tbody>
-				</table>
-			</div>
-		</div>
-		<div class="panel panel-default col-xs-6">
-			<div class="panel-heading">
-				<h3 class="panel-title">Supported in progress</h3>
-			</div>
-		</div>
-	</div>
-</div>
+</polymer-ui-accordion>
 
-<div class="panel panel-default">
-	<div class="panel-heading">
-		<h3 class="panel-title">Preassigned stakeholders</h3>
+<polymer-ui-accordion selected="0">
+	<polymer-ui-collapsible>
+	<div class="polymer-ui-collapsible-header">List of pending requests</div>
+	<div class="content panel">
+		<p>Lorem ipsum dolor sit amet, no vix eius altera imperdiet, legere luptatum adipiscing est eu. Mel brute
+			mnesarchum ne, abhorreant efficiantur definitiones an est, illum omittam sit ex. No dico menandri eam, ex
+			putent electram mei. Pro alia maluisset no, mazim ridens sadipscing nam ad, ei sit elit abhorreant dissentias.
+			Mei fierent scripserit ad, aliquid fabulas scaevola his te, at cum democritum sententiae elaboraret.</p>
 	</div>
-	<div class="panel-body">
-		<div class="fixedTable" style="-ms-flex:1;-webkit-box-flex:1;-webkit-flex-grow: 1">
-			<table id="recipients">
+		</polymer-ui-collapsible>
+</polymer-ui-accordion>
+
+<polymer-ui-accordion selected="0">
+	<polymer-ui-collapsible>
+	<div class="polymer-ui-collapsible-header">List of active requests</div>
+	<div class="content panel">
+		<p>Lorem ipsum dolor sit amet, no vix eius altera imperdiet, legere luptatum adipiscing est eu. Mel brute
+			mnesarchum ne, abhorreant efficiantur definitiones an est, illum omittam sit ex. No dico menandri eam, ex
+			putent electram mei. Pro alia maluisset no, mazim ridens sadipscing nam ad, ei sit elit abhorreant dissentias.
+			Mei fierent scripserit ad, aliquid fabulas scaevola his te, at cum democritum sententiae elaboraret.</p>
+	</div>
+		</polymer-ui-collapsible>
+</polymer-ui-accordion>
+
+<polymer-ui-accordion>
+	<polymer-ui-collapsible>
+	<div class="polymer-ui-collapsible-header">Preassigned stakeholders</div>
+	<div class="content">
+		<div class="fixedTable" style="height:300px;">
+			<table id="stakeholders">
 				<colgroup>
 					<col style="width:30%">
 					<col style="width:30%">
@@ -145,8 +162,55 @@
 					<td>Magalie</td>
 					<td></td>
 				</tr>
+				<tr>
+					<td>ROLLAND</td>
+					<td>Anne</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>COTTE</td>
+					<td>Jean</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>OFFRROY</td>
+					<td>Remy</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>GUEDON</td>
+					<td>Magalie</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>ROLLAND</td>
+					<td>Anne</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>COTTE</td>
+					<td>Jean</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>OFFRROY</td>
+					<td>Remy</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>GUEDON</td>
+					<td>Magalie</td>
+					<td></td>
+				</tr>
 				</tbody>
 		</div>
 	</div>
+		</polymer-ui-collapsible>
+</polymer-ui-accordion>
+
+<script>
+	setFixedTable("#stakeholders");
+</script>
+
 </body>
 </html>

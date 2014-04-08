@@ -18,9 +18,12 @@
 
 	<link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="/assets/css/bootstrap-theme.min.css">
-
 	<script type="text/javascript" src="/assets/js/jquery-2.1.0.min.js"></script>
 	<script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
+
+	<link rel="stylesheet" href="/styles/table.css" charset="UTF-8">
+	<link rel="stylesheet" href="/styles/fixedTable.css" charset="UTF-8">
+	<script src="/scripts/common.js"></script>
 
 	<link rel="stylesheet" href="/styles/table.css" charset="UTF-8">
 	<script src="/assets/tinymce/tinymce.min.js"></script>
@@ -32,8 +35,10 @@
 		list-style-type: none;
 		padding: 0px;
 		height: 100%;
+		width:100%;
 		overflow: auto;
 		-webkit-overflow-scrolling: touch;
+		flex-grow:1;
 	}
 
 	ul.messages > li {
@@ -85,8 +90,23 @@
 	li.message div.message {
 		margin-left: 50px;
 	}
+
+	ul.dropdown-menu {
+		margin-left:30px;
+	}
+	
+	ul.dropdown-menu li {
+		line-height: 30px;
+		padding-left: 5px;
+	}
+
+	ul.dropdown-menu li:hover {
+		color:white;
+		background:black;
+	}
 </style>
-<div class="main footer">
+
+<div class="main">
 	<ul class="messages">
 		<li class="message">
 			<div class="ttable">
@@ -119,31 +139,50 @@
 					<div class="title">Comment</div>
 					<div class="message">All is OK</div>
 				</div>
+				<footer>
+					<button class="btn btn-success btn-xs" onclick="showDlg('#newMsg')">Edit</button>
+				</footer>
 			</div>
 		</li>
 	</ul>
+
+	<footer>
+		<button class="btn btn-primary" onclick="showDlg('#newMsg')">New message</button>
+	</footer>
 </div>
-<footer>
-	<button class="btn btn-primary" onclick="showDlg('newMsg')">New message</button>
-</footer>
+
 
 <div id="bg"></div>
 
-<div class="dlg" id="newMsg" style="width: 700px;height: 600px;">
+<div class="dlg" id="newMsg" style="width: 700px;height: 650px;">
 	<div class="content">
 		<form class="form-horizontal" role="form" onsubmit="return false;">
 			<div class="form-group">
 				<div class="row">
 					<div class="col-xs-6">
 						<label for="inputEmail3" class="col-sm-3 control-label">Status</label>
-						<div class="col-sm-9">
-							<input type="text" class="form-control" id="inputEmail3" placeholder="Status">
+						<div class="col-sm-9 dropdown">
+							<input type="text" class="form-control dropdown-toggle" data-toggle="dropdown" id="inputEmail3" placeholder="Status" readonly>
+							<ul class="dropdown-menu">
+								<li>Canceled</li>
+								<li>Closed</li>
+								<li>Awaiting supplements</li>
+								<li>Processing</li>
+								<li>Suspended</li>
+							</ul>
 						</div>
 					</div>
 					<div class="col-xs-6">
-						<label for="inputPassword3" class="col-sm-3 control-label">Severity</label>
-						<div class="col-sm-9">
-							<input type="text" class="form-control" id="inputPassword3" placeholder="Severity">
+						<label for="severity" class="col-sm-3 control-label">Severity</label>
+						<div class="col-sm-9 dropdown">
+							<input type="text" class="form-control dropdown-toggle" data-toggle="dropdown" readonly id="severity" placeholder="Severity" value="Standard">
+							<ul class="dropdown-menu">
+								<li>Critical</li>
+								<li>High</li>
+								<li>Important</li>
+								<li>Standard</li>
+								<li>Minor</li>
+							</ul>
 						</div>
 					</div>
 				</div>
@@ -169,8 +208,8 @@
 		</form>
 	</div>
 	<footer>
-		<button class="btn btn-danger" onclick="hideDlg('newMsg')">Cancel</button>
-		<button class="btn btn-primary" onclick="hideDlg('newMsg')">Send</button>
+		<button class="btn btn-danger" onclick="hideDlg('#newMsg')">Cancel</button>
+		<button class="btn btn-primary" onclick="hideDlg('#newMsg')">Send</button>
 	</footer>
 </div>
 
