@@ -115,4 +115,5 @@ var myCalendar;
 	});
 
 	myCalendar = new dhtmlXCalendarObject(["calendar1", "calendar2"]);
+	setFixedTable("#measures");
 })();
