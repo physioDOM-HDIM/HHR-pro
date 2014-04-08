@@ -66,6 +66,22 @@
 </section>
 
 <script>
+	
+	if(window.navigator.standalone) {
+		$(document).on(
+			"click",
+			"a",
+			function (event) {
+
+				event.preventDefault();
+
+				var aurl = $(event.target).attr("href");
+				if (aurl) {
+					show(aurl);
+				}
+			}
+		);
+	}
 </script>
 </body>
 </html>
