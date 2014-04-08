@@ -4,7 +4,9 @@ function init() {
 	setFixedTable("#recipients");
 	
 	var buttons = document.querySelectorAll("#recipients button");
-	var func = function() { parent.show('recipientDetail','Detail of the beneficiary'); };
+	var func = function() { 
+		location.href = 'recipientDetail.htm'; 
+	};
 	Array.prototype.forEach.call(buttons, function(button) {
 		button.addEventListener("click", func, false );
 	})
