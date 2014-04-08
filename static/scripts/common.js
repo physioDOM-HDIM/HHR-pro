@@ -50,3 +50,15 @@ function getScrollbarWidth() {
 
 	return widthNoScroll - widthWithScroll;
 }
+
+window.addEventListener("DOMContentLoaded", initFrame, false);
+
+function initFrame() {
+	if(!parent) return;
+	
+	parent.setTitle();
+	var nav = parent.document.querySelector("nav");
+	if(window.innerWidth < 993 && nav.classList.contains("show")) {
+		parent.toggleNav();
+	}
+}

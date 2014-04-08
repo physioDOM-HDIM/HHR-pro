@@ -46,31 +46,36 @@ function changeTheme(themeName) {
 }
 
 function show(page, title) {
-	var article = document.querySelector("article");
-	var header = document.querySelector("header .title");
 	var iframe = document.querySelector("iframe");
 	
-	iframe.src= "/tpl/"+page+".htm";
-
+	// iframe.src= "/tpl/"+page+".htm";
+	iframe.src= page;
+	
 	var nav = document.querySelector("nav");
 	if(window.innerWidth < 993 && nav.classList.contains("show")) {
 		toggleNav();
 	}
 }
 
+function setTitle() {
+	var iframe = document.querySelector("iframe");
+	var title = document.querySelector(".hdr .title");
+	title.innerHTML = iframe.contentDocument.title;
+}
+
 function showDlg(dlgID) {
 	var bg = document.querySelector("#bg");
 	bg.style.display = "block";
-	var dlg = document.querySelector("#"+dlgID);
+	var dlg = document.querySelector(dlgID);
 	insertAfter(dlg,bg);
-	dlg.style.display = "block";
+	dlg.classList.toggle("show");
 }
 
 function hideDlg(dlgID) {
 	var bg = document.querySelector("#bg");
 	var dlg = document.querySelector("#"+dlgID);
 	if(dlg) {
-		dlg.style.display = "none";
+		dlg.classList.toggle("show");
 	}
 	if(bg) {
 		bg.style.display = "none";
