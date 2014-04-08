@@ -7,16 +7,16 @@ function showDetail(btn) {
 function showDlg(dlgID) {
 	var bg = document.querySelector("#bg");
 	bg.style.display = "block";
-	var dlg = document.querySelector("#"+dlgID);
+	var dlg = document.querySelector(dlgID);
 	insertAfter(dlg,bg);
-	dlg.style.display = "block";
+	dlg.classList.toggle("show");
 }
 
 function hideDlg(dlgID) {
 	var bg = document.querySelector("#bg");
-	var dlg = document.querySelector("#"+dlgID);
+	var dlg = document.querySelector(dlgID);
 	if(dlg) {
-		dlg.style.display = "none";
+		dlg.classList.toggle("show");
 	}
 	if(bg) {
 		bg.style.display = "none";
@@ -62,4 +62,5 @@ function insertAfter(newElement,targetElement) {
 		statusbar : false,
 		menubar : false
 	});
+	
 })();
