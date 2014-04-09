@@ -1,11 +1,20 @@
-var myCalendar;
+var Calendar1, Calendar2;
 
 (function init() {
 	$("ul.dropdown-menu").on("click","li", function(e) {
 		e.stopPropagation();
 	});
+
+	Calendar1 = new dhtmlXCalendarObject("calendar1");
+	Calendar1.setDateFormat("%Y-%m-%d %H:%i");
+	Calendar1.setDate(document.querySelector("#calendar1").value+" 00:00");
+	Calendar1.setDateFormat("%Y-%m-%d");
+	Calendar2 = new dhtmlXCalendarObject("calendar2");
+	Calendar2.setDateFormat("%Y-%m-%d %H:%i");
+	Calendar2.setDate(document.querySelector("#calendar2").value+" 23:59");
+	Calendar2.setDateFormat("%Y-%m-%d");
 	
-	chart = new Highcharts.Chart({
+	var chart = new Highcharts.Chart({
 		chart   : {
 			renderTo: document.querySelector('#container'),
 			type: 'spline'
@@ -24,8 +33,8 @@ var myCalendar;
 				month: '%e %b',
 				year : '%b'
 			},
-			max : moment().valueOf(),
-			min : moment("2014-03-22","YYYY-MM-DD").valueOf()
+			min : moment(Calendar1.getDate()).valueOf(),
+			max : moment(Calendar2.getDate()).valueOf()
 		},
 		yAxis   : [{
 			title    : {
@@ -113,13 +122,25 @@ var myCalendar;
 			}
 		]
 	});
-
-	myCalendar = new dhtmlXCalendarObject(["calendar1", "calendar2"]);
-	myCalendar.hideTime();
+	
+	Calendar1.hideTime();
+	Calendar2.hideTime();
+	Calendar1.attachEvent("onClick",function(d) {
+		chart.xAxis[0].setExtremes(moment(d).valueOf(),moment(Calendar2.getDate()).valueOf(),true);
+	});
+	Calendar2.attachEvent("onClick",function(d) {
+		chart.xAxis[0].setExtremes(moment(Calendar1.getDate()).valueOf(),moment(d).valueOf(),true);
+	});
 	setFixedTable("#measures");
 })();
 
-function setSens(inputId,mezh) {
+function setSens(obj,inputId,mezh) {
+	var myCalendar;
+	if(obj.id === "calendar1") {
+		myCalendar = Calendar1;
+	} else {
+		myCalendar = Calendar2;
+	}
 	if(mezh=="min") {
 		myCalendar.setSensitiveRange(document.getElementById(inputId).value,null);
 	} else { 
