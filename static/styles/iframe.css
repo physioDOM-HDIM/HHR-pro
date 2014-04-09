@@ -29,6 +29,8 @@ body {
 	
 	overflow: hidden;
 	padding:10px;
+	box-sizing: border-box;
+	
 }
 
 footer {
