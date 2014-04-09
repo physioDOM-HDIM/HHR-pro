@@ -178,6 +178,10 @@ ul.tree li a {
 	color: white;
 }
 
+ul.tree li.select {
+	background: cadetblue;
+}
+
 ul.dropdown-menu {
 	text-align:left;
 }
