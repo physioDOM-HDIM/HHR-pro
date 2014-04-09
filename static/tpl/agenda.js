@@ -3,7 +3,10 @@
 	
 	scheduler.clearAll();
 	scheduler.config.multi_day = true;
-
+	scheduler.config.dblclick_create = false;
+	scheduler.config.details_on_dblclick = false;
+	scheduler.config.readonly = true;
+	
 	scheduler.config.xml_date="%Y-%m-%d %H:%i";
 	//scheduler.config.first_hour = 6;
 	scheduler.config.scroll_hour = 8;
