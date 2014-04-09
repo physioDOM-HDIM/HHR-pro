@@ -115,5 +115,14 @@ var myCalendar;
 	});
 
 	myCalendar = new dhtmlXCalendarObject(["calendar1", "calendar2"]);
+	myCalendar.hideTime();
 	setFixedTable("#measures");
 })();
+
+function setSens(inputId,mezh) {
+	if(mezh=="min") {
+		myCalendar.setSensitiveRange(document.getElementById(inputId).value,null);
+	} else { 
+		myCalendar.setSensitiveRange(null,document.getElementById(inputId).value);
+	}
+}
