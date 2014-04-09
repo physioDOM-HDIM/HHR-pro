@@ -68,27 +68,64 @@
 		.content.panel {
 			padding:10px;
 		}
-		
-		.column {
-			-webkit-column-count:2; /* Chrome, Safari, Opera */
-			-moz-column-count:2; /* Firefox */
-			column-count:2;
+
+		#beneficiary {
+			border:none;
 		}
+		
+		#beneficiary > .content {
+			display: -webkit-box;
+			display: -moz-box;
+			display: -ms-flexbox;
+			display: -webkit-flex;
+			display: flex;
+			height: 100%;
+			width: 100%;
+		}
+
+		#beneficiary > .content > polymer-ui-accordion {
+			flex:1;
+			margin-bottom: 0;
+		}
+
+		ul.request {
+			list-style-type: none;
+			padding: 0px;
+			height: 100%;
+			width:100%;
+			overflow: auto;
+			-webkit-overflow-scrolling: touch;
+			flex-grow:1;
+		}
+
+		ul.request > li {
+			border-bottom: 1px solid black;
+			padding: 5px 0px;
+		}
+
+		ul.request > li:nth-child(odd) {
+			background: #f9f9f9
+		}
+
+		li .cell.title { font-weight:bold; font-size:16px; text-overflow: ellipsis; }
+		li .cell.startdate { width:150px }
+		li .cell.stopdate { width:150px }
+		li .cell.spacer { width:150px }
 	</style>
 </head>
 <body style="margin-top:20px">
 
-<polymer-ui-accordion selected="0" notap>
-	<div class="content" style="">
-		<polymer-ui-accordion selected="0" notap style="margin-bottom: 0;float:left;width:50%;">
+<polymer-ui-accordion notap id="beneficiary">
+	<div class="content">
+		<polymer-ui-accordion selected="0" notap style="margin-right: 10px;" >
 			<div class="polymer-ui-collapsible-header">Identity</div>
 			<div class="content panel">
 				<div><label>Calédonie Claire</label></div>
 				<div>Birth date : <label>1950-06-18</label></div>
-				<div>Social id <label></label></div>
+				<div>Social id : <label></label></div>
 			</div>
 		</polymer-ui-accordion>
-		<polymer-ui-accordion selected="0" notap style="margin-bottom: 0;float:left;width:50%;">
+		<polymer-ui-accordion selected="0" notap style="margin-left: 10px;" >
 			<div class="polymer-ui-collapsible-header">Address</div>
 			<div class="content panel">
 				<div>152 RUE DES JEUX OLYMPIQUES 1968</div>
@@ -101,12 +138,39 @@
 
 <polymer-ui-accordion selected="0">
 	<polymer-ui-collapsible>
-	<div class="polymer-ui-collapsible-header">List of pending requests</div>
+	<div class="polymer-ui-collapsible-header"><span>List of pending requests</span> <button class="btn btn-success btn-xs" style="float:right">Add</button></div>
 	<div class="content panel">
-		<p>Lorem ipsum dolor sit amet, no vix eius altera imperdiet, legere luptatum adipiscing est eu. Mel brute
-			mnesarchum ne, abhorreant efficiantur definitiones an est, illum omittam sit ex. No dico menandri eam, ex
-			putent electram mei. Pro alia maluisset no, mazim ridens sadipscing nam ad, ei sit elit abhorreant dissentias.
-			Mei fierent scripserit ad, aliquid fabulas scaevola his te, at cum democritum sententiae elaboraret.</p>
+		<ul class="request" id="pending">
+			<li>
+				<div class="ttable">
+					<div class="trow">
+						<div class="cell title">Cleaning, Ironing</div>
+						<div class="cell startdate">from : 2014-04-15</div>
+						<div class="cell stopdate">to : 2014-05-15</div>
+					</div>
+				</div>
+				<div class="ttable">
+					<div class="trow">
+						<div class="cell spacer"></div>
+						<div class="cell detail">All Wednesday at 14:30</div>
+					</div>
+				</div>
+			</li>
+			<li>
+				<div class="ttable">
+					<div class="trow">
+						<div class="cell title">Grocery delivery</div>
+						<div class="cell startdate">from : 2014-04-15</div>
+						<div class="cell stopdate">to : -</div>
+					</div>
+				</div>
+				<div class="ttable">
+					<div class="trow">
+						<div class="cell spacer"></div>
+						<div class="cell detail">Tuesday, thursday from 17:30 to 18:30</div>
+					</div>
+				</div>
+			</li>
 	</div>
 		</polymer-ui-collapsible>
 </polymer-ui-accordion>
@@ -115,10 +179,38 @@
 	<polymer-ui-collapsible>
 	<div class="polymer-ui-collapsible-header">List of active requests</div>
 	<div class="content panel">
-		<p>Lorem ipsum dolor sit amet, no vix eius altera imperdiet, legere luptatum adipiscing est eu. Mel brute
-			mnesarchum ne, abhorreant efficiantur definitiones an est, illum omittam sit ex. No dico menandri eam, ex
-			putent electram mei. Pro alia maluisset no, mazim ridens sadipscing nam ad, ei sit elit abhorreant dissentias.
-			Mei fierent scripserit ad, aliquid fabulas scaevola his te, at cum democritum sententiae elaboraret.</p>
+		<ul class="request" id="active">
+			<li>
+				<div class="ttable">
+					<div class="trow">
+						<div class="cell title">Meal delivery</div>
+						<div class="cell startdate">from : 2014-03-27</div>
+						<div class="cell stopdate">to : 2014-04-27</div>
+					</div>
+				</div>
+				<div class="ttable">
+					<div class="trow">
+						<div class="cell spacer"></div>
+						<div class="cell detail">All days at 11:30</div>
+					</div>
+				</div>
+			</li>
+			<li>
+				<div class="ttable">
+					<div class="trow">
+						<div class="cell title">Accompaniment aged person</div>
+						<div class="cell startdate">from : 2014-03-27</div>
+						<div class="cell stopdate">to : -</div>
+					</div>
+				</div>
+				<div class="ttable">
+					<div class="trow">
+						<div class="cell spacer"></div>
+						<div class="cell detail">All weekdays from 10:30 to 11:30</div>
+					</div>
+				</div>
+			</li>
+		</ul>
 	</div>
 		</polymer-ui-collapsible>
 </polymer-ui-accordion>
