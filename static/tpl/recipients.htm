@@ -40,63 +40,67 @@
 
 	.panel-heading .panel-title:after {
 		/* symbol for "opening" panels */
-		font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */
-		content: "\e114";    /* adjust as needed, taken from bootstrap.css */
-		float: right;        /* adjust as needed */
-		color: grey;         /* adjust as needed */
+		font-family: 'Glyphicons Halflings'; /* essential for enabling glyphicon */
+		content: "\e114"; /* adjust as needed, taken from bootstrap.css */
+		float: right; /* adjust as needed */
+		color: grey; /* adjust as needed */
 	}
+
 	.panel-heading .panel-title.collapsed:after {
 		/* symbol for "collapsed" panels */
-		content: "\e080";    /* adjust as needed, taken from bootstrap.css */
+		content: "\e080"; /* adjust as needed, taken from bootstrap.css */
 	}
 
 	.panel-heading {
 		cursor: pointer;
 	}
 
-	.form-horizontal .form-group { margin:auto; !important; }
+	.form-horizontal .form-group {
+		margin: auto;
+	!important;
+	}
 </style>
 <div class="main">
 
-<div class="panel panel-default">
-<div class="panel-heading" data-toggle="collapse" data-target="#collapse5">
-	<h3 class="panel-title">Filter</h3>
-</div>
-<div id="collapse5" class="panel-collapse collapse">
-	<div class="panel-body">
-		<div class="ttable topmargin">
-			<div class="trow normal">
-				<div class="cell">
-					<label class="col-xs-4 control-label">First Name</label>
-					<input class="col-xs-7" type="text" id="lastname">
-				</div>
-				<div class="cell">
-					<label class="col-xs-4 control-label">Last Name</label>
-					<input class="col-xs-7" type="text" id="lastname">
-				</div>
-			</div>
-			<div class="trow normal">
-				<div class="cell">
-					<label class="col-xs-4 control-label">Zip Code</label>
-					<input class="col-xs-7" type="text" id="zipcode">
-				</div>
-				<div class="cell">
-					<label class="col-xs-4 control-label">City</label>
-					<input class="col-xs-7" type="text" id="city">
-				</div>
-			</div>
+	<div class="panel panel-default">
+		<div class="panel-heading" data-toggle="collapse" data-target="#collapse5">
+			<h3 class="panel-title">Filter</h3>
 		</div>
-		<div class="ttable">
-			<div class="trow" style="height: 50px;">
-				<div class="cell" style="text-align: right;padding-right:20px">
-					<button class="btn btn-danger">Reset</button>
-					<button class="btn btn-success">Search</button>
+		<div id="collapse5" class="panel-collapse collapse">
+			<div class="panel-body">
+				<div class="ttable topmargin">
+					<div class="trow normal">
+						<div class="cell">
+							<label class="col-xs-4 control-label">Last Name</label>
+							<input class="col-xs-7" type="text" id="lastname">
+						</div>
+						<div class="cell">
+							<label class="col-xs-4 control-label">Perimeter</label>
+							<input class="col-xs-7" type="text" id="perimeter">
+						</div>
+					</div>
+					<div class="trow normal">
+						<div class="cell">
+							<label class="col-xs-4 control-label">Zip Code</label>
+							<input class="col-xs-7" type="text" id="zipcode">
+						</div>
+						<div class="cell">
+							<label class="col-xs-4 control-label">City</label>
+							<input class="col-xs-7" type="text" id="city">
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="ttable">
+				<div class="trow" style="height: 50px;">
+					<div class="cell" style="text-align: right;padding-right:20px">
+						<button class="btn btn-danger">Reset</button>
+						<button class="btn btn-success">Search</button>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-</div>
-</div>
 
 <div class="fixedTable" style="-ms-flex:1;-webkit-box-flex:1;-webkit-flex-grow: 1">
 <table id="recipients">
