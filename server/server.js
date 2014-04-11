@@ -95,7 +95,7 @@ server.listen(program.port, function() {
 
 function serveStatic(req,res,next) {
 	var uri      = require('url').parse(req.url).pathname;
-	var filepath = decodeURIComponent((uri=="/")?path.join(DOCUMENT_ROOT, '/login.htm'):path.join(DOCUMENT_ROOT, uri));
+	var filepath = decodeURIComponent((uri=="/")?path.join(DOCUMENT_ROOT, '/login2.htm'):path.join(DOCUMENT_ROOT, uri));
 	if(!filepath) return next();
 
 	fs.exists(filepath, function(exists){
