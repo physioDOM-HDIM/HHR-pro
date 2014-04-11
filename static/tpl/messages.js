@@ -37,6 +37,7 @@ function insertAfter(newElement,targetElement) {
 	}
 }
 
+
 (function init() {
 	var ul = document.querySelector("ul.messages");
 	var li = ul.querySelector("li");
@@ -62,5 +63,7 @@ function insertAfter(newElement,targetElement) {
 		statusbar : false,
 		menubar : false
 	});
-	
+
+	Calendar1 = new dhtmlXCalendarObject("calendar1");
+	Calendar2 = new dhtmlXCalendarObject("calendar2");
 })();

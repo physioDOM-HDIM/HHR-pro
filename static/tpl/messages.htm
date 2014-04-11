@@ -27,7 +27,16 @@
 
 	<link rel="stylesheet" href="/styles/table.css" charset="UTF-8">
 	<script src="/assets/tinymce/tinymce.min.js"></script>
-	
+
+	<!-- Accordion -->
+	<script src="/bower_components/platform/platform.js"></script>
+	<link rel="import" href="/bower_components/polymer-ui-accordion/polymer-ui-accordion.html">
+
+	<!-- Calendar -->
+	<link rel="stylesheet" href="/assets/dhtmlxCalendar/codebase/dhtmlxcalendar.css" charset="UTF-8">
+	<link rel="stylesheet" href="/assets/dhtmlxCalendar/codebase/skins/dhtmlxcalendar_dhx_terrace.css">
+	<script src="/assets/dhtmlxCalendar/codebase/dhtmlxcalendar.js" type="text/javascript" charset="utf-8"></script>
+
 </head>
 <body>
 <style>
@@ -104,9 +113,83 @@
 		color:white;
 		background:black;
 	}
+
+	.form-control[disabled] {
+		background-color: #ffffff;
+	}
+
+	input[type=text] {
+		height: 34px;
+		padding: 6px 12px;
+		font-size: 14px;
+		line-height: 1.42857143;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+	}
+
+	polymer-ui-accordion .row {
+		margin-left:0px !important;
+		margin-right:0px !important;
+	}
 </style>
 
 <div class="main">
+	<!-- filter panel -->
+	<polymer-ui-accordion style="margin-right: 10px;" >
+		<polymer-ui-collapsible>
+			<div class="polymer-ui-collapsible-header">Filter</div>
+			<div class="content panel container" style="min-height:200px;display: block;width: 100%;">
+				<form class="form-horizontal" role="form" onsubmit="return false;">
+					<div class="form-group">
+						<div class="row">
+							<div class="col-xs-6">
+								<div class="dropdown">
+									<label  style="width:75px" for="severity" >Severity : </label>
+									<input type="text" id="severity" readonly class="dropdown-toggle" data-toggle="dropdown">
+									<ul class="dropdown-menu" style="position:absolute">
+										<li><a href="#"><i class="icon-pencil"></i> Blocking</a></li>
+										<li><a href="#"><i class="icon-trash"></i> High</a></li>
+										<li><a href="#"><i class="icon-ban-circle"></i> Important</a></li>
+										<li><a href="#"><i class="i"></i> Standard</a></li>
+										<li><a href="#"><i class="i"></i> Minor</a></li>
+									</ul>
+								</div>
+							</div>
+							<div class="col-xs-6">
+								<div class="dropdown">
+									<label  style="width:75px" for="status">Status : </label>
+									<input type="text" id="status" readonly class="dropdown-toggle" data-toggle="dropdown">
+									<ul class="dropdown-menu" style="position:absolute">
+										<li><a href="#"><i class="icon-pencil"></i> Blocking</a></li>
+										<li><a href="#"><i class="icon-trash"></i> High</a></li>
+										<li><a href="#"><i class="icon-ban-circle"></i> Important</a></li>
+										<li><a href="#"><i class="i"></i> Standard</a></li>
+										<li><a href="#"><i class="i"></i> Minor</a></li>
+									</ul>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-xs-6">
+								<label style="width:75px">From : </label>
+								<input type="text" id="calendar1" value=""  readonly >
+							</div>
+							<div class="col-xs-6">
+								<label style="width:75px">To : </label>
+								<input type="text" id="calendar2" value=""  readonly >
+							</div>
+						</div>
+						<div class="row">&nbsp;</div>
+						<div class="row" style="text-align: right;padding-right: 10px;">
+							<button type="button" class="btn btn-primary">Reset</button>
+							<button type="button" class="btn btn-primary btn-success">Refresh</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</polymer-ui-collapsible>
+	</polymer-ui-accordion>
+
 	<ul class="messages">
 		<li class="message">
 			<div class="ttable">
@@ -137,7 +220,7 @@
 				</div>
 				<div class="comment">
 					<div class="title">Comment</div>
-					<div class="message">All is OK</div>
+					<div class="message">We are waiting your answer for tomorrow without fail</div>
 				</div>
 				<footer>
 					<button class="btn btn-success btn-xs" onclick="showDlg('#newMsg')">Edit</button>
@@ -162,7 +245,7 @@
 					<div class="col-xs-6">
 						<label for="inputEmail3" class="col-sm-3 control-label">Status</label>
 						<div class="col-sm-9 dropdown">
-							<input type="text" class="form-control dropdown-toggle" data-toggle="dropdown" id="inputEmail3" placeholder="Status" readonly>
+							<input type="text" class="form-control dropdown-toggle" data-toggle="dropdown" id="inputEmail3" readonly>
 							<ul class="dropdown-menu">
 								<li>Canceled</li>
 								<li>Closed</li>
@@ -175,7 +258,7 @@
 					<div class="col-xs-6">
 						<label for="severity" class="col-sm-3 control-label">Severity</label>
 						<div class="col-sm-9 dropdown">
-							<input type="text" class="form-control dropdown-toggle" data-toggle="dropdown" readonly id="severity" placeholder="Severity" value="Standard">
+							<input type="text" class="form-control dropdown-toggle" data-toggle="dropdown" readonly id="severity" >
 							<ul class="dropdown-menu">
 								<li>Critical</li>
 								<li>High</li>
