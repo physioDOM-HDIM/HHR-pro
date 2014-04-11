@@ -28,10 +28,6 @@
 	<link rel="stylesheet" href="/styles/table.css" charset="UTF-8">
 	<script src="/assets/tinymce/tinymce.min.js"></script>
 
-	<!-- Accordion -->
-	<script src="/bower_components/platform/platform.js"></script>
-	<link rel="import" href="/bower_components/polymer-ui-accordion/polymer-ui-accordion.html">
-
 	<!-- Calendar -->
 	<link rel="stylesheet" href="/assets/dhtmlxCalendar/codebase/dhtmlxcalendar.css" charset="UTF-8">
 	<link rel="stylesheet" href="/assets/dhtmlxCalendar/codebase/skins/dhtmlxcalendar_dhx_terrace.css">
@@ -44,10 +40,10 @@
 		list-style-type: none;
 		padding: 0px;
 		height: 100%;
-		width:100%;
+		width: 100%;
 		overflow: auto;
 		-webkit-overflow-scrolling: touch;
-		flex-grow:1;
+		flex-grow: 1;
 	}
 
 	ul.messages > li {
@@ -101,17 +97,17 @@
 	}
 
 	ul.dropdown-menu {
-		margin-left:30px;
+		margin-left: 30px;
 	}
-	
+
 	ul.dropdown-menu li {
 		line-height: 30px;
 		padding-left: 5px;
 	}
 
 	ul.dropdown-menu li:hover {
-		color:white;
-		background:black;
+		color: white;
+		background: black;
 	}
 
 	.form-control[disabled] {
@@ -127,24 +123,40 @@
 		border-radius: 4px;
 	}
 
-	polymer-ui-accordion .row {
-		margin-left:0px !important;
-		margin-right:0px !important;
+	.panel-heading .panel-title:after {
+		/* symbol for "opening" panels */
+		font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */
+		content: "\e114";    /* adjust as needed, taken from bootstrap.css */
+		float: right;        /* adjust as needed */
+		color: grey;         /* adjust as needed */
 	}
+	.panel-heading .panel-title.collapsed:after {
+		/* symbol for "collapsed" panels */
+		content: "\e080";    /* adjust as needed, taken from bootstrap.css */
+	}
+
+	.panel-heading {
+		cursor: pointer;
+	}
+
+	#collapse5 { height: 220px !important; }
+	.form-horizontal .form-group { margin:auto; !important; }
 </style>
 
 <div class="main">
 	<!-- filter panel -->
-	<polymer-ui-accordion style="margin-right: 10px;" >
-		<polymer-ui-collapsible>
-			<div class="polymer-ui-collapsible-header">Filter</div>
-			<div class="content panel container" style="min-height:200px;display: block;width: 100%;">
+	<div class="panel panel-default">
+		<div class="panel-heading" data-toggle="collapse" data-target="#collapse5">
+			<h3 class="panel-title">Filter</h3>
+		</div>
+		<div id="collapse5" class="panel-collapse collapse">
+			<div class="panel-body">
 				<form class="form-horizontal" role="form" onsubmit="return false;">
 					<div class="form-group">
 						<div class="row">
 							<div class="col-xs-6">
 								<div class="dropdown">
-									<label  style="width:75px" for="severity" >Severity : </label>
+									<label style="width:75px" for="severity">Severity : </label>
 									<input type="text" id="severity" readonly class="dropdown-toggle" data-toggle="dropdown">
 									<ul class="dropdown-menu" style="position:absolute">
 										<li><a href="#"><i class="icon-pencil"></i> Blocking</a></li>
@@ -157,7 +169,7 @@
 							</div>
 							<div class="col-xs-6">
 								<div class="dropdown">
-									<label  style="width:75px" for="status">Status : </label>
+									<label style="width:75px" for="status">Status : </label>
 									<input type="text" id="status" readonly class="dropdown-toggle" data-toggle="dropdown">
 									<ul class="dropdown-menu" style="position:absolute">
 										<li><a href="#"><i class="icon-pencil"></i> Blocking</a></li>
@@ -172,11 +184,11 @@
 						<div class="row">
 							<div class="col-xs-6">
 								<label style="width:75px">From : </label>
-								<input type="text" id="calendar1" value=""  readonly >
+								<input type="text" id="calendar1" value="" readonly>
 							</div>
 							<div class="col-xs-6">
 								<label style="width:75px">To : </label>
-								<input type="text" id="calendar2" value=""  readonly >
+								<input type="text" id="calendar2" value="" readonly>
 							</div>
 						</div>
 						<div class="row">&nbsp;</div>
@@ -184,11 +196,12 @@
 							<button type="button" class="btn btn-primary">Reset</button>
 							<button type="button" class="btn btn-primary btn-success">Refresh</button>
 						</div>
+						<div class="row">&nbsp;</div>
 					</div>
 				</form>
 			</div>
-		</polymer-ui-collapsible>
-	</polymer-ui-accordion>
+		</div>
+	</div>
 
 	<ul class="messages">
 		<li class="message">
@@ -244,6 +257,7 @@
 				<div class="row">
 					<div class="col-xs-6">
 						<label for="inputEmail3" class="col-sm-3 control-label">Status</label>
+
 						<div class="col-sm-9 dropdown">
 							<input type="text" class="form-control dropdown-toggle" data-toggle="dropdown" id="inputEmail3" readonly>
 							<ul class="dropdown-menu">
@@ -257,8 +271,9 @@
 					</div>
 					<div class="col-xs-6">
 						<label for="severity" class="col-sm-3 control-label">Severity</label>
+
 						<div class="col-sm-9 dropdown">
-							<input type="text" class="form-control dropdown-toggle" data-toggle="dropdown" readonly id="severity" >
+							<input type="text" class="form-control dropdown-toggle" data-toggle="dropdown" readonly id="severity">
 							<ul class="dropdown-menu">
 								<li>Critical</li>
 								<li>High</li>
@@ -272,6 +287,7 @@
 			</div>
 			<div class="form-group">
 				<label for="inputTitle" class="col-sm-2 control-label" style="text-align: left">Title</label>
+
 				<div class="col-sm-10">
 					<input type="text" class="form-control" id="inputTitle" placeholder="Title of the message">
 				</div>
@@ -286,7 +302,7 @@
 				<label class="col-sm-3  control-label" style="text-align: left">Comment</label>
 			</div>
 			<div class="form-group" style="margin: 0px 0px;">
-				<div id="commentMsg" style="height: 100px;"  contenteditable="true"></div>
+				<div id="commentMsg" style="height: 100px;" contenteditable="true"></div>
 			</div>
 		</form>
 	</div>
