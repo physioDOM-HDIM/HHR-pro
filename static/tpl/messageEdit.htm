@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>Messages to Home</title>
+
+	<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<meta name="apple-touch-fullscreen" content="yes">
+	<meta name="mobile-web-app-capable" content="yes">
+
+	<link rel="shortcut icon" sizes="196x196" href="/img/physiodom_favico.png">
+	<link rel="icon" href="/img/physiodom_favico.png">
+	<link rel="apple-touch-icon" href="/img/physiodom_favico.png">
+
+	<link rel="stylesheet" href="/styles/iframe.css" charset="UTF-8">
+	<link rel="stylesheet" href="/styles/theme.css" charset="UTF-8">
+
+	<link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/assets/css/bootstrap-theme.min.css">
+	<script type="text/javascript" src="/assets/js/jquery-2.1.0.min.js"></script>
+	<script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
+
+	<link rel="stylesheet" href="/styles/table.css" charset="UTF-8">
+	<link rel="stylesheet" href="/styles/fixedTable.css" charset="UTF-8">
+	<script src="/scripts/common.js"></script>
+
+	<link rel="stylesheet" href="/styles/table.css" charset="UTF-8">
+	<script src="/assets/tinymce/tinymce.min.js"></script>
+
+</head>
+<body>
+<style>
+	input[type=text] {
+		height: 34px;
+		padding: 6px 12px;
+		font-size: 14px;
+		line-height: 1.42857143;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+	}
+	
+	ul.dropdown-menu {
+		margin-left: 30px;
+	}
+
+	ul.dropdown-menu li {
+		line-height: 30px;
+		padding-left: 5px;
+	}
+
+	ul.dropdown-menu li:hover {
+		color: white;
+		background: black;
+	}
+</style>
+
+<div class="main">
+	<form class="form-horizontal" role="form" onsubmit="return false;">
+		<div class="form-group">
+			<div class="row">
+				<div class="col-xs-6">
+					<label for="inputEmail3" class="col-sm-3 control-label">Status</label>
+
+					<div class="col-sm-9 dropdown">
+						<input type="text" class="form-control dropdown-toggle" data-toggle="dropdown" id="inputEmail3" readonly>
+						<ul class="dropdown-menu">
+							<li>Canceled</li>
+							<li>Closed</li>
+							<li>Awaiting supplements</li>
+							<li>Processing</li>
+							<li>Suspended</li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-xs-6">
+					<label for="severity" class="col-sm-3 control-label">Severity</label>
+
+					<div class="col-sm-9 dropdown">
+						<input type="text" class="form-control dropdown-toggle" data-toggle="dropdown" readonly id="severity">
+						<ul class="dropdown-menu">
+							<li>Critical</li>
+							<li>High</li>
+							<li>Important</li>
+							<li>Standard</li>
+							<li>Minor</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="inputTitle" class="col-sm-2 control-label" style="text-align: left">Title</label>
+
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="inputTitle" placeholder="Title of the message">
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3  control-label" style="text-align: left">Content</label>
+		</div>
+		<div class="form-group" style="margin: 0px 0px;">
+			<div id="contentMsg" style="height: 250px;" contenteditable="true"></div>
+		</div>
+	</form>
+	
+	<footer>
+		<a href="messages.htm"><button class="btn btn-danger">Cancel</button></a>
+		<a href="messages.htm"><button class="btn btn-primary" onclick="hideDlg('#newMsg')">Send</button></a>
+	</footer>
+</div>
+
+<script>
+	tinymce.init({
+		selector: "#contentMsg",
+		plugins: [],
+		toolbar: "bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
+		statusbar : false,
+		menubar : false
+	});
+</script>
+</body>
+</html>
