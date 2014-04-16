@@ -43,19 +43,10 @@
 			margin-left: 20px;
 		}
 
-		.content.panel {
-			padding: 10px;
-			position: relative;
-		}
-		
 		div.tph {
 			position: absolute;
 			top: 10px;
 			right: 10px;
-		}
-
-		#beneficiary {
-			border: none;
 		}
 
 		#beneficiary > .content {
@@ -74,6 +65,19 @@
 			-webkit-box-flex: 1;
 			margin-bottom: 0;
 			width: 100%;
+		}
+
+		div#personal {
+			display: -webkit-box;
+			display: -moz-box;
+			display: -ms-flexbox;
+			display: -webkit-flex;
+			display: flex;
+		}
+
+		div#personal .panel {
+			width: 50%;
+			padding: 0px;
 		}
 
 		ul.request {
@@ -118,49 +122,34 @@
 			text-align: right;
 		}
 
-		.panel-heading .panel-title:after {
-			/* symbol for "opening" panels */
-			font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */
-			content: "\e114";    /* adjust as needed, taken from bootstrap.css */
-			float: right;        /* adjust as needed */
-			color: grey;         /* adjust as needed */
-		}
-		.panel-heading.collapsed .panel-title:after {
-			/* symbol for "collapsed" panels */
-			content: "\e080";    /* adjust as needed, taken from bootstrap.css */
-		}
-
-		.panel-heading {
-			cursor: pointer;
-		}
-
-
 	</style>
 </head>
 <body style="margin-top:20px">
 
-<polymer-ui-accordion notap id="beneficiary">
-	<div class="content">
-		<polymer-ui-accordion selected="0" notap style="margin-right: 10px;">
-			<div class="polymer-ui-collapsible-header">Personal data</div>
-			<div class="content panel">
-				<div><label>Calédonie Claire</label></div>
-				<div>Birth date : <label>1950-06-18</label></div>
-				<div>Social id : <label></label></div>
-				<div>Referent : <label>Dr. Julius</label></div>
-				<div class="tph">06 10 20 30 40</div>
-			</div>
-		</polymer-ui-accordion>
-		<polymer-ui-accordion selected="0" notap style="margin-left: 10px;">
-			<div class="polymer-ui-collapsible-header">Addresses</div>
-			<div class="content panel">
-				<div>152 RUE DES JEUX OLYMPIQUES 1968</div>
-				<div>38250 VILLARD DE LANS</div>
-			</div>
-		</polymer-ui-accordion>
-		<div style="clear:both"></div>
+<div id="personal" class="row" style="margin:0px;display:flex">
+	<div class="panel panel-default" style="margin-right:10px">
+		<div class="panel-heading">
+			<h3 class="panel-title">Personal data</h3>
+		</div>
+		<div class="panel-body" style="position:relative">
+			<div><label>Calédonie Claire</label></div>
+			<div>Birth date : <label>1950-06-18</label></div>
+			<div>Social id : <label></label></div>
+			<div>Referent : <label>Dr. Julius</label></div>
+			<div class="tph">06 10 20 30 40</div>
+		</div>
 	</div>
-</polymer-ui-accordion>
+
+	<div class="panel panel-default" style="margin-left:10px">
+		<div class="panel-heading">
+			<h3 class="panel-title">Addresses</h3>
+		</div>
+		<div class="panel-body">
+			<div>152 RUE DES JEUX OLYMPIQUES 1968</div>
+			<div>38250 VILLARD DE LANS</div>
+		</div>
+	</div>
+</div>
 
 <div class="panel panel-default">
 	<div class="panel-heading collapsed" data-toggle="collapse" data-target="#collapse1">
@@ -434,7 +423,7 @@
 
 <div class="panel panel-default">
 	<div class="panel-heading collapsed" data-toggle="collapse" data-target="#collapse4">
-		<h3 class="panel-title">Signalitique</h3>
+		<h3 class="panel-title">Details</h3>
 	</div>
 	<div id="collapse4" class="panel-collapse collapse">
 		<div class="panel-body">
