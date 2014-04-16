@@ -26,7 +26,10 @@
 	<script src="/scripts/common.js"></script>
 
 	<link rel="stylesheet" href="/styles/table.css" charset="UTF-8">
-	<script src="/assets/tinymce/tinymce.min.js"></script>
+
+	<link rel="stylesheet" href="/assets/dhtmlxCalendar/codebase/dhtmlxcalendar.css" charset="UTF-8">
+	<link rel="stylesheet" href="/assets/dhtmlxCalendar/codebase/skins/dhtmlxcalendar_dhx_terrace.css">
+	<script src="/assets/dhtmlxCalendar/codebase/dhtmlxcalendar.js" type="text/javascript" charset="utf-8"></script>
 
 	<script src="interProfessional.js"></script>
 </head>
@@ -35,11 +38,13 @@
 	ul.messages {
 		list-style-type: none;
 		padding: 0px;
-		height: 100%;
 		width: 100%;
 		overflow: auto;
 		-webkit-overflow-scrolling: touch;
-		flex-grow: 1;
+		flex:1;
+		-ms-flex: 1;
+		-webkit-box-flex: 1;      /* OLD - iOS 6-, Safari 3.1-6 */
+		-moz-box-flex: 1;
 	}
 
 	ul.messages > li {
@@ -119,37 +124,20 @@
 		border-radius: 4px;
 	}
 
-	.panel-heading .panel-title:after {
-		/* symbol for "opening" panels */
-		font-family: 'Glyphicons Halflings'; /* essential for enabling glyphicon */
-		content: "\e114"; /* adjust as needed, taken from bootstrap.css */
-		float: right; /* adjust as needed */
-		color: grey; /* adjust as needed */
-	}
-
-	.panel-heading .panel-title.collapsed:after {
-		/* symbol for "collapsed" panels */
-		content: "\e080"; /* adjust as needed, taken from bootstrap.css */
-	}
-
-	.panel-heading {
-		cursor: pointer;
-	}
-
-	#collapse5 {
-		height: 220px !important;
-	}
-
 	.form-horizontal .form-group {
-		margin: auto;
-	!important;
+		margin: auto !important;
+	}
+
+	.filter label {
+		width: 100px;
+		padding: 0px;
 	}
 </style>
 
 <div class="main">
 	<!-- filter panel -->
-	<div class="panel panel-default">
-		<div class="panel-heading" data-toggle="collapse" data-target="#collapse5">
+	<div class="filter panel panel-default">
+		<div class="panel-heading collapsed" data-toggle="collapse" data-target="#collapse5">
 			<h3 class="panel-title">Filter / Sort</h3>
 		</div>
 		<div id="collapse5" class="panel-collapse collapse">
@@ -158,8 +146,9 @@
 					<div class="form-group">
 						<div class="row">
 							<div class="col-xs-6">
-								<div class="dropdown">
-									<label style="width:75px" for="severity">Severity : </label>
+								<label class="col-xs-6" for="severity">Severity : </label>
+
+								<div class="dropdown col-xs-6">
 									<input type="text" id="severity" readonly class="dropdown-toggle" data-toggle="dropdown">
 									<ul class="dropdown-menu" style="position:absolute">
 										<li><a href="#"><i class="icon-pencil"></i> Blocking</a></li>
@@ -171,20 +160,27 @@
 								</div>
 							</div>
 							<div class="col-xs-6">
-								<div class="dropdown">
-									<label style="width:75px" for="status">Sender : </label>
+								<label class="col-xs-6" for="status">Sender : </label>
+
+								<div class="col-xs-6">
 									<input type="text" id="status">
 								</div>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col-xs-6">
-								<label style="width:75px">From : </label>
-								<input type="text" id="calendar1" value="" readonly>
+								<label class="col-xs-6">From : </label>
+
+								<div class="col-xs-6">
+									<input type="text" id="calendar1" value="" readonly>
+								</div>
 							</div>
 							<div class="col-xs-6">
-								<label style="width:75px">To : </label>
-								<input type="text" id="calendar2" value="" readonly>
+								<label class="col-xs-6">To : </label>
+
+								<div class="col-xs-6">
+									<input type="text" id="calendar2" value="" readonly>
+								</div>
 							</div>
 						</div>
 						<div class="row">&nbsp;</div>
@@ -192,7 +188,6 @@
 							<button type="button" class="btn btn-primary">Reset</button>
 							<button type="button" class="btn btn-primary btn-success">Refresh</button>
 						</div>
-						<div class="row">&nbsp;</div>
 					</div>
 				</form>
 			</div>
@@ -214,7 +209,7 @@
 			<div class="ttable">
 				<div class="trow">
 					<div class="cell sendDate" style="width:150px;">2014-03-24 14:26</div>
-					<div class="cell sendBy" style="width:200px;">from : Deveaux C.</div>
+					<div class="cell sendBy" style="width:200px;">sender : Deveaux C.</div>
 					<div class="cell institution">Hopital de Nevers</div>
 				</div>
 			</div>
@@ -239,7 +234,9 @@
 	</ul>
 
 	<footer>
-		<button class="btn btn-primary" onclick="showDlg('#newMsg')">New message</button>
+		<a href="messageEdit.htm">
+			<button class="btn btn-primary">New message</button>
+		</a>
 	</footer>
 </div>
 </body>

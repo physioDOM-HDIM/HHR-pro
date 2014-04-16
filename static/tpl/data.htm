@@ -24,7 +24,7 @@
 	<link rel="stylesheet" href="/styles/table.css" charset="UTF-8">
 	<link rel="stylesheet" href="/styles/fixedTable.css" charset="UTF-8">
 	<script src="/scripts/common.js"></script>
-	
+
 	<script src="/assets/js/moment-with-langs.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/assets/highcharts/highcharts.js"></script>
 	<script src="/assets/highcharts/modules/exporting.js"></script>
@@ -36,8 +36,10 @@
 </head>
 <body>
 <style>
+
 	div.main {
-		overflow: auto;
+		overflow-y: auto;
+		min-height:700px;
 		-webkit-overflow-scrolling: touch;
 	}
 
@@ -47,44 +49,72 @@
 		font-family: Tahoma;
 		font-size: 12px;
 	}
-	
+
 	div#showList {
 		position: absolute !important;
 		z-index: 2;
 	}
 
 	div#showList ul {
-		width:200px
+		width: 200px
 	}
 
 	.dhtmlxcalendar_cell_month_weekend_dis, .dhtmlxcalendar_cell_month_dis {
 		background: lightgray !important;
 	}
+
+	ul.dropdown-menu {
+		margin-left: 30px;
+	}
+
+	ul.dropdown-menu li {
+		line-height: 30px;
+		padding-left: 5px;
+	}
 </style>
 
 <div class="main">
 
-	<div class="dropdown" id="showList">
-		<button class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown">Show</button>
-		<ul class="tree dropdown-menu">
-			<li><input type="checkbox" checked> Weight</li>
-			<li><input type="checkbox" checked> Pulse</li>
-			<li><input type="checkbox"> Temperature</li>
-			<li><input type="checkbox"> systolic blood pressure</li>
-			<li><input type="checkbox"> diastolic blood pressure</li>
-		</ul>
+	<div class="row" style="margin:0px">
+		<div class="dropdown" id="graph1" style="display:inline-block">
+			<button class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown">Graph 1</button>
+			<ul class="tree dropdown-menu">
+				<li><input type="checkbox"> Weight</li>
+				<li><input type="checkbox" checked> Pulse</li>
+				<li><input type="checkbox"> Temperature</li>
+				<li><input type="checkbox"> blood pressure</li>
+			</ul>
+		</div>
+
+		<div class="dropdown" id="graph2"  style="display:inline-block">
+			<button class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown">Graph 2</button>
+			<ul class="tree dropdown-menu">
+				<li><input type="checkbox" checked> Weight</li>
+				<li><input type="checkbox"> Pulse</li>
+				<li><input type="checkbox"> Temperature</li>
+				<li><input type="checkbox"> blood pressure</li>
+			</ul>
+		</div>
 	</div>
 
-	<div id="container" style="width:100%; min-width: 310px; height: 400px; margin: 0 auto; background: aliceblue;"></div>
+	<div id="container" style="width:100%; min-width: 310px; height: 400px; margin: 0 auto;"></div>
 	<div class="ttable">
 		<div class="trow normal">
 			<div class="cell" style="width:50px"></div>
-			<div class="cell"><label style="width:75px">From : </label><input type="text" id="calendar1" value="2014-03-22" onclick="setSens(this,'calendar2','max');" readonly ></div>
-			<div class="cell"><label style="width:75px">to : </label><input type="text" id="calendar2" value="2014-03-28" onclick="setSens(this,'calendar1','min');" readonly ></div>
+			<div class="cell">
+				<label style="width:75px">From : </label>
+				<input type="text" id="calendar1" value="2014-03-22"
+							 onclick="setSens(this,'calendar2','max');"
+							 readonly></div>
+			<div class="cell">
+				<label style="width:75px">to : </label>
+				<input type="text" id="calendar2" value="2014-03-25"
+							 onclick="setSens(this,'calendar1','min');"
+							 readonly></div>
 			<div class="cell"></div>
 		</div>
 	</div>
-	
+
 	<div class="fixedTable" style="-ms-flex:1;-webkit-box-flex:1;-webkit-flex-grow: 1;margin-top:30px">
 		<table id="measures">
 			<colgroup>
@@ -95,48 +125,48 @@
 				<col>
 			</colgroup>
 			<thead>
-				<tr>
-					<th>Measure type</th>
-					<th>Minimum threshold</th>
-					<th>Maximum threshold</th>
-					<th>Last Report on</th>
-				</tr>
+			<tr>
+				<th>Measure type</th>
+				<th>Minimum threshold</th>
+				<th>Maximum threshold</th>
+				<th>Last Report on</th>
+			</tr>
 			</thead>
 			<tbody>
-				<tr>
-					<td>Pulse</td>
-					<td>50</td>
-					<td>150</td>
-					<td>2014-03-24 12:48</td>
-				</tr>
-				<tr>
-					<td>Weight</td>
-					<td>30</td>
-					<td>150</td>
-					<td>2014-03-24 12:48</td>
-				</tr>
-				<tr>
-					<td>Température</td>
-					<td>35</td>
-					<td>38</td>
-					<td>2014-03-24 12:48</td>
-				</tr>
-				<tr>
-					<td>D.B.P</td>
-					<td>60</td>
-					<td>100</td>
-					<td>2014-03-24 12:48</td>
-				</tr>
-				<tr>
-					<td>S.B.P.</td>
-					<td>110</td>
-					<td>180</td>
-					<td>2014-03-24 12:48</td>
-				</tr>
+			<tr>
+				<td>Pulse</td>
+				<td>50</td>
+				<td>150</td>
+				<td>2014-03-24 12:48</td>
+			</tr>
+			<tr>
+				<td>Weight</td>
+				<td>30</td>
+				<td>150</td>
+				<td>2014-03-24 12:48</td>
+			</tr>
+			<tr>
+				<td>Température</td>
+				<td>35</td>
+				<td>38</td>
+				<td>2014-03-24 12:48</td>
+			</tr>
+			<tr>
+				<td>D.B.P</td>
+				<td>60</td>
+				<td>100</td>
+				<td>2014-03-24 12:48</td>
+			</tr>
+			<tr>
+				<td>S.B.P.</td>
+				<td>110</td>
+				<td>180</td>
+				<td>2014-03-24 12:48</td>
+			</tr>
 			</tbody>
 		</table>
 	</div>
-	
+
 </div>
 <script src="data.js"></script>
 </body>

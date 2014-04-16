@@ -25,9 +25,6 @@
 	<link rel="stylesheet" href="/styles/fixedTable.css" charset="UTF-8">
 	<script src="/scripts/common.js"></script>
 
-	<link rel="stylesheet" href="/styles/table.css" charset="UTF-8">
-	<script src="/assets/tinymce/tinymce.min.js"></script>
-
 	<!-- Calendar -->
 	<link rel="stylesheet" href="/assets/dhtmlxCalendar/codebase/dhtmlxcalendar.css" charset="UTF-8">
 	<link rel="stylesheet" href="/assets/dhtmlxCalendar/codebase/skins/dhtmlxcalendar_dhx_terrace.css">
@@ -39,11 +36,13 @@
 	ul.messages {
 		list-style-type: none;
 		padding: 0px;
-		height: 100%;
 		width: 100%;
 		overflow: auto;
 		-webkit-overflow-scrolling: touch;
-		flex-grow: 1;
+		flex:1;
+		-ms-flex: 1;
+		-webkit-box-flex: 1;      /* OLD - iOS 6-, Safari 3.1-6 */
+		-moz-box-flex: 1;
 	}
 
 	ul.messages > li {
@@ -123,30 +122,20 @@
 		border-radius: 4px;
 	}
 
-	.panel-heading .panel-title:after {
-		/* symbol for "opening" panels */
-		font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */
-		content: "\e114";    /* adjust as needed, taken from bootstrap.css */
-		float: right;        /* adjust as needed */
-		color: grey;         /* adjust as needed */
-	}
-	.panel-heading .panel-title.collapsed:after {
-		/* symbol for "collapsed" panels */
-		content: "\e080";    /* adjust as needed, taken from bootstrap.css */
+	.form-horizontal .form-group {
+		margin: auto !important;
 	}
 
-	.panel-heading {
-		cursor: pointer;
+	.filter label {
+		width: 100px;
+		padding: 0px;
 	}
-
-	#collapse5 { height: 220px !important; }
-	.form-horizontal .form-group { margin:auto; !important; }
 </style>
 
 <div class="main">
 	<!-- filter panel -->
-	<div class="panel panel-default">
-		<div class="panel-heading" data-toggle="collapse" data-target="#collapse5">
+	<div class="filter panel panel-default">
+		<div class="panel-heading collapsed" data-toggle="collapse" data-target="#collapse5">
 			<h3 class="panel-title">Filter / Sort</h3>
 		</div>
 		<div id="collapse5" class="panel-collapse collapse">
@@ -155,8 +144,9 @@
 					<div class="form-group">
 						<div class="row">
 							<div class="col-xs-6">
-								<div class="dropdown">
-									<label style="width:75px" for="severity">Severity : </label>
+								<label class="col-xs-6" for="severity">Severity : </label>
+
+								<div class="dropdown col-xs-6">
 									<input type="text" id="severity" readonly class="dropdown-toggle" data-toggle="dropdown">
 									<ul class="dropdown-menu" style="position:absolute">
 										<li><a href="#"><i class="icon-pencil"></i> Blocking</a></li>
@@ -169,29 +159,28 @@
 							</div>
 							<div class="col-xs-6">
 								<div class="dropdown">
-									<label style="width:75px" for="status">Sender : </label>
-									<input type="text" id="status" >
-									<!--
-									<input type="text" id="status" readonly class="dropdown-toggle" data-toggle="dropdown">
-									<ul class="dropdown-menu" style="position:absolute">
-										<li><a href="#"><i class="icon-pencil"></i> Blocking</a></li>
-										<li><a href="#"><i class="icon-trash"></i> High</a></li>
-										<li><a href="#"><i class="icon-ban-circle"></i> Important</a></li>
-										<li><a href="#"><i class="i"></i> Standard</a></li>
-										<li><a href="#"><i class="i"></i> Minor</a></li>
-									</ul>
-								  -->
+									<label class="col-xs-6" for="status">Sender : </label>
+
+									<div class="col-xs-6">
+										<input type="text" id="status">
+									</div>
 								</div>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col-xs-6">
-								<label style="width:75px">From : </label>
-								<input type="text" id="calendar1" value="" readonly>
+								<label class="col-xs-6">From : </label>
+
+								<div class="col-xs-6">
+									<input type="text" id="calendar1" value="" readonly>
+								</div>
 							</div>
 							<div class="col-xs-6">
-								<label style="width:75px">To : </label>
-								<input type="text" id="calendar2" value="" readonly>
+								<label class="col-xs-6">To : </label>
+
+								<div class="col-xs-6">
+									<input type="text" id="calendar2" value="" readonly>
+								</div>
 							</div>
 						</div>
 						<div class="row">&nbsp;</div>
@@ -199,12 +188,12 @@
 							<button type="button" class="btn btn-primary">Reset</button>
 							<button type="button" class="btn btn-primary btn-success">Filter</button>
 						</div>
-						<div class="row">&nbsp;</div>
 					</div>
 				</form>
 			</div>
 		</div>
 	</div>
+
 
 	<ul class="messages">
 		<li class="message">
@@ -221,7 +210,7 @@
 			<div class="ttable">
 				<div class="trow">
 					<div class="cell sendDate" style="width:150px;">2014-03-24 14:26</div>
-					<div class="cell sendBy" style="width:200px;">from : Deveaux C.</div>
+					<div class="cell sendBy" style="width:200px;">sender : Deveaux C.</div>
 					<div class="cell institution">Hopital de Nevers</div>
 				</div>
 			</div>
@@ -234,92 +223,19 @@
 						The Coordination<br/>
 					</div>
 				</div>
-				<!--
-				<div class="comment">
-					<div class="title">Comment</div>
-					<div class="message">We are waiting your answer for tomorrow without fail</div>
-				</div>
-				-->
-				<!--
-				No Edit button
-				<footer>
-					<button class="btn btn-success btn-xs" onclick="showDlg('#newMsg')">Edit</button>
-				</footer>
-				-->
 			</div>
 		</li>
 	</ul>
 
+
 	<footer>
-		<a href="messageEdit.htm"><button class="btn btn-primary">New message</button></a>
-	</footer>
-</div>
-
-
-<div id="bg"></div>
-
-<div class="dlg" id="newMsg" style="width: 550px;height: 650px;">
-	<div class="content">
-		<form class="form-horizontal" role="form" onsubmit="return false;">
-			<div class="form-group">
-				<div class="row">
-					<div class="col-xs-6">
-						<label for="inputEmail3" class="col-sm-3 control-label">Status</label>
-
-						<div class="col-sm-9 dropdown">
-							<input type="text" class="form-control dropdown-toggle" data-toggle="dropdown" id="inputEmail3" readonly>
-							<ul class="dropdown-menu">
-								<li>Canceled</li>
-								<li>Closed</li>
-								<li>Awaiting supplements</li>
-								<li>Processing</li>
-								<li>Suspended</li>
-							</ul>
-						</div>
-					</div>
-					<div class="col-xs-6">
-						<label for="severity" class="col-sm-3 control-label">Severity</label>
-
-						<div class="col-sm-9 dropdown">
-							<input type="text" class="form-control dropdown-toggle" data-toggle="dropdown" readonly id="severity">
-							<ul class="dropdown-menu">
-								<li>Critical</li>
-								<li>High</li>
-								<li>Important</li>
-								<li>Standard</li>
-								<li>Minor</li>
-							</ul>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="inputTitle" class="col-sm-2 control-label" style="text-align: left">Title</label>
-
-				<div class="col-sm-10">
-					<input type="text" class="form-control" id="inputTitle" placeholder="Title of the message">
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-3  control-label" style="text-align: left">Content</label>
-			</div>
-			<div class="form-group" style="margin: 0px 0px;">
-				<div id="contentMsg" style="height: 150px;" contenteditable="true"></div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-3  control-label" style="text-align: left">Comment</label>
-			</div>
-			<div class="form-group" style="margin: 0px 0px;">
-				<div id="commentMsg" style="height: 100px;" contenteditable="true"></div>
-			</div>
-		</form>
-	</div>
-	<footer>
-		<button class="btn btn-danger" onclick="hideDlg('#newMsg')">Cancel</button>
-		<button class="btn btn-primary" onclick="hideDlg('#newMsg')">Send</button>
+		<a href="messageEdit.htm">
+			<button class="btn btn-primary">New message</button>
+		</a>
 	</footer>
 </div>
 
 <script src="messages.js"></script>
+
 </body>
 </html>

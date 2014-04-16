@@ -15,11 +15,9 @@
 
 	<link rel="stylesheet" href="/styles/iframe.css" charset="UTF-8">
 	<link rel="stylesheet" href="/styles/theme.css" charset="UTF-8">
-	<script src="/scripts/common.js" type="text/javascript"></script>
 
 	<link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="/assets/css/bootstrap-theme.min.css">
-
 	<script type="text/javascript" src="/assets/js/jquery-2.1.0.min.js"></script>
 	<script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
 
@@ -38,6 +36,15 @@
 		width: 100%;
 	}
 
+	input[type=text] {
+		height: 34px;
+		padding: 6px 12px;
+		font-size: 14px;
+		line-height: 1.42857143;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+	}
+
 	.panel-heading .panel-title:after {
 		/* symbol for "opening" panels */
 		font-family: 'Glyphicons Halflings'; /* essential for enabling glyphicon */
@@ -46,7 +53,7 @@
 		color: grey; /* adjust as needed */
 	}
 
-	.panel-heading .panel-title.collapsed:after {
+	.panel-heading.collapsed .panel-title:after {
 		/* symbol for "collapsed" panels */
 		content: "\e080"; /* adjust as needed, taken from bootstrap.css */
 	}
@@ -56,51 +63,69 @@
 	}
 
 	.form-horizontal .form-group {
-		margin: auto;
-	!important;
+		margin: auto !important;
+	}
+
+	.filter label {
+		width: 100px;
+		padding: 0px;
 	}
 </style>
-<div class="main">
 
-	<div class="panel panel-default">
-		<div class="panel-heading" data-toggle="collapse" data-target="#collapse5">
-			<h3 class="panel-title">Filter</h3>
-		</div>
-		<div id="collapse5" class="panel-collapse collapse">
-			<div class="panel-body">
-				<div class="ttable topmargin">
-					<div class="trow normal">
-						<div class="cell">
-							<label class="col-xs-4 control-label">Last Name</label>
-							<input class="col-xs-7" type="text" id="lastname">
+<div class="main">
+<!-- filter panel -->
+<div class="filter panel panel-default">
+	<div class="panel-heading collapsed" data-toggle="collapse" data-target="#collapse5">
+		<h3 class="panel-title">Filter</h3>
+	</div>
+	<div id="collapse5" class="panel-collapse collapse">
+		<div class="panel-body">
+			<form class="form-horizontal" role="form" onsubmit="return false;">
+				<div class="form-group">
+					<div class="row">
+						<div class="col-xs-6">
+							<label class="col-xs-6" for="lastname">Last Name : </label>
+
+							<div class="col-xs-6">
+								<input type="text" id="lastname">
+							</div>
 						</div>
-						<div class="cell">
-							<label class="col-xs-4 control-label">Perimeter</label>
-							<input class="col-xs-7" type="text" id="perimeter">
+						<div class="col-xs-6">
+							<label class="col-xs-6" for="Perimeter">Perimeter : </label>
+
+							<div class="col-xs-6">
+								<input type="text" id="perimeter">
+							</div>
 						</div>
 					</div>
-					<div class="trow normal">
-						<div class="cell">
-							<label class="col-xs-4 control-label">Zip Code</label>
-							<input class="col-xs-7" type="text" id="zipcode">
+					<div class="row">
+						<div class="col-xs-6">
+							<label class="col-xs-6" for="zipcode">Zip Code : </label>
+
+							<div class="col-xs-6">
+								<input type="text" id="zipcode">
+							</div>
 						</div>
-						<div class="cell">
-							<label class="col-xs-4 control-label">City</label>
-							<input class="col-xs-7" type="text" id="city">
+						<div class="col-xs-6">
+							<label class="col-xs-6" for="city">City : </label>
+
+							<div class="col-xs-6">
+								<input type="text" id="city">
+							</div>
 						</div>
+					</div>
+
+					<div class="row">&nbsp;</div>
+					<div class="row" style="text-align: right;padding-right: 10px;">
+						<button type="button" class="btn btn-primary">Reset</button>
+						<button type="button" class="btn btn-primary btn-success">Refresh</button>
 					</div>
 				</div>
-			</div>
-			<div class="ttable">
-				<div class="trow" style="height: 50px;">
-					<div class="cell" style="text-align: right;padding-right:20px">
-						<button class="btn btn-primary">Reset</button>
-						<button class="btn btn-success">Filter</button>
-					</div>
-				</div>
-			</div>
+
+			</form>
 		</div>
 	</div>
+</div>
 
 <div class="fixedTable" style="-ms-flex:1;-webkit-box-flex:1;-webkit-flex-grow: 1">
 <table id="recipients">

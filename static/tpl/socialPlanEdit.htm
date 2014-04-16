@@ -37,21 +37,34 @@
 	<style>
 		.panel-heading .panel-title:after {
 			/* symbol for "opening" panels */
-			font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */
-			content: "\e114";    /* adjust as needed, taken from bootstrap.css */
-			float: right;        /* adjust as needed */
-			color: grey;         /* adjust as needed */
+			font-family: 'Glyphicons Halflings'; /* essential for enabling glyphicon */
+			content: "\e114"; /* adjust as needed, taken from bootstrap.css */
+			float: right; /* adjust as needed */
+			color: grey; /* adjust as needed */
 		}
+
 		.panel-heading .panel-title.collapsed:after {
 			/* symbol for "collapsed" panels */
-			content: "\e080";    /* adjust as needed, taken from bootstrap.css */
+			content: "\e080"; /* adjust as needed, taken from bootstrap.css */
 		}
 
 		.panel-heading {
 			cursor: pointer;
 		}
 
-		.form-horizontal .form-group { margin:auto; !important; }
+		.form-horizontal .form-group {
+			margin: auto;
+		!important;
+		}
+
+		input[type=text] {
+			height: 34px;
+			padding: 6px 12px;
+			font-size: 14px;
+			line-height: 1.42857143;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+		}
 	</style>
 </head>
 <body>
@@ -99,7 +112,7 @@
 							<div class="col-xs-1">&nbsp;</div>
 							<div class="col-xs-3">
 								<label style="width:75px" for="weekly">Weekly : </label>
-								<input type="radio" name="frequency" id="weekly">
+								<input type="radio" name="frequency" id="weekly" checked>
 							</div>
 							<div class="col-xs-3">
 								<label style="width:75px" for="daily">Daily : </label>
@@ -131,10 +144,16 @@
 							</div>
 							<div class="col-xs-8">
 								<label for="daily" class="col-xs-2">Term </label>
+
 								<div class="col-xs-6">
 									<div class="row"><input type="radio" name="term"> no term</div>
-									<div class="row"><input type="radio" name="term"> term after : <input type="number" value="" style="width:50px;"> occurences</div>
-									<div class="row"><input type="radio" name="term"> term date : <input type="text" id="calendar2" value="" readonly></div>
+									<div class="row"><input type="radio" name="term"> term after :
+										<input type="number" value=""
+													 style="width:50px;"> occurences
+									</div>
+									<div class="row"><input type="radio" name="term"> term date :
+										<input type="text" id="calendar2"
+													 value="" readonly></div>
 								</div>
 							</div>
 						</div>
@@ -156,7 +175,7 @@
 							<div class="col-xs-1">&nbsp;</div>
 							<div class="col-xs-3">
 								<label style="width:75px" for="weekly">Weekly : </label>
-								<input type="radio" name="frequency" id="weekly">
+								<input type="radio" name="frequency" id="weekly" checked>
 							</div>
 							<div class="col-xs-3">
 								<label style="width:75px" for="daily">Daily : </label>
@@ -182,8 +201,8 @@
 				<form class="form-horizontal" role="form" onsubmit="return false;">
 					<div class="form-group">
 						<div class="row">
-								<label  class="col-xs-2">Title : </label>
-								<input type="text" class="col-xs-6">
+							<label class="col-xs-2">Title : </label>
+							<input type="text" class="col-xs-6">
 						</div>
 						<div class="row">
 							<div class="col-xs-6" style="margin-left: -15px;">
@@ -214,9 +233,15 @@
 	</div>
 
 	<footer>
-		<a href="socialPlan.htm"><button class="btn btn-primary">back to the list</button></a>
-		<button class="btn btn-danger">Cancel the request</button>
-		<button class="btn btn-success">Save</button>
+		<a href="socialPlan.htm">
+			<button class="btn btn-primary">back to the list</button>
+		</a>
+		<a href="socialPlan.htm">
+			<button class="btn btn-danger">Cancel the request</button>
+		</a>
+		<a href="socialPlan.htm">
+			<button class="btn btn-success">Save</button>
+		</a>
 	</footer>
 </div>
 </body>

@@ -50,6 +50,23 @@ footer {
 	text-align: right;
 }
 
+.panel-heading .panel-title:after {
+	/* symbol for "opening" panels */
+	font-family: 'Glyphicons Halflings'; /* essential for enabling glyphicon */
+	content: "\e114"; /* adjust as needed, taken from bootstrap.css */
+	float: right; /* adjust as needed */
+	color: grey; /* adjust as needed */
+}
+
+.panel-heading.collapsed .panel-title:after {
+	/* symbol for "collapsed" panels */
+	content: "\e080"; /* adjust as needed, taken from bootstrap.css */
+}
+
+.panel-heading {
+	cursor: pointer;
+}
+
 div.dlg {
 	position: absolute;
 	top: 0;
