@@ -30,6 +30,7 @@
 	<link rel="stylesheet" href="/styles/fixedTable.css" charset="UTF-8">
 	<script src="/scripts/common.js"></script>
 
+	<script src="recipientDetail.js"></script>
 	<style>
 		.span3 {
 			width: 45%;
@@ -143,10 +144,151 @@
 	</div>
 </polymer-ui-accordion>
 
-<polymer-ui-accordion>
+<!--
+<polymer-ui-accordion selected="0">
 	<polymer-ui-collapsible>
-		<div class="polymer-ui-collapsible-header">List of active services</div>
-		<div class="content panel" style="max-height: 300px; overflow:auto;">
+	<div class="polymer-ui-collapsible-header"><span>List of pending requests</span> <button class="btn btn-success btn-xs" style="float:right">Add</button></div>
+	<div class="content panel" style="max-height: 300px; overflow:auto;">
+		<ul class="request" id="pending">
+			<li>
+				<div class="ttable">
+					<div class="trow">
+						<div class="cell title">Cleaning, Ironing</div>
+						<div class="cell startdate">from : 2014-04-15</div>
+						<div class="cell stopdate">to : 2014-05-15</div>
+					</div>
+				</div>
+				<div class="ttable">
+					<div class="trow">
+						<div class="cell spacer"></div>
+						<div class="cell detail">All Wednesday at 14:30</div>
+						<div class="cell action"><button class="btn btn-primary btn-xs">Edit</button></div>
+					</div>
+				</div>
+			</li>
+			<li>
+				<div class="ttable">
+					<div class="trow">
+						<div class="cell title">Grocery delivery</div>
+						<div class="cell startdate">from : 2014-04-15</div>
+						<div class="cell stopdate">to : -</div>
+					</div>
+				</div>
+				<div class="ttable">
+					<div class="trow">
+						<div class="cell spacer"></div>
+						<div class="cell detail">Tuesday, thursday from 17:30 to 18:30</div>
+						<div class="cell action"><button class="btn btn-primary btn-xs">Edit</button></div>
+					</div>
+				</div>
+			</li>
+			<li>
+				<div class="ttable">
+					<div class="trow">
+						<div class="cell title">Cleaning, Ironing</div>
+						<div class="cell startdate">from : 2014-04-15</div>
+						<div class="cell stopdate">to : 2014-05-15</div>
+					</div>
+				</div>
+				<div class="ttable">
+					<div class="trow">
+						<div class="cell spacer"></div>
+						<div class="cell detail">All Wednesday at 14:30</div>
+						<div class="cell action"><button class="btn btn-primary btn-xs">Edit</button></div>
+					</div>
+				</div>
+			</li>
+			<li>
+				<div class="ttable">
+					<div class="trow">
+						<div class="cell title">Grocery delivery</div>
+						<div class="cell startdate">from : 2014-04-15</div>
+						<div class="cell stopdate">to : -</div>
+					</div>
+				</div>
+				<div class="ttable">
+					<div class="trow">
+						<div class="cell spacer"></div>
+						<div class="cell detail">Tuesday, thursday from 17:30 to 18:30</div>
+						<div class="cell action"><button class="btn btn-primary btn-xs">Edit</button></div>
+					</div>
+				</div>
+			</li>
+			<li>
+				<div class="ttable">
+					<div class="trow">
+						<div class="cell title">Cleaning, Ironing</div>
+						<div class="cell startdate">from : 2014-04-15</div>
+						<div class="cell stopdate">to : 2014-05-15</div>
+					</div>
+				</div>
+				<div class="ttable">
+					<div class="trow">
+						<div class="cell spacer"></div>
+						<div class="cell detail">All Wednesday at 14:30</div>
+						<div class="cell action"><button class="btn btn-primary btn-xs">Edit</button></div>
+					</div>
+				</div>
+			</li>
+			<li>
+				<div class="ttable">
+					<div class="trow">
+						<div class="cell title">Grocery delivery</div>
+						<div class="cell startdate">from : 2014-04-15</div>
+						<div class="cell stopdate">to : -</div>
+					</div>
+				</div>
+				<div class="ttable">
+					<div class="trow">
+						<div class="cell spacer"></div>
+						<div class="cell detail">Tuesday, thursday from 17:30 to 18:30</div>
+						<div class="cell action"><button class="btn btn-primary btn-xs">Edit</button></div>
+					</div>
+				</div>
+			</li>
+			<li>
+				<div class="ttable">
+					<div class="trow">
+						<div class="cell title">Cleaning, Ironing</div>
+						<div class="cell startdate">from : 2014-04-15</div>
+						<div class="cell stopdate">to : 2014-05-15</div>
+					</div>
+				</div>
+				<div class="ttable">
+					<div class="trow">
+						<div class="cell spacer"></div>
+						<div class="cell detail">All Wednesday at 14:30</div>
+						<div class="cell action"><button class="btn btn-primary btn-xs">Edit</button></div>
+					</div>
+				</div>
+			</li>
+			<li>
+				<div class="ttable">
+					<div class="trow">
+						<div class="cell title">Grocery delivery</div>
+						<div class="cell startdate">from : 2014-04-15</div>
+						<div class="cell stopdate">to : -</div>
+					</div>
+				</div>
+				<div class="ttable">
+					<div class="trow">
+						<div class="cell spacer"></div>
+						<div class="cell detail">Tuesday, thursday from 17:30 to 18:30</div>
+						<div class="cell action"><button class="btn btn-primary btn-xs">Edit</button></div>
+					</div>
+				</div>
+			</li>
+	</div>
+		</polymer-ui-collapsible>
+</polymer-ui-accordion>
+-->
+
+<div class="panel panel-default">
+	<div class="panel-heading" data-toggle="collapse" data-target="#collapse1">
+		<h3 class="panel-title">Active services</h3>
+	</div>
+	<div id="collapse1" class="panel-collapse collapse">
+		<div class="panel-body">
 			<ul class="request" id="active">
 				<li>
 					<div class="ttable">
@@ -180,13 +322,15 @@
 				</li>
 			</ul>
 		</div>
-	</polymer-ui-collapsible>
-</polymer-ui-accordion>
+	</div>
+</div>
 
-<polymer-ui-accordion>
-	<polymer-ui-collapsible>
-		<div class="polymer-ui-collapsible-header">Professional contacts</div>
-		<div class="content">
+<div class="panel panel-default">
+	<div class="panel-heading" data-toggle="collapse" data-target="#collapse2">
+		<h3 class="panel-title">Professional contacts</h3>
+	</div>
+	<div id="collapse2" class="panel-collapse collapse in">
+		<div class="panel-body">
 			<div class="fixedTable" style="height:300px;">
 				<table id="stakeholders">
 					<colgroup>
@@ -304,65 +448,28 @@
 				</table>
 			</div>
 		</div>
-	</polymer-ui-collapsible>
-</polymer-ui-accordion>
+	</div>
+</div>
 
-<polymer-ui-accordion>
-	<polymer-ui-collapsible>
-		<div class="polymer-ui-collapsible-header">Personal contacts</div>
-		<div class="content">
-			<div class="fixedTable" style="height:300px;">
-				<table id="personalContact">
-					<colgroup>
-						<col>
-						<col style="width:150px">
-						<col style="width:150px">
-						<col style="width:250px">
-					</colgroup>
-					<thead>
-					<tr>
-						<th>Name</th>
-						<th>Role</th>
-						<th>Phone</th>
-						<th>Email</th>
-					</tr>
-					</thead>
-					<tbody>
-					<tr>
-						<td>ROLLAND Anne</td>
-						<td>Parent</td>
-						<td>03 25 12 45 22</td>
-						<td>anne.rolland@gmail.com</td>
-					</tr>
-					<tr>
-						<td>COTTE Jean</td>
-						<td>Brother</td>
-						<td>03 25 12 45 22</td>
-						<td></td>
-					</tr>
-					<tr>
-						<td>OFFROY Remy</td>
-						<td>Parent</td>
-						<td></td>
-						<td>roffroy@care.com</td>
-					</tr>
-					<tr>
-						<td>GUEDON Magalie</td>
-						<td>Friend</td>
-						<td></td>
-						<td>mguedon@care.com</td>
-					</tr>
-					</tbody>
-				</table>
-			</div>
+<div class="panel panel-default">
+	<div class="panel-heading" data-toggle="collapse" data-target="#collapse3">
+		<h3 class="panel-title">Personnal contacts</h3>
+	</div>
+	<div id="collapse3" class="panel-collapse collapse">
+		<div class="panel-body">
 		</div>
-	</polymer-ui-collapsible>
-</polymer-ui-accordion>
+	</div>
+</div>
 
-<script>
-	setFixedTable("#stakeholders");
-	setFixedTable("#personalContact");
-</script>
+<div class="panel panel-default">
+	<div class="panel-heading" data-toggle="collapse" data-target="#collapse4">
+		<h3 class="panel-title">Signalitique</h3>
+	</div>
+	<div id="collapse4" class="panel-collapse collapse">
+		<div class="panel-body">
+		</div>
+	</div>
+</div>
 
 </body>
 </html>
