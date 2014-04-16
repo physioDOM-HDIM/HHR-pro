@@ -117,6 +117,24 @@
 			width: 70px;
 			text-align: right;
 		}
+
+		.panel-heading .panel-title:after {
+			/* symbol for "opening" panels */
+			font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */
+			content: "\e114";    /* adjust as needed, taken from bootstrap.css */
+			float: right;        /* adjust as needed */
+			color: grey;         /* adjust as needed */
+		}
+		.panel-heading.collapsed .panel-title:after {
+			/* symbol for "collapsed" panels */
+			content: "\e080";    /* adjust as needed, taken from bootstrap.css */
+		}
+
+		.panel-heading {
+			cursor: pointer;
+		}
+
+
 	</style>
 </head>
 <body style="margin-top:20px">
@@ -455,8 +473,100 @@
 	<div class="panel-heading" data-toggle="collapse" data-target="#collapse3">
 		<h3 class="panel-title">Personnal contacts</h3>
 	</div>
-	<div id="collapse3" class="panel-collapse collapse">
+	<div id="collapse3" class="panel-collapse collapse in">
 		<div class="panel-body">
+			<div class="fixedTable" style="height:300px;">
+				<table id="personalContact">
+					<colgroup>
+						<col>
+						<col style="width:150px">
+						<col style="width:150px">
+						<col style="width:250px">
+					</colgroup>
+					<thead>
+					<tr>
+						<th>Name</th>
+						<th>Role</th>
+						<th>Phone</th>
+						<th>Email</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr>
+						<td>ROLLAND Anne</td>
+						<td>Parent</td>
+						<td>03 25 12 45 22</td>
+						<td>anne.rolland@gmail.com</td>
+					</tr>
+					<tr>
+						<td>COTTE Jean</td>
+						<td>Brother</td>
+						<td>03 25 12 45 22</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>OFFROY Remy</td>
+						<td>Parent</td>
+						<td></td>
+						<td>roffroy@care.com</td>
+					</tr>
+					<tr>
+						<td>GUEDON Magalie</td>
+						<td>Friend</td>
+						<td></td>
+						<td>mguedon@care.com</td>
+					</tr>
+					<tr>
+						<td>ROLLAND Anne</td>
+						<td>Parent</td>
+						<td>03 25 12 45 22</td>
+						<td>anne.rolland@gmail.com</td>
+					</tr>
+					<tr>
+						<td>COTTE Jean</td>
+						<td>Brother</td>
+						<td>03 25 12 45 22</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>OFFROY Remy</td>
+						<td>Parent</td>
+						<td></td>
+						<td>roffroy@care.com</td>
+					</tr>
+					<tr>
+						<td>GUEDON Magalie</td>
+						<td>Friend</td>
+						<td></td>
+						<td>mguedon@care.com</td>
+					</tr>
+					<tr>
+						<td>ROLLAND Anne</td>
+						<td>Parent</td>
+						<td>03 25 12 45 22</td>
+						<td>anne.rolland@gmail.com</td>
+					</tr>
+					<tr>
+						<td>COTTE Jean</td>
+						<td>Brother</td>
+						<td>03 25 12 45 22</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>OFFROY Remy</td>
+						<td>Parent</td>
+						<td></td>
+						<td>roffroy@care.com</td>
+					</tr>
+					<tr>
+						<td>GUEDON Magalie</td>
+						<td>Friend</td>
+						<td></td>
+						<td>mguedon@care.com</td>
+					</tr>
+					</tbody>
+				</table>
+			</div>
 		</div>
 	</div>
 </div>
