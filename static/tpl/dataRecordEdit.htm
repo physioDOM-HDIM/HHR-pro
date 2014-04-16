@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>Constant registration</title>
+
+	<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<meta name="apple-touch-fullscreen" content="yes">
+	<meta name="mobile-web-app-capable" content="yes">
+
+	<link rel="shortcut icon" sizes="196x196" href="/img/physiodom_favico.png">
+	<link rel="icon" href="/img/physiodom_favico.png">
+	<link rel="apple-touch-icon" href="/img/physiodom_favico.png">
+
+	<link rel="stylesheet" href="/styles/iframe.css" charset="UTF-8">
+	<link rel="stylesheet" href="/styles/theme.css" charset="UTF-8">
+
+	<link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/assets/css/bootstrap-theme.min.css">
+
+	<script type="text/javascript" src="/assets/js/jquery-2.1.0.min.js"></script>
+	<script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
+
+	<!-- Accordion -->
+	<script src="/bower_components/platform/platform.js"></script>
+	<link rel="import" href="/bower_components/polymer-ui-accordion/polymer-ui-accordion.html">
+
+	<link rel="stylesheet" href="/styles/table.css" charset="UTF-8">
+	<link rel="stylesheet" href="/styles/fixedTable.css" charset="UTF-8">
+	<script src="/scripts/common.js"></script>
+</head>
+<body>
+
+<style>
+	div.row {
+		margin: auto !important;
+	}
+
+	input[type=text], input[type=number] {
+		height: 34px;
+		padding: 6px 12px;
+		font-size: 14px;
+		line-height: 1.42857143;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+	}
+	
+	#dataPanel {
+		flex-grow:1
+	}
+</style>
+
+<div class="main">
+	
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">Measure</h3>
+	</div>
+	<div class="panel-body">
+		<form class="form-horizontal" role="form" onsubmit="return false;">
+			<div class="form-group">
+				<div class="row">
+					<div class="col-xs-6">
+						<label class="col-xs-4">Date</label>
+						<input class="col-xs-8" type="text" id="recordDate">
+					</div>
+					<div class="col-xs-6">
+						<label class="col-xs-4">Daypart</label>
+						<input class="col-xs-8" type="text" id="daypart">
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-6">
+						<label class="col-xs-4">Contributor</label>
+						<input class="col-xs-8" type="text" id="Contributor" value="C. Devaux" readonly>
+					</div>
+					<div class="col-xs-6">
+						<label class="col-xs-4">Unidentified contributor</label>
+						<input class="col-xs-8" type="text" id="unknown">
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+<div class="panel panel-default" id="dataPanel">
+	<div class="panel-heading">
+		<h3 class="panel-title">Data</h3>
+	</div>
+	<div class="panel-body">
+		<form class="form-horizontal" role="form" onsubmit="return false;">
+			<div class="form-group">
+				<div class="fixedTable" style="-ms-flex:1;-webkit-box-flex:1;-webkit-flex-grow: 1">
+					<table id="dataRecord">
+						<colgroup>
+							<col style="width:250px">
+							<col style="width:200px">
+							<col>
+						</colgroup>
+						<thead>
+						<tr>
+							<th>Name</th>
+							<th>Value</th>
+							<th>Unit</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr>
+							<td>Pulse</td>
+							<td><input type="number" style="width:100%"></td>
+							<td>Pulse per minute</td>
+						</tr>
+						<tr>
+							<td>Weight</td>
+							<td><input type="number" style="width:100%"></td>
+							<td>Kilogramme</td>
+						</tr>
+						<tr>
+							<td>S.B.P</td>
+							<td><input type="number" style="width:100%"></td>
+							<td>mm of mercure</td>
+						</tr>
+						<tr>
+							<td>D.B.P</td>
+							<td><input type="number" style="width:100%"></td>
+							<td>mm of mercure</td>
+						</tr>
+						<tr>
+							<td>T°</td>
+							<td><input type="number" style="width:100%"></td>
+							<td>Celsius degree</td>
+						</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</form>
+	</div>
+	</div>
+
+	<footer>
+			<a href="dataRecord.htm"><button class="btn btn-danger">Cancel</button></a>
+			<a href="dataRecord.htm"><button class="btn btn-success">Save</button></a>
+	</footer>
+</div>
+</body>
+</html>
