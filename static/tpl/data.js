@@ -44,6 +44,8 @@ var Calendar1, Calendar2;
 						color: '#4572A7'
 					}
 				},
+				min: 30,
+				max: 180,
 				labels   : {
 					format: '{value} bpm',
 					style : {
