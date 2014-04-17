@@ -51,7 +51,7 @@
 
 		.row {
 			margin-bottom: 10px;
-		 }
+		}
 
 		table.list {
 			border-collapse: separate;
@@ -59,10 +59,10 @@
 		}
 
 		table.list tr {
-			height:34px;
+			height: 34px;
 		}
 
-		table.list th,table.list td {
+		table.list th, table.list td {
 			width: 40px;
 			padding-left: 5px;
 			padding-right: 5px;
@@ -82,7 +82,7 @@
 		}
 
 		table.list tr td:last-child {
-			text-align:right;
+			text-align: right;
 		}
 
 		.timepicker {
@@ -90,7 +90,7 @@
 			min-height: 100px;
 			background: white;
 			position: absolute;
-			border:1px solid black;
+			border: 1px solid black;
 			box-shadow: 1px 1px 15px #999;
 		}
 
@@ -102,258 +102,259 @@
 			width: 0px;
 			position: absolute;
 			top: -15px;
-			left: 12.5%; // depending on document.body.offsetWidth
-			margin-left: -15px;
+			left: 12.5%;
+		/ / depending on document . body . offsetWidth margin-left : - 15 px;
 			box-shadow: 1px 1px 15px #999;
 		}
 
 		.timepicker tr {
-			height:50px;
-			text-align:center;
-			font-size:25px;
-			background:none;
+			height: 50px;
+			text-align: center;
+			font-size: 25px;
+			background: none;
 		}
 	</style>
 </head>
 <body>
 <div class="main">
 
-	<div class="panel panel-default">
-		<div class="panel-heading" data-toggle="collapse" data-target="#collapse1">
-			<h3 class="panel-title">Service</h3>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">Service</h3>
+	</div>
+	<div class="panel-body">
+		<form class="form-horizontal" role="form" onsubmit="return false;">
+			<div class="form-group">
+				<div class="row">
+					<label style="width:100px" class="col-xs-1 control-label" for="service">Service : </label>
+					<div class="dropdown col-xs-offset-2">
+						<input type="text" id="service" readonly class="dropdown-toggle" data-toggle="dropdown">
+						<ul class="dropdown-menu col-xs-offset-2">
+							<li><a href="#"> Accompaniment aged person</a></li>
+							<li><a href="#"> Meal delevery</a></li>
+							<li><a href="#"> Grocery delivery</a></li>
+							<li><a href="#"> Cleaning, ironing</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+<div class="panel panel-default">
+	<div class="panel-heading" data-toggle="collapse" data-target="#collapse2">
+		<h3 class="panel-title">Frequency</h3>
+	</div>
+	<div id="collapse2" class="panel-collapse collapse in">
+		<div class="panel-body">
+			<form class="form-horizontal" role="form" onsubmit="return false;">
+				<div class="form-group">
+					<div class="row">
+						<div class="col-xs-1">&nbsp;</div>
+						<div class="col-xs-3">
+							<label style="width:75px" for="weekly">Weekly : </label>
+							<input type="radio" name="frequency" id="weekly" checked>
+						</div>
+						<div class="col-xs-3">
+							<label style="width:75px" for="daily">Daily : </label>
+							<input type="radio" name="frequency" id="daily">
+						</div>
+						<div class="col-xs-3">
+							<label style="width:75px" for="punctual">Punctual : </label>
+							<input type="radio" name="frequency" id="punctual">
+						</div>
+					</div>
+				</div>
+			</form>
 		</div>
-		<div id="collapse1" class="panel-collapse collapse in">
-			<div class="panel-body">
-				<form class="form-horizontal" role="form" onsubmit="return false;">
-					<div class="form-group">
-						<div class="row">
+	</div>
+</div>
+
+<div class="panel panel-default">
+	<div class="panel-heading" data-toggle="collapse" data-target="#collapse3">
+		<h3 class="panel-title">When</h3>
+	</div>
+	<div id="collapse3" class="panel-collapse collapse">
+		<div class="panel-body">
+			<form class="form-horizontal" role="form" onsubmit="return false;">
+				<div class="form-group">
+					<div class="row">
+						<div class="col-xs-4">
+							<label for="weekly">Starting date : </label>
+							<input type="text" id="calendar1" value="" readonly>
+						</div>
+						<div class="col-xs-8">
+							<label for="daily" class="col-xs-2">Term </label>
+
 							<div class="col-xs-6">
-								<div class="col-xs-12">
-									<label style="width:100px" class="col-xs-1 control-label" for="severity">Service : </label>
-									<div class="dropdown" class="col-xs-offset-3">
-										<input type="text" id="severity" readonly class="dropdown-toggle" data-toggle="dropdown">
-										<ul class="dropdown-menu" style="position:absolute">
-											<li><a href="#"><i class="icon-pencil"></i> Accompaniment aged person</a></li>
-											<li><a href="#"><i class="icon-trash"></i> Meal delevery</a></li>
-											<li><a href="#"><i class="icon-ban-circle"></i> Grocery delivery</a></li>
-											<li><a href="#"><i class="i"></i> Cleaning, ironing</a></li>
-										</ul>
-									</div>
+								<div class="row"><input type="radio" name="term"> no term</div>
+								<div class="row"><input type="radio" name="term"> term after :
+									<input type="number" value=""
+												 style="width:50px;"> occurences
 								</div>
+								<div class="row"><input type="radio" name="term"> term date :
+									<input type="text" id="calendar2"
+												 value="" readonly></div>
 							</div>
 						</div>
 					</div>
-				</form>
-			</div>
+				</div>
+			</form>
 		</div>
 	</div>
+</div>
 
-	<div class="panel panel-default">
-		<div class="panel-heading" data-toggle="collapse" data-target="#collapse2">
-			<h3 class="panel-title">Frequency</h3>
+<div class="panel panel-default">
+	<div class="panel-heading" data-toggle="collapse" data-target="#collapse4">
+		<h3 class="panel-title">Ceiling and duration of intervention</h3>
+	</div>
+	<div id="collapse4" class="panel-collapse collapse">
+		<div class="panel-body">
+			<form class="form-horizontal" role="form" onsubmit="return false;">
+				<div class="form-group">
+					<div class="row">
+
+					</div>
+				</div>
+			</form>
 		</div>
-		<div id="collapse2" class="panel-collapse collapse in">
-			<div class="panel-body">
-				<form class="form-horizontal" role="form" onsubmit="return false;">
-					<div class="form-group">
-						<div class="row">
-							<div class="col-xs-1">&nbsp;</div>
-							<div class="col-xs-3">
-								<label style="width:75px" for="weekly">Weekly : </label>
-								<input type="radio" name="frequency" id="weekly" checked>
-							</div>
-							<div class="col-xs-3">
-								<label style="width:75px" for="daily">Daily : </label>
-								<input type="radio" name="frequency" id="daily">
-							</div>
-							<div class="col-xs-3">
-								<label style="width:75px" for="punctual">Punctual : </label>
-								<input type="radio" name="frequency" id="punctual">
+	</div>
+</div>
+
+<div class="panel panel-default">
+	<div class="panel-heading" data-toggle="collapse" data-target="#collapse6">
+		<h3 class="panel-title">Recurrence</h3>
+	</div>
+	<div id="collapse6" class="panel-collapse collapse">
+		<div class="panel-body">
+			<table class="table-bordered list">
+				<thead>
+				<tr>
+					<th>Day</th>
+					<th>From</th>
+					<th>To</th>
+					<th>&nbsp</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr>
+					<td>Tuesday</td>
+					<td>10:00</td>
+					<td>11:00</td>
+					<td>
+						<button class="btn-xs btn-danger">Delete</button>
+					</td>
+				</tr>
+				<tr>
+					<td>Thursday</td>
+					<td>11:00</td>
+					<td>12:00</td>
+					<td>
+						<button class="btn-xs btn-danger">Delete</button>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<div class="dropdown">
+							<input type="text" id="day" readonly class="dropdown-toggle" data-toggle="dropdown">
+							<ul class="dropdown-menu col-xs-offset-2">
+								<li><a href="#"> Sunday</a></li>
+								<li><a href="#"> Monday</a></li>
+								<li><a href="#"> Tuesday</a></li>
+								<li><a href="#"> Wednesday</a></li>
+								<li><a href="#"> Thursday</a></li>
+								<li><a href="#"> Friday</a></li>
+								<li><a href="#"> Saturday</a></li>
+								<li><a href="#"> Public holiday</a></li>
+							</ul>
+						</div>
+					</td>
+					<td>
+						<input type="text" id="timer1">
+					</td>
+					<td>
+						<input type="text" id="timer2">
+					</td>
+					<td>
+						<button class="btn-xs btn-success">Add</button>
+					</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<div class="panel panel-default">
+	<div class="panel-heading" data-toggle="collapse" data-target="#collapse5">
+		<h3 class="panel-title">Information</h3>
+	</div>
+	<div id="collapse5" class="panel-collapse collapse">
+		<div class="panel-body">
+			<form class="form-horizontal" role="form" onsubmit="return false;">
+				<div class="form-group">
+					<div class="row">
+						<label class="col-xs-2 control-label">Title : </label>
+						<input type="text" class="col-xs-6">
+					</div>
+					<div class="row">
+						<div class="col-xs-6" style="margin-left: -15px;">
+							<label class="col-xs-5 control-label">Receive date : </label>
+							<input class="col-xs-4" type="text" id="calendar3" value="" readonly>
+						</div>
+						<div class="col-xs-6" style="margin-left: -15px;">
+							<label style="width:100px" class="col-xs-1 control-label" for="severityData">Severity : </label>
+
+							<div class="dropdown col-xs-offset-3">
+								<input type="text" id="severityData" readonly class="dropdown-toggle" data-toggle="dropdown">
+								<ul class="dropdown-menu col-xs-offset-2">
+									<li><a href="#"> Blocking</a></li>
+									<li><a href="#"> High</a></li>
+									<li><a href="#"> Important</a></li>
+									<li><a href="#"> Standard</a></li>
+									<li><a href="#"> Minor</a></li>
+								</ul>
 							</div>
 						</div>
 					</div>
-				</form>
-			</div>
-		</div>
-	</div>
-
-	<div class="panel panel-default">
-		<div class="panel-heading" data-toggle="collapse" data-target="#collapse3">
-			<h3 class="panel-title">When</h3>
-		</div>
-		<div id="collapse3" class="panel-collapse collapse">
-			<div class="panel-body">
-				<form class="form-horizontal" role="form" onsubmit="return false;">
-					<div class="form-group">
-						<div class="row">
-							<div class="col-xs-4">
-								<label for="weekly">Starting date : </label>
-								<input type="text" id="calendar1" value="" readonly>
-							</div>
-							<div class="col-xs-8">
-								<label for="daily" class="col-xs-2">Term </label>
-
-								<div class="col-xs-6">
-									<div class="row"><input type="radio" name="term"> no term</div>
-									<div class="row"><input type="radio" name="term"> term after :
-										<input type="number" value=""
-													 style="width:50px;"> occurences
-									</div>
-									<div class="row"><input type="radio" name="term"> term date :
-										<input type="text" id="calendar2"
-													 value="" readonly></div>
-								</div>
-							</div>
-						</div>
+					<div class="row">
+						<div id="contentMsg" style="height: 150px;"></div>
 					</div>
-				</form>
-			</div>
+				</div>
+			</form>
 		</div>
 	</div>
+</div>
 
-	<div class="panel panel-default">
-		<div class="panel-heading" data-toggle="collapse" data-target="#collapse4">
-			<h3 class="panel-title">Ceiling and duration of intervention</h3>
-		</div>
-		<div id="collapse4" class="panel-collapse collapse">
-			<div class="panel-body">
-				<form class="form-horizontal" role="form" onsubmit="return false;">
-					<div class="form-group">
-						<div class="row">
-
-						</div>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
-
-	<div class="panel panel-default">
-		<div class="panel-heading" data-toggle="collapse" data-target="#collapse6">
-			<h3 class="panel-title">Recurrence</h3>
-		</div>
-		<div id="collapse6" class="panel-collapse collapse">
-			<div class="panel-body">
-				<table class="table-bordered list">
-					<thead>
-						<tr>
-							<th>Day</th>
-							<th>From</th>
-							<th>To</th>
-							<th>&nbsp</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Tuesday</td>
-							<td>10:00</td>
-							<td>11:00</td>
-							<td><button class="btn-xs btn-danger">Delete</button></td>
-						</tr>
-						<tr>
-							<td>Thursday</td>
-							<td>11:00</td>
-							<td>12:00</td>
-							<td><button class="btn-xs btn-danger">Delete</button></td>
-						</tr>
-						<tr>
-							<td>
-								<div class="dropdown">
-									<input type="text" id="day" readonly class="dropdown-toggle" data-toggle="dropdown">
-									<ul class="dropdown-menu col-xs-offset-2">
-										<li><a href="#"> Sunday</a></li>
-										<li><a href="#"> Monday</a></li>
-										<li><a href="#"> Tuesday</a></li>
-										<li><a href="#"> Wednesday</a></li>
-										<li><a href="#"> Thursday</a></li>
-										<li><a href="#"> Friday</a></li>
-										<li><a href="#"> Saturday</a></li>
-										<li><a href="#"> Public holiday</a></li>
-									</ul>
-								</div>
-							</td>
-							<td>
-								<input type="text" id="timer1">
-							</td>
-							<td>
-								<input type="text" id="timer2">
-							</td>
-							<td><button class="btn-xs btn-success">Add</button></td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</div>
-
-	<div class="panel panel-default">
-		<div class="panel-heading" data-toggle="collapse" data-target="#collapse5">
-			<h3 class="panel-title">Information</h3>
-		</div>
-		<div id="collapse5" class="panel-collapse collapse">
-			<div class="panel-body">
-				<form class="form-horizontal" role="form" onsubmit="return false;">
-					<div class="form-group">
-						<div class="row">
-							<label class="col-xs-2 control-label">Title : </label>
-							<input type="text" class="col-xs-6">
-						</div>
-						<div class="row">
-							<div class="col-xs-6" style="margin-left: -15px;">
-								<label class="col-xs-5 control-label">Receive date : </label>
-								<input class="col-xs-4" type="text" id="calendar3" value="" readonly>
-							</div>
-							<div class="col-xs-6" style="margin-left: -15px;">
-								<label style="width:100px" class="col-xs-1 control-label" for="severityData">Severity : </label>
-								<div class="dropdown col-xs-offset-3">
-									<input type="text" id="severityData" readonly class="dropdown-toggle" data-toggle="dropdown">
-									<ul class="dropdown-menu col-xs-offset-2">
-										<li><a href="#"><i class="icon-pencil"></i> Blocking</a></li>
-										<li><a href="#"><i class="icon-trash"></i> High</a></li>
-										<li><a href="#"><i class="icon-ban-circle"></i> Important</a></li>
-										<li><a href="#"><i class="i"></i> Standard</a></li>
-										<li><a href="#"><i class="i"></i> Minor</a></li>
-									</ul>
-								</div>
-							</div>
-						</div>
-						<div class="row">
-							<div id="contentMsg" style="height: 150px;"></div>
-						</div>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
-
-	<div class="timepicker" style="display:none">
-		<div class="arrow"></div>
-		<table style="empty-cells:show;">
-			<tr>
-				<td>&nbsp;</td>
-				<td>&nbsp;</td>
-			</tr>
-			<tr>
-				<td>12</td>
-				<td>00</td>
-			</tr>
-			<tr>
-				<td>&nbsp;</td>
-				<td>&nbsp;</td>
-			</tr>
-		</table>
-	</div>
-	<footer>
-		<a href="socialPlan.htm">
-			<button class="btn btn-primary">back to the list</button>
-		</a>
-		<a href="socialPlan.htm">
-			<button class="btn btn-danger">Cancel the request</button>
-		</a>
-		<a href="socialPlan.htm">
-			<button class="btn btn-success">Save</button>
-		</a>
-	</footer>
+<div class="timepicker" style="display:none">
+	<div class="arrow"></div>
+	<table style="empty-cells:show;">
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td>12</td>
+			<td>00</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+	</table>
+</div>
+<footer>
+	<a href="socialPlan.htm">
+		<button class="btn btn-primary">back to the list</button>
+	</a>
+	<a href="socialPlan.htm">
+		<button class="btn btn-danger">Cancel the request</button>
+	</a>
+	<a href="socialPlan.htm">
+		<button class="btn btn-success">Save</button>
+	</a>
+</footer>
 </div>
 </body>
 </html>
