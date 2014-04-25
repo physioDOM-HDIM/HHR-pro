@@ -167,9 +167,10 @@
 
 <div class="main">
 
+<!--
 <div class="panel panel-default" id="graphPanel">
 	<div class="panel-heading" data-toggle="collapse" data-target="#collapse1">
-		<h3 class="panel-title">Graph</h3>
+		<h3 class="panel-title">Graph selection</h3>
 	</div>
 	<div id="collapse1" class="panel-collapse collapse in">
 		<div class="panel-body">
@@ -231,7 +232,7 @@
 		</div>
 	</div>
 </div>
-
+-->
 <!--
 <div class="row" style="margin:0px">
 	<div class="dropdown" id="graph1" style="display:inline-block">
@@ -296,7 +297,17 @@
 		</thead>
 		<tbody>
 		<tr>
-			<td>Pulse</td>
+			<td>
+				<div class="redCheck check">
+					<input type="checkbox" value="None" id="param0" name="check" checked/>
+					<label for="param0"></label>
+				</div>
+				<div class="blueCheck check">
+					<input type="checkbox" value="None" id="param1" name="check"/>
+					<label for="param1"></label>
+				</div>
+				<label>Pulse</label>
+			</td>
 			<td><input type="number" readonly value="50"></td>
 			<td><input type="number" readonly value="170"></td>
 			<td><input type="number" readonly value="60"></td>
@@ -309,7 +320,16 @@
 			</td>
 		</tr>
 		<tr>
-			<td>Weight</td>
+			<td>
+				<div class="redCheck check">
+					<input type="checkbox" value="None" id="param2" name="check"/>
+					<label for="param2"></label>
+				</div>
+				<div class="blueCheck check">
+					<input type="checkbox" value="None" id="param3" name="check" checked/>
+					<label for="param3"></label>
+				</div>
+				<label>Weight</label></td>
 			<td><input type="number" readonly value="30"></td>
 			<td><input type="number" readonly value="150"></td>
 			<td><input type="number" readonly value="65"></td>
@@ -322,7 +342,16 @@
 			</td>
 		</tr>
 		<tr>
-			<td>Température</td>
+			<td>
+				<div class="redCheck check">
+					<input type="checkbox" value="None" id="param4" name="check"/>
+					<label for="param4"></label>
+				</div>
+				<div class="blueCheck check">
+					<input type="checkbox" value="None" id="param5" name="check"/>
+					<label for="param5"></label>
+				</div>
+				<label>Température</label></td>
 			<td><input type="number" readonly value="35"></td>
 			<td><input type="number" readonly value="38"></td>
 			<td><input type="number" readonly value="36.5"></td>
@@ -335,7 +364,16 @@
 			</td>
 		</tr>
 		<tr>
-			<td>D.B.P</td>
+			<td>
+				<div class="redCheck check">
+					<input type="checkbox" value="None" id="param6" name="check"/>
+					<label for="param6"></label>
+				</div>
+				<div class="blueCheck check">
+					<input type="checkbox" value="None" id="param7" name="check"/>
+					<label for="param7"></label>
+				</div>
+				<label>D.B.P</label></td>
 			<td><input type="number" readonly value="60"></td>
 			<td><input type="number" readonly value="100"></td>
 			<td><input type="number" readonly value="60"></td>
@@ -348,7 +386,16 @@
 			</td>
 		</tr>
 		<tr>
-			<td>S.B.P.</td>
+			<td>
+				<div class="redCheck check">
+					<input type="checkbox" value="None" id="param8" name="check"/>
+					<label for="param8"></label>
+				</div>
+				<div class="blueCheck check">
+					<input type="checkbox" value="None" id="param9" name="check"/>
+					<label for="param9"></label>
+				</div>
+				<label>S.B.P.</label></td>
 			<td><input type="number" readonly value="110"></td>
 			<td><input type="number" readonly value="180"></td>
 			<td><input type="number" readonly value="120"></td>
