@@ -44,8 +44,8 @@ var Calendar1, Calendar2;
 						color: '#4572A7'
 					}
 				},
-				min: 30,
-				max: 180,
+				min: 40,
+				max: 140,
 				labels   : {
 					format: '{value} bpm',
 					style : {
@@ -67,7 +67,7 @@ var Calendar1, Calendar2;
 					{
 						color: '#4572A7',
 						width: 2,
-						value: 150 // Need to set this probably as a var.
+						value: 130 // Need to set this probably as a var.
 					}
 				]
 			},
@@ -78,6 +78,8 @@ var Calendar1, Calendar2;
 						color: "tomato"
 					}
 				},
+				min: 50,
+				max: 75,
 				plotLines: [
 					{
 						value: 0,
@@ -86,11 +88,11 @@ var Calendar1, Calendar2;
 					},{
 						color: 'tomato',
 						width: 2,
-						value: 30 // Need to set this probably as a var.
+						value: 60 // Need to set this probably as a var.
 					},{
 						color: 'tomato',
 						width: 2,
-						value: 150 // Need to set this probably as a var.
+						value: 75 // Need to set this probably as a var.
 					}
 				],
 				labels   : {
@@ -170,4 +172,28 @@ function setSens(obj, inputId, mezh) {
 	} else {
 		myCalendar.setSensitiveRange(null, document.getElementById(inputId).value);
 	}
+}
+
+function editValues(obj) {
+	var param = obj.parentNode.parentNode;
+	var inputs = param.querySelectorAll("input");
+	Array.prototype.forEach.call(inputs, function(input) {
+		input.removeAttribute('readonly');
+		input.classList.add("edit");
+	});
+	// param.querySelector(".btncancel").style.display = "inline-block";
+	param.querySelector(".btnsave").style.display = "inline-block";
+	param.querySelector(".btnedit").style.display = "none";
+}
+
+function saveValues(obj) {
+	var param = obj.parentNode.parentNode;
+	var inputs = param.querySelectorAll("input");
+	Array.prototype.forEach.call(inputs, function(input) {
+		input.setAttribute('readonly',true);
+		input.classList.remove("edit");
+	});
+	// param.querySelector(".btncancel").style.display = "none";
+	param.querySelector(".btnsave").style.display = "none";
+	param.querySelector(".btnedit").style.display = "inline-block";
 }
