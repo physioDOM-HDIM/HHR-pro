@@ -48,6 +48,7 @@ function insertAfter(newElement,targetElement) {
 		ul.appendChild(newMsg);
 	}
 
+	/*
 	tinymce.init({
 		selector: "#contentMsg",
 		plugins: [],
@@ -63,6 +64,7 @@ function insertAfter(newElement,targetElement) {
 		statusbar : false,
 		menubar : false
 	});
+	*/
 
 	Calendar1 = new dhtmlXCalendarObject("calendar1");
 	Calendar2 = new dhtmlXCalendarObject("calendar2");
