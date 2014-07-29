@@ -39,7 +39,7 @@
 
 	div.main {
 		overflow-y: auto;
-		min-height:700px;
+		min-height: 700px;
 		-webkit-overflow-scrolling: touch;
 	}
 
@@ -71,101 +71,345 @@
 		line-height: 30px;
 		padding-left: 5px;
 	}
+
+	#measures input {
+		border: 0px;
+		width: 100%;
+		background: none;
+	}
+
+	#measures input.edit {
+		padding: 2px 4px;
+		border: 1px solid dodgerblue;
+		outline: none;
+	}
+
+	#measures button.btnsave, #measures button.btncancel {
+		display: none;
+	}
+
+	#measures tr td:last-child {
+		text-align: right;
+	}
+
+	input[type=checkbox] {
+		visibility: hidden;
+	}
+
+	/* SQUARED THREE */
+	.check {
+		width: 20px;
+		margin: 20px auto;
+		position: relative;
+		display: inline-block;
+	}
+
+	.redCheck label {
+		cursor: pointer;
+		position: absolute;
+		width: 20px;
+		height: 20px;
+		top: 0;
+		border-radius: 4px;
+
+		background: Tomato;
+	}
+
+	.blueCheck label {
+		cursor: pointer;
+		position: absolute;
+		width: 20px;
+		height: 20px;
+		top: 0;
+		border-radius: 4px;
+
+		background: #4572A7;
+	}
+
+	.check label:after {
+		-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+		filter: alpha(opacity=0);
+		opacity: 0;
+		content: '';
+		position: absolute;
+		width: 15px;
+		height: 8px;
+		background: transparent;
+		top: 4px;
+		left: 4px;
+		border: 3px solid #fcfff4;
+		border-top: none;
+		border-right: none;
+
+		-webkit-transform: rotate(-45deg);
+		-moz-transform: rotate(-45deg);
+		-o-transform: rotate(-45deg);
+		-ms-transform: rotate(-45deg);
+		transform: rotate(-45deg);
+	}
+
+	.check label:hover::after {
+		-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+		filter: alpha(opacity=30);
+		opacity: 0.3;
+	}
+
+	.check input[type=checkbox]:checked + label:after {
+		-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+		filter: alpha(opacity=100);
+		opacity: 1;
+	}
+
+	#graphPanel label.title {
+		margin-left: 20px;
+	}
 </style>
 
 <div class="main">
 
-	<div class="row" style="margin:0px">
-		<div class="dropdown" id="graph1" style="display:inline-block">
-			<button class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown">Graph 1</button>
-			<ul class="tree dropdown-menu">
-				<li><input type="checkbox"> Weight</li>
-				<li><input type="checkbox" checked> Pulse</li>
-				<li><input type="checkbox"> Temperature</li>
-				<li><input type="checkbox"> blood pressure</li>
-			</ul>
-		</div>
-
-		<div class="dropdown" id="graph2"  style="display:inline-block">
-			<button class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown">Graph 2</button>
-			<ul class="tree dropdown-menu">
-				<li><input type="checkbox" checked> Weight</li>
-				<li><input type="checkbox"> Pulse</li>
-				<li><input type="checkbox"> Temperature</li>
-				<li><input type="checkbox"> blood pressure</li>
-			</ul>
+<!--
+<div class="panel panel-default" id="graphPanel">
+	<div class="panel-heading" data-toggle="collapse" data-target="#collapse1">
+		<h3 class="panel-title">Graph selection</h3>
+	</div>
+	<div id="collapse1" class="panel-collapse collapse in">
+		<div class="panel-body">
+			<div class="col-xs-6">
+				<div class="redCheck check">
+					<input type="checkbox" value="None" id="param0" name="check" checked/>
+					<label for="param0"></label>
+				</div>
+				<div class="blueCheck check">
+					<input type="checkbox" value="None" id="param1" name="check"/>
+					<label for="param1"></label>
+				</div>
+				<label class="title">Weight</label>
+			</div>
+			<div class="col-xs-6">
+				<div class="redCheck check">
+					<input type="checkbox" value="None" id="param2" name="check"/>
+					<label for="param0"></label>
+				</div>
+				<div class="blueCheck check">
+					<input type="checkbox" value="None" id="param3" name="check" checked/>
+					<label for="param1"></label>
+				</div>
+				<label class="title">Pulse</label>
+			</div>
+			<div class="col-xs-6">
+				<div class="redCheck check">
+					<input type="checkbox" value="None" id="param4" name="check"/>
+					<label for="param0"></label>
+				</div>
+				<div class="blueCheck check">
+					<input type="checkbox" value="None" id="param5" name="check"/>
+					<label for="param1"></label>
+				</div>
+				<label class="title">Temperature</label>
+			</div>
+			<div class="col-xs-6">
+				<div class="redCheck check">
+					<input type="checkbox" value="None" id="param6" name="check"/>
+					<label for="param0"></label>
+				</div>
+				<div class="blueCheck check">
+					<input type="checkbox" value="None" id="param7" name="check"/>
+					<label for="param1"></label>
+				</div>
+				<label class="title">DBP</label>
+			</div>
+			<div class="col-xs-6">
+				<div class="redCheck check">
+					<input type="checkbox" value="None" id="param8" name="check"/>
+					<label for="param0"></label>
+				</div>
+				<div class="blueCheck check">
+					<input type="checkbox" value="None" id="param9" name="check"/>
+					<label for="param1"></label>
+				</div>
+				<label class="title">SBP</label>
+			</div>
 		</div>
 	</div>
-
-	<div id="container" style="width:100%; min-width: 310px; height: 400px; margin: 0 auto;"></div>
-	<div class="ttable">
-		<div class="trow normal">
-			<div class="cell" style="width:50px"></div>
-			<div class="cell">
-				<label style="width:75px">From : </label>
-				<input type="text" id="calendar1" value="2014-03-22"
-							 onclick="setSens(this,'calendar2','max');"
-							 readonly></div>
-			<div class="cell">
-				<label style="width:75px">to : </label>
-				<input type="text" id="calendar2" value="2014-03-25"
-							 onclick="setSens(this,'calendar1','min');"
-							 readonly></div>
-			<div class="cell"></div>
-		</div>
+</div>
+-->
+<!--
+<div class="row" style="margin:0px">
+	<div class="dropdown" id="graph1" style="display:inline-block">
+		<button class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown">Graph 1</button>
+		<ul class="tree dropdown-menu">
+			<li><input type="checkbox"> Weight</li>
+			<li><input type="checkbox" checked> Pulse</li>
+			<li><input type="checkbox"> Temperature</li>
+			<li><input type="checkbox"> blood pressure</li>
+		</ul>
 	</div>
 
-	<div class="fixedTable" style="-ms-flex:1;-webkit-box-flex:1;-webkit-flex-grow: 1;margin-top:30px">
-		<table id="measures">
-			<colgroup>
-				<col>
-				<col style="width:150px">
-				<col style="width:150px">
-				<col style="width:150px">
-				<col>
-			</colgroup>
-			<thead>
-			<tr>
-				<th>Measure type</th>
-				<th>Minimum threshold</th>
-				<th>Maximum threshold</th>
-				<th>Last Report on</th>
-			</tr>
-			</thead>
-			<tbody>
-			<tr>
-				<td>Pulse</td>
-				<td>50</td>
-				<td>150</td>
-				<td>2014-03-24 12:48</td>
-			</tr>
-			<tr>
-				<td>Weight</td>
-				<td>30</td>
-				<td>150</td>
-				<td>2014-03-24 12:48</td>
-			</tr>
-			<tr>
-				<td>Température</td>
-				<td>35</td>
-				<td>38</td>
-				<td>2014-03-24 12:48</td>
-			</tr>
-			<tr>
-				<td>D.B.P</td>
-				<td>60</td>
-				<td>100</td>
-				<td>2014-03-24 12:48</td>
-			</tr>
-			<tr>
-				<td>S.B.P.</td>
-				<td>110</td>
-				<td>180</td>
-				<td>2014-03-24 12:48</td>
-			</tr>
-			</tbody>
-		</table>
+	<div class="dropdown" id="graph2" style="display:inline-block">
+		<button class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown">Graph 2</button>
+		<ul class="tree dropdown-menu">
+			<li><input type="checkbox" checked> Weight</li>
+			<li><input type="checkbox"> Pulse</li>
+			<li><input type="checkbox"> Temperature</li>
+			<li><input type="checkbox"> blood pressure</li>
+		</ul>
 	</div>
+</div>
+-->
+
+<div id="container" style="width:100%; min-width: 310px; height: 400px; margin: 0 auto;"></div>
+<div class="row">
+		<div class="col-xs-4">
+			<label style="width:75px">From : </label>
+			<input type="text" id="calendar1" value="2014-03-22"
+						 onclick="setSens(this,'calendar2','max');"
+						 readonly></div>
+		<div  class="col-xs-4">
+			<label style="width:75px">to : </label>
+			<input type="text" id="calendar2" value="2014-03-25"
+						 onclick="setSens(this,'calendar1','min');"
+						 readonly></div>
+		<div class="cell"></div>
+</div>
+
+<div class="fixedTable" style="-ms-flex:1;-webkit-box-flex:1;-webkit-flex-grow: 1;margin-top:30px">
+	<table id="measures">
+		<colgroup>
+			<col>
+			<col style="width:100px">
+			<col style="width:100px">
+			<col style="width:100px">
+			<col style="width:100px">
+			<col style="width:150px">
+			<col style="width:60px;">
+			<col>
+		</colgroup>
+		<thead>
+		<tr>
+			<th>Measure type</th>
+			<th>Minimum value</th>
+			<th>Maximum value</th>
+			<th>Minimum threshold</th>
+			<th>Maximum threshold</th>
+			<th>Last Report on</th>
+			<th>&nbsp;</th>
+		</tr>
+		</thead>
+		<tbody>
+		<tr>
+			<td>
+				<div class="redCheck check">
+					<input type="checkbox" value="None" id="param0" name="check" checked/>
+					<label for="param0"></label>
+				</div>
+				<div class="blueCheck check">
+					<input type="checkbox" value="None" id="param1" name="check"/>
+					<label for="param1"></label>
+				</div>
+				<label>Pulse</label>
+			</td>
+			<td><input type="number" readonly value="50"></td>
+			<td><input type="number" readonly value="170"></td>
+			<td><input type="number" readonly value="60"></td>
+			<td><input type="number" readonly value="130"></td>
+			<td>2014-03-24 12:48</td>
+			<td>
+				<button class="btn btn-xs btn-primary btnedit" onclick="editValues(this)">Edit</button>
+				<button class="btn btn-xs btn-danger btncancel" onclick="saveValues(this)">Cancel</button>
+				<button class="btn btn-xs btn-success btnsave" onclick="saveValues(this)">Save</button>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div class="redCheck check">
+					<input type="checkbox" value="None" id="param2" name="check"/>
+					<label for="param2"></label>
+				</div>
+				<div class="blueCheck check">
+					<input type="checkbox" value="None" id="param3" name="check" checked/>
+					<label for="param3"></label>
+				</div>
+				<label>Weight</label></td>
+			<td><input type="number" readonly value="30"></td>
+			<td><input type="number" readonly value="150"></td>
+			<td><input type="number" readonly value="65"></td>
+			<td><input type="number" readonly value="70"></td>
+			<td>2014-03-24 12:48</td>
+			<td>
+				<button class="btn btn-xs btn-primary btnedit" onclick="editValues(this)">Edit</button>
+				<button class="btn btn-xs btn-danger btncancel" onclick="saveValues(this)">Cancel</button>
+				<button class="btn btn-xs btn-success btnsave" onclick="saveValues(this)">Save</button>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div class="redCheck check">
+					<input type="checkbox" value="None" id="param4" name="check"/>
+					<label for="param4"></label>
+				</div>
+				<div class="blueCheck check">
+					<input type="checkbox" value="None" id="param5" name="check"/>
+					<label for="param5"></label>
+				</div>
+				<label>Température</label></td>
+			<td><input type="number" readonly value="35"></td>
+			<td><input type="number" readonly value="38"></td>
+			<td><input type="number" readonly value="36.5"></td>
+			<td><input type="number" readonly value="37.5"></td>
+			<td>2014-03-24 12:48</td>
+			<td>
+				<button class="btn btn-xs btn-primary btnedit" onclick="editValues(this)">Edit</button>
+				<button class="btn btn-xs btn-danger btncancel" onclick="saveValues(this)">Cancel</button>
+				<button class="btn btn-xs btn-success btnsave" onclick="saveValues(this)">Save</button>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div class="redCheck check">
+					<input type="checkbox" value="None" id="param6" name="check"/>
+					<label for="param6"></label>
+				</div>
+				<div class="blueCheck check">
+					<input type="checkbox" value="None" id="param7" name="check"/>
+					<label for="param7"></label>
+				</div>
+				<label>D.B.P</label></td>
+			<td><input type="number" readonly value="60"></td>
+			<td><input type="number" readonly value="100"></td>
+			<td><input type="number" readonly value="60"></td>
+			<td><input type="number" readonly value="100"></td>
+			<td>2014-03-24 12:48</td>
+			<td>
+				<button class="btn btn-xs btn-primary btnedit" onclick="editValues(this)">Edit</button>
+				<button class="btn btn-xs btn-danger btncancel" onclick="saveValues(this)">Cancel</button>
+				<button class="btn btn-xs btn-success btnsave" onclick="saveValues(this)">Save</button>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div class="redCheck check">
+					<input type="checkbox" value="None" id="param8" name="check"/>
+					<label for="param8"></label>
+				</div>
+				<div class="blueCheck check">
+					<input type="checkbox" value="None" id="param9" name="check"/>
+					<label for="param9"></label>
+				</div>
+				<label>S.B.P.</label></td>
+			<td><input type="number" readonly value="110"></td>
+			<td><input type="number" readonly value="180"></td>
+			<td><input type="number" readonly value="120"></td>
+			<td><input type="number" readonly value="130"></td>
+			<td>2014-03-24 12:48</td>
+			<td>
+				<button class="btn btn-xs btn-primary btnedit" onclick="editValues(this)">Edit</button>
+				<button class="btn btn-xs btn-danger btncancel" onclick="saveValues(this)">Cancel</button>
+				<button class="btn btn-xs btn-success btnsave" onclick="saveValues(this)">Save</button>
+			</td>
+		</tr>
+		</tbody>
+	</table>
+</div>
 
 </div>
 <script src="data.js"></script>

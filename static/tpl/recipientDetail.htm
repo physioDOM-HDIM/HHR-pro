@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="utf-8"/>
-	<title>Detail of the beneficiary</title>
+	<title>Beneficiary overview</title>
 
 	<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
 	<meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -21,10 +21,6 @@
 
 	<script type="text/javascript" src="/assets/js/jquery-2.1.0.min.js"></script>
 	<script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
-
-	<!-- Accordion -->
-	<script src="/bower_components/platform/platform.js"></script>
-	<link rel="import" href="/bower_components/polymer-ui-accordion/polymer-ui-accordion.html">
 
 	<link rel="stylesheet" href="/styles/table.css" charset="UTF-8">
 	<link rel="stylesheet" href="/styles/fixedTable.css" charset="UTF-8">
@@ -49,6 +45,12 @@
 			right: 10px;
 		}
 
+		div.biomaster {
+			position:absolute;
+			bottom:10px;
+			right:10px;
+		}
+
 		#beneficiary > .content {
 			display: -webkit-box;
 			display: -moz-box;
@@ -56,14 +58,6 @@
 			display: -webkit-flex;
 			display: flex;
 			height: 100%;
-			width: 100%;
-		}
-
-		#beneficiary > .content > polymer-ui-accordion {
-			flex: 1;
-			-ms-flex: 1;
-			-webkit-box-flex: 1;
-			margin-bottom: 0;
 			width: 100%;
 		}
 
@@ -134,9 +128,16 @@
 		<div class="panel-body" style="position:relative">
 			<div><label>Calédonie Claire</label></div>
 			<div>Birth date : <label>1950-06-18</label></div>
+			<div>Size : <label>1m62</label></div>
 			<div>Social id : <label></label></div>
 			<div>Referent : <label>Dr. Julius</label></div>
-			<div class="tph">06 10 20 30 40</div>
+			<div class="tph">
+				<div>phone : 04 99 03 02 01</div>
+				<div>mobile : 06 10 20 30 40</div>
+			</div>
+			<div class="biomaster">
+				<div>biomaster : xxxxxxx</div>
+			</div>
 		</div>
 	</div>
 
