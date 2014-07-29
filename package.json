@@ -19,7 +19,7 @@
 		"restify":"2.6.3",
 		"moment":"2.5.1",
 		"commander":"2.1.0",
-		"q":"0.9.7"
+		"rsvp":"3.0.9"
 	},
 	"devDependencies": {
 		"mocha": "1.13.0",
