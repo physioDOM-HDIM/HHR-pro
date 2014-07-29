@@ -59,6 +59,7 @@
 			var form = document.getElementById("loginForm");
 			var xhr = new XMLHttpRequest();
 			xhr.open("POST","/api/login",false);
+			xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 			xhr.send("login="+form["login"].value+"&passwd="+form["passwd"].value);
 			if( xhr.status === 302 ) {
 				window.location = xhr.responseText.replace(/"/g,'');
