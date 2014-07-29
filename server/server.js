@@ -1,12 +1,12 @@
 "use strict";
 
 var restify = require("restify");
-var fs = require('fs');
+var fs      = require('fs');
 var program = require("commander");
-var Q = require("q");
-var path = require("path");
-var zlib = require("zlib");
-var pkg = require('../package.json');
+var RSVP    = require("rsvp");
+var path    = require("path");
+var zlib    = require("zlib");
+var pkg     = require('../package.json');
 
 var DOCUMENT_ROOT = __dirname+"/../static";
 
@@ -68,7 +68,7 @@ server.use( function(req, res, next) {
 server.use(restify.gzipResponse());
 server.use(restify.fullResponse());
 server.use(restify.queryParser());
-server.use(restify.bodyParser({ mapParams: true }));
+server.use(restify.bodyParser());
 server.pre(restify.pre.userAgentConnection());
 
 server.opts(/\.*/,function (req, res, next) {
@@ -87,11 +87,24 @@ server.on("after",function(req,res) {
 	responseLog(req,res);
 });
 
+server.post('/api/login', login);
 server.get(/\/?.*/, serveStatic );
 
 server.listen(program.port, function() {
 	console.log('%s listening at %s', server.name, server.url);
 });
+
+function login(req,res,next) {
+	console.log("login",req.params, req.body);
+	var params = require("querystring").parse(req.body);
+	console.log("params",params);
+	if( params.login === "login" && params.passwd === "passwd") {
+		res.send(302,'/ui.htm');
+	} else {
+		res.send();
+	}
+	next();
+}
 
 function serveStatic(req,res,next) {
 	var uri      = require('url').parse(req.url).pathname;
