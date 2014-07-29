@@ -1,3 +1,5 @@
+/* jslint node:true */
+
 "use strict";
 
 var restify = require("restify");
@@ -108,7 +110,7 @@ function login(req,res,next) {
 
 function serveStatic(req,res,next) {
 	var uri      = require('url').parse(req.url).pathname;
-	var filepath = decodeURIComponent((uri=="/")?path.join(DOCUMENT_ROOT, '/login2.htm'):path.join(DOCUMENT_ROOT, uri));
+	var filepath = decodeURIComponent((uri=="/")?path.join(DOCUMENT_ROOT, '/index.htm'):path.join(DOCUMENT_ROOT, uri));
 	if(!filepath) return next();
 
 	fs.exists(filepath, function(exists){
