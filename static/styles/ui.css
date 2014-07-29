@@ -153,7 +153,7 @@ footer + section {
 /* ul tree list */
 ul.tree {
 	list-style-type: none;
-	padding: 0px 10px;
+	padding: 0px 0px 10px 10px;
 }
 
 ul.tree > ul {
@@ -167,6 +167,11 @@ ul.tree li.menuitem:hover {
 	color: white;
 }
 
+ul.tree li.menuitem.selected:hover {
+	background: white;
+	color: black;
+}
+
 ul.tree li {
 	line-height:30px;
 	font-weight:bold;
@@ -176,6 +181,9 @@ ul.tree li {
 ul.tree li a {
 	text-decoration: none;
 	color: white;
+}
+ul.tree li.selected a {
+	color:black;
 }
 
 ul.tree li.select {
