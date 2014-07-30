@@ -129,46 +129,29 @@
 	// if(window.navigator.standalone) {
 	var menuEntries = document.querySelectorAll("nav ul.tree li");
 	[].slice.call(menuEntries).forEach( function(entry) {
-		if( entry.querySelector(":scope > a") ) {
-			entry.addEventListener("click", function(event) {
-				event.preventDefault();
-				
-				var aurl = event.currentTarget.querySelector("a").getAttribute("href");
-				if (aurl) {
-					var selected = document.querySelector("nav ul.tree li.selected");
-					if(selected) selected.classList.remove("selected");
-					event.currentTarget.classList.add("selected");
-					show(aurl);
-				}
-			},false);
+		switch( entry.className ) {
+			case "menuitem" :
+				entry.addEventListener("click", function(event) {
+					event.preventDefault();
+
+					var aurl = event.currentTarget.querySelector("a").getAttribute("href");
+					if (aurl) {
+						var selected = document.querySelector("nav ul.tree li.selected");
+						if(selected) selected.classList.remove("selected");
+						event.currentTarget.classList.add("selected");
+						show(aurl);
+					}
+				},false);
+				break;
+			default:
+				entry.addEventListener("click", function(e) {
+					var parent = e.target.parentNode;
+					parent.classList.toggle("collapsed");
+				}, false);
+				break;
 		}
 	});
 	
-	/*
-		$(document).on(
-			"click",
-			"li",
-			function (event) {
-
-				event.preventDefault();
-				
-				if(event.target.tagName === "DIV") return;
-				var aurl = event.currentTarget.querySelector("a").getAttribute("href");
-				if (aurl) {
-					var selected = document.querySelector("nav ul.tree li.selected");
-					if(selected) selected.classList.remove("selected");
-					event.currentTarget.classList.add("selected");
-					show(aurl);
-				}
-			}
-		);
-	// }
-	*/
-	
-	$("li > div").on("click", function(e) {
-		var parent = e.target.parentNode;
-		parent.classList.toggle("collapsed");
-	});
 </script>
 </body>
 </html>
