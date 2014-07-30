@@ -13,10 +13,9 @@ body {
 
 .main {
 	display: -webkit-box;
-	display: -moz-box;
 	display: -ms-flexbox;
 	display: -webkit-flex;
-	/* display: flex; */
+	display: flex;
 	/* height: 100%; */
 	width: 100%;
 	background: white;
