@@ -35,7 +35,7 @@
 	<img src="img/physiodom_logo.png" id="logo" style="height:150px;">
 </div>
 <div class="container" style="width:300px; background:#d6d6d6; margin-top:50px">
-	<form id="loginForm">
+	<form id="loginForm" method="POST" >
 	<div class="r0">&nbsp;</div>
 	<div class="r0">
 		<input class="col-xs-12 col-sm-12" type="text" name="login" id="login" placeholder="login">
@@ -52,20 +52,5 @@
 	<div class="r0">&nbsp;</div>
 	</form>
 </div>
-	<script>
-	document.getElementById("loginForm").addEventListener("submit", function(evt) {
-			evt.preventDefault();
-			
-			var form = document.getElementById("loginForm");
-			var xhr = new XMLHttpRequest();
-			xhr.open("POST","/api/login",false);
-			xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-			xhr.send("login="+form["login"].value+"&passwd="+form["passwd"].value);
-			if( xhr.status === 302 ) {
-				window.location = xhr.responseText.replace(/"/g,'');
-			};
-			return false;
-		});
-	</script>
 </body>
 </html>
