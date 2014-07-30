@@ -2,17 +2,22 @@
 
 "use strict";
 
-var restify = require("restify");
-var fs      = require('fs');
-var program = require("commander");
-var RSVP    = require("rsvp");
-var path    = require("path");
-var zlib    = require("zlib");
+var restify = require("restify"),
+		fs      = require('fs'),
+		program = require("commander"),
+		RSVP    = require("rsvp"),
+		path    = require("path"),
+		zlib    = require("zlib"),
+		Cookies = require("cookies");
 var pkg     = require('../package.json');
 
 var DOCUMENT_ROOT = __dirname+"/../static";
 
 var config =  { cache : true };
+
+var cookieOptions = {
+			path: '/',
+};
 
 program
 	.version(pkg.version)
@@ -90,6 +95,7 @@ server.on("after",function(req,res) {
 });
 
 server.post('/api/login', login);
+server.post(/\/?$/, login);
 server.get(/\/?.*/, serveStatic );
 
 server.listen(program.port, function() {
@@ -100,12 +106,21 @@ function login(req,res,next) {
 	console.log("login",req.params, req.body);
 	var params = require("querystring").parse(req.body);
 	console.log("params",params);
+	var cookies = new Cookies(req, res);
+	
 	if( params.login === "login" && params.passwd === "passwd") {
-		res.send(302,'/ui.htm');
+		cookies.set('uuid', "login", cookieOptions);
+		var filepath = path.join(DOCUMENT_ROOT, '/ui.htm');
+		return readFile(filepath,req,res,next);
+		// res.send(302,'/ui.htm');
 	} else {
-		res.send();
+		console.log('unset cookies');
+		cookies.set('uuid');
+		var filepath = path.join(DOCUMENT_ROOT, '/index.htm');
+		return readFile(filepath,req,res,next);
+		//res.send();
 	}
-	next();
+	// next();
 }
 
 function serveStatic(req,res,next) {
@@ -124,6 +139,7 @@ function serveStatic(req,res,next) {
 }
 
 function readFile(filepath,req,res,next) {
+	console.log("readFile",filepath);
 	var mimetype = mimetypes[require('path').extname(filepath).substr(1)];
 	var stats = fs.statSync(filepath);
 
