@@ -1,0 +1,8 @@
+{
+	"serverName":"physiodom.telecomsante.loc",
+	"rootDir":"/Users/fablec/Sites/PhysioDOM/static",
+	"sslDir":"/Users/fablec/Sites/PhysioDOM/keys",
+	"logDir":"/Users/fablec/Sites/TelecomSante/WebApps/webrtc/private/log",
+	"appPort":8001;
+	"nginxDestDir": "/usr/local/etc/nginx/sites-available"
+}

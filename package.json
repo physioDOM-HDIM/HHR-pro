@@ -1,29 +1,34 @@
 {
-	"name":"PhysioDOM-server",
-	"preferGlobal":false,
-	"version":"0.0.1",
-	"author":"Telecom Sante <tech@telecomsante.com>",
-	"contributors": [
-		{ "name":"Fabrice Le Coz", "email":"fabrice.lecoz@telecomsante.com"}
-	],
-	"description": "A web portal for professionnal",
-	"scripts": {
-		"start":"supervisor -w package.json,server/ -- server/server.js -p 8001 2>&1 > log/app.log"
-	},
-	"main":"./server/server.js",
-	"repository": {
-		"type": "git",
-		"url": "http://git.telecomsante.com/physiodom-hdim/physiodom"
-	},
-	"dependencies": {
-		"restify":"2.6.3",
-		"moment":"2.5.1",
-		"commander":"2.1.0",
-		"rsvp":"3.0.9"
-	},
-	"devDependencies": {
-		"mocha": "1.13.0",
-		"should": "2.0.1",
-		"request": "2.27.0"
-	}
+  "name": "PhysioDOM-server",
+  "preferGlobal": false,
+  "version": "0.0.1",
+  "author": "Telecom Sante <tech@telecomsante.com>",
+  "contributors": [
+    {
+      "name": "Fabrice Le Coz",
+      "email": "fabrice.lecoz@telecomsante.com"
+    }
+  ],
+  "description": "A web portal for professionnal",
+  "scripts": {
+    "install": "cd static; bower install; cd ..; sudo node install/install.js",
+    "start": "supervisor -w package.json,server/ -- server/server.js -p 8001 2>&1 > log/app.log"
+  },
+  "main": "./server/server.js",
+  "repository": {
+    "type": "git",
+    "url": "http://git.telecomsante.com/physiodom-hdim/physiodom"
+  },
+  "dependencies": {
+    "restify": "2.6.3",
+    "moment": "2.5.1",
+    "commander": "2.1.0",
+    "rsvp": "3.0.9",
+    "mongodb": "~1.4.7"
+  },
+  "devDependencies": {
+    "mocha": "1.13.0",
+    "should": "2.0.1",
+    "request": "2.27.0"
+  }
 }
