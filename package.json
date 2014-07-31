@@ -11,6 +11,7 @@
   ],
   "description": "A web portal for professionnal",
   "scripts": {
+    "install": "cd static; bower install; cd ..; sudo node install/install.js",
     "start": "supervisor -w package.json,server/ -- server/server.js -p 8001 2>&1 > log/app.log"
   },
   "main": "./server/server.js",
