@@ -30,11 +30,22 @@
 		font-weight: normal;
 		font-size: medium;
 	}
+	div.error {
+		border: 2px solid red;
+		padding: 10px;
+		width: 300px;
+		border-radius: 10px;
+		margin: auto;
+		margin-top: 25px;
+		display:none;
+		color: DarkRed;
+	}
 </style>
 <div style="text-align: center; margin-top:50px">
 	<img src="img/physiodom_logo.png" id="logo" style="height:150px;">
 </div>
-<div class="container" style="width:300px; background:#d6d6d6; margin-top:50px">
+<div class="error">Bad login or password</div>
+<div class="container" style="width:300px; background:#d6d6d6; margin-top:25px">
 	<form id="loginForm" method="POST" >
 	<div class="r0">&nbsp;</div>
 	<div class="r0">
@@ -52,5 +63,14 @@
 	<div class="r0">&nbsp;</div>
 	</form>
 </div>
+<script>
+window.addEventListener("DOMContentLoaded",init,false);
+function init() {
+	var hash = window.location.hash;
+	if(hash === "#403") {
+		document.querySelector(".error").style.display = "block";
+	}
+}
+</script>
 </body>
 </html>
