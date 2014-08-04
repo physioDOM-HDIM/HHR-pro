@@ -8,7 +8,10 @@ var restify = require("restify"),
 		RSVP    = require("rsvp"),
 		path    = require("path"),
 		zlib    = require("zlib"),
-		Cookies = require("cookies");
+		Cookies = require("cookies"),
+		MongoClient = require("mongodb").MongoClient,
+		ObjectID = require("mongodb").ObjectID;
+
 var pkg     = require('../package.json');
 
 var DOCUMENT_ROOT = __dirname+"/../static";
@@ -16,7 +19,8 @@ var DOCUMENT_ROOT = __dirname+"/../static";
 var config =  { cache : true };
 
 var cookieOptions = {
-			path: '/',
+	path: '/',
+	httpOnly : true
 };
 
 program
@@ -94,8 +98,17 @@ server.on("after",function(req,res) {
 	responseLog(req,res);
 });
 
-server.post('/api/login', login);
 server.post(/\/?$/, login);
+server.get(/\/?logout$/, logout);
+server.get(/\/?$/, function(req, res, next) {
+	console.log("index");
+	if( req.cookies.sessionID ) {
+		return readFile(path.join(DOCUMENT_ROOT, '/ui.htm'), req, res, next);
+	} else {
+		return readFile(path.join(DOCUMENT_ROOT, '/index.htm'), req, res, next);
+	}
+});
+
 server.get(/\/?.*/, serveStatic );
 
 server.listen(program.port, "127.0.0.1", function() {
@@ -103,24 +116,32 @@ server.listen(program.port, "127.0.0.1", function() {
 });
 
 function login(req,res,next) {
-	console.log("login",req.params, req.body);
-	var params = require("querystring").parse(req.body);
-	console.log("params",params);
+	console.log("login",req.params);
 	var cookies = new Cookies(req, res);
-	
-	if( params.login === "login" && params.passwd === "passwd") {
-		cookies.set('uuid', "login", cookieOptions);
+
+	if( req.params.login === "login" && req.params.passwd === "passwd") {
+		cookies.set('sessionID', new ObjectID(), cookieOptions);
 		var filepath = path.join(DOCUMENT_ROOT, '/ui.htm');
 		return readFile(filepath,req,res,next);
-		// res.send(302,'/ui.htm');
 	} else {
 		console.log('unset cookies');
-		cookies.set('uuid');
-		var filepath = path.join(DOCUMENT_ROOT, '/index.htm');
-		return readFile(filepath,req,res,next);
-		//res.send();
+		cookies.set('sessionID');
+		res.header('Location', '/#403');
+		res.send(302);
+		return next();
 	}
-	// next();
+}
+
+function logout(req, res, next ) {
+	console.log("login",req.params);
+	var cookies = new Cookies(req, res);
+
+	console.log('unset cookies');
+	cookies.set('sessionID');
+	res.header('Location', '/');
+	res.send(302);
+	return next();
+}
 }
 
 function serveStatic(req,res,next) {
