@@ -24,7 +24,8 @@
     "moment": "2.5.1",
     "commander": "2.1.0",
     "rsvp": "3.0.9",
-    "mongodb": "~1.4.7"
+    "mongodb": "~1.4.7",
+    "cookies": "~0.5.0"
   },
   "devDependencies": {
     "mocha": "1.13.0",

@@ -2,17 +2,26 @@
 
 "use strict";
 
-var restify = require("restify");
-var fs      = require('fs');
-var program = require("commander");
-var RSVP    = require("rsvp");
-var path    = require("path");
-var zlib    = require("zlib");
+var restify = require("restify"),
+		fs      = require('fs'),
+		program = require("commander"),
+		RSVP    = require("rsvp"),
+		path    = require("path"),
+		zlib    = require("zlib"),
+		Cookies = require("cookies"),
+		MongoClient = require("mongodb").MongoClient,
+		ObjectID = require("mongodb").ObjectID;
+
 var pkg     = require('../package.json');
 
 var DOCUMENT_ROOT = __dirname+"/../static";
 
 var config =  { cache : true };
+
+var cookieOptions = {
+	path: '/',
+	httpOnly : true
+};
 
 program
 	.version(pkg.version)
@@ -89,7 +98,17 @@ server.on("after",function(req,res) {
 	responseLog(req,res);
 });
 
-server.post('/api/login', login);
+server.post(/\/?$/, login);
+server.get(/\/?logout$/, logout);
+server.get(/\/?$/, function(req, res, next) {
+	console.log("index");
+	if( req.cookies.sessionID ) {
+		return readFile(path.join(DOCUMENT_ROOT, '/ui.htm'), req, res, next);
+	} else {
+		return readFile(path.join(DOCUMENT_ROOT, '/index.htm'), req, res, next);
+	}
+});
+
 server.get(/\/?.*/, serveStatic );
 
 server.listen(program.port, "127.0.0.1", function() {
@@ -97,15 +116,32 @@ server.listen(program.port, "127.0.0.1", function() {
 });
 
 function login(req,res,next) {
-	console.log("login",req.params, req.body);
-	var params = require("querystring").parse(req.body);
-	console.log("params",params);
-	if( params.login === "login" && params.passwd === "passwd") {
-		res.send(302,'/ui.htm');
+	console.log("login",req.params);
+	var cookies = new Cookies(req, res);
+
+	if( req.params.login === "login" && req.params.passwd === "passwd") {
+		cookies.set('sessionID', new ObjectID(), cookieOptions);
+		var filepath = path.join(DOCUMENT_ROOT, '/ui.htm');
+		return readFile(filepath,req,res,next);
 	} else {
-		res.send();
+		console.log('unset cookies');
+		cookies.set('sessionID');
+		res.header('Location', '/#403');
+		res.send(302);
+		return next();
 	}
-	next();
+}
+
+function logout(req, res, next ) {
+	console.log("login",req.params);
+	var cookies = new Cookies(req, res);
+
+	console.log('unset cookies');
+	cookies.set('sessionID');
+	res.header('Location', '/');
+	res.send(302);
+	return next();
+}
 }
 
 function serveStatic(req,res,next) {
@@ -124,6 +160,7 @@ function serveStatic(req,res,next) {
 }
 
 function readFile(filepath,req,res,next) {
+	console.log("readFile",filepath);
 	var mimetype = mimetypes[require('path').extname(filepath).substr(1)];
 	var stats = fs.statSync(filepath);
 
