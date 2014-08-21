@@ -15,6 +15,12 @@ For the server part, we will use nodejs as web server and probably mongoDB as da
 
 > __Nota :__ bootstrap is useful to create a mockup, but requires creating a code relatively difficult to maintain. We will prefer to use custom components even if the support needs to use a polyfill library.
 
+# Server
+
+The server will use nginx to cache request and to proxyfy the REST service.
+
+  http://serverfault.com/questions/30705/how-to-set-up-nginx-as-a-caching-reverse-proxy
+  
 # Client part
 
 bootstrap is commonly use , by the web community, to create cross browser web site, and responsive design UI. With 
@@ -47,3 +53,58 @@ table with fixed header : [Working with datatables](http://mkoryak.github.io/flo
 For tablets, it will be preferable to avoid tables and use custom list. Tables could be used only if the information to display are short.
 
 List and scrolling : if a list is scrollable, it must be the last element of the page, since it's difficult to scroll to element below the list. So it will be preferable to use a pager to display other pages of the list.
+
+# Data definition
+
+## HL7 schema
+
+ - [Questionnaire Definition HL7](http://www.hl7.org/implement/standards/fhir/questionnaire.html#def)
+ - [Practitionner](http://www.hl7.org/implement/standards/fhir/practitioner.html#def)
+ - [Patient](http://www.hl7.org/implement/standards/fhir/patient.html#def)
+ - [Observation](http://www.hl7.org/implement/standards/fhir/observation.html)
+ - [Care Plan](http://www.hl7.org/implement/standards/fhir/careplan.html#def)
+
+## profession ( patient )
+
+ - Agriculteur
+ - Artisans, commercant, chef d'entreprise
+ - Profession libérale, Cadre
+ - Employé
+ - Ouvrier
+ - Retraité 
+     - Agriculteur
+     - Artisans, commercant, chef d'entreprise
+     - Profession libérale, Cadre
+     - Employé, Ouvrier
+
+## Activity status
+
+not started
+scheduled
+in progress
+on hold
+completed
+cancelled
+
+## profession ( practitioner )
+
+  - Physician, dentist, pharmacist
+  - Physician assistant, nurse, scribe
+  - midwive, dietitian, therapist, optometrist, paramedic
+  - medical technicians, laboratory scientists, prosthetic technician, radiographer
+  - social worker, professional home carer, official volunteer
+  - IT personel
+
+## data validation
+
+when posted, data will be validate against a schema, and then saved into the database.
+
+For that operation, we will use the npm library 'jsonschema'
+
+reference : 
+  - [jsonschema](https://github.com/tdegrunt/jsonschema)
+  - [JSON Schame Test Suite](https://github.com/json-schema/JSON-Schema-Test-Suite)
+  - [JSON schame documentation](http://json-schema.org/documentation.html)
+  - [Benchmark of node.js JSON Validation Modules](http://cosmicrealms.com/blog/2012/01/13/benchmark-of-node-dot-js-json-validation-modules/)
+  
+ 
