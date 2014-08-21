@@ -28,3 +28,7 @@ The language setting of the user is defined by the site and could be overwritten
 [1]: http://ejohn.org/blog/a-strategy-for-i18n-and-node/ "Strategy for i18n and Node.js"
 [2]: https://github.com/jeresig/i18n-node-2 "i18n-node-2"
 [3]: https://github.com/jamuhl/i18next-node "i18next-node"
+
+The language preference will be saved as a cookie in the user browser : locale. For PhysioDOM application accepted values
+will be "en-gb","es","nl" and "fr" 
+
