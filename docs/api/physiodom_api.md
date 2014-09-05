@@ -35,7 +35,6 @@ Directory section
 |                                   | URL
 |-----------------------------------|--------------------------------------------------------------------------
 | Get Professionnal Directory       | /api/directory/professionals
-| Get Extend Directory              | /api/directory/extends
 | Get beneficiaries Directory       | /api/directory/beneficiaries
 
 Administration
