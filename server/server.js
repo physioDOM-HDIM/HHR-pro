@@ -10,7 +10,8 @@ var restify = require("restify"),
 		zlib    = require("zlib"),
 		Cookies = require("cookies"),
 		MongoClient = require("mongodb").MongoClient,
-		ObjectID = require("mongodb").ObjectID;
+		ObjectID = require("mongodb").ObjectID,
+		PhysioDOM = require("./lib/physiodom");
 
 var pkg     = require('../package.json');
 
@@ -55,6 +56,9 @@ function responseLog(req, res) {
 	return;
 }
 
+var physioDOM = new PhysioDOM();
+physioDOM.connect("mongodb://127.0.0.1/physioDOM");
+
 var server = restify.createServer({
 	name:    pkg.name,
 	version: pkg.version
@@ -81,6 +85,19 @@ server.use(restify.fullResponse());
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
 server.pre(restify.pre.userAgentConnection());
+server.use(function checkAcl(req, res, next) {
+	console.log("checkAcl",req.url);
+	/*
+	CheckACL and return not authorized if not
+	if( req.cookies.uuid !== "login") {
+		res.send(new restify.NotAuthorizedError());
+		next(false);
+	} else {
+		return next();
+	}
+	*/
+	return next();
+});
 
 server.opts(/\.*/,function (req, res, next) {
 	var allowHeaders = ['Accept', 'Accept-Version', 'Content-Type', 'Api-Version','X-Api-Version', 'X-Request-Id',' X-Response-Time','X-Custom-Header'];
@@ -98,9 +115,19 @@ server.on("after",function(req,res) {
 	responseLog(req,res);
 });
 
+server.post(/\/api\/token/, function( req, res, next) {
+	console.log( "getToken", req.headers.username, req.headers.password);
+	
+	res.send(200);
+	return next();
+});
+
 server.post(/\/?$/, login);
 server.get(/\/?logout$/, logout);
-server.get(/\/?$/, function(req, res, next) {
+server.get(/\/api\/beneficiaries/, getBeneficiaries);
+server.get(/\/api\/directory\/professionals/, getDirectory);
+
+server.get(/\/[^api\/]?$/, function(req, res, next) {
 	console.log("index");
 	if( req.cookies.sessionID ) {
 		return readFile(path.join(DOCUMENT_ROOT, '/ui.htm'), req, res, next);
@@ -109,7 +136,7 @@ server.get(/\/?$/, function(req, res, next) {
 	}
 });
 
-server.get(/\/?.*/, serveStatic );
+server.get(/\/[^api\/]?.*/, serveStatic );
 
 server.listen(program.port, "127.0.0.1", function() {
 	console.log('%s listening at %s', server.name, server.url);
@@ -142,9 +169,34 @@ function logout(req, res, next ) {
 	res.send(302);
 	return next();
 }
+
+function getBeneficiaries(req, res, next) {
+	console.log("getBeneficiaries");
+	var pg = parseInt(req.params.pg,10) || 1;
+	var offset = parseInt(req.params.offset,10) || 10;
+	
+	physioDOM.getBeneficiaries(pg, offset)
+		.then(function(list) {
+			res.send(list);
+			next();
+		});
+}
+
+function getDirectory( req, res, next ) {
+	console.log("getDirectory");
+	var pg = parseInt(req.params.pg,10) || 1;
+	var offset = parseInt(req.params.offset,10) || 10;
+	var sort = req.params.sort;
+	
+	physioDOM.getDirectory(pg, offset, sort)
+		.then(function(list) {
+			res.send(list);
+			next();
+		});
 }
 
 function serveStatic(req,res,next) {
+	console.log("serveStatic");
 	var uri      = require('url').parse(req.url).pathname;
 	var filepath = decodeURIComponent((uri=="/")?path.join(DOCUMENT_ROOT, '/index.htm'):path.join(DOCUMENT_ROOT, uri));
 	if(!filepath) return next();
@@ -231,5 +283,6 @@ var mimetypes = {
 	'xul':'application/vnd.mozilla.xul+xml',
 	'manifest':'text/cache-manifest',
 	'ttf':'font/ttf',
-	'woff':'application/font-woff'
+	'woff':'application/font-woff',
+	'json':'application/json'
 };
