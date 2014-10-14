@@ -26,7 +26,12 @@
 	<script src="/scripts/common.js"></script>
 
 	<script src="recipients.js"></script>
-
+	<script>
+		if(window.location === window.parent.location ) {
+			console.info("not in iframe");
+			window.location = "/?url="+window.location;
+		}
+	</script>
 </head>
 <body>
 <style>
