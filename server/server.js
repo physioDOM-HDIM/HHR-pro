@@ -77,10 +77,12 @@ server.pre(function(req, res, next) {
 
 server.use( function(req, res, next) {
 	req.cookies = {};
-	req.headers.cookie && req.headers.cookie.split(';').forEach( function( cookie ) {
-		var parts = cookie.split('=');
-		req.cookies[ parts[0].trim() ] = ( parts[1].trim() || '' );
-	});
+	if( req.headers.cookie ) {
+		req.headers.cookie.split(';').forEach(function (cookie) {
+			var parts = cookie.split('=');
+			req.cookies[parts[0].trim()] = parts[1].trim() || '';
+		});
+	}
 	requestLog(req, res);
 	return next();
 });
@@ -172,7 +174,8 @@ server.get(/\/[^api\/]?$/, function(req, res, next) {
 server.get(/\/[^api\/]?.*/, serveStatic );
 
 server.listen(program.port, "127.0.0.1", function() {
-	console.log('%s listening at %s', server.name, server.url);
+	logger.info('------------------------------------------------------------------');
+	logger.info(server.name + ' listening at '+ server.url);
 });
 
 function apiLogin(req, res, next) {
@@ -254,14 +257,13 @@ function login(req,res,next) {
 }
 
 function logout(req, res, next ) {
-	console.log("logout");
 	var cookies = new Cookies(req, res);
 
 	physioDOM.deleteSession( cookies.get("sessionID") )
 		.catch( function(err) { 
 			console.log("Error ",err);
 		}).finally( function() {
-			console.log('unset cookies');
+			logger.info('unset cookies');
 			cookies.set('sessionID');
 			if(req.url.match(/^\/api/)) {
 				res.send(200);
