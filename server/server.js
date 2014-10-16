@@ -13,7 +13,7 @@ var restify = require("restify"),
 		Logger = require("logger"),
 		MongoClient = require("mongodb").MongoClient,
 		ObjectID = require("mongodb").ObjectID,
-		PhysioDOM = require("./lib/physiodom");
+		PhysioDOM = require("./lib/class/physiodom");
 
 var pkg     = require('../package.json');
 var logger = new Logger( "PhysioDOM ");
@@ -58,8 +58,9 @@ function responseLog(req, res) {
 	return;
 }
 
-var physioDOM = new PhysioDOM();
+var physioDOM = new PhysioDOM();   // PhysioDOM object is global and so shared to all modules
 physioDOM.connect("mongodb://127.0.0.1/physioDOM");
+global.physioDOM = physioDOM;
 
 var server = restify.createServer({
 	name:    pkg.name,
