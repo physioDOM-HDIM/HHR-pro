@@ -32,5 +32,23 @@
     "chai": "^1.9.2",
     "mocha": "1.13.0",
     "request": "^2.45.0"
+  },
+  "jshintConfig": {
+    "nonew":true, 
+    "validthis":true, 
+    "curly":true, 
+    "latedef":true, 
+    "unused":"vars", 
+    "noarg":true, 
+    "forin":true, 
+    "noempty":true, 
+    "node":true, 
+    "eqeqeq":true, 
+    "strict":true, 
+    "undef":true, 
+    "bitwise":true, 
+    "newcap":true, 
+    "browser":true, 
+    "camelcase":true
   }
 }
