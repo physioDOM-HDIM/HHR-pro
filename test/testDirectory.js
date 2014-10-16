@@ -68,13 +68,53 @@ suite('Directory', function() {
 				list.should.have.property("offset");
 				list.should.have.property("items");
 				list.items.should.be.an("array");
+
+				list.nb.should.be.equal(24);
+				list.items.should.have.length(10);
 			} catch(err) {
 				console.log(err);
 			}
 			return done();
 		});
-	})
-	
+	});
+
+	test('create a new entry directory', function(done) {
+		var newEntry = {
+			name: {
+				family:"Einstein",
+				given:"Albert"
+			},
+			gender:"male",
+			telecom: [ 
+				{
+					system:"email",
+					value:"albert.einstein@physiodom.loc"
+				},{
+					system:"phone",
+					value:"025558888"
+				}
+			],
+			role:"physician"
+		};
+		request({url           : domain + '/api/directory',
+				method             : "POST",
+				jar                : sessionCookie,
+				form	           : JSON.stringify(newEntry)
+			}, function (err, resp, body) {
+					var list;
+					should.not.exist(err);
+					resp.statusCode.should.equal(200);
+					body.should.be.a("string");
+					try {
+						list = JSON.parse(body);
+						
+					} catch(err) {
+						console.log(err);
+					}
+				return done();
+			});
+	});
+			
 	test('logout', function(done) {
 		request({url           : domain + '/api/logout',
 			method             : "GET",
