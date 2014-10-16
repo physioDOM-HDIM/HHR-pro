@@ -1,8 +1,11 @@
 /* jslint node:true */
 
-var dbPromise = require("../lib/database.js"),
+var dbPromise = require("./database"),
 	Promise = require("rsvp").Promise,
-	ObjectID = require("mongodb").ObjectID;
+	ObjectID = require("mongodb").ObjectID,
+	Logger = require("logger");
+
+var logger = new Logger("PhysioDOM");
 
 var Account = require("./account"),
 	Session = require("./session");
@@ -35,15 +38,39 @@ function PhysioDOM( ) {
 	this.createBeneficiary = function( obj ) {
 		
 	};
+
+	/**
+	 * return a promise with the Beneficiaries Object
+	 * 
+	 * @returns {Promise}
+	 * @constructor
+	 */
+	this.Beneficiaries = function() {
+		logger.trace("Beneficiaries");
+		var that = this;
+		return new Promise( function(resolve, reject) {
+			var Beneficiaries = require("./beneficiary");
+			resolve( new Beneficiaries(that) );
+		});
+	};
+
+	/**
+	 * return a promise with the Directory Object
+	 * 
+	 * @returns {Promise}
+	 * @constructor
+	 */
+	this.Directory = function() {
+		logger.trace("Directory");
+		var that = this;
+		return new Promise( function(resolve, reject) {
+			var Directory = require("./directory");
+			resolve( new Directory(that) );
+		});
+	};
 	
-	this.getDirectory = function( pg, offset, sort, filter) {
-		var cursor = this.db.collection("practitioner").find();
-		if(sort) {
-			var cursorSort = {};
-			cursorSort[sort] = 1;
-			cursor = cursor.sort( cursorSort );
-		}
-		return dbPromise.getList(cursor, pg, offset);
+	this.Session = function() {
+		
 	};
 	
 	this.getAccountByCredentials = function(login, passwd) {
