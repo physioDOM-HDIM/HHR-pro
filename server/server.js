@@ -15,6 +15,8 @@ var restify = require("restify"),
 		ObjectID = require("mongodb").ObjectID,
 		PhysioDOM = require("./lib/class/physiodom");
 
+var IDirectory = require('./lib/http/IDirectory');
+
 var pkg     = require('../package.json');
 var logger = new Logger( "PhysioDOM ");
 var DOCUMENT_ROOT = __dirname+"/../static";
@@ -146,13 +148,17 @@ server.on("after",function(req,res) {
 	responseLog(req,res);
 });
 
-server.post(/\/api\/login/, apiLogin);
-server.post(/\/api\/logout/, logout);
-server.post(/\/?$/, login);
-server.get(/\/?logout$/, logout);
-server.get(/\/api\/beneficiaries/, getBeneficiaries);
-server.get(/\/api\/directory/, getDirectory);
-server.get(/\api\/sessions/, getSessions);
+server.post('/api/login', apiLogin);
+server.post('/api/logout', logout);
+server.get('/logout', logout);
+server.get('/api/beneficiaries', getBeneficiaries);
+
+server.get( '/api/directory', IDirectory.getEntries);
+server.post('/api/directory', IDirectory.createEntry);
+server.get( '/api/directory/:entryID', IDirectory.getEntry );
+
+server.get('/api/sessions/', getSessions);
+server.post('/', login);
 
 server.get(/\/[^api\/]?$/, function(req, res, next) {
 	logger.trace("index");
@@ -273,19 +279,6 @@ function getBeneficiaries(req, res, next) {
 	var offset = parseInt(req.params.offset,10) || 10;
 	
 	physioDOM.getBeneficiaries(pg, offset)
-		.then(function(list) {
-			res.send(list);
-			next();
-		});
-}
-
-function getDirectory( req, res, next ) {
-	console.log("getDirectory");
-	var pg = parseInt(req.params.pg,10) || 1;
-	var offset = parseInt(req.params.offset,10) || 10;
-	var sort = req.params.sort;
-	
-	physioDOM.getDirectory(pg, offset, sort)
 		.then(function(list) {
 			res.send(list);
 			next();
