@@ -93,6 +93,8 @@ server.use(function checkAcl(req, res, next) {
 	logger.trace("checkAcl",req.url);
 	var cookies = new Cookies(req, res);
 
+	return next();
+	/*
 	if( req.url.match(/^(\/|\/api\/login)$/) ) {
 		return next();
 	}
@@ -125,6 +127,7 @@ server.use(function checkAcl(req, res, next) {
 				return next(false);
 			});
 	}
+	*/
 });
 
 server.opts(/\.*/,function (req, res, next) {
