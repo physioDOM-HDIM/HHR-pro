@@ -1,3 +1,8 @@
+/**
+ * @file physiodom.js
+ * @module PhysioDOM
+ */
+
 /* jslint node:true */
 
 var dbPromise = require("./database"),
@@ -8,11 +13,25 @@ var dbPromise = require("./database"),
 var logger = new Logger("PhysioDOM");
 
 var Account = require("./account"),
-	Session = require("./session");
+	Session = require("./session"),
+	Directory = require("./directory");
 
+/**
+ * PhysioDOM
+ * 
+ * Entry point to the rest API
+ * 
+ * @constructor
+ */
 function PhysioDOM( ) {
 	this.db = null;
-	
+
+	/**
+	 * Connect to the database
+	 * 
+	 * @param uri
+	 * @returns {Promise}
+	 */
 	this.connect = function(uri) {
 		var that = this;
 		var promise = new Promise( function(resolve, reject) {
@@ -24,11 +43,21 @@ function PhysioDOM( ) {
 			});
 		return promise;
 	};
-	
+
+	/**
+	 * Close the connection to the database
+	 */
 	this.close = function() {
 		this.db.close();
 	};
-	
+
+	/**
+	 * Get the beneficiaries list per page
+	 * 
+	 * @param pg
+	 * @param offset
+	 * @returns {*}
+	 */
 	this.getBeneficiaries = function( pg, offset ) {
 		var cursor = this.db.collection("beneficiaries").find();
 	
@@ -43,7 +72,6 @@ function PhysioDOM( ) {
 	 * return a promise with the Beneficiaries Object
 	 * 
 	 * @returns {Promise}
-	 * @constructor
 	 */
 	this.Beneficiaries = function() {
 		logger.trace("Beneficiaries");
@@ -56,23 +84,30 @@ function PhysioDOM( ) {
 
 	/**
 	 * return a promise with the Directory Object
-	 * 
+	 * {@link module:Directory}
 	 * @returns {Promise}
-	 * @constructor
 	 */
 	this.Directory = function() {
-		logger.trace("Directory");
 		var that = this;
 		return new Promise( function(resolve, reject) {
-			var Directory = require("./directory");
+			logger.trace("Directory");
 			resolve( new Directory(that) );
 		});
 	};
-	
+
+	/**
+	 * return a promise with the Session Object
+	 */
 	this.Session = function() {
 		
 	};
-	
+
+	/**
+	 * 
+	 * @param login
+	 * @param passwd
+	 * @returns {Promise}
+	 */
 	this.getAccountByCredentials = function(login, passwd) {
 		var search = { login:login, '$or' : [ { passwd:passwd }, { tmpPasswd: passwd } ] };
 		var that = this;
@@ -84,7 +119,12 @@ function PhysioDOM( ) {
 			});
 		});
 	};
-	
+
+	/**
+	 * 
+	 * @param sessionID
+	 * @returns {Promise}
+	 */
 	this.getSession = function( sessionID ) {
 		var that = this;
 		return new Promise( function(resolve, reject) {
@@ -98,6 +138,11 @@ function PhysioDOM( ) {
 		});
 	};
 
+	/**
+	 * Delate a session given by its id ( cookie )
+	 * @param sessionID
+	 * @returns {Promise}
+	 */
 	this.deleteSession = function( sessionID ) {
 		var that = this;
 		return new Promise( function(resolve, reject) {
@@ -109,7 +154,16 @@ function PhysioDOM( ) {
 			});
 		});
 	};
-	
+
+	/**
+	 * List of active sessions
+	 * 
+	 * @param pg
+	 * @param offset
+	 * @param sort
+	 * @param filter
+	 * @returns {*}
+	 */
 	this.getSessions = function(pg, offset, sort, filter) {
 		console.log("getSessions");
 		
