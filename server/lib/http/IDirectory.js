@@ -8,13 +8,16 @@
  * @type {exports}
  */
 	
-var dbPromise = require("../class/database.js"),
-	Promise = require("rsvp").Promise,
-	ObjectID = require("mongodb").ObjectID,
-	Logger = require("logger");
-
+var Logger = require("logger");
 var logger = new Logger("IDirectory");
 
+/**
+ * IDirectory
+ *
+ * treat http request for the directory
+ * 
+ * @type {{getEntries: Function, createEntry: Function, getEntry: Function}}
+ */
 var IDirectory = {
 	/**
 	 * retrieve directory entry and send it as json object
@@ -30,6 +33,7 @@ var IDirectory = {
 
 		physioDOM.Directory()
 			.then( function(directory) {
+				logger.debug("getEntries");
 				return directory.getEntries(pg, offset, sort);
 			})
 			.then( function(list) {
@@ -37,7 +41,8 @@ var IDirectory = {
 				next();
 			})
 			.catch( function(err) {
-				logger.error(err);
+				res.send(err.code || 400, err);
+				next(false);
 			});
 	},
 	/**
@@ -64,7 +69,7 @@ var IDirectory = {
 				next();
 			})
 			.catch( function(err) {
-				res.send(400, err);
+				res.send(err.code || 400, err);
 				next(false);
 			});
 	},
@@ -79,12 +84,55 @@ var IDirectory = {
 				next();
 			})
 			.catch( function(err) {
-				res.send(400, err);
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	updateEntry: function(req, res, next) {
+		if(!req.body) {
+			res.send(400, { error: "empty request"});
+			return next(false);
+		}
+		// console.log( req.getContentType() );
+		try {
+			var item = JSON.parse(req.body);
+		} catch( err ) {
+			res.send(400, { error: "bad json format"});
+			next(false);
+		} finally {
+			physioDOM.Directory()
+				.then(function (directory) {
+					return directory.getEntryByID(req.params.entryID);
+				})
+				.then(function (professional) {
+					return professional.update( item );
+				})
+				.then(function (professional) {
+					res.send(professional);
+					next();
+				})
+				.catch(function (err) {
+					res.send(err.code || 400, err);
+					next(false);
+				});
+		}
+	},
+	
+	deleteEntry: function(req, res, next) {
+		physioDOM.Directory()
+			.then( function(directory) {
+				return directory.deleteEntry(req.params.entryID);
+			})
+			.then( function() {
+				res.send(410, { error: "entry deleted"});
+				next();
+			})
+			.catch(function (err) {
+				res.send(err.code || 400, err);
 				next(false);
 			});
 	}
 };
 
-module.exports.getEntries = IDirectory.getEntries;
-module.exports.createEntry = IDirectory.createEntry;
-module.exports.getEntry = IDirectory.getEntry;
+module.exports = IDirectory;
