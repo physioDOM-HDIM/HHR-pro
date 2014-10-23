@@ -10,16 +10,12 @@
  */
 'use strict';
 
-var fs      = require('fs'),
-	Mocha   = require('mocha'),
-	join    = require('path').join,
-	moment  = require('moment'),
-	prog    = require('commander'),
-	pkg     = require('../package');
+var Mocha   = require('mocha'),
+	join    = require('path').join;
 
 // Setup mocha
 var mocha = new Mocha({
-	ui : 'tdd',
+	ui : 'bdd',
 	globals : ['okGlobalA', 'okGlobalB', 'okGlobalC', 'callback*'],
 	reporter : "spec",
 	ignoreLeaks: true
