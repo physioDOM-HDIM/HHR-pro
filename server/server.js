@@ -35,7 +35,10 @@ program
 	.parse(process.argv);
 
 /**
- *
+ * requestLog
+ * show request information
+ * @param req
+ * @param res
  */
 function requestLog(req, res) {
 	var ipAddress = req.headers['x-forwarded-for'] === undefined ? req.connection.remoteAddress : req.headers['x-forwarded-for'];
@@ -151,13 +154,15 @@ server.on("after",function(req,res) {
 });
 
 server.post('/api/login', apiLogin);
-server.post('/api/logout', logout);
+server.get('/api/logout', logout);
 server.get('/logout', logout);
 server.get('/api/beneficiaries', getBeneficiaries);
 
 server.get( '/api/directory', IDirectory.getEntries);
 server.post('/api/directory', IDirectory.createEntry);
 server.get( '/api/directory/:entryID', IDirectory.getEntry );
+server.put( '/api/directory/:entryID', IDirectory.updateEntry );
+server.del( '/api/directory/:entryID', IDirectory.deleteEntry );
 
 server.get('/api/sessions/', getSessions);
 server.post('/', login);
@@ -242,7 +247,6 @@ function login(req,res,next) {
 				return readFile(filepath, req,res,next);
 			})
 			.catch( function(err) {
-				console.log("Error ",err);
 				cookies.set('sessionID');
 				res.header('Location', '/#401');
 				res.send(302);
