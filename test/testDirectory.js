@@ -5,7 +5,8 @@
 
 var request = require("request"),
 	should = require('chai').should(),
-	querystring = require("querystring");
+	querystring = require("querystring"),
+	testCommon = require("./testCommon");
 
 var domain = 'http://127.0.0.1:8001';   // domain name for reading cookies
 var sessionCookie = request.jar();
@@ -13,6 +14,18 @@ var sessionCookie = request.jar();
 var entry1, entry2;   // entries created during tests
 
 describe('Directory', function() {
+
+	before(function ( done ) {
+		testCommon.before()
+			.then( function() {
+				done();
+			})
+			.catch( function(err) {
+				console.error("error when initializing the database");
+				throw err;
+				done();
+			});
+	});
 	
 	it('login by header', function(done) {
 		var cookie = request.jar();
@@ -295,5 +308,8 @@ describe('Directory', function() {
 			return done();
 		});
 	});
-	
+
+	after(function () {
+		console.log("recover database");
+	});
 });
