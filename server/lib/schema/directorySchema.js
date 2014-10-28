@@ -20,6 +20,15 @@ var job = [
 	"social worker"
 ];
 
+// @todo:  get role list from database
+var role = [
+	"administrator",   // for system administrator
+	"coordinator",     // for coordinators
+	"physician",       // role that could add services and manage health content
+	"medical",         // other medical role that have access to health content in read only 
+	"social"           // social worker ( no access to health care section )
+];
+
 var practitionerSchema = {
 	"id": "/Practitioner",
 	"description" : "practitioner JSON Schema",
@@ -35,7 +44,7 @@ var practitionerSchema = {
 		"communication": { type:"string", "enum": [ "fr", "es", "nl", "en" ] },
 		"active": { type:"boolean" },
 		"pilot": { type:"object"},
-		"account": { "$ref":"/Account" }
+		"account": { "type":"object", "description":"_id of the account object attached" }
 	},
 	"additionalProperties":false
 };
@@ -52,7 +61,7 @@ var organizationSchema = {
 		"telecom": { type:"array",item: { "$ref":"/Contact" } },
 		"address": { "$ref":"/SimpleAddress" },
 		"active":  { type:"boolean" },
-		"account": { "$ref":"/Account" }
+		"account": { "type":"object", "description":"_id of the account object attached" }
 	},
 	"additionalProperties":false
 };
@@ -73,9 +82,8 @@ var account = {
 	"properties": {
 		"login":    { type:"string", required:true },
 		"password": { type:"string", required: true },
-		"email":    { "type":"string", "format":"email" },
 		"active":   { type:"boolean" },
-		"role":     { type:"string", "enum": job },
+		"role":     { type:"string", "enum": role },
 		"person": {
 			"ID": { type:"object", "description":"object id" },
 			"type" : { type:"string", description:"collection name" }

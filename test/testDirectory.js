@@ -85,7 +85,7 @@ describe('Directory', function() {
 			list.should.have.property("offset");
 			list.should.have.property("items");
 			list.items.should.be.an("array");
-			list.nb.should.be.equal(24);
+			list.nb.should.be.equal(27);
 			list.items.should.have.length(10);
 			
 			return done();
