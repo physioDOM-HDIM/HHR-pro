@@ -58,6 +58,8 @@ function Directory( ) {
 	/**
 	 * Get the list of entries per page
 	 * 
+	 * @TODO administrator could see account informations
+	 * 
 	 * @param pg
 	 * @param offset
 	 * @param sort
