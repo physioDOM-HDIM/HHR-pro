@@ -30,11 +30,12 @@ var IDirectory = {
 		var pg = parseInt(req.params.pg,10) || 1;
 		var offset = parseInt(req.params.offset,10) || 10;
 		var sort = req.params.sort;
+		var filter = req.params.filter;
 
 		physioDOM.Directory()
 			.then( function(directory) {
 				logger.debug("getEntries");
-				return directory.getEntries(pg, offset, sort);
+				return directory.getEntries(pg, offset, sort, filter);
 			})
 			.then( function(list) {
 				res.send(list);
@@ -130,6 +131,58 @@ var IDirectory = {
 			})
 			.catch(function (err) {
 				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	/**
+	 * @method accountUpdate
+	 * 
+	 * adds account information to a directory entry
+	 * the directory entry is given by req.params.entryID
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	accountUpdate: function(req, res, next) {
+		try {
+			var account = JSON.parse(req.body);
+		} catch( err ) {
+			res.send(400, { error: "bad json format"});
+			next(false);
+		} finally {
+			physioDOM.Directory()
+				.then(function (directory) {
+					return directory.getEntryByID(req.params.entryID);
+				})
+				.then(function (professional) {
+					return professional.accountUpdate(account);
+				})
+				.then( function(professional) {
+					res.send(professional);  // updated professional
+					next();
+				})
+				.catch(function (err) {
+					next(false);
+				});
+		}
+	},
+	
+	account: function(req, res, next) {
+		physioDOM.Directory()
+			.then(function (directory) {
+				return directory.getEntryByID(req.params.entryID);
+			})
+			.then(function(professional) {
+				return professional.getAccount();
+			})
+			.then( function(account) {
+				res.send(account);
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err );
 				next(false);
 			});
 	}
