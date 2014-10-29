@@ -1,9 +1,8 @@
 /* jslint node:true */
 "use strict";
 
-var Person   = require("./person"),
-	Session  = require("./session"),
-	Promise  = require("rsvp").Promise,
+var Session  = require("./session"),
+	promise  = require("rsvp").Promise,
 	ObjectID = require("mongodb").ObjectID;
 
 var Logger = require("logger");
@@ -15,20 +14,26 @@ function Account( physioDOM, obj ) {
 
 	this._id       = null;
 	this.login     = null;
-	this.passwd    = null;
+	this.password    = null;
 	this.tmpPasswd = null;
 	this.role      = null;
-	this.person    = {id: null, type: null};
+	this.person    = {id: null, collection: null};
+	this.active    = false;
 	
 	for (var prop in this) {
-		if (obj[prop]) this[prop] = obj[prop];
+		if (obj.hasOwnProperty(prop)) {
+			this[prop] = obj[prop];
+		}
 	}
 
 	this.createSession = function () {
 		logger.trace("Account.createSession");
 		var that = this;
 
-		var promise = new Promise(function ( resolv, reject ) {
+		return new promise(function ( resolv, reject ) {
+			if( !that.active ) {
+				return reject({code:403, message:"account not activate"});
+			}
 			var obj = {
 				sessionID: new ObjectID(),
 				createDate : (new Date()).toISOString(),
@@ -41,8 +46,6 @@ function Account( physioDOM, obj ) {
 				.then(resolv)
 				.catch(reject);
 		});
-
-		return promise;
 	};
 }
 
