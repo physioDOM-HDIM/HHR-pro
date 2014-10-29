@@ -21,6 +21,7 @@
     "url": "http://git.telecomsante.com/physiodom-hdim/physiodom"
   },
   "dependencies": {
+    "MD5": "^1.2.1",
     "commander": "2.1.0",
     "cookies": "~0.5.0",
     "jsonschema": "^1.0.0",
