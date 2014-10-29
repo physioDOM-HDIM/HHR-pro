@@ -1,11 +1,11 @@
 /* jslint node:true */
-/* jshint expr:true */
-/* global describe, it */
+/* global describe, it, before, after */
 "use strict";
 
 var request = require("request"),
 	should = require('chai').should(),
 	querystring = require("querystring"),
+	Promise = require("rsvp").Promise,
 	testCommon = require("./testCommon");
 
 var domain = 'http://127.0.0.1:8001';   // domain name for reading cookies
@@ -23,7 +23,6 @@ describe('Directory', function() {
 			.catch( function(err) {
 				console.error("error when initializing the database");
 				throw err;
-				done();
 			});
 	});
 	
@@ -108,7 +107,8 @@ describe('Directory', function() {
 					value:"025558888"
 				}
 			],
-			role:"physician"
+			role:"physician",
+			active:false
 		};
 		request({url           : domain + '/api/directory',
 				method             : "POST",
@@ -140,7 +140,7 @@ describe('Directory', function() {
 			});
 	});
 
-	it('create a bad entry directory (professional)', function(done) {
+	it('duplicate error (professional)', function(done) {
 		var newEntry = {
 			name: {
 				family:"Curie",
@@ -156,7 +156,8 @@ describe('Directory', function() {
 					value:"025558888"
 				}
 			],
-			role:"physician"
+			role:"physician",
+			active:false
 		};
 		request({url           : domain + '/api/directory',
 			method             : "POST",
@@ -205,7 +206,7 @@ describe('Directory', function() {
 	
 	it('create a new entry directory (organization)', function(done) {
 		var newEntry = {
-			name: "Hospital CST",
+			name: { family: "Hospital CST" },
 			organization:true,
 			telecom: [
 				{
@@ -216,7 +217,8 @@ describe('Directory', function() {
 					value:"025558888"
 				}
 			],
-			role:"physician"
+			role:"physician",
+			active:true
 		};
 		request({url           : domain + '/api/directory',
 			method             : "POST",
@@ -249,7 +251,6 @@ describe('Directory', function() {
 	
 	it('update an entry (professional)', function(done) {
 		entry1.communication = "en";
-		entry1.active = true;
 		
 		request({url           : domain + '/api/directory/'+entry1._id,
 			method             : "PUT",
@@ -285,6 +286,120 @@ describe('Directory', function() {
 		});
 	});
 	
+	it('add login information to a professional account', function(done) {
+		var account = { login:"einstein", password:"e=mc2"};
+		request({
+			url      : domain + '/api/directory/'+entry1._id+'/account',
+			method   : "POST",
+			jar      : sessionCookie,
+			headers  : { "content-type":"text/plain"},
+			body     : JSON.stringify(account)
+		}, function (err, resp, body) {
+			var item;
+			should.not.exist(err);
+			resp.statusCode.should.equal(200);
+			item = JSON.parse(body);
+			item.should.have.property("account");
+			return done();
+		});
+	});
+	
+	it('get account information from a professional', function(done) {
+		request({
+			url      : domain + '/api/directory/'+entry1._id+'/account',
+			method   : "GET",
+			jar      : sessionCookie
+		}, function (err, resp, body) {
+			var item;
+			should.not.exist(err);
+			resp.statusCode.should.equal(200);
+			item = JSON.parse(body);
+			item.should.have.property("login");
+			item.should.have.property("password");
+			item.should.have.property("active");
+			item.active.should.be.a("boolean");
+			item.active.should.equal(entry1.active);
+			item.should.have.property("role");
+			item.role.should.equal(entry1.role);
+			item.should.have.property('person');
+			item.person.should.have.property('id');
+			item.person.id.should.be.equal(entry1._id);
+			item.person.should.have.property('collection');
+			item.person.collection.should.be.equal('professionals');
+			return done();
+		});
+	});
+
+	it('cant\'t login if active is false', function(done) {
+		var tmpCookie = request.jar();
+		request({url           : domain + '/api/login',
+			method             : "POST",
+			auth               : {username: 'einstein', password: 'e=mc2'},
+			jar                : tmpCookie
+		}, function (err, resp, body) {
+			should.not.exist(err);
+			resp.statusCode.should.equal(403);
+			var cookies = querystring.parse(tmpCookie.getCookieString(domain), ";");
+			cookies.should.not.have.property("sessionID");
+			return done();
+		});
+	});
+
+	it('activate a professional should activate the account', function(done) {
+		entry1.active = true;
+
+		function updateEntry(entry) {
+			return new Promise( function( resolve, reject) {
+				request({url           : domain + '/api/directory/'+entry._id,
+					method             : "PUT",
+					jar                : sessionCookie,
+					headers            : { "content-type":"text/plain"},
+					body               : JSON.stringify(entry)
+				}, function (err, resp, body) {
+					var item;
+					should.not.exist(err);
+					resp.statusCode.should.equal(200);
+					item = JSON.parse(body);
+					item.should.have.property("active");
+					item.active.should.equal(true);
+					resolve();
+				});
+			});
+		}
+		
+		updateEntry(entry1)
+			.then( function(professional) {
+				request({url           : domain + '/api/directory/'+entry1._id+"/account",
+					method             : "GET",
+					jar                : sessionCookie,
+					headers            : { "content-type":"text/plain"}
+				}, function (err, resp, body) {
+					var item;
+					should.not.exist(err);
+					resp.statusCode.should.equal(200);
+					item = JSON.parse(body);
+					item.should.have.property("active");
+					item.active.should.equal(true);
+					return done();
+				});
+			});
+	});
+
+	it('cant login with the activated coount', function(done) {
+		var tmpCookie = request.jar();
+		request({url           : domain + '/api/login',
+			method             : "POST",
+			auth               : {username: 'einstein', password: 'e=mc2'},
+			jar                : tmpCookie
+		}, function (err, resp, body) {
+			should.not.exist(err);
+			resp.statusCode.should.equal(200);
+			var cookies = querystring.parse(tmpCookie.getCookieString(domain), ";");
+			cookies.should.have.property("sessionID");
+			return done();
+		});
+	});
+	
 	it('delete an entry', function(done) {
 		request({url           : domain + '/api/directory/'+entry1._id,
 			method             : "DELETE",
@@ -295,7 +410,7 @@ describe('Directory', function() {
 			return done();
 		});
 	});
-			
+	
 	it('logout', function(done) {
 		request({url           : domain + '/api/logout',
 			method             : "GET",
