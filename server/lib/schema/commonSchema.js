@@ -1,6 +1,32 @@
 /* jslint node:true */
 "use strict";
 
+// @todo:  get job list from database
+var job = [
+	"system administrator",
+	"coordinator",
+	"physician",
+	"pharmacist",
+	"Physician assistant",
+	"dietitian",
+	"therapist",
+	"paramedic",
+	"nurse",
+	"professional home carer",
+	"social worker"
+];
+module.exports.job = job;
+
+// @todo:  get role list from database
+var role = [
+	"administrator",   // for system administrator
+	"coordinator",     // for coordinators
+	"physician",       // role that could add services and manage health content
+	"medical",         // other medical role that have access to health content in read only 
+	"social"           // social worker ( no access to health care section )
+];
+module.exports.role = role;
+
 module.exports.humanName = {
 	"id":"/HumanName",
 	"description" : "Human Name define name of a person",
@@ -55,4 +81,21 @@ module.exports.contact = {
 			}
 		}
 	]
+};
+
+module.exports.account = {
+	id: "/Account",
+	"type":"object",
+	"properties": {
+		"_id":      { type:"string" },
+		"login":    { type:"string", required:true },
+		"password": { type:"string", required: true },
+		"active":   { type:"boolean" },
+		"role":     { type:"string", "enum": role },
+		"person": {
+			"ID": { type:"object", "description":"object id" },
+			"type" : { type:"string", description:"collection name" }
+		}
+	},
+	"additionalProperties":false
 };
