@@ -163,6 +163,8 @@ server.post('/api/directory', IDirectory.createEntry);
 server.get( '/api/directory/:entryID', IDirectory.getEntry );
 server.put( '/api/directory/:entryID', IDirectory.updateEntry );
 server.del( '/api/directory/:entryID', IDirectory.deleteEntry );
+server.post( '/api/directory/:entryID/account', IDirectory.accountUpdate );
+server.get( '/api/directory/:entryID/account', IDirectory.account );
 
 server.get('/api/sessions/', getSessions);
 server.post('/', login);
