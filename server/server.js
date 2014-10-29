@@ -3,22 +3,17 @@
 "use strict";
 
 var restify = require("restify"),
-		fs      = require('fs'),
-		program = require("commander"),
-		RSVP    = require("rsvp"),
-		path    = require("path"),
-		zlib    = require("zlib"),
-		Cookies = require("cookies"),
-		moment  = require("moment"),
-		Logger = require("logger"),
-		MongoClient = require("mongodb").MongoClient,
-		ObjectID = require("mongodb").ObjectID,
-		PhysioDOM = require("./lib/class/physiodom");
+	fs      = require('fs'),
+	program = require("commander"),
+	path    = require("path"),
+	Cookies = require("cookies"),
+	Logger = require("logger"),
+	PhysioDOM = require("./lib/class/physiodom");
 
 var IDirectory = require('./lib/http/IDirectory');
 
 var pkg     = require('../package.json');
-var logger = new Logger( "PhysioDOM ");
+var logger = new Logger( "PhysioDOM App");
 var DOCUMENT_ROOT = __dirname+"/../static";
 
 var config =  { cache : true };
@@ -266,9 +261,10 @@ function apiLogin(req, res, next) {
 					return next();
 				})
 				.catch( function(err) {
-					logger.warning("bad login or password");
+					// logger.debug("err",err);
+					logger.warning(err.message || "bad login or password");
 					cookies.set('sessionID');
-					res.send(403);
+					res.send(err.code || 403, err);
 					return next(false);
 				});
 		}
@@ -356,7 +352,7 @@ function getSessions( req, res, next ) {
 function serveStatic(req,res,next) {
 	console.log("serveStatic");
 	var uri      = require('url').parse(req.url).pathname;
-	var filepath = decodeURIComponent((uri=="/")?path.join(DOCUMENT_ROOT, '/index.htm'):path.join(DOCUMENT_ROOT, uri));
+	var filepath = decodeURIComponent((uri==="/")?path.join(DOCUMENT_ROOT, '/index.htm'):path.join(DOCUMENT_ROOT, uri));
 	if(!filepath) {
 		return next();
 	}
@@ -369,39 +365,6 @@ function serveStatic(req,res,next) {
 		}
 		readFile(filepath,req,res,next);
 	});
-}
-
-function readFile(filepath,req,res,next) {
-	console.log("readFile",filepath);
-	var mimetype = mimetypes[require('path').extname(filepath).substr(1)];
-	var stats = fs.statSync(filepath);
-
-	if(config.cache && req.headers['if-modified-since'] && (new Date(req.headers['if-modified-since'])).valueOf() === ( new Date(stats.mtime)).valueOf() ) {
-		res.statusCode = 304;
-		res.end();
-		return next();
-	} else {
-		var raw = fs.createReadStream(filepath);
-		raw.on("open",function(fd) {
-			res.set("Content-Type", mimetype);
-			res.set("Content-Length",stats.size);
-			res.set("Cache-Control","public");
-			res.set("Last-Modified",stats.mtime);
-			res.writeHead(200);
-			raw.pipe(res);
-
-			raw.once('end', function () {
-				next(false);
-			});
-		});
-	}
-}
-
-function send404(req,res,next) {
-	res.writeHead(404, {"Content-Type": "text/html"});
-	res.write("404 Not Found\n");
-	res.end();
-	return next();
 }
 
 var mimetypes = {
@@ -445,3 +408,36 @@ var mimetypes = {
 	'woff':'application/font-woff',
 	'json':'application/json'
 };
+
+function readFile(filepath,req,res,next) {
+	console.log("readFile",filepath);
+	var mimetype = mimetypes[require('path').extname(filepath).substr(1)];
+	var stats = fs.statSync(filepath);
+
+	if(config.cache && req.headers['if-modified-since'] && (new Date(req.headers['if-modified-since'])).valueOf() === ( new Date(stats.mtime)).valueOf() ) {
+		res.statusCode = 304;
+		res.end();
+		return next();
+	} else {
+		var raw = fs.createReadStream(filepath);
+		raw.on("open",function(fd) {
+			res.set("Content-Type", mimetype);
+			res.set("Content-Length",stats.size);
+			res.set("Cache-Control","public");
+			res.set("Last-Modified",stats.mtime);
+			res.writeHead(200);
+			raw.pipe(res);
+
+			raw.once('end', function () {
+				next(false);
+			});
+		});
+	}
+}
+
+function send404(req,res,next) {
+	res.writeHead(404, {"Content-Type": "text/html"});
+	res.write("404 Not Found\n");
+	res.end();
+	return next();
+}
