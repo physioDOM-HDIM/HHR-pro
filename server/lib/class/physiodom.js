@@ -8,6 +8,7 @@
 var dbPromise = require("./database"),
 	Promise = require("rsvp").Promise,
 	ObjectID = require("mongodb").ObjectID,
+	md5 = require('MD5'),
 	Logger = require("logger");
 
 var logger = new Logger("PhysioDOM");
@@ -109,7 +110,7 @@ function PhysioDOM( ) {
 	 * @returns {Promise}
 	 */
 	this.getAccountByCredentials = function(login, passwd) {
-		var search = { login:login, '$or' : [ { passwd:passwd }, { tmpPasswd: passwd } ] };
+		var search = { login:login, '$or' : [ { password:md5(passwd) }, { tmpPasswd:md5(passwd) } ] };
 		var that = this;
 		return new Promise( function(resolve, reject) {
 			that.db.collection("account").findOne(search, function (err, record) {
@@ -128,9 +129,10 @@ function PhysioDOM( ) {
 	this.getSession = function( sessionID ) {
 		var that = this;
 		return new Promise( function(resolve, reject) {
-			that.db.collection("session").findOne({ _id: ObjectID(sessionID) }, function (err, record) {
+			logger.trace("getSession");
+			that.db.collection("session").findOne({ _id: new ObjectID(sessionID) }, function (err, record) {
 				if(!record ) {
-					return reject( { code:404, message: "could not find session "+ sessionID});
+					return reject( { message: "could not find session "+ sessionID });
 				}
 				record.sessionID = sessionID;
 				resolve( new Session(that, record));
@@ -146,7 +148,7 @@ function PhysioDOM( ) {
 	this.deleteSession = function( sessionID ) {
 		var that = this;
 		return new Promise( function(resolve, reject) {
-			that.db.collection("session").remove({ _id: ObjectID(sessionID) }, function (err, record) {
+			that.db.collection("session").remove({ _id: new ObjectID(sessionID) }, function (err, record) {
 				if(!record ) {
 					return reject({code: 404, message: "could not find session " + sessionID});
 				}
