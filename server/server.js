@@ -59,6 +59,7 @@ function responseLog(req, res) {
 }
 
 var physioDOM = new PhysioDOM();   // PhysioDOM object is global and so shared to all modules
+// @todo move database uri to a config file
 physioDOM.connect("mongodb://127.0.0.1/physioDOM");
 global.physioDOM = physioDOM;
 
