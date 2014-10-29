@@ -1,12 +1,18 @@
-
+/* jslint node:true */
+"use strict";
 
 /**
 Constructor Person
 */
-function Person( obj ) {
-	for( var prop in this ) {
-		if( obj[prop] ) this[prop] = obj[prop];
-	}
+function Person( ) {
+	
+	this.setup = function( obj ) {
+		for (var prop in this) {
+			if (obj.hasOwnProperty(prop)) {
+				this[prop] = obj[prop];
+			}
+		}
+	};
 }
 
 Person.prototype = {

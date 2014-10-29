@@ -4,9 +4,10 @@
  */
 
 /* jslint node:true */
+"use strict";
 
 var dbPromise = require("./database"),
-	Promise = require("rsvp").Promise,
+	promise = require("rsvp").Promise,
 	ObjectID = require("mongodb").ObjectID,
 	md5 = require('MD5'),
 	Logger = require("logger");
@@ -31,18 +32,17 @@ function PhysioDOM( ) {
 	 * Connect to the database
 	 * 
 	 * @param uri
-	 * @returns {Promise}
+	 * @returns {promise}
 	 */
 	this.connect = function(uri) {
 		var that = this;
-		var promise = new Promise( function(resolve, reject) {
+		return new promise( function(resolve, reject) {
 			dbPromise.connect(uri)
 				.then( function(dbClient) {
 					that.db = dbClient;
 					resolve(that);
 				});
-			});
-		return promise;
+		});
 	};
 
 	/**
@@ -72,12 +72,12 @@ function PhysioDOM( ) {
 	/**
 	 * return a promise with the Beneficiaries Object
 	 * 
-	 * @returns {Promise}
+	 * @returns {promise}
 	 */
 	this.Beneficiaries = function() {
 		logger.trace("Beneficiaries");
 		var that = this;
-		return new Promise( function(resolve, reject) {
+		return new promise( function(resolve, reject) {
 			var Beneficiaries = require("./beneficiary");
 			resolve( new Beneficiaries(that) );
 		});
@@ -86,11 +86,11 @@ function PhysioDOM( ) {
 	/**
 	 * return a promise with the Directory Object
 	 * {@link module:Directory}
-	 * @returns {Promise}
+	 * @returns {promise}
 	 */
 	this.Directory = function() {
 		var that = this;
-		return new Promise( function(resolve, reject) {
+		return new promise( function(resolve, reject) {
 			logger.trace("Directory");
 			resolve( new Directory(that) );
 		});
@@ -107,12 +107,12 @@ function PhysioDOM( ) {
 	 * 
 	 * @param login
 	 * @param passwd
-	 * @returns {Promise}
+	 * @returns {promise}
 	 */
 	this.getAccountByCredentials = function(login, passwd) {
 		var search = { login:login, '$or' : [ { password:md5(passwd) }, { tmpPasswd:md5(passwd) } ] };
 		var that = this;
-		return new Promise( function(resolve, reject) {
+		return new promise( function(resolve, reject) {
 			that.db.collection("account").findOne(search, function (err, record) {
 				if(err) { reject(err); }
 				if(!record) { reject({code:404, msg:"Account not found"}); }
@@ -124,11 +124,11 @@ function PhysioDOM( ) {
 	/**
 	 * 
 	 * @param sessionID
-	 * @returns {Promise}
+	 * @returns {promise}
 	 */
 	this.getSession = function( sessionID ) {
 		var that = this;
-		return new Promise( function(resolve, reject) {
+		return new promise( function(resolve, reject) {
 			logger.trace("getSession");
 			that.db.collection("session").findOne({ _id: new ObjectID(sessionID) }, function (err, record) {
 				if(!record ) {
@@ -143,11 +143,11 @@ function PhysioDOM( ) {
 	/**
 	 * Delate a session given by its id ( cookie )
 	 * @param sessionID
-	 * @returns {Promise}
+	 * @returns {promise}
 	 */
 	this.deleteSession = function( sessionID ) {
 		var that = this;
-		return new Promise( function(resolve, reject) {
+		return new promise( function(resolve, reject) {
 			that.db.collection("session").remove({ _id: new ObjectID(sessionID) }, function (err, record) {
 				if(!record ) {
 					return reject({code: 404, message: "could not find session " + sessionID});

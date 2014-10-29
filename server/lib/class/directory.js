@@ -9,7 +9,7 @@
 
 //var Person = require("./person.js");
 // var Account = require("./account.js");
-var Promise = require("rsvp").Promise,
+var promise = require("rsvp").Promise,
 	dbPromise = require("./database.js"),
 	Logger = require("logger"),
 	ObjectID = require("mongodb").ObjectID,
@@ -38,7 +38,7 @@ function Directory( ) {
 		// and send it
 		
 		// else reject
-		return new Promise( function(resolve, reject) {
+		return new promise( function(resolve, reject) {
 			logger.trace("createEntry", newEntry);
 			if( newEntry ) {
 				var entry = new Professional( );
@@ -107,7 +107,7 @@ function Directory( ) {
 	this.updateEntry = function( updatedItem ) {
 		// the updatedItem must check the schema
 		// the updatedItem must have the same ID
-		return new Promise( function(resolve, reject) {
+		return new promise( function(resolve, reject) {
 			logger.trace("updateEntry", updatedItem);
 			if (updatedItem) {
 				var entry = new Professional();

@@ -1,32 +1,33 @@
+/* jslint node:true */
+"use strict";
+
 var MongoClient = require("mongodb").MongoClient,
-	ObjectID = require("mongodb").ObjectID,
-	RSVP = require("rsvp"),
-	Promise = RSVP.Promise;
+	promise = require("rsvp").Promise;
 
 
 module.exports = {
 	dbClient: null,
 	connect: function( uri ) {
-		var promise = new Promise( function(resolve, reject) {
+		return new promise( function(resolve, reject) {
 			MongoClient.connect( uri, function(err, dbClient) {
 				if(err) { reject( err ); }
 				this.dbClient = dbClient;
 				resolve(dbClient);
 			});
 		});
-		return promise;
 	},
+	
 	count: function( cursor ) {
-		var promise = new Promise( function(resolve, reject) {
+		return new promise( function(resolve, reject) {
 			cursor.count( function(err, count) {
 				resolve(count);
 			});
 		});
-		return promise;
 	},
+	
 	getList: function( cursor, pg, offset) {
 		var that = this;
-		var promise = new Promise( function(resolve, reject) {
+		return new promise( function(resolve, reject) {
 			that.count(cursor)
 				.then( function(nb) {
 					var list  = { nb: nb, pg: pg || 1, offset:offset || 20, items:[] };
@@ -37,12 +38,14 @@ module.exports = {
 					});
 				});
 		});
-		return promise;
-	},
+	}
+	
+	/*
 	save: function(collection, obj) {
 		var that = this;
-		var promise = new Promise( function(resolve, reject) {
+		return new promise( function(resolve, reject) {
 			
 		});
 	}
+	*/
 };

@@ -1,4 +1,5 @@
 /* jslint node:true */
+/* global physioDOM */
 "use strict";
 
 /**

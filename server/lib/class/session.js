@@ -1,8 +1,9 @@
 /* jslint node:true */
 "use strict";
 
-var Promise = require("rsvp").Promise;
-var Logger = require("logger");
+var promise = require("rsvp").Promise,
+	Logger = require("logger");
+
 var logger = new Logger("Session");
 
 function Session( physioDOM, obj ) {
@@ -19,7 +20,7 @@ function Session( physioDOM, obj ) {
 	this.person = null;
 	
 	for( var prop in this ) {
-		if( obj[prop] ) {
+		if( obj.hasOwnProperty(prop) ) {
 			this[prop] = obj[prop];
 		}
 	}
@@ -38,7 +39,7 @@ function Session( physioDOM, obj ) {
 	this.save = function() {
 		logger.trace("Session.save");
 		var that = this;
-		var promise = new Promise( function( resolv, reject ) {
+		return new promise( function( resolv, reject ) {
 			_physioDOM.db.collection("session").save(that.toMongo(), function(err, item) {
 				if(err) { reject(err); }
 				if(item) {
@@ -48,13 +49,20 @@ function Session( physioDOM, obj ) {
 				}
 			});
 		});
-		return promise;
 	};
 
 	this.update = function () {
 		logger.trace("Session update");
 		this.expire = (new Date()).getTime() + sessionExpire;
 		return this.save();
+	};
+	
+	this.getPerson = function() {
+		logger.trace("getPerson");
+		// var that = this;
+		return new promise( function(resolve, reject) {
+			resolve( {} );
+		});
 	};
 }
 

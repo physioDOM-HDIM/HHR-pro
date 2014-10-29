@@ -37,7 +37,7 @@ function UUID() {
 			for (i = 0; i < 36; i++) {
 				if (!uuid[i]) {
 					r = 0 | Math.random() * 16;
-					uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
+					uuid[i] = chars[(i === 19) ? (r & 0x3) | 0x8 : r];
 				}
 			}
 		}
@@ -53,15 +53,17 @@ function UUID() {
 		var rnd = 0;
 		var r;
 		for (var i = 0; i < 36; i++) {
-			if (i == 8 || i == 13 ||  i == 18 || i == 23) {
+			if (i === 8 || i === 13 ||  i === 18 || i === 23) {
 				uuid[i] = '-';
-			} else if (i == 14) {
+			} else if (i === 14) {
 				uuid[i] = '4';
 			} else {
-				if (rnd <= 0x02) rnd = 0x2000000 + (Math.random() * 0x1000000) | 0;
+				if (rnd <= 0x02) {
+					rnd = 0x2000000 + (Math.random() * 0x1000000) | 0;
+				}
 				r = rnd & 0xf;
 				rnd = rnd >> 4;
-				uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
+				uuid[i] = chars[(i === 19) ? (r & 0x3) | 0x8 : r];
 			}
 		}
 		return uuid.join('');
@@ -71,7 +73,7 @@ function UUID() {
 	this.uuidCompact = function () {
 		return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
 			var r = Math.random() * 16 | 0;
-			var v = c == 'x' ? r : (r & 0x3 | 0x8);
+			var v = c === 'x' ? r : (r & 0x3 | 0x8);
 			return v.toString(16);
 		});
 	};
