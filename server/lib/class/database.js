@@ -6,13 +6,23 @@ var MongoClient = require("mongodb").MongoClient,
 
 
 module.exports = {
-	dbClient: null,
+
+	/**
+	 * connect to the database
+	 * the database to connect is given by an uri
+	 * ex : "mongodb://127.0.0.1/physioDOM"
+	 * 
+	 * @param uri
+	 * @returns {promise}
+	 */
 	connect: function( uri ) {
 		return new promise( function(resolve, reject) {
 			MongoClient.connect( uri, function(err, dbClient) {
-				if(err) { reject( err ); }
-				this.dbClient = dbClient;
-				resolve(dbClient);
+				if(err) { 
+					reject( err ); 
+				} else {
+					resolve(dbClient);
+				}
 			});
 		});
 	},
