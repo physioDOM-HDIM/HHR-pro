@@ -58,7 +58,7 @@ function Directory( ) {
 	/**
 	 * Get the list of entries per page
 	 * 
-	 * @TODO administrator could see account informations
+	 * @todo administrator could see account informations
 	 * 
 	 * @param pg
 	 * @param offset
@@ -68,7 +68,22 @@ function Directory( ) {
 	 */
 	this.getEntries = function( pg, offset, sort, filter ) {
 		logger.trace("getEntries");
-		var cursor = physioDOM.db.collection("professionals").find();
+		var search = {};
+		if(filter) {
+			try {
+				search = JSON.parse(filter);
+				for( var prop in search) {
+					if(search.hasOwnProperty(prop)) {
+						if( ["true","false"].indexOf(search[prop]) !== -1) {
+							search[prop] = (search[prop]==="true"?true:false);
+						}
+					}
+				}
+			} catch(err) {
+				search = {};
+			}
+		}
+		var cursor = physioDOM.db.collection("professionals").find(search);
 		if(sort) {
 			var cursorSort = {};
 			cursorSort[sort] = 1;
@@ -96,7 +111,7 @@ function Directory( ) {
 			logger.trace("updateEntry", updatedItem);
 			if (updatedItem) {
 				var entry = new Professional();
-				return entry.update(newEntry)
+				return entry.update(updatedItem)
 					.then(resolve)
 					.catch(function (err) {
 						logger.alert("error ", err);
@@ -108,28 +123,54 @@ function Directory( ) {
 			}
 		});
 	};
-	
+
+	/**
+	 * delete an entry of the directory
+	 * 
+	 * @todo remove also session of the account
+	 * 
+	 * @param entryID
+	 * @returns {promise}
+	 */
 	this.deleteEntry = function(entryID) {
-		return new Promise( function(resolve, reject) {
+		function deleteProfessional( professionalID) {
+			return new promise( function(resolve, reject) {
+				physioDOM.db.collection("professionals").remove({ _id: professionalID}, function (err, nb) {
+					if(err) {
+						console.log(err);
+						reject(err);
+					} else {
+						return resolve(nb);
+					}
+				});
+			});
+		}
+
+		function deleteAccount( professionalID ) {
+			return new promise( function(resolve, reject) {
+				physioDOM.db.collection("account").remove({ "person.id": professionalID}, function (err, nb) {
+					if(err) {
+						console.log(err);
+						reject(err);
+					} else {
+						return resolve(nb);
+					}
+				});
+			});
+		}
+		
+		return new promise( function(resolve, reject) {
 			logger.trace("deleteEntry", entryID);
 			var professionalID = new ObjectID(entryID);
 			var professional = new Professional();
 			professional.getById(professionalID)
 				.then(function (professional) {
-					logger.debug("delete 1");
-					// remove the entry in the database
-					physioDOM.db.collection("professionals").remove({ _id: professionalID}, function (err, nb) {
-						logger.debug("delete 2", err, nb);
-						if(err) {
-							console.log(err);
-							reject(err);
-						} else {
-							return resolve(nb);
-						}
-					});
-					// remove account associated with the professional
-					// remove sessions associated to the account
+					return deleteProfessional(professionalID);
 				})
+				.then( function() {
+					return deleteAccount(professionalID);
+				})
+				.then( resolve )
 				.catch(reject);
 		});
 	};
