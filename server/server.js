@@ -80,14 +80,62 @@ server.pre(function(req, res, next) {
 
 server.use( function(req, res, next) {
 	req.cookies = {};
-	if( req.headers.cookie ) {
-		req.headers.cookie.split(';').forEach(function (cookie) {
-			var parts = cookie.split('=');
-			req.cookies[parts[0].trim()] = parts[1].trim() || '';
-		});
+	
+	function readCookies( cb ) {
+		logger.trace("read cookies");
+		if( req.headers.cookie ) {
+			var cookies = req.headers.cookie.split(';');
+			var count = cookies.length;
+			cookies.forEach(function (cookie) {
+				var parts = cookie.split('=');
+				req.cookies[parts[0].trim()] = parts[1].trim() || '';
+				if( --count === 0 ) {
+					console.log( req.cookies);
+					cb( req.cookies );
+				}
+			});
+		} else {
+			cb( {} );
+		}
 	}
-	requestLog(req, res);
-	return next();
+
+	function getSession( cb ) {
+		logger.trace("getSessionAccount");
+		logger.debug("cookies ", JSON.stringify(req.cookies, null, 4) );
+		if( req.cookies && req.cookies.sessionID ) {
+			physioDOM.getSession( req.cookies.sessionID )
+				.then( function( session ) {
+					logger.debug("session ", JSON.stringify(session,null,4));
+					session.getPerson()
+						.then( function( session ) {
+							cb(null, session);
+						})
+						.catch( function(err) {
+							cb(null, null);
+						});
+				})
+				.catch( function(err) {
+					logger.warning("error", err);
+					cb(err, null);
+				});
+		} else {
+			logger.debug("no session");
+			cb( null, null);
+		}
+	}
+	
+	
+	readCookies( function(cookies) {
+		getSession( function(err, session) {
+			if(err) {
+				req.session = null;
+			} else {
+				req.session = session;
+			}
+			requestLog(req, res);
+			return next();
+		});
+	});
 });
 
 server.use(restify.gzipResponse());
@@ -98,8 +146,7 @@ server.pre(restify.pre.userAgentConnection());
 
 server.use(function checkAcl(req, res, next) {
 	logger.trace("checkAcl",req.url);
-	var cookies = new Cookies(req, res);
-
+	
 	return next();
 	/*
 	if( req.url.match(/^(\/|\/api\/login)$/) ) {
