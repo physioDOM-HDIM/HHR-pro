@@ -36,8 +36,10 @@ describe('Directory', function() {
 			should.not.exist(err);
 			resp.statusCode.should.equal(200);
 			body.should.equal("");
-			var cookies = querystring.parse(cookie.getCookieString(domain), ";");
+			var cookies = querystring.parse(cookie.getCookieString(domain), "; ");
+			Object.keys(cookies).length.should.equal(2);
 			cookies.should.have.property("sessionID");
+			cookies.should.have.property("role");
 			return done();
 		});
 	});
@@ -55,14 +57,23 @@ describe('Directory', function() {
 			var cookies = querystring.parse(sessionCookie.getCookieString(domain), ";");
 			cookies.should.have.property("sessionID");
 			cookies = sessionCookie.getCookies(domain);
-			cookies.should.have.length(1);
-			cookies[0].should.have.property("httpOnly");
-			cookies[0].httpOnly.should.be.true;
-			cookies[0].should.have.property("hostOnly");
-			cookies[0].hostOnly.should.be.true;
-			cookies[0].should.have.property("path");
-			cookies[0].path.should.equal("/");
-			return done();
+			cookies.should.have.length(2);
+			var count = cookies.length;
+			cookies.forEach( function( cookie ) {
+				cookie.should.have.property("httpOnly");
+				if( cookie.key === "sessionID") {
+					cookie.httpOnly.should.be.true;
+				} else {
+					cookie.httpOnly.should.be.false;
+				}
+				cookie.should.have.property("hostOnly");
+				cookie.hostOnly.should.be.true;
+				cookie.should.have.property("path");
+				cookie.path.should.equal("/");
+				if( --count === 0 ) {
+					return done();
+				}
+			});
 		});
 	});
 	

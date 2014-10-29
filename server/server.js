@@ -248,6 +248,7 @@ function apiLogin(req, res, next) {
 		var user = JSON.parse( body );
 		if( !user.login || !user.password ) {
 			cookies.set('sessionID');
+			cookies.set('role');
 			logger.warning("no login or password");
 			res.send(403);
 			return next(false);
@@ -258,6 +259,7 @@ function apiLogin(req, res, next) {
 				})
 				.then( function(session) {
 					cookies.set('sessionID', session.sessionID, cookieOptions);
+					cookies.set('role', session.role, { path: '/', httpOnly : false} );
 					res.send(200);
 					return next();
 				})
@@ -265,6 +267,7 @@ function apiLogin(req, res, next) {
 					// logger.debug("err",err);
 					logger.warning(err.message || "bad login or password");
 					cookies.set('sessionID');
+					cookies.set('role');
 					res.send(err.code || 403, err);
 					return next(false);
 				});
@@ -272,6 +275,7 @@ function apiLogin(req, res, next) {
 	} catch(err) {
 		logger.warning("bad json format");
 		cookies.set('sessionID');
+		cookies.set('role');
 		res.send(403);
 		return next(false);
 	}
@@ -289,17 +293,20 @@ function login(req,res,next) {
 			})
 			.then( function(session) {
 				cookies.set('sessionID', session.sessionID, cookieOptions);
+				cookies.set('role', session.role, { path: '/', httpOnly : false});
 				var filepath = path.join(DOCUMENT_ROOT, '/ui.htm');
 				return readFile(filepath, req,res,next);
 			})
 			.catch( function(err) {
 				cookies.set('sessionID');
+				cookies.set('role');
 				res.header('Location', '/#401');
 				res.send(302);
 				return next();
 			});
 	} else {
 		cookies.set('sessionID');
+		cookies.set('role');
 		res.header('Location', '/#403');
 		res.send(302);
 		return next();
@@ -315,6 +322,7 @@ function logout(req, res, next ) {
 		}).finally( function() {
 			logger.info('unset cookies');
 			cookies.set('sessionID');
+			cookies.set('role');
 			if(req.url.match(/^\/api/)) {
 				res.send(200);
 			} else {
