@@ -148,10 +148,90 @@ function Professional() {
 					}
 					return that.save();
 				})
-				.then( resolve )
+				.then( function(professional) {
+					return professional.getAccount();
+				})
+				.then( function(account) {
+					if( account.hasOwnProperty("active") && account.active !== that.active ) {
+						logger.debug("update account active flag");
+						account.active = that.active;
+						physioDOM.db.collection("account").save(account, function (err, result) {
+							if(err) { throw err; }
+							resolve(that);
+						});
+					} else {
+						resolve(that);
+					}
+				})
 				.catch( reject );
 		});
-	}
+	};
+
+	/**
+	 * return account information about the professional
+	 * 
+	 * the promise resolve with account information as object,
+	 * if no account information is found the resolve return an empty object
+	 * 
+	 * @returns {promise}
+	 */
+	this.getAccount = function() {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			var search = { "person.id": that._id };
+			physioDOM.db.collection("account").findOne( search, function( err, item ) {
+				if(err) {
+					throw err;
+				} else {
+					console.log( JSON.stringify(item, null, 4));
+					resolve(item || {});
+				}
+			});
+		});
+	};
+
+	/**
+	 * @method accountUpdate
+	 * 
+	 * update account information of the professional, resolve with the updated object
+	 * 
+	 * @param accountData
+	 * @returns {promise}
+	 */
+	this.accountUpdate = function( accountData ) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			that.getAccount()
+				.then( function(account) {
+					logger.trace("account");
+					if (!accountData.login || !accountData.password) {
+						return reject({error: "account data incomplete"});
+					}
+					var newAccount = {
+						login   : accountData.login,
+						password: md5(accountData.password),
+						active  : that.active || false,
+						role    : that.role,
+						person  : {
+							id        : that._id,
+							collection: "professionals"
+						}
+					};
+					if( account && account._id) {
+						newAccount._id = account._id;
+					} 
+					physioDOM.db.collection("account").save(newAccount, function (err, result) {
+						if(err) { throw err; }
+						if( isNaN(result)) {
+							newAccount._id = result._id;
+						}
+						that.account = newAccount._id;
+						resolve(that.save());
+					});
+				})
+				.catch( reject );
+		});
+	};
 }
 
 module.exports = Professional;
