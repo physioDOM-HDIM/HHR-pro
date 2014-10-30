@@ -14,8 +14,7 @@
     "tests"
   ],
   "dependencies": {
-    "platform": "Polymer/platform#~0.3.4",
-    "polymer": "Polymer/polymer#~0.3.5",
-    "polymer-elements": "~0.3.0"
+    "platform": "Polymer/platform#~0.4.2",
+    "polymer": "Polymer/polymer#~0.4.2"
   }
 }
