@@ -20,6 +20,12 @@
 	<script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
 
 	<link rel="stylesheet" href="styles/ui.css">
+	<script>
+		if(window.location !== window.parent.location ) {
+			console.info("load in iframe");
+			window.parent.location = window.location;
+		}
+	</script>
 </head>
 <body>
 <style>

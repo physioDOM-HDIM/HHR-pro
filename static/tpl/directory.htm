@@ -1,81 +1,97 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>Professionnal directory</title>
-		
-		<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-		<meta name="apple-mobile-web-app-capable" content="yes"/>
-		<meta name="apple-touch-fullscreen" content="yes">
-		<meta name="mobile-web-app-capable" content="yes">
+<head>
+    <meta charset="utf-8">
+    <title>Professionnal directory</title>
 
-		<link rel="shortcut icon" sizes="196x196" href="/img/physiodom_favico.png">
-		<link rel="icon" href="/img/physiodom_favico.png">
-		<link rel="apple-touch-icon" href="/img/physiodom_favico.png">
-		
-		<link rel="stylesheet" href="/styles/iframe.css" charset="UTF-8">
-		<link rel="stylesheet" href="/styles/theme.css" charset="UTF-8">
-		
-		<script src="directory.js"></script>
-		<style>
-			* { box-sizing: padding-box }
-			ul { 
-				list-style-type: none;
-				padding: 0px;
-				/* overflow:auto; */
-				/* flex: 1; */
-			}
-			li:nth-child(even) { background: #DFDFDF; }
-			li {
-				position:relative;
-				border:1px solid #ccc;
-				border-collapse: collapse;
-				height:40px;
-			}
-			li > div { display:flex; }
-			span { 
-				display:inline-block; 
-				padding: 0px 10px; 
-				text-overflow:ellipsis; 
-				overflow: hidden; 
-				white-space: nowrap; 
-			}
-			span.name { font-weight:bold; flex:1;  }
-			span.role, span.perimeter { width: 150px;  }
-			span.phone { width:100px; padding-left: 100px; }
-			span.email { flex:1 }
-			
-			div#pager { text-align: center; height: 50px; }
-			div#pager > div { 
-				display:inline-block; 
-				border: 1px solid dodgerblue;
-				color:dodgerblue;
-				width:30px;
-				height:30px;
-				text-align:center;
-				line-height: 30px; 
-			}
-			div#pager > div:hover {
-				background:dodgerblue;
-				color:white;
-			}
-		</style>
-	</head>
-	<body>
-		<div class="main">
-			<ul id="directory">
-			</ul>
-			<div id="pager">
-				<div>1</div>
-				<div>2</div>
-				<div>3</div>
-				<div>4</div>
-				<div>5</div>
-				<div>6</div>
-				<div>7</div>
-				<div>8</div>
-				<div>9</div>
-			</div>
-		</div>
-	</body>
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <link rel="shortcut icon" sizes="196x196" href="/img/physiodom_favico.png">
+    <link rel="icon" href="/img/physiodom_favico.png">
+    <link rel="apple-touch-icon" href="/img/physiodom_favico.png">
+
+    <link rel="stylesheet" href="/styles/iframe.css" charset="UTF-8">
+    <link rel="stylesheet" href="/styles/theme.css" charset="UTF-8">
+
+    <link rel="stylesheet" href="/styles/common.css" charset="UTF-8">
+    <link rel="stylesheet" href="/styles/directory.css" charset="UTF-8">
+
+    <!-- Polyfills -->
+    <script src="../bower_components/platform/platform.js"></script>
+    <!-- Import polymer element -->
+    <link rel="import" href="../bower_components/tsante-listpager/tsante-listpager.html">
+
+    <script src="directory.js"></script>
+</head>
+
+<body>
+    <div class="main">
+        <div id="filterNode">
+            <div class="textFilter" onclick="toggleFilter(this)">FILTER</div>
+            <div class="contentFilter" data-state="hidden">
+                <form name="filter" onsubmit="return false;">
+                    <label>Active</label>
+                    <input type="checkbox" name="active">
+                    <label>Sort</label>
+                    <select name="sort">
+                        <option value="asc">asc</option>
+                        <option value="desc">desc</option>
+                    </select>
+                    <footer>
+                        <button class="resetFilter" onclick="resetFilter()">Reset</button>
+                        <button class="validFilter" onclick="validFilter()">Valid</button>
+                    </footer>
+                </form>
+            </div>
+        </div>
+        <tsante-list url="/api/directory" pg="3" auto="true" unresolved id="tsanteList">
+            <template is="auto-binding" repeat="{{list.items}}">
+                <div class="item {{!active ? 'disabled' : ''}}">
+                    <div class="leftContent">
+                        <span class="name">
+                            {{!organization ? name.family+" "+name.given+" ("+gender+")" : name.family}}
+                        </span>
+                        <div>
+                            <span class="communication">
+                                <template repeat="{{telecom}}">
+                                    <template if="{{system !== 'email'}}">
+                                        <span class="{{system}}">{{value}}</span>
+                                    </template>
+                                    <template if="{{system === 'email'}}">
+                                        <a class="email" href="mailto:{{value}}">{{value}}</a>
+                                    </template>
+                                </template>
+                            </span>
+                        </div>
+                        <template if="{{address}}">
+                            <div class="address" data-state="hidden">
+                                <template repeat="{{address.line}}">
+                                    <div class="line">{{}}</div>
+                                </template>
+                                <div class="line">{{address.zip}} {{address.city}}</div>
+                            </div>
+                        </template>
+                    </div>
+                    <div class="middleContent">
+                        <div class="role">{{role}}</div>
+                        <div class="job">{{job}}</div>
+                    </div>
+                    <div class="rightContent">
+                        <template if="{{address}}">
+                            <button type="button" onclick="toggleHiddenNode(this, '.address')">detail</button>
+                        </template>
+                        <button class="editButton hidden" type="button">edit</button>
+                    </div>
+                </div>
+            </template>
+        </tsante-list>
+        <div>
+            <button id="addEntry" class="hidden" type="button">Add entry</button>
+        </div>
+    </div>
+</body>
+
 </html>
