@@ -12,6 +12,7 @@ var domain = 'http://127.0.0.1:8001';   // domain name for reading cookies
 var sessionCookie = request.jar();
 
 var entry1, entry2;   // entries created during tests
+var list1; 
 
 describe('Directory', function() {
 
@@ -102,6 +103,89 @@ describe('Directory', function() {
 		});
 	});
 
+	it('get directory filter name.family = "a"', function(done) {
+		request({
+			url           : domain + '/api/directory?filter={"name.family":"a"}',
+			method        : "GET",
+			jar           : sessionCookie
+		}, function (err, resp, body) {
+			var list;
+
+			should.not.exist(err);
+			resp.statusCode.should.equal(200);
+			body.should.be.a("string");
+
+			list = JSON.parse(body);
+			list.should.be.an('object');
+			list.should.have.property("nb");
+			list.should.have.property("pg");
+			list.should.have.property("offset");
+			list.should.have.property("items");
+			list.items.should.be.an("array");
+			list.nb.should.be.equal(3);
+			list.items.should.have.length(3);
+
+			return done();
+		});
+	});
+
+	it('get directory filter name.family = "a" and sort by role', function(done) {
+		request({
+			url           : domain + '/api/directory?filter={"name.family":"a"}&sort=role',
+			method        : "GET",
+			jar           : sessionCookie
+		}, function (err, resp, body) {
+			var list;
+
+			should.not.exist(err);
+			resp.statusCode.should.equal(200);
+			body.should.be.a("string");
+
+			list = JSON.parse(body);
+			list.should.be.an('object');
+			list.should.have.property("nb");
+			list.should.have.property("pg");
+			list.should.have.property("offset");
+			list.should.have.property("items");
+			list.items.should.be.an("array");
+			list.nb.should.be.equal(3);
+			list.items.should.have.length(3);
+			list1 = list;
+			return done();
+		});
+	});
+
+	it('get directory filter name.family = "a" and sort descending by role', function(done) {
+		request({
+			url           : domain + '/api/directory?filter={"name.family":"a"}&sort=role&dir=-1',
+			method        : "GET",
+			jar           : sessionCookie
+		}, function (err, resp, body) {
+			var list;
+
+			should.not.exist(err);
+			resp.statusCode.should.equal(200);
+			body.should.be.a("string");
+
+			list = JSON.parse(body);
+			list.should.be.an('object');
+			list.should.have.property("nb");
+			list.should.have.property("pg");
+			list.should.have.property("offset");
+			list.should.have.property("items");
+			list.items.should.be.an("array");
+			list.nb.should.be.equal(3);
+			list.items.should.have.length(3);
+			
+			list.items.forEach( function(item, indx) {
+				item.should.eql( list1.items[2-indx]);
+				if(indx === 2 ) { 
+					return done(); 
+				}
+			});
+		});
+	});
+	
 	it('create a new entry directory (professional)', function(done) {
 		var newEntry = {
 			name: {

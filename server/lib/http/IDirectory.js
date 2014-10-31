@@ -30,13 +30,13 @@ var IDirectory = {
 		logger.trace("getEntries");
 		var pg = parseInt(req.params.pg,10) || 1;
 		var offset = parseInt(req.params.offset,10) || 10;
-		var sort = req.params.sort;
-		var filter = req.params.filter;
-
+		var sort = req.params.sort || null;
+		var sortDir = parseInt(req.params.dir,10) || 1;
+		var filter = req.params.filter || null;
+		
 		physioDOM.Directory()
 			.then( function(directory) {
-				logger.debug("getEntries");
-				return directory.getEntries(pg, offset, sort, filter);
+				return directory.getEntries(pg, offset, sort, sortDir, filter);
 			})
 			.then( function(list) {
 				res.send(list);

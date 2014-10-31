@@ -66,7 +66,7 @@ function Directory( ) {
 	 * @param filter
 	 * @returns {*}
 	 */
-	this.getEntries = function( pg, offset, sort, filter ) {
+	this.getEntries = function( pg, offset, sort, sortDir, filter ) {
 		logger.trace("getEntries");
 		var search = {};
 		if(filter) {
@@ -76,6 +76,8 @@ function Directory( ) {
 					if(search.hasOwnProperty(prop)) {
 						if( ["true","false"].indexOf(search[prop]) !== -1) {
 							search[prop] = (search[prop]==="true"?true:false);
+						} else {
+							search[prop] = new RegExp("^"+search[prop],'i');
 						}
 					}
 				}
@@ -86,7 +88,7 @@ function Directory( ) {
 		var cursor = physioDOM.db.collection("professionals").find(search);
 		if(sort) {
 			var cursorSort = {};
-			cursorSort[sort] = 1;
+			cursorSort[sort] = [-1,1].indexOf(sortDir)!==-1?sortDir:1;
 			cursor = cursor.sort( cursorSort );
 		}
 		return dbPromise.getList(cursor, pg, offset);
