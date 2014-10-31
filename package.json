@@ -12,7 +12,8 @@
   "description": "A web portal for professionnal",
   "scripts": {
     "install": "cd static; bower install; cd ..; sudo node install/install.js",
-    "start": "supervisor -w package.json,server/ -- server/server.js -p 8001 2>&1 > log/app.log"
+    "start": "supervisor -w package.json,server/ -- server/server.js -p 8001 2>&1 > log/app.log",
+    "test": "node ./test/index.js"
   },
   "main": "./server/server.js",
   "repository": {
@@ -20,16 +21,44 @@
     "url": "http://git.telecomsante.com/physiodom-hdim/physiodom"
   },
   "dependencies": {
-    "restify": "2.6.3",
-    "moment": "2.5.1",
+    "MD5": "^1.2.1",
     "commander": "2.1.0",
-    "rsvp": "3.0.9",
+    "cookies": "~0.5.0",
+    "jsonschema": "^1.0.0",
+    "logger": "git+ssh://git@git.telecomsante.com:tools/logger.git#v1.1.0",
+    "moment": "2.5.1",
     "mongodb": "~1.4.7",
-    "cookies": "~0.5.0"
+    "restify": "2.6.3",
+    "rsvp": "3.0.9"
   },
   "devDependencies": {
-    "mocha": "1.13.0",
-    "should": "2.0.1",
-    "request": "2.27.0"
+    "chai": "^1.9.2",
+    "grunt": "^0.4.5",
+    "grunt-mocha": "^0.4.11",
+    "grunt-mocha-test": "^0.12.1",
+    "mocha": "^1.21.5",
+    "request": "^2.45.0"
+  },
+  "jshintConfig": {
+    "nonew": true,
+    "validthis": true,
+    "curly": true,
+    "latedef": true,
+    "unused": "vars",
+    "noarg": true,
+    "forin": true,
+    "noempty": true,
+    "node": true,
+    "eqeqeq": true,
+    "strict": true,
+    "undef": true,
+    "bitwise": true,
+    "newcap": true,
+    "browser": true,
+    "camelcase": true,
+    "ignores": [
+      "vendors", 
+      "exp/"
+    ]
   }
 }

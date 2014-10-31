@@ -3,18 +3,17 @@
 "use strict";
 
 var restify = require("restify"),
-		fs      = require('fs'),
-		program = require("commander"),
-		RSVP    = require("rsvp"),
-		path    = require("path"),
-		zlib    = require("zlib"),
-		Cookies = require("cookies"),
-		MongoClient = require("mongodb").MongoClient,
-		ObjectID = require("mongodb").ObjectID,
-		PhysioDOM = require("./lib/physiodom");
+	fs      = require('fs'),
+	program = require("commander"),
+	path    = require("path"),
+	Cookies = require("cookies"),
+	Logger = require("logger"),
+	PhysioDOM = require("./lib/class/physiodom");
+
+var IDirectory = require('./lib/http/IDirectory');
 
 var pkg     = require('../package.json');
-
+var logger = new Logger( "PhysioDOM App");
 var DOCUMENT_ROOT = __dirname+"/../static";
 
 var config =  { cache : true };
@@ -31,14 +30,17 @@ program
 	.parse(process.argv);
 
 /**
- *
+ * requestLog
+ * show request information
+ * @param req
+ * @param res
  */
 function requestLog(req, res) {
 	var ipAddress = req.headers['x-forwarded-for'] === undefined ? req.connection.remoteAddress : req.headers['x-forwarded-for'];
-	console.log(ipAddress, req.method, req.url);
-	console.log(" ", "cookies : ", req.cookies);
-	console.log(" ", "params : ", req.params);
-	console.log(" ", "body : ", req.body ? req.body.toString() : "");
+	logger.info(ipAddress, req.method, req.url);
+	logger.debug(" ", "cookies : ", req.cookies);
+	logger.debug(" ", "params : ", req.params);
+	logger.debug(" ", "body : ", req.body ? req.body.toString() : "-");
 	return;
 }
 
@@ -52,12 +54,14 @@ function requestLog(req, res) {
 function responseLog(req, res) {
 	var ipAddress = req.headers['x-forwarded-for'] === undefined ? req.connection.remoteAddress : req.headers['x-forwarded-for'];
 	var responseTime = (res._headers && res._headers.hasOwnProperty('response-time') ? res._headers['response-time'] + 'ms' : '');
-	console.log(ipAddress, req.method, req.url, res.statusCode, responseTime);
+	logger.info(ipAddress, req.method, req.url, res.statusCode, responseTime);
 	return;
 }
 
-var physioDOM = new PhysioDOM();
+var physioDOM = new PhysioDOM();   // PhysioDOM object is global and so shared to all modules
+// @todo move database uri to a config file
 physioDOM.connect("mongodb://127.0.0.1/physioDOM");
+global.physioDOM = physioDOM;
 
 var server = restify.createServer({
 	name:    pkg.name,
@@ -72,12 +76,62 @@ server.pre(function(req, res, next) {
 
 server.use( function(req, res, next) {
 	req.cookies = {};
-	req.headers.cookie && req.headers.cookie.split(';').forEach( function( cookie ) {
-		var parts = cookie.split('=');
-		req.cookies[ parts[0].trim() ] = ( parts[1].trim() || '' );
+	
+	function readCookies( cb ) {
+		logger.trace("read cookies");
+		if( req.headers.cookie ) {
+			var cookies = req.headers.cookie.split(';');
+			var count = cookies.length;
+			cookies.forEach(function (cookie) {
+				var parts = cookie.split('=');
+				req.cookies[parts[0].trim()] = parts[1].trim() || '';
+				if( --count === 0 ) {
+					console.log( req.cookies);
+					cb( req.cookies );
+				}
+			});
+		} else {
+			cb( {} );
+		}
+	}
+
+	function getSession( cb ) {
+		logger.trace("getSessionAccount");
+		logger.debug("cookies ", JSON.stringify(req.cookies, null, 4) );
+		if( req.cookies && req.cookies.sessionID ) {
+			physioDOM.getSession( req.cookies.sessionID )
+				.then( function( session ) {
+					logger.debug("session ", JSON.stringify(session,null,4));
+					session.getPerson()
+						.then( function( session ) {
+							cb(null, session);
+						})
+						.catch( function(err) {
+							cb(null, null);
+						});
+				})
+				.catch( function(err) {
+					logger.warning("error", err);
+					cb(err, null);
+				});
+		} else {
+			logger.debug("no session");
+			cb( null, null);
+		}
+	}
+	
+	
+	readCookies( function(cookies) {
+		getSession( function(err, session) {
+			if(err) {
+				req.session = null;
+			} else {
+				req.session = session;
+			}
+			requestLog(req, res);
+			return next();
+		});
 	});
-	requestLog(req, res);
-	return next();
 });
 
 server.use(restify.gzipResponse());
@@ -85,18 +139,45 @@ server.use(restify.fullResponse());
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
 server.pre(restify.pre.userAgentConnection());
+
 server.use(function checkAcl(req, res, next) {
-	console.log("checkAcl",req.url);
+	logger.trace("checkAcl",req.url);
+	
+	return next();
 	/*
-	CheckACL and return not authorized if not
-	if( req.cookies.uuid !== "login") {
-		res.send(new restify.NotAuthorizedError());
-		next(false);
-	} else {
+	if( req.url.match(/^(\/|\/api\/login)$/) ) {
 		return next();
 	}
+	if(!req.cookies.sessionID) {
+			logger.warning("not authorized");
+			res.send(403);
+			return next(false);
+	} else {
+		physioDOM.getSession(req.cookies.sessionID)
+			.then( function(session) {
+				if( session.expire - (new Date()).getTime() < 0 ) {
+					logger.warning( "session has expired");
+					cookies.set('sessionID');
+					if( req.url.match(/^\/api/)) {
+						res.send(403, { code:"EXPIRED", msg:"session has expired"});
+						return next(false);
+					} else {
+						return readFile(path.join(DOCUMENT_ROOT, '/index.htm'), req, res, next);
+					}
+				} else {
+					
+					logger.debug("session expires at "+ moment().add( session.expire - (new Date()).getTime(), 'ms' ).format());
+					return next();
+				}
+			})
+			.catch( function(err) {
+				console.log("Error ", err);
+				cookies.set('sessionID');
+				res.send(403);
+				return next(false);
+			});
+	}
 	*/
-	return next();
 });
 
 server.opts(/\.*/,function (req, res, next) {
@@ -115,20 +196,24 @@ server.on("after",function(req,res) {
 	responseLog(req,res);
 });
 
-server.post(/\/api\/token/, function( req, res, next) {
-	console.log( "getToken", req.headers.username, req.headers.password);
-	
-	res.send(200);
-	return next();
-});
+server.post('/api/login', apiLogin);
+server.get('/api/logout', logout);
+server.get('/logout', logout);
+server.get('/api/beneficiaries', getBeneficiaries);
 
-server.post(/\/?$/, login);
-server.get(/\/?logout$/, logout);
-server.get(/\/api\/beneficiaries/, getBeneficiaries);
-server.get(/\/api\/directory\/professionals/, getDirectory);
+server.get( '/api/directory', IDirectory.getEntries);
+server.post('/api/directory', IDirectory.createEntry);
+server.get( '/api/directory/:entryID', IDirectory.getEntry );
+server.put( '/api/directory/:entryID', IDirectory.updateEntry );
+server.del( '/api/directory/:entryID', IDirectory.deleteEntry );
+server.post( '/api/directory/:entryID/account', IDirectory.accountUpdate );
+server.get( '/api/directory/:entryID/account', IDirectory.account );
+
+server.get('/api/sessions/', getSessions);
+server.post('/', login);
 
 server.get(/\/[^api\/]?$/, function(req, res, next) {
-	console.log("index");
+	logger.trace("index");
 	if( req.cookies.sessionID ) {
 		return readFile(path.join(DOCUMENT_ROOT, '/ui.htm'), req, res, next);
 	} else {
@@ -139,20 +224,89 @@ server.get(/\/[^api\/]?$/, function(req, res, next) {
 server.get(/\/[^api\/]?.*/, serveStatic );
 
 server.listen(program.port, "127.0.0.1", function() {
-	console.log('%s listening at %s', server.name, server.url);
+	logger.info('------------------------------------------------------------------');
+	logger.info(server.name + ' listening at '+ server.url);
 });
 
-function login(req,res,next) {
-	console.log("login",req.params);
-	var cookies = new Cookies(req, res);
-
-	if( req.params.login === "login" && req.params.passwd === "passwd") {
-		cookies.set('sessionID', new ObjectID(), cookieOptions);
-		var filepath = path.join(DOCUMENT_ROOT, '/ui.htm');
-		return readFile(filepath,req,res,next);
+function apiLogin(req, res, next) {
+	logger.trace("apiLogin");
+	var body,cookies;
+	
+	if( req.headers.authorization ) {
+		logger.debug("authorization header");
+		var token = req.headers.authorization.split(/\s+/).pop() || '';            // and the encoded auth token
+		var auth = new Buffer(token, 'base64').toString();    // convert from base64
+		var parts = auth.split(/:/);                          // split on colon
+		body = JSON.stringify({login: parts[0], password: parts[1]});
 	} else {
-		console.log('unset cookies');
+		body = req.body.toString();
+	}
+	
+	cookies = new Cookies(req, res);
+	
+	try {
+		var user = JSON.parse( body );
+		if( !user.login || !user.password ) {
+			cookies.set('sessionID');
+			cookies.set('role');
+			logger.warning("no login or password");
+			res.send(403);
+			return next(false);
+		} else {
+			physioDOM.getAccountByCredentials(user.login, user.password )
+				.then( function(account) {
+					return account.createSession();
+				})
+				.then( function(session) {
+					cookies.set('sessionID', session.sessionID, cookieOptions);
+					cookies.set('role', session.role, { path: '/', httpOnly : false} );
+					res.send(200);
+					return next();
+				})
+				.catch( function(err) {
+					// logger.debug("err",err);
+					logger.warning(err.message || "bad login or password");
+					cookies.set('sessionID');
+					cookies.set('role');
+					res.send(err.code || 403, err);
+					return next(false);
+				});
+		}
+	} catch(err) {
+		logger.warning("bad json format");
 		cookies.set('sessionID');
+		cookies.set('role');
+		res.send(403);
+		return next(false);
+	}
+}
+
+function login(req,res,next) {
+	logger.trace("login",req.params);
+	var cookies = new Cookies(req, res);
+	
+	if( req.params.login && req.params.passwd) {
+		// check if an account exists and is active
+		physioDOM.getAccountByCredentials(req.params.login, req.params.passwd )
+			.then( function(account) {
+				return account.createSession();
+			})
+			.then( function(session) {
+				cookies.set('sessionID', session.sessionID, cookieOptions);
+				cookies.set('role', session.role, { path: '/', httpOnly : false});
+				var filepath = path.join(DOCUMENT_ROOT, '/ui.htm');
+				return readFile(filepath, req,res,next);
+			})
+			.catch( function(err) {
+				cookies.set('sessionID');
+				cookies.set('role');
+				res.header('Location', '/#401');
+				res.send(302);
+				return next();
+			});
+	} else {
+		cookies.set('sessionID');
+		cookies.set('role');
 		res.header('Location', '/#403');
 		res.send(302);
 		return next();
@@ -160,14 +314,23 @@ function login(req,res,next) {
 }
 
 function logout(req, res, next ) {
-	console.log("login",req.params);
 	var cookies = new Cookies(req, res);
 
-	console.log('unset cookies');
-	cookies.set('sessionID');
-	res.header('Location', '/');
-	res.send(302);
-	return next();
+	physioDOM.deleteSession( cookies.get("sessionID") )
+		.catch( function(err) { 
+			console.log("Error ",err);
+		}).finally( function() {
+			logger.info('unset cookies');
+			cookies.set('sessionID');
+			cookies.set('role');
+			if(req.url.match(/^\/api/)) {
+				res.send(200);
+			} else {
+				res.header('Location', '/');
+				res.send(302);
+			}
+			return next();
+		});
 }
 
 function getBeneficiaries(req, res, next) {
@@ -182,13 +345,13 @@ function getBeneficiaries(req, res, next) {
 		});
 }
 
-function getDirectory( req, res, next ) {
-	console.log("getDirectory");
+function getSessions( req, res, next ) {
+	console.log("getSessions");
 	var pg = parseInt(req.params.pg,10) || 1;
 	var offset = parseInt(req.params.offset,10) || 10;
 	var sort = req.params.sort;
-	
-	physioDOM.getDirectory(pg, offset, sort)
+
+	physioDOM.getSessions(pg, offset, sort)
 		.then(function(list) {
 			res.send(list);
 			next();
@@ -198,8 +361,10 @@ function getDirectory( req, res, next ) {
 function serveStatic(req,res,next) {
 	console.log("serveStatic");
 	var uri      = require('url').parse(req.url).pathname;
-	var filepath = decodeURIComponent((uri=="/")?path.join(DOCUMENT_ROOT, '/index.htm'):path.join(DOCUMENT_ROOT, uri));
-	if(!filepath) return next();
+	var filepath = decodeURIComponent((uri==="/")?path.join(DOCUMENT_ROOT, '/index.htm'):path.join(DOCUMENT_ROOT, uri));
+	if(!filepath) {
+		return next();
+	}
 
 	fs.exists(filepath, function(exists){
 		if(!exists){
@@ -209,40 +374,6 @@ function serveStatic(req,res,next) {
 		}
 		readFile(filepath,req,res,next);
 	});
-}
-
-function readFile(filepath,req,res,next) {
-	console.log("readFile",filepath);
-	var mimetype = mimetypes[require('path').extname(filepath).substr(1)];
-	var stats = fs.statSync(filepath);
-
-	if(config.cache && req.headers['if-modified-since'] && (new Date(req.headers['if-modified-since'])).valueOf() == ( new Date(stats.mtime)).valueOf() ) {
-		res.statusCode = 304;
-		res.end();
-		return next();
-	} else {
-		var raw = fs.createReadStream(filepath);
-		raw.on("open",function(fd) {
-			res.set("Content-Type", mimetype);
-			res.set("Content-Length",stats.size);
-			res.set("Cache-Control","public");
-			res.set("Last-Modified",stats.mtime);
-			res.writeHead(200);
-			raw.pipe(res);
-
-			raw.once('end', function () {
-				console.log("end");
-				next(false);
-			});
-		});
-	}
-}
-
-function send404(req,res,next) {
-	res.writeHead(404, {"Content-Type": "text/html"});
-	res.write("404 Not Found\n");
-	res.end();
-	return next();
 }
 
 var mimetypes = {
@@ -286,3 +417,36 @@ var mimetypes = {
 	'woff':'application/font-woff',
 	'json':'application/json'
 };
+
+function readFile(filepath,req,res,next) {
+	console.log("readFile",filepath);
+	var mimetype = mimetypes[require('path').extname(filepath).substr(1)];
+	var stats = fs.statSync(filepath);
+
+	if(config.cache && req.headers['if-modified-since'] && (new Date(req.headers['if-modified-since'])).valueOf() === ( new Date(stats.mtime)).valueOf() ) {
+		res.statusCode = 304;
+		res.end();
+		return next();
+	} else {
+		var raw = fs.createReadStream(filepath);
+		raw.on("open",function(fd) {
+			res.set("Content-Type", mimetype);
+			res.set("Content-Length",stats.size);
+			res.set("Cache-Control","public");
+			res.set("Last-Modified",stats.mtime);
+			res.writeHead(200);
+			raw.pipe(res);
+
+			raw.once('end', function () {
+				next(false);
+			});
+		});
+	}
+}
+
+function send404(req,res,next) {
+	res.writeHead(404, {"Content-Type": "text/html"});
+	res.write("404 Not Found\n");
+	res.end();
+	return next();
+}
