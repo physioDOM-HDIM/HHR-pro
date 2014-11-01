@@ -188,7 +188,6 @@ function Professional() {
 				if(err) {
 					throw err;
 				} else {
-					console.log( JSON.stringify(item, null, 4));
 					resolve(item || {});
 				}
 			});
