@@ -4,35 +4,141 @@
 
 var promise = require("rsvp").Promise,
 	Logger = require("logger"),
-	ObjectID = require("mongodb").ObjectID;
+	ObjectID = require("mongodb").ObjectID,
+	beneficiarySchema = require("./../schema/beneficiarySchema");
 
 var logger = new Logger("Beneficiary");
 
 
 function Beneficiary( ) {
-	
-	this.setup = function( obj ) {
-		// Account.call( this, obj );
-		for (var prop in this) {
-			if (obj.hasOwnProperty(prop)) {
-				this[prop] = obj[prop];
-			}
-		}
-	};
 
-	this.check = function() {
-		return true;
+	this.getById = function( beneficiaryID, professional ) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("getById");
+			var search = {_id: beneficiaryID };
+			if( ["adminstrator","coordinator"].indexOf(professional.role) === -1) {
+				search["$elemMatch"] = { professionalID: professional._id };
+			}
+			physioDOM.db.collection("beneficiaries").findOne(search, function (err, doc) {
+				if (err) {
+					logger.alert("Error");
+					throw err;
+				}
+				if(!doc) {
+					reject( {code:404, error:"not found"});
+				} else {
+					for (var prop in doc) {
+						if (doc.hasOwnProperty(prop)) {
+							that[prop] = doc[prop];
+						}
+					}
+					resolve(that);
+				}
+			});
+		});
+	};
+	
+	this.save = function() {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("-> save" );
+			
+			physioDOM.db.collection("beneficiaries").save( that, function(err, result) {
+				if(err) { 
+					throw err; 
+				}
+				if( isNaN(result)) {
+					that._id = result._id;
+				}
+				resolve(that);
+			});
+		});
+	};
+	
+	function checkUniq( entry ) {
+		return new promise( function(resolve, reject) {
+			logger.trace("checkUniq");
+			// check that the entry have an email
+			
+			var filter = { name: entry.name, birthdate: entry.birthdate, telecom: entry.telecom };
+			if( entry._id ) {
+				filter._id = { "$ne": new ObjectID(entry._id) };
+			}
+			physioDOM.db.collection("beneficiaries").count( filter , function(err,nb) {
+				if(err) {
+					logger.error(err);
+					reject(err);
+				}
+				if(nb > 0) {
+					logger.warning("duplicate");
+					reject({error:"duplicate"});
+				} else {
+					resolve( entry );
+				}
+			});
+		});
+	}
+
+	function checkSchema( entry ) {
+		return new promise( function(resolve, reject) {
+			logger.trace("checkSchema");
+			var check = beneficiarySchema.validator.validate( entry, { "$ref":"/Beneficiary"} );
+			if( check.errors.length ) {
+				console.log(JSON.stringify(check.errors,null,4));
+				return reject( { error:"bad format" } );
+			} else {
+				return resolve(entry);
+			}
+		});
+	}
+	
+	this.setup = function( newEntry ) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("setup");
+			checkSchema(newEntry)
+				.then(checkUniq)
+				.then(function (entry) {
+					for (var key in newEntry) {
+						if (newEntry.hasOwnProperty(key)) {
+							that[key] = newEntry[key];
+						}
+					}
+					return that.save();
+				})
+				.then(resolve)
+				.catch(reject);
+		});
+	};
+	
+	this.update = function( updatedEntry ) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("update");
+			if( that._id.toString() !== updatedEntry._id ) {
+				logger.warning("not same beneficiary");
+				throw { code:405, message:"not same beneficiary"};
+			}
+			updatedEntry._id = that._id;
+			checkSchema(updatedEntry)
+				.then(function (updatedEntry) {
+					logger.debug("schema is valid");
+					for (var key in updatedEntry) {
+						if (key !== "_id" && updatedEntry.hasOwnProperty(key)) {
+							that[key] = updatedEntry[key];
+						}
+					}
+					return that.save();
+				})
+				.then(resolve)
+				.catch(reject);
+		});
 	};
 
 	this.getEvents = function() {
 		return new promise( function(resolve, reject) {
 			logger.trace("getEvents");
-		});
-	};
-
-	this.save = function() {
-		return new promise( function(resolve, reject) {
-			logger.trace("save");
 		});
 	};
 
@@ -78,24 +184,5 @@ function Beneficiary( ) {
 		});
 	};
 }
-
-/*
-Beneficiary.prototype = Object.create( Account.prototype, {
-	birthdate     : { value:null, enumerable: true, configurable: true,writable: true },
-	socialID      : { value:null, enumerable: true, configurable: true,writable: true },
-	referring     : { value:null, enumerable: true, configurable: true,writable: true },
-	physioDOMBox  : { value:null, enumerable: true, configurable: true,writable: true },
-	details : { value: {
-		maritalStatus: null,
-		disability: {
-			type:null,
-			level:0
-		},
-		lifeCondtion: null,
-		profession:null
-	}, enumerable: true, configurable: true,writable: true },
-	perimeter     : { value:null, enumerable: true, configurable: true,writable: true },
-});
-*/
 
 module.exports = Beneficiary;

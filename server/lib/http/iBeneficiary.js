@@ -2,7 +2,7 @@
 "use strict";
 
 /**
- * IDirectory
+ * IBeneficiary
  *
  * treat http request for the directory
  * @type {exports}
@@ -16,7 +16,7 @@ var logger = new Logger("IBeneficiary");
  *
  * treat http request for beneficiaries
  */
-var IBeneficiaries = {
+var IBeneficiary = {
 
 	/**
 	 * get list of beneficiaries
@@ -25,33 +25,127 @@ var IBeneficiaries = {
 	 */
 	getBeneficiaries : function( req, res, next ) {
 		logger.trace("getBeneficiaries");
-		res.send(501);
-		return next();
+		logger.debug(req.session?"session "+ JSON.stringify(req.session,null,4) : "no session");
+		var pg = parseInt(req.params.pg,10) || 1;
+		var offset = parseInt(req.params.offset,10) || 20;
+		var sort = req.params.sort || null;
+		var sortDir = parseInt(req.params.dir,10) || 1;
+		var filter = req.params.filter || null;
+
+		// console.log(req.Session);
+		physioDOM.Beneficiaries()
+			.then(function(beneficiaries) {
+				return beneficiaries.getBeneficiaries(req.session, pg, offset, sort, sortDir, filter);
+			})
+			.then( function(list) {
+				res.send(list);
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
 	},
 
 	createBeneficiary: function(req, res, next ) {
 		logger.trace("createBeneficiary");
-		res.send(501);
-		return next();
+		physioDOM.Beneficiaries()
+			.then( function(beneficiaries) {
+				if(!req.body) {
+					throw( {"message":"entry is empty"});
+				}
+				try {
+					var user = JSON.parse(req.body.toString());
+					return beneficiaries.createBeneficiary(req.session, user);
+				} catch(err) {
+					throw { code:405, message:"bad json format"};
+				}
+			})
+			.then( function(beneficiary) {
+				res.send(beneficiary);
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
 	},
 
 	getBeneficiary: function(req, res, next) {
 		logger.trace("getBeneficiary");
-		res.send(501);
-		return next();
+		physioDOM.Beneficiaries()
+			.then( function(beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID);
+			})
+			.then( function(beneficiary) {
+				res.send( beneficiary );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
 	},
 
 	updateBeneficiary: function(req, res, next) {
 		logger.trace("updateBeneficiary");
-		res.send(501);
-		return next();
+		if(!req.body) {
+			res.send(400, { error: "empty request"});
+			return next(false);
+		}
+		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
+			res.send(403,  { code:403, message:"not authorized"});
+			return next(false);
+		}
+		try {
+			var updateItem = JSON.parse(req.body);
+			physioDOM.Beneficiaries()
+				.then(function (beneficiaries) {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID);
+				})
+				.then(function (beneficiary) {
+					return beneficiary.update(updateItem);
+				})
+				.then( function (beneficiary ) {
+					res.send( beneficiary );
+					next();
+				})
+				.catch(function (err) {
+					res.send(err.code || 400, err);
+					next(false);
+				});
+		} catch( err ) {
+			res.send(400, { error: "bad json format"});
+			next(false);
+		}
 	},
 
 	deleteBeneficiary: function(req, res, next) {
 		logger.trace("deleteBeneficiary");
-		res.send(501);
+		var beneficiaries;
+		
+		physioDOM.Beneficiaries()
+			.then( function( _beneficiaries) {
+				beneficiaries = _beneficiaries;
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID);
+			})
+			.then( function(beneficiary) {
+				if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
+					throw { code:403, message:"not authorized"};
+				} else {
+					return beneficiaries.deleteBeneficiary(beneficiary);
+				}
+			})
+			.then( function() {
+				res.send(410, { code:410, message: "entry deleted"});
+				next();
+			})
+			.catch(function (err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
 		return next();
 	}
 };
 
-module.exports = IBeneficiaries;
+module.exports = IBeneficiary;

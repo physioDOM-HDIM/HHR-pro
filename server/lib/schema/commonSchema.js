@@ -27,13 +27,23 @@ var role = [
 ];
 module.exports.role = role;
 
+var maritalStatus = [
+	"Divorced",
+	"Separated",
+	"Married",
+	"Domestic partner",
+	"Single",
+	"Widowed"
+];
+module.exports.maritalStatus = maritalStatus;
+
 module.exports.humanName = {
 	"id":"/HumanName",
 	"description" : "Human Name define name of a person",
 	"type":"object",
 	"properties": {
 		"family": { type:"string", required:true },
-		"given":  { type:"string", required:true },
+		"given":  { type:"string" },
 		"prefix": { type:"string" },
 		"suffix": { type:"string" }
 	},
@@ -47,7 +57,7 @@ module.exports.simpleAddress = {
 	"properties": {
 		"use"    : {type: "string", "enum": ["home", "work", "temp", "old"]},
 		"text"   : {type: "string"},
-		"line"   : {type:"array",item: {type: "string"}},
+		"line"   : {type: "array",item: {type: "string"}},
 		"city"   : {type: "string"},
 		"state"  : {type: "string"},
 		"zip"    : {type: "string"},
