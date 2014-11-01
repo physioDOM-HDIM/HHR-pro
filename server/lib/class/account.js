@@ -1,4 +1,5 @@
 /* jslint node:true */
+/* glooal physioDOM */
 "use strict";
 
 var Session  = require("./session"),
@@ -8,9 +9,8 @@ var Session  = require("./session"),
 var Logger = require("logger");
 var logger = new Logger("Account");
 
-function Account( physioDOM, obj ) {
+function Account( obj ) {
 	logger.trace("Account constructor");
-	var _physioDOM = physioDOM;
 
 	this._id       = null;
 	this.login     = null;
@@ -41,7 +41,7 @@ function Account( physioDOM, obj ) {
 				role     : that.role,
 				person   : that.person
 			};
-			var session = new Session( _physioDOM, obj );
+			var session = new Session( obj );
 			session.save()
 				.then(resolv)
 				.catch(reject);

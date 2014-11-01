@@ -42,9 +42,12 @@ module.exports = {
 				.then( function(nb) {
 					var list  = { nb: nb, pg: pg || 1, offset:offset || 20, items:[] };
 					cursor.skip( (list.pg - 1) * list.offset).limit( list.offset ).toArray( function(err, results) {
-						if(err) { reject(err); }
-						list.items = results;
-						resolve( list );
+						if(err) { 
+							reject(err); 
+						} else {
+							list.items = results;
+							resolve(list);
+						}
 					});
 				});
 		});

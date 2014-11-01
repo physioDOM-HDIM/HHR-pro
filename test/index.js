@@ -22,7 +22,7 @@ var mocha = new Mocha({
 });
 
 mocha.addFile(join(__dirname,'testDirectory.js'));
-// mocha.addFile(join(__dirname,'testBeneficiaries.js'));
+mocha.addFile(join(__dirname,'testBeneficiaries.js'));
 
 mocha.run(function onEnding() {
 	console.log("testing done");

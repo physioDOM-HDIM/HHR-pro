@@ -10,7 +10,8 @@ var restify = require("restify"),
 	Logger = require("logger"),
 	PhysioDOM = require("./lib/class/physiodom");
 
-var IDirectory = require('./lib/http/IDirectory');
+var IDirectory = require('./lib/http/IDirectory'),
+	IBeneficiary = require('./lib/http/IBeneficiary');
 
 var pkg     = require('../package.json');
 var logger = new Logger( "PhysioDOM App");
@@ -86,7 +87,7 @@ server.use( function(req, res, next) {
 				var parts = cookie.split('=');
 				req.cookies[parts[0].trim()] = parts[1].trim() || '';
 				if( --count === 0 ) {
-					console.log( req.cookies);
+					// console.log( req.cookies);
 					cb( req.cookies );
 				}
 			});
@@ -97,17 +98,17 @@ server.use( function(req, res, next) {
 
 	function getSession( cb ) {
 		logger.trace("getSessionAccount");
-		logger.debug("cookies ", JSON.stringify(req.cookies, null, 4) );
 		if( req.cookies && req.cookies.sessionID ) {
 			physioDOM.getSession( req.cookies.sessionID )
 				.then( function( session ) {
-					logger.debug("session ", JSON.stringify(session,null,4));
 					session.getPerson()
 						.then( function( session ) {
+							// logger.debug("session", JSON.stringify(person,null,4));
 							cb(null, session);
 						})
 						.catch( function(err) {
-							cb(null, null);
+							logger.error("error", JSON.stringify(err, null,4));
+							cb(err, null);
 						});
 				})
 				.catch( function(err) {
@@ -115,7 +116,7 @@ server.use( function(req, res, next) {
 					cb(err, null);
 				});
 		} else {
-			logger.debug("no session");
+			logger.warning("no session");
 			cb( null, null);
 		}
 	}
@@ -129,6 +130,14 @@ server.use( function(req, res, next) {
 				req.session = session;
 			}
 			requestLog(req, res);
+			if( !req.session ){
+				if( req.url.match(/^(\/|\/api\/login)$/) ) {
+					return next();
+				} else {
+					res.send(403, { error:403, message:"no session"} );
+					return next(false);
+				}
+			}
 			return next();
 		});
 	});
@@ -196,20 +205,25 @@ server.on("after",function(req,res) {
 	responseLog(req,res);
 });
 
-server.post('/api/login', apiLogin);
-server.get('/api/logout', logout);
-server.get('/logout', logout);
-server.get('/api/beneficiaries', getBeneficiaries);
-
 server.get( '/api/directory', IDirectory.getEntries);
 server.post('/api/directory', IDirectory.createEntry);
 server.get( '/api/directory/:entryID', IDirectory.getEntry );
 server.put( '/api/directory/:entryID', IDirectory.updateEntry );
 server.del( '/api/directory/:entryID', IDirectory.deleteEntry );
-server.post( '/api/directory/:entryID/account', IDirectory.accountUpdate );
+server.post('/api/directory/:entryID/account', IDirectory.accountUpdate );
 server.get( '/api/directory/:entryID/account', IDirectory.account );
 
+server.get( '/api/beneficiaries', IBeneficiary.getBeneficiaries);   // get beneficiaries list
+server.post('/api/beneficiaries', IBeneficiary.createBeneficiary);
+server.get( '/api/beneficiaries/:entryID', IBeneficiary.getBeneficiary );
+server.put( '/api/beneficiaries/:entryID', IBeneficiary.updateBeneficiary );
+server.del( '/api/beneficiaries/:entryID', IBeneficiary.deleteBeneficiary );
+
 server.get('/api/sessions/', getSessions);
+
+server.post('/api/login', apiLogin);
+server.get( '/api/logout', logout);
+server.get( '/logout', logout);
 server.post('/', login);
 
 server.get(/\/[^api\/]?$/, function(req, res, next) {
@@ -330,18 +344,6 @@ function logout(req, res, next ) {
 				res.send(302);
 			}
 			return next();
-		});
-}
-
-function getBeneficiaries(req, res, next) {
-	console.log("getBeneficiaries");
-	var pg = parseInt(req.params.pg,10) || 1;
-	var offset = parseInt(req.params.offset,10) || 10;
-	
-	physioDOM.getBeneficiaries(pg, offset)
-		.then(function(list) {
-			res.send(list);
-			next();
 		});
 }
 

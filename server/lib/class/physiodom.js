@@ -16,7 +16,8 @@ var logger = new Logger("PhysioDOM");
 
 var Account = require("./account"),
 	Session = require("./session"),
-	Directory = require("./directory");
+	Directory = require("./directory"),
+	Beneficiaries = require("./beneficiaries");
 
 /**
  * PhysioDOM
@@ -53,33 +54,14 @@ function PhysioDOM( ) {
 	};
 
 	/**
-	 * Get the beneficiaries list per page
-	 * 
-	 * @param pg
-	 * @param offset
-	 * @returns {*}
-	 */
-	this.getBeneficiaries = function( pg, offset ) {
-		var cursor = this.db.collection("beneficiaries").find();
-	
-		return dbPromise.getList(cursor, pg, offset);
-	};
-	
-	this.createBeneficiary = function( obj ) {
-		
-	};
-
-	/**
 	 * return a promise with the Beneficiaries Object
 	 * 
 	 * @returns {promise}
 	 */
 	this.Beneficiaries = function() {
-		logger.trace("Beneficiaries");
-		var that = this;
 		return new promise( function(resolve, reject) {
-			var Beneficiaries = require("./beneficiary");
-			resolve( new Beneficiaries(that) );
+			logger.trace("Beneficiaries");
+			resolve( new Beneficiaries() );
 		});
 	};
 
@@ -89,10 +71,9 @@ function PhysioDOM( ) {
 	 * @returns {promise}
 	 */
 	this.Directory = function() {
-		var that = this;
 		return new promise( function(resolve, reject) {
 			logger.trace("Directory");
-			resolve( new Directory(that) );
+			resolve( new Directory() );
 		});
 	};
 
@@ -116,7 +97,7 @@ function PhysioDOM( ) {
 			that.db.collection("account").findOne(search, function (err, record) {
 				if(err) { reject(err); }
 				if(!record) { reject({code:404, msg:"Account not found"}); }
-				resolve( new Account(that, record));
+				resolve( new Account( record ));
 			});
 		});
 	};
@@ -135,7 +116,7 @@ function PhysioDOM( ) {
 					return reject( { message: "could not find session "+ sessionID });
 				}
 				record.sessionID = sessionID;
-				resolve( new Session(that, record));
+				resolve( new Session( record ));
 			});
 		});
 	};

@@ -1,0 +1,12 @@
+server/exp/*
+node_modules/*
+log/*
+dist/*
+docs/*
+out/*
+Documents/
+static/scheduler/*
+static/bower_components/*
+static/assets/*
+static/components/
+static/tpl/

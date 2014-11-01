@@ -32,12 +32,6 @@ function Directory( ) {
 	 * @returns {Promise}
 	 */
 	this.createEntry = function( newEntry ) {
-		// check the Entry format
-		
-		// if entry is valid create it
-		// and send it
-		
-		// else reject
 		return new promise( function(resolve, reject) {
 			logger.trace("createEntry", newEntry);
 			if( newEntry ) {

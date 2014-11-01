@@ -1,11 +1,11 @@
-/* jslint node:true */
-/* global describe, it, before, after */
+/* jshint node:true */
+
 "use strict";
 
 var request = require("request"),
 	should = require('chai').should(),
 	querystring = require("querystring"),
-	Promise = require("rsvp").Promise,
+	promise = require("rsvp").Promise,
 	testCommon = require("./testCommon");
 
 var domain = 'http://127.0.0.1:8001';   // domain name for reading cookies
@@ -216,12 +216,6 @@ describe('Directory', function() {
 					body.should.be.a("string");
 					try {
 						item = JSON.parse(body);
-						
-					} catch(err) {
-						throw {err:"bad json format"};
-						return done();
-					}
-					finally {
 						item.should.have.property("_id");
 						for( var key in newEntry) {
 							if(newEntry.hasOwnProperty(key)) {
@@ -231,6 +225,9 @@ describe('Directory', function() {
 						}
 						entry1 = item;
 						return done();
+					} catch(err) {
+						throw {err: "bad json format"};
+						// return done();
 					}
 			});
 	});
@@ -326,11 +323,6 @@ describe('Directory', function() {
 			body.should.be.a("string");
 			try {
 				item = JSON.parse(body);
-			} catch(err) {
-				throw {err:"bad json format"};
-				return done();
-			}
-			finally {
 				item.should.have.property("_id");
 				for( var key in newEntry) {
 					if(newEntry.hasOwnProperty(key)) {
@@ -340,6 +332,9 @@ describe('Directory', function() {
 				}
 				entry2 = item;
 				return done();
+			} catch(err) {
+				throw {err:"bad json format"};
+				// return done();
 			}
 		});
 	});
@@ -444,7 +439,7 @@ describe('Directory', function() {
 		entry1.active = true;
 
 		function updateEntry(entry) {
-			return new Promise( function( resolve, reject) {
+			return new promise( function( resolve, reject) {
 				request({url           : domain + '/api/directory/'+entry._id,
 					method             : "PUT",
 					jar                : sessionCookie,

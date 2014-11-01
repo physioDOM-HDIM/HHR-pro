@@ -3,7 +3,6 @@
 /* jshint node:true */
 
 var fs = require("fs"),
-	path = require("path"),
 	swig = require("swig");
 
 var confSchema = {
@@ -19,7 +18,7 @@ var confSchema = {
 	},
 	"additionalProperties":false
 };
-var filename = "test.tpl";
+
 fs.exists(__dirname+"/install.json", function(exists) {
 	var error = false;
 
