@@ -41,6 +41,14 @@
     "request": "^2.45.0"
   },
   "jshintConfig": {
+    "predef": [
+      "before",
+      "after",
+      "it",
+      "describe",
+      "beforeEach",
+      "afterEach"
+    ],
     "nonew": true,
     "validthis": true,
     "curly": true,
@@ -53,13 +61,11 @@
     "eqeqeq": true,
     "strict": true,
     "undef": true,
-    "bitwise": true,
+    "bitwise": false,
     "newcap": true,
     "browser": true,
     "camelcase": true,
-    "ignores": [
-      "vendors",
-      "exp/"
-    ]
+    "node":true,
+    "expr":true
   }
 }
