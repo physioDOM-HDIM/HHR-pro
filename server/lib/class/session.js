@@ -1,17 +1,16 @@
-/* jslint node:true */
+/* global physioDOM */
 "use strict";
 
 var promise = require("rsvp").Promise,
-	Logger = require("logger");
+	Logger = require("logger"),
+	ObjectID = require("mongodb").ObjectID;
 
 var logger = new Logger("Session");
 
-function Session( physioDOM, obj ) {
+function Session( obj ) {
 	var sessionExpire = 5 * 60 * 1000;
 	
 	logger.trace("Session constructor");
-	
-	var _physioDOM = physioDOM;
 	
 	this.sessionID = null;
 	this.createDate = null;
@@ -40,7 +39,7 @@ function Session( physioDOM, obj ) {
 		logger.trace("Session.save");
 		var that = this;
 		return new promise( function( resolv, reject ) {
-			_physioDOM.db.collection("session").save(that.toMongo(), function(err, item) {
+			physioDOM.db.collection("session").save(that.toMongo(), function(err, item) {
 				if(err) { reject(err); }
 				if(item) {
 					resolv(that);
@@ -59,9 +58,32 @@ function Session( physioDOM, obj ) {
 	
 	this.getPerson = function() {
 		logger.trace("getPerson");
-		// var that = this;
+		var that = this;
 		return new promise( function(resolve, reject) {
-			resolve( {} );
+			logger.debug("collection",that.person.collection );
+			if (that.person.collection === "professionals") {
+				physioDOM.Directory()
+					.then(function (directory) {
+						return directory.getEntryByID( new ObjectID(that.person.id));
+					})
+					.then(function (professional) {
+						that.person.item = professional;
+						return that;
+					})
+					.then( resolve )
+					.catch( reject );
+			} else {
+				physioDOM.Beneficiaries()
+					.then(function(beneficiaries) {
+						return beneficiaries.getBeneficiaryByID(null, new ObjectID(that.person.id));
+					})
+					.then( function( beneficiary ) {
+						that.person.item = professional;
+						return that;
+					})
+					.then( resolve )
+					.catch( reject );
+			}
 		});
 	};
 }
