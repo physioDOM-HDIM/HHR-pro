@@ -22,7 +22,8 @@ var practitionerSchema = {
 		"communication": { type:"string", "enum": [ "fr", "es", "nl", "en" ] },
 		"active": { type:"boolean", required:true },
 		"pilot": { type:"object"},
-		"account": { "type":"object", "description":"_id of the account object attached" }
+		"account": { "type":"object", "description":"_id of the account object attached" },
+		"perimeter": { type:"string" }
 	},
 	"additionalProperties":false
 };
@@ -45,7 +46,8 @@ var organizationSchema = {
 		"telecom": { type:"array",item: { "$ref":"/Contact" } },
 		"address": { "$ref":"/SimpleAddress" },
 		"active":  { type:"boolean", required:true },
-		"account": { "type":"object", "description":"_id of the account object attached" }
+		"account": { "type":"object", "description":"_id of the account object attached" },
+		"perimeter": { type:"string" }
 	},
 	"additionalProperties":false
 };
@@ -60,12 +62,12 @@ var professionalSchema = {
 
 var Validator = require('jsonschema').Validator;
 var validator = new Validator();
-validator.addSchema(practitionerSchema,"/Practitioner");
-validator.addSchema(organizationSchema,"/Organization");
-validator.addSchema(professionalSchema,"/Professional");
 validator.addSchema(humanName,"/HumanName");
 validator.addSchema(simpleAddress,"/SimpleAddress");
 validator.addSchema(contact,"/Contact");
+validator.addSchema(practitionerSchema,"/Practitioner");
+validator.addSchema(organizationSchema,"/Organization");
+validator.addSchema(professionalSchema,"/Professional");
 validator.addSchema(account,"/Account");
 
 module.exports.validator = validator;
