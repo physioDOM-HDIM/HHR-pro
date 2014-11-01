@@ -62,9 +62,12 @@ var IDirectory = {
 			.then( function(directory) {
 				if(!req.body) {
 					throw( {"message":"entry is empty"});
+				}try {
+					var user = JSON.parse(req.body.toString());
+					return directory.createEntry(user);
+				} catch(err) {
+					throw { code:405, message:"bad json format"};
 				}
-				var user = JSON.parse( req.body.toString() );
-				return directory.createEntry(user);
 			})
 			.then( function(entry) {
 				res.send(entry);
