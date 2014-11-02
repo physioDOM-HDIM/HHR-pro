@@ -25,7 +25,7 @@ var IBeneficiary = {
 	 */
 	getBeneficiaries : function( req, res, next ) {
 		logger.trace("getBeneficiaries");
-		logger.debug(req.session?"session "+ JSON.stringify(req.session,null,4) : "no session");
+		// logger.debug(req.session?"session "+ JSON.stringify(req.session,null,4) : "no session");
 		var pg = parseInt(req.params.pg,10) || 1;
 		var offset = parseInt(req.params.offset,10) || 20;
 		var sort = req.params.sort || null;
