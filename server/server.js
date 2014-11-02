@@ -218,6 +218,9 @@ server.post('/api/beneficiaries', IBeneficiary.createBeneficiary);
 server.get( '/api/beneficiaries/:entryID', IBeneficiary.getBeneficiary );
 server.put( '/api/beneficiaries/:entryID', IBeneficiary.updateBeneficiary );
 server.del( '/api/beneficiaries/:entryID', IBeneficiary.deleteBeneficiary );
+server.get( '/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryProfessionals );
+server.post( '/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryAddProfessional );
+server.del( '/api/beneficiaries/:entryID/professionals/:profID', IBeneficiary.beneficiaryDelProfessional );
 
 server.get('/api/sessions/', getSessions);
 

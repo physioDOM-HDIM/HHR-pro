@@ -144,7 +144,80 @@ var IBeneficiary = {
 				res.send(err.code || 400, err);
 				next(false);
 			});
-		return next();
+	},
+	
+	beneficiaryProfessionals: function(req, res, next) {
+		logger.trace("beneficiaryProfessonnals");
+		var pg = parseInt(req.params.pg,10) || 1;
+		var offset = parseInt(req.params.offset,10) || 20;
+		
+		physioDOM.Beneficiaries()
+			.then( function(beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID);
+			})
+			.then( function(beneficiary) {
+				return beneficiary.getProfessionals( pg, offset );
+			})
+			.then( function( professionals ) {
+				res.send( professionals );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	beneficiaryAddProfessional: function(req, res, next) {
+		logger.trace("beneficiaryAddProfessonnal");
+		physioDOM.Beneficiaries()
+			.then( function(beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID);
+			}).then( function(beneficiary) {
+				logger.debug("get beneficiary");
+				var item;
+				try {
+					item = JSON.parse(req.body);
+					if( typeof item.referent === "string" ) {
+						item.referent = item.referent === "true"?true:false;
+					}
+					console.log("item", item );
+					return beneficiary.addProfessional(item.professionalID, item.referent );
+				} catch( err ) {
+					var error = err;
+					if(!error) {
+						error = { code:405, message:"bad format"};
+					}
+					res.send(error.code || 400, error);
+					next(false);
+				}
+			})
+			.then( function(professionals) {
+				res.send( professionals );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	beneficiaryDelProfessional: function(req, res, next) {
+		logger.trace("beneficiaryDelProfessonnal");
+		physioDOM.Beneficiaries()
+			.then( function(beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID);
+			}).then( function(beneficiary) {
+				return beneficiary.delProfessional(req.params.profID);
+			})
+			.then( function(professionals) {
+				res.send( professionals );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
 	}
 };
 

@@ -278,6 +278,81 @@ describe('Beneficiaries', function() {
 		});
 	});
 	
+	it('get professionals', function(done) {
+		request({url           : domain + '/api/beneficiaries/'+entry1._id+"/professionals",
+			method             : "GET",
+			jar                : sessionCookie
+		}, function (err, resp, body) {
+			should.not.exist(err);
+			resp.statusCode.should.equal(200);
+			var items = JSON.parse(body);
+			items.should.be.a("array");
+			items.length.should.equal(0);
+			return done();
+		});
+	});
+
+	it('add a professional', function(done) {
+		var professional = { professionalID: "53fb2763b3371800000d42cd", referent: true };
+		request({url           : domain + '/api/beneficiaries/'+entry1._id+"/professionals",
+			method             : "POST",
+			jar                : sessionCookie,
+			form	           : JSON.stringify(professional)
+		}, function (err, resp, body) {
+			should.not.exist(err);
+			resp.statusCode.should.equal(200);
+			var items = JSON.parse(body);
+			items.should.be.a("array");
+			items.length.should.equal(1);
+			items[0].should.have.property("_id");
+			items[0]._id.should.equal(professional.professionalID);
+			items[0].should.have.property("name");
+			items[0].should.have.property("role");
+			items[0].should.have.property("referent");
+			items[0].referent.should.equal(true);
+			return done();
+		});
+	});
+
+	it('add a second professional', function(done) {
+		var professional = { professionalID: "53fb2763b3371800000d42d1", referent: false };
+		request({url           : domain + '/api/beneficiaries/'+entry1._id+"/professionals",
+			method             : "POST",
+			jar                : sessionCookie,
+			form	           : JSON.stringify(professional)
+		}, function (err, resp, body) {
+			should.not.exist(err);
+			resp.statusCode.should.equal(200);
+			var items = JSON.parse(body);
+			items.should.be.a("array");
+			items.length.should.equal(2);
+			items[1].should.have.property("_id");
+			items[1]._id.should.equal(professional.professionalID);
+			items[1].should.have.property("name");
+			items[1].should.have.property("role");
+			items[1].should.have.property("referent");
+			items[1].referent.should.equal(false);
+			return done();
+		});
+	});
+
+	it('delete a professional', function(done) {
+		request({
+			url   : domain + '/api/beneficiaries/' + entry1._id + "/professionals/53fb2763b3371800000d42cd",
+			method: "DELETE",
+			jar   : sessionCookie
+		}, function (err, resp, body) {
+			should.not.exist(err);
+			resp.statusCode.should.equal(200);
+			var items = JSON.parse(body);
+			items.should.be.a("array");
+			items.length.should.equal(1);
+			items[0].should.have.property("_id");
+			items[0]._id.should.equal("53fb2763b3371800000d42d1");
+			return done();
+		});
+	});
+	
 	it('delete a beneficiary', function(done) {
 		request({url           : domain + '/api/beneficiaries/'+entry1._id,
 			method             : "DELETE",
