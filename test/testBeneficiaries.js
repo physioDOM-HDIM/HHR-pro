@@ -140,23 +140,75 @@ describe('Beneficiaries', function() {
 	});
 
 	it('get beneficiaries (admin)', function (done) {
-		throw {error: "not yet implemented"};
-		done();
+		request({url           : domain + '/api/beneficiaries',
+			method             : "GET",
+			jar                : sessionCookies[1]
+		}, function (err, resp, body) {
+			var list;
+
+			should.not.exist(err);
+			resp.statusCode.should.equal(200);
+			body.should.be.a("string");
+
+			list = JSON.parse(body);
+			list.should.be.an('object');
+			list.should.have.property("nb");
+			list.should.have.property("pg");
+			list.should.have.property("offset");
+			list.should.have.property("items");
+			list.items.should.be.an("array");
+			list.nb.should.be.equal(34);
+			list.items.should.have.length(20);
+
+			return done();
+		});
 	});
 
 	it('get beneficiaries (professional)', function (done) {
-		throw {error: "not yet implemented"};
-		done();
+		request({url           : domain + '/api/beneficiaries',
+			method             : "GET",
+			jar                : sessionCookies[2]
+		}, function (err, resp, body) {
+			var list;
+
+			should.not.exist(err);
+			resp.statusCode.should.equal(200);
+			body.should.be.a("string");
+
+			list = JSON.parse(body);
+			list.should.be.an('object');
+			list.should.have.property("nb");
+			list.should.have.property("pg");
+			list.should.have.property("offset");
+			list.should.have.property("items");
+			list.items.should.be.an("array");
+			list.nb.should.be.equal(0);
+			list.items.should.have.length(0);
+
+			return done();
+		});
 	});
 
+	/*
 	it('get beneficiaries (beneficiary)', function (done) {
 		throw {error: "not yet implemented"};
 		done();
 	});
+	*/
 
 	it('get beneficiaries (no user)', function (done) {
-		throw {error: "not yet implemented"};
-		done();
+		request({url           : domain + '/api/beneficiaries?pg=3&offset=10',
+			method             : "GET"
+		}, function (err, resp, body) {
+			var list;
+
+			should.not.exist(err);
+			resp.statusCode.should.equal(403);
+			var msg = JSON.parse(body);
+			msg.error.should.equal(403);
+			msg.message.should.equal("no session");
+			return done();
+		});
 	});
 
 	it('create a beneficiary ( must be JSON )', function(done) {
@@ -314,6 +366,31 @@ describe('Beneficiaries', function() {
 		});
 	});
 
+	it('get beneficiaries (professional)', function (done) {
+		request({url           : domain + '/api/beneficiaries',
+			method             : "GET",
+			jar                : sessionCookies[2]
+		}, function (err, resp, body) {
+			var list;
+
+			should.not.exist(err);
+			resp.statusCode.should.equal(200);
+			body.should.be.a("string");
+
+			list = JSON.parse(body);
+			list.should.be.an('object');
+			list.should.have.property("nb");
+			list.should.have.property("pg");
+			list.should.have.property("offset");
+			list.should.have.property("items");
+			list.items.should.be.an("array");
+			list.nb.should.be.equal(1);
+			list.items.should.have.length(1);
+
+			return done();
+		});
+	});
+	
 	it('add a second professional', function(done) {
 		var professional = { professionalID: "53fb2763b3371800000d42d1", referent: false };
 		request({url           : domain + '/api/beneficiaries/'+entry1._id+"/professionals",
