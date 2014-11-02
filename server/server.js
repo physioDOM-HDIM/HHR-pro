@@ -277,7 +277,7 @@ function apiLogin(req, res, next) {
 				.then( function(session) {
 					cookies.set('sessionID', session.sessionID, cookieOptions);
 					cookies.set('role', session.role, { path: '/', httpOnly : false} );
-					res.send(200);
+					res.send(200, { code:200, message:"logged" } );
 					return next();
 				})
 				.catch( function(err) {
