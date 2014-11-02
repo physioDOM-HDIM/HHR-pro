@@ -9,6 +9,7 @@ var request = require("request"),
 	testCommon = require("./testCommon");
 
 var domain = 'http://127.0.0.1:8001';   // domain name for reading cookies
+var sessionCookies = [];
 var sessionCookie = request.jar();
 
 var entry1, entry2;   // entries created during tests
@@ -38,6 +39,22 @@ describe('Beneficiaries', function() {
 	before(function ( done ) {
 		testCommon.before()
 			.then( function() {
+				return testCommon.login({login: 'archer', password: 'test'} );
+			})
+			.then( function( cookie ) {
+				sessionCookies.push(cookie);
+				return testCommon.login({login: 'admin', password: 'physiodom'} );
+			})
+			.then( function( cookie ) {
+				sessionCookies.push(cookie);
+				return testCommon.login({login: 'cburton', password: 'cburton'} );
+			})
+			.then( function( cookie ) {
+				sessionCookies.push(cookie);
+				return testCommon.login({login: 'plaevitt', password: 'pleavitt'} );
+			})
+			.then( function( cookie ) {
+				sessionCookies.push(cookie);
 				done();
 			})
 			.catch( function(err) {
@@ -46,28 +63,11 @@ describe('Beneficiaries', function() {
 				done();
 			});
 	});
-
-	it('login by header', function (done) {
-		var cookie = request.jar();
-		request({
-			url   : domain + '/api/login',
-			method: "POST",
-			auth  : {username: 'archer', password: 'test'},
-			jar   : sessionCookie
-		}, function (err, resp, body) {
-			should.not.exist(err);
-			resp.statusCode.should.equal(200);
-			body.should.equal("");
-			var cookies = querystring.parse(sessionCookie.getCookieString(domain), ";");
-			cookies.should.have.property("sessionID");
-			return done();
-		});
-	});
-
+	
 	it('get beneficiaries (coordinator)', function (done) {
 		request({url           : domain + '/api/beneficiaries',
 			method             : "GET",
-			jar                : sessionCookie
+			jar                : sessionCookies[0]
 		}, function (err, resp, body) {
 			var list;
 
@@ -92,7 +92,7 @@ describe('Beneficiaries', function() {
 	it('get beneficiaries (coordinator) pg=3', function (done) {
 		request({url           : domain + '/api/beneficiaries?pg=2',
 			method             : "GET",
-			jar                : sessionCookie
+			jar                : sessionCookies[0]
 		}, function (err, resp, body) {
 			var list;
 
@@ -117,7 +117,7 @@ describe('Beneficiaries', function() {
 	it('get beneficiaries (coordinator) offset=10', function (done) {
 		request({url           : domain + '/api/beneficiaries?pg=3&offset=10',
 			method             : "GET",
-			jar                : sessionCookie
+			jar                : sessionCookies[0]
 		}, function (err, resp, body) {
 			var list;
 
@@ -162,7 +162,7 @@ describe('Beneficiaries', function() {
 	it('create a beneficiary ( must be JSON )', function(done) {
 		request({url           : domain + '/api/beneficiaries',
 			method             : "POST",
-			jar                : sessionCookie,
+			jar                : sessionCookies[0],
 			form	           : newEntry1
 		}, function (err, resp, body) {
 			var error;
@@ -178,7 +178,7 @@ describe('Beneficiaries', function() {
 	it('create a beneficiary', function(done) {
 		request({url           : domain + '/api/beneficiaries',
 			method             : "POST",
-			jar                : sessionCookie,
+			jar                : sessionCookies[0],
 			form	           : JSON.stringify(newEntry1)
 		}, function (err, resp, body) {
 			var item;
@@ -209,7 +209,7 @@ describe('Beneficiaries', function() {
 	it('duplicate error (same name, birthdate and telecom)', function(done) {
 		request({url           : domain + '/api/beneficiaries',
 			method             : "POST",
-			jar                : sessionCookie,
+			jar                : sessionCookies[0],
 			form	           : JSON.stringify(newEntry1)
 		}, function (err, resp, body) {
 			var error;
@@ -225,7 +225,7 @@ describe('Beneficiaries', function() {
 	it('get a beneficiary', function(done) {
 		request({url           : domain + '/api/beneficiaries/'+entry1._id,
 			method             : "GET",
-			jar                : sessionCookie
+			jar                : sessionCookies[0]
 		}, function (err, resp, body) {
 			var item;
 			should.not.exist(err);
@@ -262,7 +262,7 @@ describe('Beneficiaries', function() {
 		};
 		request({url           : domain + '/api/beneficiaries/'+entry1._id,
 			method             : "PUT",
-			jar                : sessionCookie,
+			jar                : sessionCookies[0],
 			headers            : { "content-type":"text/plain"},
 			body               : JSON.stringify(entry1)
 		}, function (err, resp, body) {
@@ -281,7 +281,7 @@ describe('Beneficiaries', function() {
 	it('get professionals', function(done) {
 		request({url           : domain + '/api/beneficiaries/'+entry1._id+"/professionals",
 			method             : "GET",
-			jar                : sessionCookie
+			jar                : sessionCookies[0]
 		}, function (err, resp, body) {
 			should.not.exist(err);
 			resp.statusCode.should.equal(200);
@@ -296,7 +296,7 @@ describe('Beneficiaries', function() {
 		var professional = { professionalID: "53fb2763b3371800000d42cd", referent: true };
 		request({url           : domain + '/api/beneficiaries/'+entry1._id+"/professionals",
 			method             : "POST",
-			jar                : sessionCookie,
+			jar                : sessionCookies[0],
 			form	           : JSON.stringify(professional)
 		}, function (err, resp, body) {
 			should.not.exist(err);
@@ -318,7 +318,7 @@ describe('Beneficiaries', function() {
 		var professional = { professionalID: "53fb2763b3371800000d42d1", referent: false };
 		request({url           : domain + '/api/beneficiaries/'+entry1._id+"/professionals",
 			method             : "POST",
-			jar                : sessionCookie,
+			jar                : sessionCookies[0],
 			form	           : JSON.stringify(professional)
 		}, function (err, resp, body) {
 			should.not.exist(err);
@@ -340,7 +340,7 @@ describe('Beneficiaries', function() {
 		request({
 			url   : domain + '/api/beneficiaries/' + entry1._id + "/professionals/53fb2763b3371800000d42cd",
 			method: "DELETE",
-			jar   : sessionCookie
+			jar   : sessionCookies[0]
 		}, function (err, resp, body) {
 			should.not.exist(err);
 			resp.statusCode.should.equal(200);
@@ -356,7 +356,7 @@ describe('Beneficiaries', function() {
 	it('delete a beneficiary', function(done) {
 		request({url           : domain + '/api/beneficiaries/'+entry1._id,
 			method             : "DELETE",
-			jar                : sessionCookie
+			jar                : sessionCookies[0]
 		}, function (err, resp, body) {
 			should.not.exist(err);
 			resp.statusCode.should.equal(410);
@@ -371,17 +371,17 @@ describe('Beneficiaries', function() {
 		request({
 			url   : domain + '/api/logout',
 			method: "GET",
-			jar   : sessionCookie
+			jar   : sessionCookies[0]
 		}, function (err, resp, body) {
 			should.not.exist(err);
 			resp.statusCode.should.equal(200);
 			body.should.equal("");
-			sessionCookie.getCookieString(domain).should.equal("");
+			sessionCookies[0].getCookieString(domain).should.equal("");
 			return done();
 		});
 	});
 
 	after(function () {
-		console.log("recover database");
+		// console.log("recover database");
 	});
 });
