@@ -51,7 +51,7 @@ describe('Beneficiaries', function() {
 			})
 			.then( function( cookie ) {
 				sessionCookies.push(cookie);
-				return testCommon.login({login: 'plaevitt', password: 'pleavitt'} );
+				return testCommon.login({login: 'pleavitt', password: 'pleavitt'} );
 			})
 			.then( function( cookie ) {
 				sessionCookies.push(cookie);
