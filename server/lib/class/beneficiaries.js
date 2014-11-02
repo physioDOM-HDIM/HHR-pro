@@ -59,11 +59,13 @@ function Beneficiaries( ) {
 			throw { code:403, message:"forbidden"};
 		}
 		var cursor = physioDOM.db.collection("beneficiaries").find(search);
+		var cursorSort = {};
 		if(sort) {
-			var cursorSort = {};
 			cursorSort[sort] = [-1,1].indexOf(sortDir)!==-1?sortDir:1;
-			cursor = cursor.sort( cursorSort );
+		} else {
+			cursorSort["name.family"] = 1;
 		}
+		cursor = cursor.sort( cursorSort );
 		return dbPromise.getList(cursor, pg, offset);
 	};
 	
