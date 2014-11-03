@@ -15,7 +15,7 @@ function Professional() {
 	this.getById = function( professionalID ) {
 		var that = this;
 		return new promise( function(resolve, reject) {
-			logger.trace("getById");
+			logger.trace("getById", professionalID);
 			physioDOM.db.collection("professionals").findOne({_id: professionalID }, function (err, doc) {
 				if (err) {
 					logger.alert("Error");

@@ -36,7 +36,9 @@ describe('Directory', function() {
 		}, function (err, resp, body) {
 			should.not.exist(err);
 			resp.statusCode.should.equal(200);
-			body.should.equal("");
+			var message = JSON.parse(body);
+			message.code.should.equal(200);
+			message.message.should.equal("logged");
 			var cookies = querystring.parse(cookie.getCookieString(domain), "; ");
 			Object.keys(cookies).length.should.equal(2);
 			cookies.should.have.property("sessionID");
@@ -54,7 +56,9 @@ describe('Directory', function() {
 		}, function (err, resp, body) {
 			should.not.exist(err);
 			resp.statusCode.should.equal(200);
-			body.should.equal("");
+			var message = JSON.parse(body);
+			message.code.should.equal(200);
+			message.message.should.equal("logged");
 			var cookies = querystring.parse(sessionCookie.getCookieString(domain), ";");
 			cookies.should.have.property("sessionID");
 			cookies = sessionCookie.getCookies(domain);
@@ -515,6 +519,6 @@ describe('Directory', function() {
 	});
 
 	after(function () {
-		console.log("recover database");
+		// console.log("recover database");
 	});
 });

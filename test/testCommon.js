@@ -2,9 +2,13 @@
 
 var fs = require("fs"),
 	promise = require("rsvp").Promise,
-	exec = require("child_process").exec;
+	exec = require("child_process").exec,
+	request = require("request"),
+	should = require('chai').should();
 
 var DB_FILE = require("path").join(__dirname, "testDB.tar.bz2");
+
+var domain = 'http://127.0.0.1:8001';   // domain name for reading cookies
 
 function testTools(_config) {
 	/**
@@ -69,6 +73,26 @@ function testTools(_config) {
 			});
 		});
 	}
+	
+	this.login = function( credentials ) {
+		return new promise( function(resolve, reject) {
+			var cookie = request.jar();
+			request({
+				url   : domain + '/api/login',
+				method: "POST", 
+				encoding           : 'utf-8',
+				headers            : { "content-type":"text/plain"},
+				body               : JSON.stringify(credentials),
+				jar   : cookie
+			}, function (err, resp, body) {
+				should.not.exist(err);
+				resp.statusCode.should.equal(200);
+				// console.log("cookie" , cookie);
+				resolve(cookie);
+			});
+		});
+	};
+	
 	
 	this.before = function() {
 		return mongoRestore( DB_FILE );

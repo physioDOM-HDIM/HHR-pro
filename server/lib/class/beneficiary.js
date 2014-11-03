@@ -161,9 +161,126 @@ function Beneficiary( ) {
 	};
 
 	this.getProfessionals = function() {
+		var that = this;
+		if( that.professionals === undefined ) {
+			that.professionals = [];
+		}
 		return new promise( function(resolve, reject) {
 			logger.trace("getProfessionals");
+			var count = that.professionals.length;
+			if( !count ) {
+				resolve( [] );
+			}
+			physioDOM.Directory()
+				.then(function (directory) {
+					that.professionals.forEach( function( item, i ) {
+						directory.getEntryByID( item.professionalID.toString() )
+							.then( function( professional ) {
+								that.professionals[i] = professional;
+								that.professionals[i].referent = item.referent;
+							})
+							.then( function() {
+								if( --count === 0) {
+									resolve( that.professionals );
+								}
+							})
+							.catch( function(err) {
+								if( --count === 0) {
+									resolve( that.professionals );
+								}
+							});
+					});
+				})
+				.catch( function(err) {
+					logger.error("error ",err);
+					reject(err);
+				});
 		});
+	};
+
+	this.addProfessional = function( professionalID, referent ) {
+		var that = this;
+		if( !that.professionals ) {
+			that.professionals = [];
+		}
+		return new promise(function (resolve, reject) {
+			logger.trace("addProfessional ", professionalID);
+			physioDOM.Directory()
+				.then(function (directory) {
+					return directory.getEntryByID(professionalID);
+				})
+				.then( function( professional ) {
+					// check if professional is already added
+					var indx = -1;
+					that.professionals.forEach( function( item, i ) {
+						if ( item.professionalID.toString() === professional._id.toString() ) {
+							console.log("professional found");
+							indx = i;
+						}
+					});
+					console.log("indx", indx);
+					if(indx !== -1) {
+						that.professionals[indx] = {professionalID: professional._id, referent: referent || false};
+					} else {
+						that.professionals.push({professionalID: professional._id, referent: referent || false});
+					}
+					return that.save();
+				})
+				.then( function() {
+					return that.getProfessionals();
+				})
+				.then( function(professionals) {
+					resolve(professionals);
+				})
+				.catch( function(err) {
+					logger.error("error ",err);
+					reject(err);
+				});
+		});
+	};
+
+	this.delProfessional = function( professionalID ) {
+		var that = this;
+		if( !that.professionals ) {
+			that.professionals = [];
+		}
+		return new promise(function (resolve, reject) {
+			logger.trace("delProfessional ", professionalID);
+			physioDOM.Directory()
+				.then(function (directory) {
+					return directory.getEntryByID(professionalID);
+				})
+				.then(function (professional) {
+					// check if professional is already added
+					var indx = -1;
+					
+					that.professionals.forEach(function (item, i) {
+						if (item.professionalID.toString() === professional._id.toString()) {
+							indx = i;
+						}
+					});
+					if (indx !== -1) {
+						if (that.professionals.length > 1) {
+							that.professionals.splice(indx, 1);
+						} else {
+							that.professionals = [];
+						}
+						return that.save();
+					} else {
+						throw {code: 404, message: "-> professional " + professionalID + " not found"};
+					}
+				})
+				.then(function () {
+					return that.getProfessionals();
+				})
+				.then(function (professionals) {
+					resolve(professionals);
+				})
+				.catch(function (err) {
+					logger.error("error ", err);
+					reject(err);
+				});
+		});	
 	};
 
 	this.getContacts = function() {

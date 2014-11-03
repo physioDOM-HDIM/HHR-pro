@@ -218,6 +218,9 @@ server.post('/api/beneficiaries', IBeneficiary.createBeneficiary);
 server.get( '/api/beneficiaries/:entryID', IBeneficiary.getBeneficiary );
 server.put( '/api/beneficiaries/:entryID', IBeneficiary.updateBeneficiary );
 server.del( '/api/beneficiaries/:entryID', IBeneficiary.deleteBeneficiary );
+server.get( '/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryProfessionals );
+server.post( '/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryAddProfessional );
+server.del( '/api/beneficiaries/:entryID/professionals/:profID', IBeneficiary.beneficiaryDelProfessional );
 
 server.get('/api/sessions/', getSessions);
 
@@ -274,7 +277,7 @@ function apiLogin(req, res, next) {
 				.then( function(session) {
 					cookies.set('sessionID', session.sessionID, cookieOptions);
 					cookies.set('role', session.role, { path: '/', httpOnly : false} );
-					res.send(200);
+					res.send(200, { code:200, message:"logged" } );
 					return next();
 				})
 				.catch( function(err) {
