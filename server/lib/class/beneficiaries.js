@@ -33,16 +33,6 @@ function Beneficiaries( ) {
 	 */
 	this.getBeneficiaries = function( session, pg, offset, sort, sortDir, filter) {
 		logger.trace("getBeneficiaries");
-		// var filter = filter ? filter : {};
-		// filter.professionals = { '$elemMatch' : { professionalID : new ObjectID(profID) } };
-		/*
-		var cursor = physioDOM.db.collection("beneficiaries").find( filter );
-		if(sort) {
-			var cursorSort = {};
-			cursorSort[sort] = 1;
-			cursor = cursor.sort( cursorSort );
-		}
-		*/
 		
 		var search = {};
 		if(filter) {
@@ -62,18 +52,20 @@ function Beneficiaries( ) {
 			}
 		}
 		if( session.role) { 
-			if( ["administrator","coordinator"].indexOf(session.role)===-1 ) {
-				search["$elemMatch"] = {professionalID: session.person.id};
+			if( ["administrator","coordinator"].indexOf(session.role.toLowerCase())===-1 ) {
+				search.professionals= { "$elemMatch": {professionalID: new ObjectID(session.person.id)}};
 			}
 		} else {
 			throw { code:403, message:"forbidden"};
 		}
 		var cursor = physioDOM.db.collection("beneficiaries").find(search);
+		var cursorSort = {};
 		if(sort) {
-			var cursorSort = {};
 			cursorSort[sort] = [-1,1].indexOf(sortDir)!==-1?sortDir:1;
-			cursor = cursor.sort( cursorSort );
+		} else {
+			cursorSort["name.family"] = 1;
 		}
+		cursor = cursor.sort( cursorSort );
 		return dbPromise.getList(cursor, pg, offset);
 	};
 	
