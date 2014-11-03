@@ -14,8 +14,11 @@
     "tests"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#~0.2.2",
-    "platform": "Polymer/platform#~0.2.2",
-    "polymer-ui-accordion": "Polymer/polymer-ui-accordion#~0.2.2"
+    "platform": "Polymer/platform#~0.4.2",
+    "polymer": "Polymer/polymer#~0.4.2",
+    "zdk-panel": "~0.1.0",
+    "zdk-modal": "~0.2.0",
+    "zdk-calendar": "~0.1.0",
+    "tsante-listpager": "git@git.telecomsante.com:components/tsante-listpager.git#0.1.1"
   }
 }

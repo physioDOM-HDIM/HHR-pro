@@ -1,0 +1,7 @@
+{
+	"serverName":"physiodom.telecomsante.loc",
+	"rootDir":"{{HOME}}/Sites/PhysioDOM/static",
+	"sslDir":"{{HOME}}/Sites/PhysioDOM/keys",
+	"logDir":"{{HOME}}/Sites/TelecomSante/WebApps/webrtc/private/log",
+	"appPort":8001
+}

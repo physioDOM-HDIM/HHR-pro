@@ -20,6 +20,12 @@
 	<script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
 
 	<link rel="stylesheet" href="styles/ui.css">
+	<script>
+		if(window.location !== window.parent.location ) {
+			console.info("load in iframe");
+			window.parent.location = window.location;
+		}
+	</script>
 </head>
 <body>
 <style>
@@ -30,12 +36,23 @@
 		font-weight: normal;
 		font-size: medium;
 	}
+	div.error {
+		border: 2px solid red;
+		padding: 10px;
+		width: 300px;
+		border-radius: 10px;
+		margin: auto;
+		margin-top: 25px;
+		display:none;
+		color: DarkRed;
+	}
 </style>
 <div style="text-align: center; margin-top:50px">
 	<img src="img/physiodom_logo.png" id="logo" style="height:150px;">
 </div>
-<div class="container" style="width:300px; background:#d6d6d6; margin-top:50px">
-	<form id="loginForm">
+<div class="error">Bad login or password</div>
+<div class="container" style="width:300px; background:#d6d6d6; margin-top:25px">
+	<form id="loginForm" method="POST" >
 	<div class="r0">&nbsp;</div>
 	<div class="r0">
 		<input class="col-xs-12 col-sm-12" type="text" name="login" id="login" placeholder="login">
@@ -52,19 +69,14 @@
 	<div class="r0">&nbsp;</div>
 	</form>
 </div>
-	<script>
-	document.getElementById("loginForm").addEventListener("submit", function(evt) {
-			evt.preventDefault();
-			
-			var form = document.getElementById("loginForm");
-			var xhr = new XMLHttpRequest();
-			xhr.open("POST","/api/login",false);
-			xhr.send("login="+form["login"].value+"&passwd="+form["passwd"].value);
-			if( xhr.status === 302 ) {
-				window.location = xhr.responseText.replace(/"/g,'');
-			};
-			return false;
-		});
-	</script>
+<script>
+window.addEventListener("DOMContentLoaded",init,false);
+function init() {
+	var hash = window.location.hash;
+	if(hash === "#403") {
+		document.querySelector(".error").style.display = "block";
+	}
+}
+</script>
 </body>
 </html>

@@ -1,29 +1,71 @@
 {
-	"name":"PhysioDOM-server",
-	"preferGlobal":false,
-	"version":"0.0.1",
-	"author":"Telecom Sante <tech@telecomsante.com>",
-	"contributors": [
-		{ "name":"Fabrice Le Coz", "email":"fabrice.lecoz@telecomsante.com"}
-	],
-	"description": "A web portal for professionnal",
-	"scripts": {
-		"start":"supervisor -w package.json,server/ -- server/server.js -p 8001 2>&1 > log/app.log"
-	},
-	"main":"./server/server.js",
-	"repository": {
-		"type": "git",
-		"url": "http://git.telecomsante.com/physiodom-hdim/physiodom"
-	},
-	"dependencies": {
-		"restify":"2.6.3",
-		"moment":"2.5.1",
-		"commander":"2.1.0",
-		"rsvp":"3.0.9"
-	},
-	"devDependencies": {
-		"mocha": "1.13.0",
-		"should": "2.0.1",
-		"request": "2.27.0"
-	}
+  "name": "PhysioDOM-server",
+  "preferGlobal": false,
+  "version": "0.0.1",
+  "author": "Telecom Sante <tech@telecomsante.com>",
+  "contributors": [
+    {
+      "name": "Fabrice Le Coz",
+      "email": "fabrice.lecoz@telecomsante.com"
+    }
+  ],
+  "description": "A web portal for professionnal",
+  "scripts": {
+    "install": "cd static; bower install; cd ..; node install/install.js",
+    "start": "supervisor -w package.json,server/ -- server/server.js -p 8001 2>&1 > log/app.log",
+    "test": "node ./test/index.js"
+  },
+  "main": "./server/server.js",
+  "repository": {
+    "type": "git",
+    "url": "http://git.telecomsante.com/physiodom-hdim/physiodom"
+  },
+  "dependencies": {
+    "MD5": "^1.2.1",
+    "commander": "2.1.0",
+    "cookies": "~0.5.0",
+    "jsonschema": "^1.0.0",
+    "logger": "git+ssh://git@git.telecomsante.com:tools/logger.git#v1.1.0",
+    "moment": "2.5.1",
+    "mongodb": "~1.4.7",
+    "restify": "2.6.3",
+    "rsvp": "3.0.9",
+    "swig": "^1.4.2"
+  },
+  "devDependencies": {
+    "chai": "^1.9.2",
+    "grunt": "^0.4.5",
+    "grunt-mocha": "^0.4.11",
+    "grunt-mocha-test": "^0.12.1",
+    "mocha": "^1.21.5",
+    "request": "^2.45.0"
+  },
+  "jshintConfig": {
+    "predef": [
+      "before",
+      "after",
+      "it",
+      "describe",
+      "beforeEach",
+      "afterEach"
+    ],
+    "nonew": true,
+    "validthis": true,
+    "curly": true,
+    "latedef": true,
+    "unused": "vars",
+    "noarg": true,
+    "forin": true,
+    "noempty": true,
+    "node": true,
+    "eqeqeq": true,
+    "strict": true,
+    "undef": true,
+    "bitwise": false,
+    "newcap": true,
+    "browser": true,
+    "camelcase": true,
+    "node":true,
+    "expr":true
+  }
 }
