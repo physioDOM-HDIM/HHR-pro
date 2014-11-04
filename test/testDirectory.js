@@ -193,6 +193,115 @@ describe('Directory', function() {
 			});
 		});
 	});
+
+	it('a new entry directory (professional) must have a family name', function(done) {
+		var newEntry = {
+			name: {
+				family:"",
+				given:"Albert"
+			},
+			gender:"M",
+			telecom: [
+				{
+					system:"email",
+					value:"albert.einstein@physiodom.loc"
+				},{
+					system:"phone",
+					value:"025558888"
+				}
+			],
+			role:"physician",
+			active:false
+		};
+		request({url           : domain + '/api/directory',
+			method             : "POST",
+			jar                : sessionCookie,
+			form	           : JSON.stringify(newEntry)
+		}, function (err, resp, body) {
+			var error;
+			should.not.exist(err);
+			resp.statusCode.should.equal(400);
+			error = JSON.parse(body);
+			error.error.should.be.equal("bad format");
+			return done();
+		});
+	});
+
+	it('a new entry directory (professional) given name if given must have a length', function(done) {
+		var newEntry = {
+			name: {
+				family:"test",
+				given:""
+			},
+			gender:"M",
+			telecom: [
+				{
+					system:"email",
+					value:"albert.einstein@physiodom.loc"
+				},{
+					system:"phone",
+					value:"025558888"
+				}
+			],
+			role:"physician",
+			active:false
+		};
+		request({url           : domain + '/api/directory',
+			method             : "POST",
+			jar                : sessionCookie,
+			form	           : JSON.stringify(newEntry)
+		}, function (err, resp, body) {
+			var error;
+			should.not.exist(err);
+			resp.statusCode.should.equal(400);
+			error = JSON.parse(body);
+			error.error.should.be.equal("bad format");
+			return done();
+		});
+	});
+
+	it('a new entry directory (professional) could not have a given name', function(done) {
+		var newEntry = {
+			name: {
+				family:"test"
+			},
+			gender:"M",
+			telecom: [
+				{
+					system:"email",
+					value:"test@physiodom.loc"
+				},{
+					system:"phone",
+					value:"025558888"
+				}
+			],
+			role:"physician",
+			active:false
+		};
+		request({url           : domain + '/api/directory',
+			method             : "POST",
+			jar                : sessionCookie,
+			form	           : JSON.stringify(newEntry)
+		}, function (err, resp, body) {
+			var item;
+			should.not.exist(err);
+			resp.statusCode.should.equal(200);
+			try {
+				item = JSON.parse(body);
+				item.should.have.property("_id");
+				for( var key in newEntry) {
+					if(newEntry.hasOwnProperty(key)) {
+						item.should.have.property(key);
+						item[key].should.be.eql(newEntry[key]);
+					}
+				}
+				entry1 = item;
+				return done();
+			} catch(err) {
+				throw {err: "bad json format"};
+			}
+		});
+	});
 	
 	it('create a new entry directory (professional)', function(done) {
 		var newEntry = {
