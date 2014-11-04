@@ -117,7 +117,6 @@ function Directory( ) {
 					.then(resolve)
 					.catch(function (err) {
 						logger.alert("error ", err);
-						console.log(err);
 						reject(err);
 					});
 			} else {

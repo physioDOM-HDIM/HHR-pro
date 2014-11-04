@@ -103,6 +103,10 @@ describe('Directory', function() {
 			list.nb.should.be.equal(27);
 			list.items.should.have.length(10);
 			
+			// check that entries are arranged by family name
+			for( var i=1; i< list.items.length; i++ ) {
+				list.items[i].name.family.should.be.above(list.items[i-1].name.family);
+			}
 			return done();
 		});
 	});
@@ -363,7 +367,6 @@ describe('Directory', function() {
 	
 	it('update an entry (organization)', function(done) {
 		entry2.communication = "en";
-		entry2.active = true;
 		
 		request({
 			url      : domain + '/api/directory/'+entry2._id,
@@ -376,6 +379,23 @@ describe('Directory', function() {
 			should.not.exist(err);
 			resp.statusCode.should.equal(200);
 			item = JSON.parse(body);
+			return done();
+		});
+	});
+	
+	it('try to activate a professional without account', function(done) {
+		entry1.active = true;
+		request({url           : domain + '/api/directory/'+entry1._id,
+			method             : "PUT",
+			jar                : sessionCookie,
+			headers            : { "content-type":"text/plain"},
+			body               : JSON.stringify(entry1)
+		}, function (err, resp, body) {
+			var item;
+			should.not.exist(err);
+			resp.statusCode.should.equal(200);
+			item = JSON.parse(body);
+			item.active.should.be.equal(false);
 			return done();
 		});
 	});
@@ -394,6 +414,7 @@ describe('Directory', function() {
 			resp.statusCode.should.equal(200);
 			item = JSON.parse(body);
 			item.should.have.property("account");
+			item.active.should.equal(true);
 			return done();
 		});
 	});
@@ -424,7 +445,7 @@ describe('Directory', function() {
 		});
 	});
 
-	it('cant\'t login if active is false', function(done) {
+	it('cant login with the activated account', function(done) {
 		var tmpCookie = request.jar();
 		request({url           : domain + '/api/login',
 			method             : "POST",
@@ -432,15 +453,15 @@ describe('Directory', function() {
 			jar                : tmpCookie
 		}, function (err, resp, body) {
 			should.not.exist(err);
-			resp.statusCode.should.equal(403);
+			resp.statusCode.should.equal(200);
 			var cookies = querystring.parse(tmpCookie.getCookieString(domain), ";");
-			cookies.should.not.have.property("sessionID");
+			cookies.should.have.property("sessionID");
 			return done();
 		});
 	});
 
-	it('activate a professional should activate the account', function(done) {
-		entry1.active = true;
+	it('deactivate a professional should also deactivate the account', function(done) {
+		entry1.active = false;
 
 		function updateEntry(entry) {
 			return new promise( function( resolve, reject) {
@@ -455,7 +476,7 @@ describe('Directory', function() {
 					resp.statusCode.should.equal(200);
 					item = JSON.parse(body);
 					item.should.have.property("active");
-					item.active.should.equal(true);
+					item.active.should.equal(false);
 					resolve();
 				});
 			});
@@ -473,13 +494,13 @@ describe('Directory', function() {
 					resp.statusCode.should.equal(200);
 					item = JSON.parse(body);
 					item.should.have.property("active");
-					item.active.should.equal(true);
+					item.active.should.equal(false);
 					return done();
 				});
 			});
 	});
 
-	it('cant login with the activated coount', function(done) {
+	it('cant\'t login if active is false', function(done) {
 		var tmpCookie = request.jar();
 		request({url           : domain + '/api/login',
 			method             : "POST",
@@ -487,9 +508,9 @@ describe('Directory', function() {
 			jar                : tmpCookie
 		}, function (err, resp, body) {
 			should.not.exist(err);
-			resp.statusCode.should.equal(200);
+			resp.statusCode.should.equal(403);
 			var cookies = querystring.parse(tmpCookie.getCookieString(domain), ";");
-			cookies.should.have.property("sessionID");
+			cookies.should.not.have.property("sessionID");
 			return done();
 		});
 	});

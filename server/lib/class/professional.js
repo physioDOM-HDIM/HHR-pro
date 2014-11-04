@@ -148,7 +148,11 @@ function Professional() {
 				.then( function(entry) {
 					for( var key in entry ) {
 						if(entry.hasOwnProperty(key) && key !== "_id") {
-							that[key] = entry[key];
+							if( key==="active" && entry.active === true && that.active !== entry.active && !that.account ) {
+								that.active = false;
+							} else {
+								that[key] = entry[key];
+							}
 						}
 					}
 					return that.save();
@@ -214,7 +218,7 @@ function Professional() {
 					var newAccount = {
 						login   : accountData.login,
 						password: md5(accountData.password),
-						active  : that.active || false,
+						active  : true,
 						role    : that.role,
 						person  : {
 							id        : that._id,
@@ -230,6 +234,7 @@ function Professional() {
 							newAccount._id = result._id;
 						}
 						that.account = newAccount._id;
+						that.active = true;
 						resolve(that.save());
 					});
 				})
