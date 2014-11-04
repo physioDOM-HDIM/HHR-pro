@@ -7,7 +7,9 @@ var dataFormat = {
     nameData: "name.family",
     perimeterData: "perimeter",
     ascData: "1",
-    descData: "-1"
+    descData: "-1",
+    activeTrueData: "true",
+    activeFalseData: "false"
 },
 isAdmin = false;
 
@@ -31,6 +33,7 @@ function checkUser(e) {
 function toggleHiddenNode(node, searchPattern) {
     var found = false,
         searchNode;
+    node = node.parentNode;
     while (!found && node) {
         searchNode = node.querySelector(searchPattern);
         if (searchNode) {
@@ -50,9 +53,9 @@ function getBaseURL(url) {
 
 function resetFilter() {
     var filterForm = document.forms.filter;
-    filterForm.nameTxt.value = "";
+    filterForm.querySelector("tsante-inputtext[name=nameTxt]").value = "";
     filterForm.perimeter.selectedIndex = 0;
-    filterForm.active.checked = true;
+    filterForm.active.selectedIndex = 0;
     filterForm.sortSelection.selectedIndex = 0;
     filterForm.sortDirection.selectedIndex = 0;
 
@@ -74,13 +77,18 @@ function validFilter() {
 
     //TODO Perimeter
     //active
-    filterObj.active = JSON.stringify(filterForm.active.checked);
+    var activeStatus = filterForm.active.options[filterForm.active.selectedIndex].value;
+    if(activeStatus !== "activeAllData"){
+    	filterObj.active = dataFormat[activeStatus];
+    }
     //name
-    nameValue = filterForm.nameTxt.value;
+    nameValue = filterForm.querySelector("tsante-inputtext[name=nameTxt]").value;
     if (nameValue) {
         filterObj[dataFormat.nameData] = nameValue;
     }
-    params += "&filter=" + JSON.stringify(filterObj);
+    if(JSON.stringify(filterObj) !== "{}"){
+    	params += "&filter=" + JSON.stringify(filterObj);
+    }
     listPagerElt.url = getBaseURL(listPagerElt.url) + params;
 
     //console.log(listPagerElt.url);
@@ -89,23 +97,8 @@ function validFilter() {
     listPagerElt.go();
 }
 
-function displayModal(param){
-	var zdkModalElt = document.querySelector("zdk-modal"),
-		model;
-	//Edit mode
-	if(typeof param !== "undefined"){
-		//Get model from the tsant-list component
-		model = document.querySelector("tsante-list template").model;
-		if(model && model.list && model.list.items && param < model.list.items.length){
-			// Clone the object to avoid the binding between the listPage item and the modal item in case of cancel
-			zdkModalElt.querySelector("template").model = JSON.parse(JSON.stringify({item: model.list.items[param]}));
-		}
-	}
-	else{
-		//Add new entry mode
-		zdkModalElt.querySelector("template").model = "";
-	}
-	zdkModalElt.show();
+function updateDirectory(){
+	window.location = "updateDirectory.htm" + (event.target.templateInstance ? "?itemId="+event.target.templateInstance.model.item._id : "");
 }
 
 function init() {

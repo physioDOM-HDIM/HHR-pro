@@ -1,0 +1,41 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<polymer-element name="tsante-inputtext" attributes="value name">
+    <template>
+        <style>
+        input {
+            padding-right: 18px;
+        }
+        a {
+            text-decoration: none;
+            color: black;
+            font-size: 18px;
+            margin-left: -22px;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        a:hover {
+            color: grey;
+        }
+        a:after {
+            content: "✖";
+        }
+        a[hidden] {
+            display: none;
+        }
+        </style>
+        <input type="text" name="{{name}}" id="inputField" value="{{value}}" on-change="{{changeCB}}"/>
+        <a href="javascript:;" on-click="{{deleteCB}}"></a>
+        <!-- <a href="javascript:;" on-click="{{deleteCB}}" hidden?='{{value === ""}}'></a> -->
+    </template>
+    <script>
+    Polymer({
+        value: "",
+        name: "",
+        deleteCB: function(event, detail, sender) {
+            this.value = "";
+            this.$.inputField.value = "";
+        }
+    });
+    </script>
+</polymer-element>

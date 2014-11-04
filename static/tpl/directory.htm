@@ -25,7 +25,7 @@
     <!-- Import polymer element -->
     <link rel="import" href="../bower_components/zdk-panel/zdk-panel.html">
     <link rel="import" href="../bower_components/tsante-listpager/tsante-listpager.html">
-    <link rel="import" href="../bower_components/zdk-modal/zdk-modal.html">
+    <link rel="import" href="../components/tsante-inputtext.html">
 
     <script src="directory.js"></script>
 </head>
@@ -36,14 +36,18 @@
             <form class="filter" name="filter" onsubmit="return false;">
                 <div>
                     <label>Name:</label>
-                    <input type="text" name="nameTxt" />
+                    <tsante-inputtext name="nameTxt"></tsante-inputtext>
                     <label>Perimeter:</label>
                     <select name="perimeter">
                         <option value="todo1">todo1</option>
                         <option value="todo2">todo2</option>
                     </select>
-                    <label>Active:</label>
-                    <input type="checkbox" name="active" checked/>
+                    <label>Active status:</label>
+                    <select name="active">
+                        <option value="activeAllData">all</option>
+                        <option value="activeTrueData">active</option>
+                        <option value="activeFalseData">not active</option>
+                    </select>
                 </div>
                 <div>
                     <hr>
@@ -101,105 +105,15 @@
                         <template if="{{item.address}}">
                             <button type="button" onclick="toggleHiddenNode(this, '.address')">detail</button>
                         </template>
-                        <button class="editButton hidden" type="button" onclick="displayModal({{i}})">edit</button>
+                        <button class="editButton hidden" type="button" onclick="updateDirectory()">edit</button>
                     </div>
                 </div>
             </template>
         </tsante-list>
 
         <div>
-            <button id="addEntry" class="hidden" type="button" onclick="displayModal()">Add entry</button>
+            <button id="addEntry" class="hidden" type="button" onclick="updateDirectory()">Add entry</button>
         </div>
-
-        <zdk-modal width="400px" height="400px">
-            <div class="content">
-                <template is="auto-binding">
-                    <form name="modalEdit" onsubmit="return false;">
-                        <fieldset>
-                            <label>{{!item.organization ? "Name family:" : "Name"}}</label>
-                            <input type="text" value="{{item.name.family}}">
-                            <br/>
-                            <template if="{{!item.organization}}">
-                                <label>Name given:</label>
-                                <input type="text" value="{{item.name.given}}">
-                                <br/>
-                                <label>Gender:</label>
-                                <input type="radio" name="gender" value="M" checked="{{item.gender ==='M'}}" />M
-                                <input type="radio" name="gender" value="F" checked="{{item.gender ==='F'}}" />F
-                                <br/>
-                                <label>Job:</label>
-                                <select name="job">
-                                    <option value="todo1">TODO ({{item.job}})</option>
-                                </select>
-                                <br/>
-                                <label>Pilot: (?? TODO)</label>
-                                <input type="text" value="{{item.pilote}}">
-                                <br/>
-                            </template>
-                            <label>Organization:</label>
-                            <input type="checkbox" checked="{{item.organization}}" />
-                            <br/>
-                            <label>Role:</label>
-                            <select name="role">
-                                <option value="todo1">TODO ({{item.role}})</option>
-                            </select>
-                        <br/>
-                        <label>Communication:</label>
-                        <select name="communication">
-                            <option value="todo1">TODO ({{item.communication}})</option>
-                        </select>
-                        <br/>
-                        <label>Active:</label>
-                        <input type="checkbox" checked="{{item.active}}" />
-                        </fieldset>
-                        <br/>
-                        <fieldset>
-                            <legend>Telecom</legend>
-                            //TODO repeat + add/remove
-
-                        </fieldset>
-                        <br/>
-                        <fieldset>
-                            <legend>Address</legend>
-                            <label>Use:</label>
-                            <input type="text" value="{{item.address.use}}">
-                            <br/>
-                            <label>Text:</label>
-                            <input type="text" value="{{item.address.text}}">
-                            <br/>//TODO line repeat + add/remove
-                            <br/>
-                            <label>City:</label>
-                            <input type="text" value="{{item.address.city}}">
-                            <br/>
-                            <label>State:</label>
-                            <input type="text" value="{{item.address.state}}">
-                            <br/>
-                            <label>Zip:</label>
-                            <input type="text" value="{{item.address.zip}}">
-                            <br/>
-                            <label>Country:</label>
-                            <input type="text" value="{{item.address.country}}">
-                        </fieldset>
-                        <br/>
-                        <fieldset>
-                            <legend>Account</legend>
-                            <label>Login:</label>
-                            <input type="text" value="{{item.account.login}}">
-                            <br/>
-                            <label>Password:</label>
-                            <input type="text" value="{{item.account.password}}">
-                        </fieldset>
-
-                        <div>
-                            //TODO champ d'erreur ? //TODO verif formatage donnée
-                        </div>
-                        <br/>
-                        <button>save</button>
-                        <button>delete</button>
-                    </form>
-                </template>
-            </div>
-        </zdk-modal>
     </div>
 </body>
 
