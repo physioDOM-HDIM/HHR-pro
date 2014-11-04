@@ -90,7 +90,12 @@ function Professional() {
 			logger.trace("checkSchema");
 			var check = directorySchema.validator.validate( entry, { "$ref":"/Professional"} );
 			if( check.errors.length ) {
-				return reject( {error:"bad format"} );
+				if( entry.organization ) {
+					check = directorySchema.validator.validate( entry, { "$ref":"/Organization"} );
+				} else {
+					check = directorySchema.validator.validate( entry, { "$ref":"/Practitioner"} );
+				}
+				return reject( {error:"bad format", detail: check.errors} );
 			} else {
 				return resolve(entry);
 			}
