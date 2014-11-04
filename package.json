@@ -16,6 +16,10 @@
     "test": "node ./test/index.js"
   },
   "main": "./server/server.js",
+  "bin": {
+    "restoreDB": "./bin/restoreDB",
+    "backupDB": "./bin/backupDB"
+  },
   "repository": {
     "type": "git",
     "url": "http://git.telecomsante.com/physiodom-hdim/physiodom"
@@ -30,7 +34,8 @@
     "mongodb": "~1.4.7",
     "restify": "2.6.3",
     "rsvp": "3.0.9",
-    "swig": "^1.4.2"
+    "swig": "^1.4.2",
+    "tar.gz": "^0.1.1"
   },
   "devDependencies": {
     "chai": "^1.9.2",
@@ -65,7 +70,6 @@
     "newcap": true,
     "browser": true,
     "camelcase": true,
-    "node":true,
-    "expr":true
+    "expr": true
   }
 }

@@ -4,76 +4,89 @@ var fs = require("fs"),
 	promise = require("rsvp").Promise,
 	exec = require("child_process").exec,
 	request = require("request"),
-	should = require('chai').should();
+	targz = require("tar.gz");
 
-var DB_FILE = require("path").join(__dirname, "testDB.tar.bz2");
-
+var DB_FILE = require("path").join(__dirname, "testDB.tar.gz");
 var domain = 'http://127.0.0.1:8001';   // domain name for reading cookies
 
 function testTools(_config) {
 	/**
 	 * Dump the mongo database into a file
-	 *
-	 * @param {String} filepath (optional)
-	 * @param {Function} cb - callback, gives (err, filepath)
-	 * @return none
+	 * 
+	 * @param {String} filepath the filename to create
+	 * @returns {promise} on resolve return null
 	 */
-	function mongodump (filepath, cb) {
-		// Connexion string
-		var cnx = '--host ';
-
-		// Add replicaSet name if exists
-		if (_config.replicaSet) {
-			cnx += _config.replicaSet + '/';
-		}
-
-		// Add replicaSet servers or server
-		cnx += _config.server.join(',');
-
-		// Check if file exists
-		fs.exists(require("path").dirname(filepath), function (exists) {
-			if (!exists) {
-				return cb(filepath + ' does not exist');
-			}
-			var cmd = 'mongodump ' + cnx + ' -d ' + _config.database;
-			cmd += ';  tar -cvjf ' + filepath + ' dump';
-			cmd += ';  rm -rf dump';
-			exec(cmd, function (err, stdout, stderr) {
-				if (err) {
-					return cb(err);
-				}
-				return cb(null, filepath);
+	this.mongoDump = function(filepath) {
+		return new promise( function(resolve, reject) {
+			require("child_process").exec("mongodump -d physioDOM", function (err) {
+				new targz().compress("dump", filepath, function (err) {
+					if (err) {
+						console.log("err", err);
+						process.exit(1);
+					} else {
+						exec("rm -rf dump", function(err,stdout,stderr) {
+							if(err) {
+								reject(err);
+							} else {
+								resolve();
+							}
+						});
+					}
+				});
 			});
 		});
-	}
+	};
 
 	/**
 	 * Restore the mongo database from a file
 	 *
-	 * @param {String} filepath - restoration filepath
-	 * @param {Function} cb - callback, gives (err)
-	 * @return none
+	 * @param filepath {string} the file path ( tar.gz ) to restore from
+	 * @returns {promise} on resolve return null
 	 */
-	function mongoRestore(filepath ) {
+	this.mongoRestore = function(filepath ) {
 		return new promise( function(resolve, reject) {
 			// Check if file exists
 			fs.exists(filepath, function (exists) {
 				if (!exists) {
 					return reject( "mongoRestore : "+ filepath + " does not exist");
 				}
-				var cmd = 'tar -xvjf ' + filepath;
-				cmd += ';  mongorestore -d physioDOM --drop dump/physioDOM/';
-				cmd += ';  rm -rf dump';
-				exec(cmd, function (err, stdout, stderr) {
-					if (err) {
-						return reject(err);
+				
+				new targz().extract( filepath, process.cwd(), function(err) {
+					if(err) {
+						console.error("err", err);
+						reject(err);
+					} else {
+						if( !fs.existsSync( "dump/physioDOM" )) {
+							var error = "can't find the database to restore";
+							console.error(error);
+							reject(error);
+						} else {
+							var cmd = 'mongorestore -d physioDOM --drop dump/physioDOM/';
+							cmd += ';  rm -rf dump';
+							exec(cmd, function (err, stdout, stderr) {
+								if (err) {
+									reject(err);
+								} else {
+									resolve();
+								}
+							});
+						}
 					}
-					return resolve();
 				});
 			});
 		});
-	}
-	
+	};
+
+	/**
+	 * Login function
+	 * 
+	 * Make a login request to the Application with the given credentials
+	 * credentials is a object containing a login and a password properties.
+	 * ex : { login:"test",password:"test" }
+	 * 
+	 * @param credentials
+	 * @returns {promise}
+	 */
 	this.login = function( credentials ) {
 		return new promise( function(resolve, reject) {
 			var cookie = request.jar();
@@ -85,17 +98,26 @@ function testTools(_config) {
 				body               : JSON.stringify(credentials),
 				jar   : cookie
 			}, function (err, resp, body) {
-				should.not.exist(err);
-				resp.statusCode.should.equal(200);
-				// console.log("cookie" , cookie);
-				resolve(cookie);
+				if( resp.statusCode === 200 ) {
+					resolve(cookie);
+				} else {
+					if(err) { 
+						reject(err); 
+					} else {
+						try {
+							reject(JSON.parse(body));
+						} catch(err) {
+							reject({ code:resp.statusCode, message: body });
+						}
+					}
+				}
 			});
 		});
 	};
 	
 	
 	this.before = function() {
-		return mongoRestore( DB_FILE );
+		return this.mongoRestore( DB_FILE );
 	};
 }
 
