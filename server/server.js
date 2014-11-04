@@ -11,7 +11,8 @@ var restify = require("restify"),
 	PhysioDOM = require("./lib/class/physiodom");
 
 var IDirectory = require('./lib/http/IDirectory'),
-	IBeneficiary = require('./lib/http/IBeneficiary');
+	IBeneficiary = require('./lib/http/IBeneficiary'),
+	ILists = require("./lib/http/Ilists");
 
 var pkg     = require('../package.json');
 var logger = new Logger( "PhysioDOM App");
@@ -223,6 +224,11 @@ server.post( '/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficia
 server.del( '/api/beneficiaries/:entryID/professionals/:profID', IBeneficiary.beneficiaryDelProfessional );
 
 server.get('/api/sessions/', getSessions);
+
+server.get( '/api/lists', ILists.getLists );
+server.get( '/api/lists/:listName', ILists.getList );
+server.post( '/api/lists/:listName', ILists.addItem );
+server.post( '/api/lists/:listName/:itemRef', ILists.translateItem );
 
 server.post('/api/login', apiLogin);
 server.get( '/api/logout', logout);
