@@ -18,13 +18,14 @@ var listItemSchema = {
 	id:"/ListItem",
 	type:"object",
 	properties: {
-		"ref"  : {
-			type       : "string", required:true, description: "reference name of the item"
-		},
+		"ref"  : { type : "string", required:true, description: "reference name of the item" },
 		"label": {
-			"en": {type: "string"},
-			"es": {type: "string"},
-			"nl": {type: "string"}
+			type:"object",
+			"anyOf":[ 
+				{ properties : { "en": {type: "string"} } },
+				{ properties : { "es": {type: "string"} } },
+				{ properties : { "nl": {type: "string"} } }
+			]
 		}
 	}
 };
@@ -34,4 +35,4 @@ var validator = new Validator();
 validator.addSchema(listSchema,"/List");
 validator.addSchema(listItemSchema,"/ListItem");
 
-module.exports.validator = validator;
+module.exports = validator;

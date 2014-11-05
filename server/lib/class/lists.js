@@ -25,7 +25,7 @@ var logger = new Logger("Lists");
 function Lists( ) {
 	this.getLists = function(pg, offset) {
 		logger.trace("getLists");
-		var cursor = physioDOM.db.collection("lists").find({}, {name:1});
+		var cursor = physioDOM.db.collection("lists").find({}, {name:1, editable:1});
 		var cursorSort = {};
 		cursor = cursor.sort( cursorSort );
 		return dbPromise.getList(cursor, pg, offset);
