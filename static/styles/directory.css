@@ -1,4 +1,4 @@
-.filter label, .filter input, .filter select {
+.filter label, .filter select, .filter tsante-inputtext {
     margin-right: 10px;
 }
 .filter hr {

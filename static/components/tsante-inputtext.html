@@ -20,21 +20,21 @@
         a:after {
             content: "✖";
         }
-        a[hidden] {
-            display: none;
+        a[hide] {
+            visibility: hidden;
         }
         </style>
-        <input type="text" name="{{name}}" id="inputField" value="{{value}}" on-change="{{changeCB}}"/>
-        <a href="javascript:;" on-click="{{deleteCB}}"></a>
-        <!-- <a href="javascript:;" on-click="{{deleteCB}}" hidden?='{{value === ""}}'></a> -->
+        <input type="text" value="{{value}}"/>
+        <a href="javascript:;" on-click="{{deleteCB}}" hide?="{{value === ''}}"></a>
     </template>
     <script>
     Polymer({
-        value: "",
-        name: "",
+        created: function(){
+            this.value = "";
+            this.name = "";
+        },
         deleteCB: function(event, detail, sender) {
             this.value = "";
-            this.$.inputField.value = "";
         }
     });
     </script>

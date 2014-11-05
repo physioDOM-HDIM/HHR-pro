@@ -105,7 +105,7 @@
                         <template if="{{item.address}}">
                             <button type="button" onclick="toggleHiddenNode(this, '.address')">detail</button>
                         </template>
-                        <button class="editButton hidden" type="button" onclick="updateDirectory()">edit</button>
+                        <button class="editButton hidden" type="button" onclick="updateDirectory('{{item._id}}')">edit</button>
                     </div>
                 </div>
             </template>

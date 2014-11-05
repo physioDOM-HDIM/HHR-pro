@@ -1,4 +1,4 @@
-#directoryForm {
+.mainContainer {
     line-height: 25px;
 }
 .buttonContainer {
@@ -21,4 +21,8 @@ zdk-modal .modalTitleContainer, zdk-modal .modalButtonContainer {
 zdk-modal .modalContentContainer {
     padding-top: 10px;
     padding-bottom: 10px;
+}
+
+zdk-modal div#bg{
+	display: block; /* FF fix */
 }

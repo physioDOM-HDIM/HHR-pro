@@ -15,6 +15,7 @@ isAdmin = false;
 
 //Display/hide some information according to the user status
 function checkUser(e) {
+	console.log("checkUser", arguments);
     if (isAdmin) {
         var editButtons = document.querySelectorAll(".editButton"),
             addEntry = document.querySelector("#addEntry");
@@ -31,6 +32,7 @@ function checkUser(e) {
 
 //Toggle display/hide a node
 function toggleHiddenNode(node, searchPattern) {
+    console.log("toggleHiddenNode", arguments);
     var found = false,
         searchNode;
     node = node.parentNode;
@@ -47,13 +49,15 @@ function toggleHiddenNode(node, searchPattern) {
 
 //Get the base url of the tsante-list component (without potential params)
 function getBaseURL(url) {
+    console.log("getBaseURL", arguments);
     var idx = url.indexOf("?");
     return url.slice(0, idx !== -1 ? idx : url.length);
 }
 
 function resetFilter() {
+	console.log("resetFilter", arguments);
     var filterForm = document.forms.filter;
-    filterForm.querySelector("tsante-inputtext[name=nameTxt]").value = "";
+    document.querySelector("tsante-inputtext[name=nameTxt]").value = ""; //filterForm.querySelector("tsante-inputtext[name=nameTxt]").value; ==> doesn't work on FF
     filterForm.perimeter.selectedIndex = 0;
     filterForm.active.selectedIndex = 0;
     filterForm.sortSelection.selectedIndex = 0;
@@ -65,6 +69,7 @@ function resetFilter() {
 }
 
 function validFilter() {
+	console.log("validFilter", arguments);
     var filterForm = document.forms.filter,
         listPagerElt = document.querySelector("tsante-list"),
         params = "",
@@ -82,7 +87,7 @@ function validFilter() {
     	filterObj.active = dataFormat[activeStatus];
     }
     //name
-    nameValue = filterForm.querySelector("tsante-inputtext[name=nameTxt]").value;
+    nameValue = document.querySelector("tsante-inputtext[name=nameTxt]").value; //filterForm.querySelector("tsante-inputtext[name=nameTxt]").value; ==> doesn't work on FF
     if (nameValue) {
         filterObj[dataFormat.nameData] = nameValue;
     }
@@ -91,17 +96,19 @@ function validFilter() {
     }
     listPagerElt.url = getBaseURL(listPagerElt.url) + params;
 
-    //console.log(listPagerElt.url);
+    console.log("validFilter - url: ", listPagerElt.url);
 
     listPagerElt.pg = 1;
     listPagerElt.go();
 }
 
-function updateDirectory(){
-	window.location = "updateDirectory.htm" + (event.target.templateInstance ? "?itemId="+event.target.templateInstance.model.item._id : "");
+function updateDirectory(id){
+	console.log("updateDirectory", arguments);
+	window.location = "updateDirectory.htm" + (id ? "?itemId="+id : "");
 }
 
 function init() {
+	console.log("init");
     //TODO internationalization
 
 	//TODO get the info about access user and
@@ -109,7 +116,9 @@ function init() {
 	isAdmin = true;
 
     var listPagerElt = document.querySelector("tsante-list");
-    listPagerElt.addEventListener("tsante-draw", checkUser, false);
+    if(listPagerElt){
+    	listPagerElt.addEventListener("tsante-draw", checkUser, false);
+    }
 }
 
 window.addEventListener("DOMContentLoaded", init, false);

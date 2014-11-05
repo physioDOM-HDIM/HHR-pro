@@ -22,6 +22,7 @@
 
     <!-- Polyfills -->
     <script src="../bower_components/platform/platform.js"></script>
+
     <!-- Import polymer element -->
     <link rel="import" href="../bower_components/zdk-modal/zdk-modal.html">
     <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
@@ -32,37 +33,45 @@
 
 <body>
     <core-ajax url="/api/directory/" handleAs="json"></core-ajax>
-    <div class="content">
+    <div class="mainContainer">
         <template id="tplInfoContainer" is="auto-binding">
-            <form id="directoryForm" name="directoryForm" onsubmit="return false;">
-                <fieldset>
-                    <legend>Identity</legend>
-                    <label>{{!item.organization ? "Name family:" : "Name"}}</label>
-                    <tsante-inputtext name="item.name.family" value="{{item.name.family}}"></tsante-inputtext>
+            <fieldset>
+                <legend>Identity</legend>
+                <label>{{!item.organization ? "Name family:" : "Name"}}</label>
+                <tsante-inputtext name="item.name.family" value="{{item.name.family}}"></tsante-inputtext>
+                <br />
+                <template if="{{!item.organization}}">
+                    <label>Name given:</label>
+                    <tsante-inputtext name="item.name.given" value="{{item.name.given}}"></tsante-inputtext>
                     <br />
-                    <template if="{{!item.organization}}">
-                        <label>Name given:</label>
-                        <tsante-inputtext name="item.name.given" value="{{item.name.given}}"></tsante-inputtext>
-                        <br />
-                        <label>Gender:</label>
-                        <input type="radio" name="item.gender" value="M" checked="{{item.gender ==='M'}}" />M
-                        <input type="radio" name="item.gender" value="F" checked="{{item.gender ==='F'}}" />F
-                        <br />
-                        <label>Job:</label>
-                        <select name="item.job">
-                            <option value="{{item.job}}">TODO ({{item.job}})</option>
-                        </select>
-                        <br/>
+                    <label>Gender:</label>
+                    <select name="item.gender" value="{{item.gender}}">
+                        <option value=""></option>
+                        <option value="M">M</option>
+                        <option value="F">F</option>
+                    </select>
+                    <br />
+                    <label>Job:</label>
+                    <select name="item.job" value="{{item.job}}">
+                        <template repeat="{{enumJobItem in enums.enumJob}}">
+                            <option value="{{enumJobItem}}">{{enumJobItem}}</option>
+                        </template>
+                    </select>
+                    <br/>
+                </template>
+                <label>Role:</label>
+                <select name="item.role" value="{{item.role}}">
+                    <template repeat="{{enumRoleItem in enums.enumRole}}">
+                        <option value="{{enumRoleItem}}">{{enumRoleItem}}</option>
                     </template>
-                    <label>Role:</label>
-                    <select name="item.role">
-                        <option value="{{item.role}}">TODO ({{item.role}})</option>
-                    </select>
-                    <br />
-                    <label>Communication:</label>
-                    <select name="item.communication">
-                        <option value="{{item.communication}}">TODO ({{item.communication}})</option>
-                    </select>
+                </select>
+                <br />
+                <label>Communication:</label>
+                <select name="item.communication" value="{{item.communication}}">
+                    <template repeat="{{enumCommunicationItem in enums.enumCommunication}}">
+                        <option value="{{enumCommunicationItem}}">{{enumCommunicationItem}}</option>
+                    </template>
+                </select>
                 </fieldset>
                 <br />
                 <fieldset>
@@ -77,35 +86,43 @@
                 <br />
                 <fieldset id="telecomFieldset">
                     <legend>Telecom</legend>
-                    <template repeat="{{telecomItem in item.telecom}}">
+                    <template repeat="{{telecomItem, i in item.telecom}}">
                         <div class="telecomContainer">
                             <label>Use:</label>
-                            <select class="telecomUse">
-                                <option value="{{telecomItem.use}}">TODO ({{telecomItem.use}})</option>
+                            <select class="telecomUse" value="{{telecomItem.use}}">
+                                <template repeat="{{enumUseItem in enums.enumUse}}">
+                                    <option value="{{enumUseItem}}">{{enumUseItem}}</option>
+                                </template>
                             </select>
                             <label>System:</label>
-                            <select class="telecomSystem">
-                                <option value="{{telecomItem.system}}">TODO ({{telecomItem.system}})</option>
+                            <select class="telecomSystem" value="{{telecomItem.system}}">
+                                <template repeat="{{enumSystemItem in enums.enumSystem}}">
+                                    <option value="{{enumSystemItem}}">{{enumSystemItem}}</option>
+                                </template>
                             </select>
                             <label>Value:</label>
                             <tsante-inputtext class="telecomValue" value="{{telecomItem.value}}"></tsante-inputtext>
-                            <button onclick="deleteTelecom(this)">delete</button>
+                            <button onclick="deleteTelecom({{i}})">delete</button>
                         </div>
                     </template>
-                    <button onclick="addTelecom(this)">Add</button>
+                    <button onclick="addTelecom()">Add</button>
                 </fieldset>
                 <br />
                 <fieldset>
                     <legend>Address</legend>
                     <label>Use:</label>
-                    <tsante-inputtext name="item.address.use" value="{{item.address.use}}"></tsante-inputtext>
+                    <select name="item.address.use" value="{{item.address.use}}">
+                        <template repeat="{{enumUseItem in enums.enumUse}}">
+                            <option value="{{enumUseItem}}">{{enumUseItem}}</option>
+                        </template>
+                    </select>
                     <br />
                     <label>Text:</label>
                     <tsante-inputtext name="item.address.text" value="{{item.address.text}}"></tsante-inputtext>
                     <br />
                     <fieldset>
                         <legend>Lines:</legend>
-                        <textarea name="item.address.line">{{item.address.line | join("\n")}}</textarea>
+                        <textarea name="item.address.line" value="{{item.address.line}}"></textarea>
                     </fieldset>
                     <br />
                     <label>City:</label>
@@ -160,9 +177,7 @@
                         </template>
                     </div>
                 </zdk-modal>
-            </form>
         </template>
     </div>
 </body>
-
 </html>
