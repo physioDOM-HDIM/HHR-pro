@@ -32,6 +32,9 @@ function PhysioDOM( ) {
 
 	this.Lists = new Lists();
 	
+	// @todo report lang into a config file.
+	this.lang = ["en","es","nl","fr"];
+	
 	/**
 	 * Connect to the database
 	 * 
