@@ -74,7 +74,7 @@
                 <div class="item {{!item.active ? 'disabled' : ''}}">
                     <div class="leftContent">
                         <span class="name">
-                            {{!item.organization ? item.name.family+" "+item.name.given+" ("+item.gender+")" : item.name.family}}
+                            {{!item.organization ? item.name.family+" "+(item.name.given ? item.name.given : "")+" ("+item.gender+")" : item.name.family}}
                         </span>
                         <div>
                             <span class="communication">

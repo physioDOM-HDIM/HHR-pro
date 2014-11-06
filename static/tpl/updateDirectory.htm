@@ -38,14 +38,14 @@
             <fieldset>
                 <legend>Identity</legend>
                 <label>{{!item.organization ? "Name family:" : "Name"}}</label>
-                <tsante-inputtext name="item.name.family" value="{{item.name.family}}"></tsante-inputtext>
+                <tsante-inputtext name="item.name.family" value="{{item.name.family}}" required="true" placeholder="Mandatory field"></tsante-inputtext>
                 <br />
                 <template if="{{!item.organization}}">
                     <label>Name given:</label>
                     <tsante-inputtext name="item.name.given" value="{{item.name.given}}"></tsante-inputtext>
                     <br />
                     <label>Gender:</label>
-                    <select name="item.gender" value="{{item.gender}}">
+                    <select name="item.gender" value="{{item.gender}}" emptyValue?="{{item.gender === ''}}">
                         <option value=""></option>
                         <option value="M">M</option>
                         <option value="F">F</option>
@@ -60,7 +60,7 @@
                     <br/>
                 </template>
                 <label>Role:</label>
-                <select name="item.role" value="{{item.role}}">
+                <select name="item.role" value="{{item.role}}" emptyValue?="{{item.role === ''}}">
                     <template repeat="{{enumRoleItem in enums.enumRole}}">
                         <option value="{{enumRoleItem}}">{{enumRoleItem}}</option>
                     </template>
@@ -101,7 +101,7 @@
                                 </template>
                             </select>
                             <label>Value:</label>
-                            <tsante-inputtext class="telecomValue" value="{{telecomItem.value}}"></tsante-inputtext>
+                            <tsante-inputtext class="telecomValue" value="{{telecomItem.value}}" type="{{telecomItem.system === 'email' ? 'email' : 'text'}}"></tsante-inputtext>
                             <button onclick="deleteTelecom({{i}})">delete</button>
                         </div>
                     </template>

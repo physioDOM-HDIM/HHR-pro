@@ -177,33 +177,147 @@ function createNestedObject(base, names, value) {
 
     // If a value was given, set it to the last name:
     if (lastName) {
-        base = base[lastName] = (value === "") ? (typeof base[lastName] !== "undefined" ? base[lastName] : value) : value;
+        base = base[lastName] = (value === "" || value === null) ? (typeof base[lastName] !== "undefined" ? base[lastName] : value) : value;
     }
 
     // Return the last object in the hierarchy:
     return base;
 }
 
-function updateItem() {
-    console.log("updateItem", arguments);
-    closeModal();
+function formatDataForValidity(){
+	console.log("formatDataForValidity", arguments);
 
-    //Ne pas envoyer les champs '' ou array vide ?
-    if (itemObj.organization === true) {
+	if (itemObj.organization === true) {
         delete itemObj.name.given;
         delete itemObj.gender;
         delete itemObj.job;
+        delete itemObj.pilot;
     } else {
         delete itemObj.organization;
     }
 
     if (itemObj.address.line === "") {
         delete itemObj.address.line;
-    } else if (itemObj.address.line){
+    } else if (itemObj.address.line) {
         itemObj.address.line = itemObj.address.line instanceof Array ? itemObj.address.line : itemObj.address.line.split("\n");
     }
 
-    console.log(itemObj);
+    //Check input validation
+    var model,
+        validationItem = document.querySelectorAll("tsante-inputtext"),
+        i = 0,
+        invalid = false,
+        item;
+
+    while (!invalid && i < validationItem.length) {
+        item = validationItem[i];
+        if (!item.validate()) {
+            invalid = true;
+        } else {
+            i++;
+        }
+    }
+
+    if (invalid) {
+        model = {
+            msg: {
+                title: "Error",
+                content: "Bad form validation, check mandatory fields",
+                buttons: [{
+                    label: "OK",
+                    action: "closeModal();"
+                }]
+            }
+        };
+        showModal(model);
+        return false;
+    }
+
+    //Check select required
+    var selectItems = document.querySelectorAll("select[emptyValue]");
+    if (selectItems.length > 0) {
+        model = {
+            msg: {
+                title: "Error",
+                content: "Check mandatory select field",
+                buttons: [{
+                    label: "OK",
+                    action: "closeModal();"
+                }]
+            }
+        };
+        showModal(model);
+        return false;
+    }
+
+    // //Don't send empty string for select tags due to enum data check in bdd
+    // var selectItems = document.querySelectorAll("select");
+    // for (i = 0; i < selectItems.length; i++) {
+    //     item = selectItems[i];
+    //     if (item.value === "") {
+    //         var objInspect = item.name.slice(item.name.indexOf(".") + 1).split(".");
+    //         var tmp = {};
+    //         for(var j=0; j<objInspect.length; j++){
+    //         	tmp[objInspect[j]] = null;
+    //         }
+    //         delete itemObj[tmp];
+    //     }
+    // }
+
+    // var lookdeep = function(object) {
+    //     var next, item;
+    //     for (item in object) {
+    //         if (object.hasOwnProperty(item)) {
+    //             next = object[item];
+    //             if (typeof next === "object" && next !== null) {
+    //                 lookdeep(next);
+    //             } else {
+    //                 if (next === null) {
+    //                     delete object[item];
+    //                 }
+    //             }
+    //         }
+    //     }
+    // };
+    // lookdeep(itemObj);
+
+    //Delete empty string before sending to DB
+    var checkItem = function(parentObj, childObj){
+    	if(parentObj[childObj] === "" || (typeof parentObj[childObj] === "object" && Object.keys(parentObj[childObj]).length === 0)){
+    		delete parentObj[childObj];
+    	}
+    };
+
+    itemObj.active = itemObj.active === "" ? false : itemObj.active;
+    checkItem(itemObj.name, "given");
+    checkItem(itemObj, "job");
+	checkItem(itemObj, "communication");
+	for(i=0; i<itemObj.telecom; i++){
+		checkItem(itemObj.telecom[i], "system");
+		checkItem(itemObj.telecom[i], "use");
+		checkItem(itemObj.telecom[i], "value");
+	}
+	checkItem(itemObj.address, "use");
+	checkItem(itemObj.address, "text");
+	checkItem(itemObj.address, "city");
+	checkItem(itemObj.address, "state");
+	checkItem(itemObj.address, "zip");
+	checkItem(itemObj.address, "country");
+	checkItem(itemObj, "address");
+
+	//TODO Account
+	return true;
+}
+
+function updateItem() {
+	console.log("updateItem", arguments);
+    closeModal();
+
+    if(!formatDataForValidity()){
+    	return;
+    }
+
+    console.log("updateItem - updateItem: ", itemObj);
 
     var xhr = new XMLHttpRequest(),
         successModel = {
@@ -219,7 +333,7 @@ function updateItem() {
         errorModel = {
             msg: {
                 title: "Error",
-                content: "Error occurred: ",
+                content: "An error occurred",
                 buttons: [{
                     label: "OK",
                     action: "closeModal();"
@@ -235,7 +349,6 @@ function updateItem() {
                     model = dialogModelSuccess;
                 } else {
                     model = dialogModelError;
-                    model.msg.content += xhr.responseText;
                     console.log(xhr);
                 }
                 showModal(model);
@@ -413,6 +526,15 @@ function createEmptyValueForTemplateBinding() {
         elt = formElements[i];
         eltName = elt.name.slice(elt.name.indexOf(".") + 1); //remove the 'item.' prefixe
         createNestedObject(itemObj, eltName, "");
+
+        // if (elt.tagName.toLowerCase() === "select") {
+        //     createNestedObject(itemObj, eltName, null);
+        // } else {
+        //     createNestedObject(itemObj, eltName, "");
+        // }
+
+
+
         // switch (elt.tagName.toLowerCase()) {
         //     case "tsante-inputtext":
         //         {

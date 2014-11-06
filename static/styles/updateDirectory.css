@@ -1,5 +1,5 @@
 .mainContainer {
-    line-height: 25px;
+    line-height: 28px;
 }
 .buttonContainer {
     float: right;
@@ -25,4 +25,10 @@ zdk-modal .modalContentContainer {
 
 zdk-modal div#bg{
 	display: block; /* FF fix */
+}
+tsante-inputtext{
+	line-height: 20px;
+}
+*[emptyValue]{
+	box-shadow: 0 0 3px red;
 }
