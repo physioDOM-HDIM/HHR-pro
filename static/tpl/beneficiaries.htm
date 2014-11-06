@@ -1,0 +1,102 @@
+{% extends './page.htm' %}
+
+{% block title %}{{ "Select beneficiary"|i18n }}{% endblock %}
+
+{% block head %}
+{% parent %}
+{% endblock %}
+
+{% block content %}
+<style>
+	tsante-list { margin-top:30px; }
+	div.item {
+		display:-webkit-flex;
+		display: -ms-flexbox;
+		display:flex;
+		align-items: center;
+		padding:5px;
+	}
+	div.item:nth-child(even) {
+		background:white;
+	}
+	div.item:nth-child(odd) {
+		background:#DFDFDF;
+	}
+	div.item > span {
+		padding: 1px 5px;
+	}
+	.collabel { -webkit-flex:1; -ms-flex:1; flex:1 }
+	.colcontent { -webkit-flex:2; -ms-flex:2; flex:2 }
+	.spacer { -webkit-flex:1; -ms-flex:1; flex:1; display:inline-block; }
+</style>
+
+	<zdk-panel heading="Filter / Sort" height="250" collapsable="true" collapsed="true">
+		<div>
+			<div class="row">
+				<div class="col">
+					<label class="collabel" for="lastname">{{ "Last name"|i18n }} : </label>
+					<div class="colcontent">
+						<input type="text" id="lastname">
+					</div>
+				</div>
+				<div class="col">
+					<label class="collabel" for="Perimeter">{{ "Perimeter"|i18n }} : </label>
+					<div class="colcontent">
+						<input type="text" id="perimeter">
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<label class="collabel" for="zipcode">{{ "Zip code"|i18n }} : </label>
+					<div class="colcontent">
+						<input type="text" id="zipcode">
+					</div>
+				</div>
+				<div class="col">
+					<label class="collabel" for="city">{{ "City"|i18n }} : </label>
+					<div class="colcontent">
+						<input type="text" id="city">
+					</div>
+				</div>
+			</div>
+			<div style="height:10px">&nbsp;</div>
+			<div class="row" style="text-align: right;padding-right: 10px;">
+				<span class="spacer"></span>
+				<button type="button" class="blue">Reset</button>
+				<button type="button" class="green">Filter</button>
+			</div>
+			<hr/>
+			
+		</div>
+	</zdk-panel>
+	
+	<tsante-list url="/api/beneficiaries" pg="1" auto="true" unresolved id="tsanteList">
+		<template is="auto-binding" repeat="{% raw %}{{item in list.items}}{% endraw %}">
+			<div class="item">
+				<div style="-webkit-flex:1; -ms-flex:1; flex:1">
+					<div class="row">
+						<span style="-webkit-flex:2; -ms-flex:2; flex:2;font-weight:bold">{% raw %}{{item.name.family}} {{item.name.given}}{% endraw %}</span>
+						<span style="-webkit-flex:1; -ms-flex:1; flex:1">{{ "Perimeter"|i18n }} : {% raw %}{{item.perimeter?item.perimeter:"-"}}{% endraw %}</span>
+					</div>
+					<div class="row">
+						<span style="padding-left:50px;-webkit-flex:1; -ms-flex:1; flex:1">{{ "Birth date"|i18n }} : {% raw %}{{item.birthdate}}{% endraw %}</span>
+					</div>
+				</div>
+				<div>
+					<span><button class="blue small" style="margin:5px">select</button></span>
+				</div>
+			</div>
+		</template>
+	</tsante-list>
+	
+  <script>
+	  window.addEventListener("polymer-ready", function() { console.log("test")}, false);
+  </script>
+    {% if admin %}
+	<div class="row control" style="height:60px; align-content: center">
+		<span class="spacer"></span>
+		<a href="/beneficiary/create?lang=fr"><button class="blue big">{{ "Add"|i18n }}</button></a>
+	</div>
+    {% endif %}
+{% endblock %}

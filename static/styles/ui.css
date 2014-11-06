@@ -1,5 +1,5 @@
 body { 
-	background: aliceblue;
+	background: white;
 	position: absolute;
 	bottom: 0;
 	top: 0;
@@ -201,6 +201,106 @@ ul.dropdown-menu li {
 ul.dropdown-menu li:hover {
 	color:white;
 	background: black;
+}
+
+div.row { 
+	min-height:20px; 
+	display:-webkit-flex; 
+	display: -ms-flexbox; 
+	display:flex; 
+	align-items: center 
+}
+div.row.control { 
+	margin-top:10px;
+}
+div.col { 
+	-webkit-flex:1; 
+	-ms-flex:1; 
+	flex:1; 
+	display: -webkit-flex; 
+	display: -ms-flexbox; 
+	display: flex; 
+	align-items: center 
+}
+div.col + div.col { 
+	margin-left:5px; 
+}
+span, label { display:inline-block; }
+span.spacer { 
+	-webkit-flex:1; 
+	-ms-flex:1; 
+	flex:1; 
+}
+div.row label { 
+	width:150px; 
+	text-overflow: ellipsis; 
+	white-space: nowrap; 
+	overflow: hidden; 
+	padding-right:5px
+}
+div.row textarea { 
+	-webkit-flex:1; 
+	-ms-flex:1; 
+	flex:1; 
+	font-size:inherit; 
+	font-family: inherit; 
+	border:1px solid lightgray; 
+	resize: none;
+}
+input[type=text],input[type=password] { 
+	-webkit-flex:1; 
+	-ms-flex:1; 
+	flex:1; 
+	font-size:inherit; 
+	height:25px;
+	margin:2px 0px;
+	padding-left:5px;
+}
+input[type=date],input[type=number] { 
+	width:150px; 
+	font-size:inherit; 
+	height:25px;
+	margin:2px 0px;
+	padding-left:5px;
+}
+select {
+	min-width: 200px;
+	height:25px;
+	margin:0;
+	padding-left:5px;
+	font-size:inherit;
+	font-family: inherit;
+	border:1px solid gray;
+	-webkit-appearance:none !important;
+	-moz-appearance:none  !important;
+	appearance:none  !important;
+	background: white;
+	display:inline-block;
+	outline:none;
+}
+button { 
+	border-radius:2px;
+	height:30px; 
+	min-width:100px; 
+	font-size:inherit; 
+	font-family:inherit; 
+	margin-left:5px; 
+	border:none;
+}
+.blue { background:#428bca; color:white; }
+.red { background:crimson; color:white; }
+.green { background:ForestGreen ; color:white; }
+button.small { 
+	font-size: 12px; 
+	height:1.5em; 
+	min-width:20px;
+}
+button[disabled] { 
+	color:darkgray; 
+	background: lightgray; }
+p.head { font-weight:bold }
+input[type=radio] + input[type=radio] { 
+	margin-left:10px;
 }
 
 

@@ -46,23 +46,24 @@ footer {
 	text-align: right;
 }
 
+/*
 .panel-heading[data-toggle="collapse"] .panel-title:after {
-	/* symbol for "opening" panels */
-	font-family: 'Glyphicons Halflings'; /* essential for enabling glyphicon */
-	content: "\e114"; /* adjust as needed, taken from bootstrap.css */
-	float: right; /* adjust as needed */
-	color: grey; /* adjust as needed */
+	font-family: 'Glyphicons Halflings';
+	content: "\e114";
+	float: right;
+	color: grey;
 }
 
 .panel-heading.collapsed[data-toggle="collapse"] .panel-title:after {
-	/* symbol for "collapsed" panels */
-	content: "\e080"; /* adjust as needed, taken from bootstrap.css */
+	content: "\e080";
 }
 
 .panel-heading[data-toggle="collapse"] {
 	cursor: pointer;
 }
+*/
 
+/*
 div.dlg {
 	position: absolute;
 	top: 0;
@@ -109,26 +110,4 @@ div#bg {
 	right: 0px;
 	background: rgba(0, 0, 0, 0.6);
 }
-
-polymer-ui-accordion {
-    border:1px solid #ddd;
-    margin-bottom:20px;
-    border-radius: 3px;
-
-}
-
-.polymer-ui-collapsible-header {
-    background-image: -webkit-linear-gradient(top,#f5f5f5 0,#e8e8e8 100%);
-    background-image: linear-gradient(to bottom,#f5f5f5 0,#e8e8e8 100%);
-    background-repeat: repeat-x;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff5f5f5', endColorstr='#ffe8e8e8', GradientType=0);
-    color: #333;
-    background-color: #f5f5f5;
-    border-color: #ddd;
-    padding: 10px 15px;
-    border-bottom: 1px solid transparent;
-    border-top-right-radius: 3px;
-    border-top-left-radius: 3px;
-    font-weight:bold;
-    font-size:16px;
-}
+*/
