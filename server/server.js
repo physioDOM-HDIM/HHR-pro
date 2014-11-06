@@ -141,7 +141,7 @@ server.use( function(req, res, next) {
 			}
 			requestLog(req, res);
 			if( !req.session ){
-				if( req.url.match(/^(\/|\/api\/login)$/) ) {
+				if( req.url.match(/^(\/|\/api\/login|\/logout)$/) ) {
 					return next();
 				} else {
 					res.send(403, { error:403, message:"no session"} );
@@ -229,7 +229,7 @@ server.get( '/api/beneficiaries/:entryID', IBeneficiary.getBeneficiary );
 server.put( '/api/beneficiaries/:entryID', IBeneficiary.updateBeneficiary );
 server.del( '/api/beneficiaries/:entryID', IBeneficiary.deleteBeneficiary );
 server.get( '/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryProfessionals );
-server.post( '/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryAddProfessional );
+server.post('/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryAddProfessional );
 server.del( '/api/beneficiaries/:entryID/professionals/:profID', IBeneficiary.beneficiaryDelProfessional );
 
 server.get( '/api/sessions/', getSessions);
@@ -248,7 +248,7 @@ server.post('/', login);
 server.get( '/beneficiary/create', IPage.beneficiaryCreate);
 server.get( '/beneficiary/select', IPage.beneficiarySelect);
 
-server.get(/\/[^(api|beneficiary)\/]?$/, function(req, res, next) {
+server.get(/\/[^api\/]?$/, function(req, res, next) {
 	logger.trace("index");
 	if( req.cookies.sessionID ) {
 		return readFile(path.join(DOCUMENT_ROOT, '/ui.htm'), req, res, next);
@@ -351,7 +351,7 @@ function login(req,res,next) {
 
 function logout(req, res, next ) {
 	var cookies = new Cookies(req, res);
-
+	logger.trace( "logout" );
 	physioDOM.deleteSession( cookies.get("sessionID") )
 		.catch( function(err) { 
 			console.log("Error ",err);
@@ -362,6 +362,7 @@ function logout(req, res, next ) {
 			if(req.url.match(/^\/api/)) {
 				res.send(200);
 			} else {
+				logger.debug("redirect to /")
 				res.header('Location', '/');
 				res.send(302);
 			}
