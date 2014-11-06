@@ -32,7 +32,8 @@ function IPage() {
 		logger.trace("beneficiaryCreate");
 		var html;
 		
-		//init(req);
+		init(req);
+		/*
 		i18n.setLocale(req.cookies.lang || req.params.lang || "en");
 
 		swig.setDefaults({cache: false});
@@ -40,6 +41,7 @@ function IPage() {
 			console.log("input", input, idx);
 			return i18n.__(input);
 		});
+		*/
 		
 		html = swig.renderFile('./static/tpl/beneficiaryCreate.htm');
 		// html = swig.renderFile('./static/tpl/beneficiaries.htm');

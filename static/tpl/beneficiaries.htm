@@ -8,36 +8,10 @@
 
 {% block content %}
 <style>
-	div.row { min-height:20px; display:flex; align-items: center }
-	div.row.control { margin-top:10px;}
-	div.col { flex:1; display:flex; align-items: center }
-	div.col + div.col { margin-left:5px; }
-	span.spacer { flex:1 }
-	div.row label { width:150px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; padding-right:5px }
-	div.row textarea { flex:1; font-size:inherit; font-family: inherit; border:1px solid lightgray; resize: none;}
-	input[type=text],input[type=password] { flex:1; font-size:inherit; height:1.5em;margin:2px 0px; }
-	input[type=date],input[type=number] { width:150px; font-size:inherit; height:1.5em;margin:2px 0px; }
-	select { min-width: 200px;height:1.5em }
-	button { border-radius:2px;height:30px; min-width:100px; font-size:inherit; font-family:inherit; margin-left:5px; border:none; }
-	.blue { background:#428bca; color:white; }
-	.red { background:crimson; color:white; }
-	.green { background:ForestGreen ; color:white; }
-	button.small { font-size: 12px; height:1.5em; min-width:20px;}
-	button[disabled] { color:darkgray; background: lightgray; }
-	p.head { font-weight:bold }
-	input[type=radio] + input[type=radio] { margin-left:10px; }
-	
-	.form-horizontal .form-group {
-		margin: auto !important;
-	}
-
-	.filter label {
-		width: 100px;
-		padding: 0px;
-	}
-	
 	tsante-list { margin-top:30px; }
 	div.item {
+		display:-webkit-flex;
+		display: -ms-flexbox;
 		display:flex;
 		align-items: center;
 		padding:5px;
@@ -51,9 +25,9 @@
 	div.item > span {
 		padding: 1px 5px;
 	}
-	.collabel { flex:1 }
-	.colcontent { flex:2 }
-	.spacer { flex:1 }
+	.collabel { -webkit-flex:1; -ms-flex:1; flex:1 }
+	.colcontent { -webkit-flex:2; -ms-flex:2; flex:2 }
+	.spacer { -webkit-flex:1; -ms-flex:1; flex:1; display:inline-block; }
 </style>
 
 	<zdk-panel heading="Filter / Sort" height="250" collapsable="true" collapsed="true">
@@ -100,13 +74,13 @@
 	<tsante-list url="/api/beneficiaries" pg="1" auto="true" unresolved id="tsanteList">
 		<template is="auto-binding" repeat="{% raw %}{{item in list.items}}{% endraw %}">
 			<div class="item">
-				<div style="flex:1">
+				<div style="-webkit-flex:1; -ms-flex:1; flex:1">
 					<div class="row">
-						<span style="flex:2;font-weight:bold">{% raw %}{{item.name.family}} {{item.name.given}}{% endraw %}</span>
-						<span style="flex:1">{{ "Perimeter"|i18n }} : {% raw %}{{item.perimeter?item.perimeter:"-"}}{% endraw %}</span>
+						<span style="-webkit-flex:2; -ms-flex:2; flex:2;font-weight:bold">{% raw %}{{item.name.family}} {{item.name.given}}{% endraw %}</span>
+						<span style="-webkit-flex:1; -ms-flex:1; flex:1">{{ "Perimeter"|i18n }} : {% raw %}{{item.perimeter?item.perimeter:"-"}}{% endraw %}</span>
 					</div>
 					<div class="row">
-						<span style="padding-left:50px;flex:1">{{ "Birth date"|i18n }} : {% raw %}{{item.birthdate}}{% endraw %}</span>
+						<span style="padding-left:50px;-webkit-flex:1; -ms-flex:1; flex:1">{{ "Birth date"|i18n }} : {% raw %}{{item.birthdate}}{% endraw %}</span>
 					</div>
 				</div>
 				<div>
@@ -115,11 +89,14 @@
 			</div>
 		</template>
 	</tsante-list>
-
+	
+  <script>
+	  window.addEventListener("polymer-ready", function() { console.log("test")}, false);
+  </script>
     {% if admin %}
 	<div class="row control" style="height:60px; align-content: center">
 		<span class="spacer"></span>
-		<a href="/beneficiary/create"><button class="blue big">{{ "Add"|i18n }}</button></a>
+		<a href="/beneficiary/create?lang=fr"><button class="blue big">{{ "Add"|i18n }}</button></a>
 	</div>
     {% endif %}
 {% endblock %}
