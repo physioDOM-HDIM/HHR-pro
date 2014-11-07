@@ -160,6 +160,11 @@ function Professional() {
 							}
 						}
 					}
+					for( var key in that ) {
+						if(!entry.hasOwnProperty(key)) {
+							delete that[key];
+						}
+					}
 					return that.save();
 				})
 				.then( function(professional) {
