@@ -28,6 +28,7 @@
     "MD5": "^1.2.1",
     "commander": "2.1.0",
     "cookies": "~0.5.0",
+    "i18n-2": "^0.4.6",
     "jsonschema": "^1.0.0",
     "logger": "git+ssh://git@git.telecomsante.com:tools/logger.git#v1.1.0",
     "moment": "2.5.1",
