@@ -17,13 +17,13 @@
 				<input name="gender" type="radio" value="F" id="Female"> <label for="Female">{{ "Female"|i18n }}</label>
 			</div>
 			<div class="row">
-				<label>{{ "Last name"|i18n }}</label><input type="text" name="name.family"/>
+				<label>{{ "Last name"|i18n }}</label><input type="text" name="name.family" required />
 			</div>
 			<div class="row">
 				<label>{{ "First name"|i18n }}</label><input type="text" name="name.given"/>
 			</div>
 			<div class="row">
-				<label>{{ "Birth date"|i18n }}</label><input type="text" name="birthdate"/>
+				<label>{{ "Birth date"|i18n }}</label><input type="text" name="birthdate" required placeholder="YYYY-MM-DD"/>
 			</div>
 			<div class="row">
 				<label>{{ "Perimeter"|i18n }}</label><select name="perimeter">
@@ -37,7 +37,7 @@
 			</div>
 			<div class="row">
 				<div class="col">
-					<label>{{ "Height (meters)"|i18n }}</label><input type="number" name="height"/>
+					<label>{{ "Height (meters)"|i18n }}</label><input type="number" name="height" required/>
 				</div>
 				<div class="col">
 					<label>{{ "Social ID"|i18n }}</label><input type="text" name="socialID" />
