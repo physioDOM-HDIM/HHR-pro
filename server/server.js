@@ -247,8 +247,9 @@ server.post('/', login);
 
 server.get( '/beneficiary/create', IPage.beneficiaryCreate);
 server.get( '/beneficiary/select', IPage.beneficiarySelect);
+server.get( '/beneficiary/:entryID', IPage.beneficiaryOverview);
 
-server.get(/\/[^api\/]?$/, function(req, res, next) {
+server.get(/\/[^api|components\/]?$/, function(req, res, next) {
 	logger.trace("index");
 	if( req.cookies.sessionID ) {
 		return readFile(path.join(DOCUMENT_ROOT, '/ui.htm'), req, res, next);
@@ -444,10 +445,15 @@ var mimetypes = {
 };
 
 function readFile(filepath,req,res,next) {
-	console.log("readFile",filepath);
+	logger.trace("readFile",filepath);
 	var mimetype = mimetypes[require('path').extname(filepath).substr(1)];
 	var stats = fs.statSync(filepath);
-
+	
+	if(stats.isDirectory()) {
+		console.log("this is a directory");
+		res.send(405);
+		return next(false);
+	}
 	if(config.cache && req.headers['if-modified-since'] && (new Date(req.headers['if-modified-since'])).valueOf() === ( new Date(stats.mtime)).valueOf() ) {
 		res.statusCode = 304;
 		res.end();
