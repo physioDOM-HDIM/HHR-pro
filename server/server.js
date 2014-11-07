@@ -199,6 +199,59 @@ server.use(function checkAcl(req, res, next) {
 	*/
 });
 
+function apiLogin(req, res, next) {
+	logger.trace("apiLogin");
+	var body,cookies;
+
+	if( req.headers.authorization ) {
+		logger.debug("authorization header");
+		var token = req.headers.authorization.split(/\s+/).pop() || '';            // and the encoded auth token
+		var auth = new Buffer(token, 'base64').toString();    // convert from base64
+		var parts = auth.split(/:/);                          // split on colon
+		body = JSON.stringify({login: parts[0], password: parts[1]});
+	} else {
+		body = req.body?req.body.toString():"";
+	}
+
+	cookies = new Cookies(req, res);
+
+	try {
+		var user = JSON.parse( body );
+		if( !user.login || !user.password ) {
+			cookies.set('sessionID');
+			cookies.set('role');
+			logger.warning("no login or password");
+			res.send(403);
+			return next(false);
+		} else {
+			logger.debug("passe par là");
+			physioDOM.getAccountByCredentials(user.login, user.password )
+				.then( function(account) {
+					return account.createSession();
+				})
+				.then( function(session) {
+					cookies.set('sessionID', session.sessionID, cookieOptions);
+					cookies.set('role', session.role, { path: '/', httpOnly : false} );
+					res.send(200, { code:200, message:"logged" } );
+					return next();
+				})
+				.catch( function(err) {
+					logger.warning(err.message || "bad login or password");
+					cookies.set('sessionID');
+					cookies.set('role');
+					res.send( 403, {code:403, message:"bad credentials"} );
+					next();
+				});
+		}
+	} catch(err) {
+		logger.warning("bad json format");
+		cookies.set('sessionID');
+		cookies.set('role');
+		res.send(403, {code:403, message:"bad credentials"});
+		return next(false);
+	}
+}
+
 server.opts(/\.*/,function (req, res, next) {
 	var allowHeaders = ['Accept', 'Accept-Version', 'Content-Type', 'Api-Version','X-Api-Version', 'X-Request-Id',' X-Response-Time','X-Custom-Header'];
 	if (res.methods.indexOf('OPTIONS') === -1) {
@@ -264,59 +317,6 @@ server.listen(program.port, "127.0.0.1", function() {
 	logger.info(server.name + ' listening at '+ server.url);
 });
 
-function apiLogin(req, res, next) {
-	logger.trace("apiLogin");
-	var body,cookies;
-	
-	if( req.headers.authorization ) {
-		logger.debug("authorization header");
-		var token = req.headers.authorization.split(/\s+/).pop() || '';            // and the encoded auth token
-		var auth = new Buffer(token, 'base64').toString();    // convert from base64
-		var parts = auth.split(/:/);                          // split on colon
-		body = JSON.stringify({login: parts[0], password: parts[1]});
-	} else {
-		body = req.body.toString();
-	}
-	
-	cookies = new Cookies(req, res);
-	
-	try {
-		var user = JSON.parse( body );
-		if( !user.login || !user.password ) {
-			cookies.set('sessionID');
-			cookies.set('role');
-			logger.warning("no login or password");
-			res.send(403);
-			return next(false);
-		} else {
-			physioDOM.getAccountByCredentials(user.login, user.password )
-				.then( function(account) {
-					return account.createSession();
-				})
-				.then( function(session) {
-					cookies.set('sessionID', session.sessionID, cookieOptions);
-					cookies.set('role', session.role, { path: '/', httpOnly : false} );
-					res.send(200, { code:200, message:"logged" } );
-					return next();
-				})
-				.catch( function(err) {
-					// logger.debug("err",err);
-					logger.warning(err.message || "bad login or password");
-					cookies.set('sessionID');
-					cookies.set('role');
-					res.send(err.code || 403, err);
-					return next(false);
-				});
-		}
-	} catch(err) {
-		logger.warning("bad json format");
-		cookies.set('sessionID');
-		cookies.set('role');
-		res.send(403);
-		return next(false);
-	}
-}
-
 function login(req,res,next) {
 	logger.trace("login",req.params);
 	var cookies = new Cookies(req, res);
@@ -334,11 +334,13 @@ function login(req,res,next) {
 				return readFile(filepath, req,res,next);
 			})
 			.catch( function(err) {
+				logger.warning("bad credentials");
 				cookies.set('sessionID');
-				cookies.set('role');
-				res.header('Location', '/#401');
+				// cookies.set('role');
+				res.header('Location', '/index.htm');
 				res.send(302);
-				return next();
+				logger.debug("redirect to /");
+				next(false);
 			});
 	} else {
 		cookies.set('sessionID');
@@ -354,8 +356,9 @@ function logout(req, res, next ) {
 	logger.trace( "logout" );
 	physioDOM.deleteSession( cookies.get("sessionID") )
 		.catch( function(err) { 
-			console.log("Error ",err);
-		}).finally( function() {
+			logger.warning("Error ",err);
+		})
+		.finally( function() {
 			logger.info('unset cookies');
 			cookies.set('sessionID');
 			cookies.set('role');
