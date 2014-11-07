@@ -16,9 +16,9 @@
   "dependencies": {
     "platform": "Polymer/platform#~0.4.2",
     "polymer": "Polymer/polymer#~0.4.2",
-    "zdk-panel": "~0.1.0",
+    "zdk-panel": "~0.2.1",
     "zdk-modal": "~0.2.0",
     "zdk-calendar": "~0.1.0",
-    "tsante-listpager": "git@git.telecomsante.com:components/tsante-listpager.git#0.1.1"
+    "tsante-listpager": "git@git.telecomsante.com:components/tsante-listpager.git#0.1.2"
   }
 }

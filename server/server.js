@@ -7,11 +7,14 @@ var restify = require("restify"),
 	program = require("commander"),
 	path    = require("path"),
 	Cookies = require("cookies"),
-	Logger = require("logger"),
+	Logger  = require("logger"),
+	I18n    = require("i18n-2"),
 	PhysioDOM = require("./lib/class/physiodom");
 
 var IDirectory = require('./lib/http/IDirectory'),
-	IBeneficiary = require('./lib/http/IBeneficiary');
+	IBeneficiary = require('./lib/http/IBeneficiary'),
+	ILists = require("./lib/http/Ilists"),
+	IPage = require("./lib/http/IPage");
 
 var pkg     = require('../package.json');
 var logger = new Logger( "PhysioDOM App");
@@ -67,6 +70,13 @@ global.physioDOM = physioDOM;
 var server = restify.createServer({
 	name:    pkg.name,
 	version: pkg.version
+});
+
+I18n.expressBind(server, {
+	// setup some locales - other locales default to en silently
+	locales: physioDOM.lang,
+	// change the cookie name from 'lang' to 'locale'
+	cookieName: 'locale'
 });
 
 server.pre(function(req, res, next) {
@@ -131,7 +141,7 @@ server.use( function(req, res, next) {
 			}
 			requestLog(req, res);
 			if( !req.session ){
-				if( req.url.match(/^(\/|\/api\/login)$/) ) {
+				if( req.url.match(/^(\/|\/api\/login|\/logout)$/) ) {
 					return next();
 				} else {
 					res.send(403, { error:403, message:"no session"} );
@@ -219,15 +229,24 @@ server.get( '/api/beneficiaries/:entryID', IBeneficiary.getBeneficiary );
 server.put( '/api/beneficiaries/:entryID', IBeneficiary.updateBeneficiary );
 server.del( '/api/beneficiaries/:entryID', IBeneficiary.deleteBeneficiary );
 server.get( '/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryProfessionals );
-server.post( '/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryAddProfessional );
+server.post('/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryAddProfessional );
 server.del( '/api/beneficiaries/:entryID/professionals/:profID', IBeneficiary.beneficiaryDelProfessional );
 
-server.get('/api/sessions/', getSessions);
+server.get( '/api/sessions/', getSessions);
+
+server.get( '/api/lists', ILists.getLists );
+server.get( '/api/lists/:listName', ILists.getList );
+server.get( '/api/lists/:listName/translate', ILists.getListTranslate );
+server.post('/api/lists/:listName', ILists.addItem );
+server.post('/api/lists/:listName/:itemRef', ILists.translateItem );
 
 server.post('/api/login', apiLogin);
 server.get( '/api/logout', logout);
 server.get( '/logout', logout);
 server.post('/', login);
+
+server.get( '/beneficiary/create', IPage.beneficiaryCreate);
+server.get( '/beneficiary/select', IPage.beneficiarySelect);
 
 server.get(/\/[^api\/]?$/, function(req, res, next) {
 	logger.trace("index");
@@ -332,7 +351,7 @@ function login(req,res,next) {
 
 function logout(req, res, next ) {
 	var cookies = new Cookies(req, res);
-
+	logger.trace( "logout" );
 	physioDOM.deleteSession( cookies.get("sessionID") )
 		.catch( function(err) { 
 			console.log("Error ",err);
@@ -343,6 +362,7 @@ function logout(req, res, next ) {
 			if(req.url.match(/^\/api/)) {
 				res.send(200);
 			} else {
+				logger.debug("redirect to /")
 				res.header('Location', '/');
 				res.send(302);
 			}

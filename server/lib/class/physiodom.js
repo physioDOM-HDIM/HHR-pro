@@ -17,7 +17,8 @@ var logger = new Logger("PhysioDOM");
 var Account = require("./account"),
 	Session = require("./session"),
 	Directory = require("./directory"),
-	Beneficiaries = require("./beneficiaries");
+	Beneficiaries = require("./beneficiaries"),
+	Lists = require("./lists");
 
 /**
  * PhysioDOM
@@ -29,6 +30,11 @@ var Account = require("./account"),
 function PhysioDOM( ) {
 	this.db = null;
 
+	this.Lists = new Lists();
+	
+	// @todo report lang into a config file.
+	this.lang = ["en","es","nl","fr"];
+	
 	/**
 	 * Connect to the database
 	 * 
@@ -76,7 +82,7 @@ function PhysioDOM( ) {
 			resolve( new Directory() );
 		});
 	};
-
+	
 	/**
 	 * return a promise with the Session Object
 	 */

@@ -17,7 +17,7 @@ var logger = new Logger("IDirectory");
  *
  * treat http request for the directory
  * 
- * @type {{getEntries: Function, createEntry: Function, getEntry: Function}}
+ * @type {object}
  */
 var IDirectory = {
 	/**
