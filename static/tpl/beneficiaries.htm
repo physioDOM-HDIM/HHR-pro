@@ -84,7 +84,7 @@
 					</div>
 				</div>
 				<div>
-					<span><button class="blue small" style="margin:5px">select</button></span>
+					<span><a href="/beneficiary/{%raw%}{{item._id}}{% endraw %}"><button class="blue small" style="margin:5px">select</button></a></span>
 				</div>
 			</div>
 		</template>
@@ -96,7 +96,7 @@
     {% if admin %}
 	<div class="row control" style="height:60px; align-content: center">
 		<span class="spacer"></span>
-		<a href="/beneficiary/create?lang=fr"><button class="blue big">{{ "Add"|i18n }}</button></a>
+		<a href="/beneficiary/create"><button class="blue big">{{ "Add"|i18n }}</button></a>
 	</div>
     {% endif %}
 {% endblock %}
