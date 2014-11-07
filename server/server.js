@@ -296,7 +296,6 @@ server.post('/api/lists/:listName/:itemRef', ILists.translateItem );
 server.post('/api/login', apiLogin);
 server.get( '/api/logout', logout);
 server.get( '/logout', logout);
-server.post('/', login);
 
 server.get( '/beneficiary/create', IPage.beneficiaryCreate);
 server.get( '/beneficiary/select', IPage.beneficiarySelect);
@@ -316,40 +315,6 @@ server.listen(program.port, "127.0.0.1", function() {
 	logger.info('------------------------------------------------------------------');
 	logger.info(server.name + ' listening at '+ server.url);
 });
-
-function login(req,res,next) {
-	logger.trace("login",req.params);
-	var cookies = new Cookies(req, res);
-	
-	if( req.params.login && req.params.passwd) {
-		// check if an account exists and is active
-		physioDOM.getAccountByCredentials(req.params.login, req.params.passwd )
-			.then( function(account) {
-				return account.createSession();
-			})
-			.then( function(session) {
-				cookies.set('sessionID', session.sessionID, cookieOptions);
-				cookies.set('role', session.role, { path: '/', httpOnly : false});
-				var filepath = path.join(DOCUMENT_ROOT, '/ui.htm');
-				return readFile(filepath, req,res,next);
-			})
-			.catch( function(err) {
-				logger.warning("bad credentials");
-				cookies.set('sessionID');
-				// cookies.set('role');
-				res.header('Location', '/index.htm');
-				res.send(302);
-				logger.debug("redirect to /");
-				next(false);
-			});
-	} else {
-		cookies.set('sessionID');
-		cookies.set('role');
-		res.header('Location', '/#403');
-		res.send(302);
-		return next();
-	}
-}
 
 function logout(req, res, next ) {
 	var cookies = new Cookies(req, res);
