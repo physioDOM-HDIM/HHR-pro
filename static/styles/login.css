@@ -56,3 +56,5 @@ div.spacer {
 button {
 	border-style: initial;
 }
+
+input[type=text], input[type=password] { height: 30px; }
