@@ -14,7 +14,7 @@ function Account( obj ) {
 
 	this._id       = null;
 	this.login     = null;
-	this.password    = null;
+	this.password  = null;
 	this.tmpPasswd = null;
 	this.role      = null;
 	this.person    = {id: null, collection: null};
