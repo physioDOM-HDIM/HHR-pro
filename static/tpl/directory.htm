@@ -25,7 +25,6 @@
     <!-- Import polymer element -->
     <link rel="import" href="../bower_components/zdk-panel/zdk-panel.html">
     <link rel="import" href="../bower_components/tsante-listpager/tsante-listpager.html">
-    <link rel="import" href="../components/tsante-inputtext.html">
 
     <script src="directory.js"></script>
 </head>
@@ -36,7 +35,7 @@
             <form class="filter" name="filter" onsubmit="return false;">
                 <div>
                     <label>Name:</label>
-                    <tsante-inputtext name="nameTxt"></tsante-inputtext>
+                    <input name="nameTxt" />
                     <label>Perimeter:</label>
                     <select name="perimeter">
                         <option value="todo1">todo1</option>
@@ -105,7 +104,7 @@
                         <template if="{{item.address}}">
                             <button type="button" onclick="toggleHiddenNode(this, '.address')">detail</button>
                         </template>
-                        <button class="editButton hidden" type="button" onclick="updateDirectory('{{item._id}}')">edit</button>
+                        <button class="editButton hidden" type="button" onclick="updateDirectory({{i}})">edit</button>
                     </div>
                 </div>
             </template>

@@ -1,8 +1,8 @@
 .mainContainer {
     line-height: 28px;
 }
-.buttonContainer {
-    float: right;
+.buttonContainer{
+	float: right;
 }
 zdk-modal {
     border: 1px solid black;

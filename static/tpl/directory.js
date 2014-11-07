@@ -11,7 +11,8 @@ var dataFormat = {
     activeTrueData: "true",
     activeFalseData: "false"
 },
-isAdmin = false;
+isAdmin = false,
+_dataObj;
 
 //Display/hide some information according to the user status
 function checkUser(e) {
@@ -56,13 +57,7 @@ function getBaseURL(url) {
 
 function resetFilter() {
 	console.log("resetFilter", arguments);
-    var filterForm = document.forms.filter;
-    document.querySelector("tsante-inputtext[name=nameTxt]").value = ""; //filterForm.querySelector("tsante-inputtext[name=nameTxt]").value; ==> doesn't work on FF
-    filterForm.perimeter.selectedIndex = 0;
-    filterForm.active.selectedIndex = 0;
-    filterForm.sortSelection.selectedIndex = 0;
-    filterForm.sortDirection.selectedIndex = 0;
-
+    document.forms.filter.reset();
     var listPagerElt = document.querySelector("tsante-list");
     listPagerElt.url = getBaseURL(listPagerElt.url);
     listPagerElt.go();
@@ -87,7 +82,7 @@ function validFilter() {
     	filterObj.active = dataFormat[activeStatus];
     }
     //name
-    nameValue = document.querySelector("tsante-inputtext[name=nameTxt]").value; //filterForm.querySelector("tsante-inputtext[name=nameTxt]").value; ==> doesn't work on FF
+    nameValue = filterForm.querySelector("input[name=nameTxt]").value;
     if (nameValue) {
         filterObj[dataFormat.nameData] = nameValue;
     }
@@ -102,9 +97,15 @@ function validFilter() {
     listPagerElt.go();
 }
 
-function updateDirectory(id){
+function updateDirectory(idx){
 	console.log("updateDirectory", arguments);
-	window.location = "updateDirectory.htm" + (id ? "?itemId="+id : "");
+	if(_dataObj && _dataObj.list && _dataObj.list.items){
+		window.location = "updateDirectory.htm" + (typeof idx !== undefined && _dataObj.list.items[idx] ? "?itemId="+_dataObj.list.items[idx]._id : "");
+	}
+}
+
+function onHaveData(data){
+	_dataObj = data.detail;
 }
 
 function init() {
@@ -118,6 +119,7 @@ function init() {
     var listPagerElt = document.querySelector("tsante-list");
     if(listPagerElt){
     	listPagerElt.addEventListener("tsante-draw", checkUser, false);
+    	listPagerElt.addEventListener("tsante-response", onHaveData, false);
     }
 }
 

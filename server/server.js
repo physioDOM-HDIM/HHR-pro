@@ -13,7 +13,7 @@ var restify = require("restify"),
 
 var IDirectory = require('./lib/http/IDirectory'),
 	IBeneficiary = require('./lib/http/IBeneficiary'),
-	ILists = require("./lib/http/Ilists"),
+	ILists = require("./lib/http/ILists"),
 	IPage = require("./lib/http/IPage");
 
 var pkg     = require('../package.json');

@@ -22,15 +22,211 @@
 
     <!-- Polyfills -->
     <script src="../bower_components/platform/platform.js"></script>
+    <script src="../bower_components/mustache/mustache.js"></script>
 
     <!-- Import polymer element -->
     <link rel="import" href="../bower_components/zdk-modal/zdk-modal.html">
     <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
-    <link rel="import" href="../components/tsante-inputtext.html">
+    <!-- <link rel="import" href="../components/tsante-inputtext.html"> -->
 
     <script src="updateDirectory.js"></script>
 </head>
 
+<body>
+    <core-ajax url="/api/directory/" handleAs="json"></core-ajax>
+    <div class="mainContainer">
+        <div>---TODO CHARGEMENT---</div>
+        <form name="directoryForm" onsubmit="showModal('modalUpdate'); return false;">
+            <fieldset>
+                <legend>Identity</legend>
+                <label>Name</label>
+                <input name="name.family" placeholder="Mandatory field" required value="{{item.name.family}}" />
+                <br/>
+                <div id="nonOrgContainer">
+                    <label>Given:</label>
+                    <input name="name.given" value="{{item.name.given}}" />
+                    <br/>
+                    <label>Gender:</label>
+                    <input type="radio" name="gender" value="M" {{gender_m_checked}}/>Male
+                    <input type="radio" name="gender" value="F" {{gender_f_checked}}/>Female
+                    <br/>
+                    <label>Job:</label>
+                    <select name="job">
+                        {{#job_list}}
+                        <option value="{{.}}" {{job_selected}}>{{.}}</option>
+                        {{/job_list}}
+                    </select>
+                    <br/>
+                </div>
+                <label>Role:</label>
+                <select name="role" required>
+                    {{#role_list}}
+                    <option value="{{.}}" {{role_selected}}>{{.}}</option>
+                    {{/role_list}}
+                </select>
+                <br/>
+                <label>Communication:</label>
+                <select name="communication">
+                    {{#communication_list}}
+                    <option value="{{.}}" {{communication_selected}}>{{.}}</option>
+                    {{/communication_list}}
+                </select>
+                <br/>
+            </fieldset>
+            <fieldset>
+                <legend>Status</legend>
+                <label>Organization:</label>
+                <input type="checkbox" name="organization" onchange="checkOrganization()" {{organization_checked}}/>
+                <br/>
+                <label>Active:</label>
+                <input type="checkbox" name="active" {{active_checked}}/>
+                <br/>
+            </fieldset>
+            <br/>
+            <fieldset>
+                <legend>Telecom</legend>
+                <div id="tplTelecomContainer" class="telecomContainer hidden">
+                    <label>Use:</label>
+                    <select name="telecom.use">
+                        {{#use_list}}
+                        <option value="{{.}}">{{.}}</option>
+                        {{/use_list}}
+                    </select>
+                    <label>System:</label>
+                    <select name="telecom.system" onchange="checkEmailTypeValidation(this)">
+                        {{#system_list}}
+                        <option value="{{.}}">{{.}}</option>
+                        {{/system_list}}
+                    </select>
+                    <label>Value:</label>
+                    <input name="telecom.value"/>
+                    <button type="button" onclick="deleteTelecom(this)">delete</button>
+                </div>
+                {{#item.telecom}}
+                <div class="telecomContainer">
+                    <label>Use:</label>
+                    <select name="telecom.use">
+                        {{#use_list}}
+                        <option value="{{.}}" {{telecom_use_selected}}>{{.}}</option>
+                        {{/use_list}}
+                    </select>
+                    <label>System:</label>
+                    <select name="telecom.system" onchange="checkEmailTypeValidation(this)">
+                        {{#system_list}}
+                        <option value="{{.}}" {{telecom_system_selected}}>{{.}}</option>
+                        {{/system_list}}
+                    </select>
+                    <label>Value:</label>
+                    <input name="telecom.value" value="{{value}}" type="{{telecom_email_type}}"/>
+                    <button type="button" onclick="deleteTelecom(this)">delete</button>
+                </div>
+                {{idx}}
+                {{/item.telecom}}
+                {{resetIdx}}
+                <button id="addTelecomBtn" type="button" onclick="addTelecom()">Add</button>
+            </fieldset>
+            <br />
+            <fieldset>
+                <legend>Address</legend>
+                <label>Use:</label>
+                <select name="address.use">
+                    {{#use_list}}
+                    <option value="{{.}}" {{use_selected}}>{{.}}</option>
+                    {{/use_list}}
+                </select>
+                <br/>
+                <label>Text:</label>
+                <input name="address.text" value="{{item.address.text}}" />
+                <br/>
+                <fieldset>
+                    <legend>Lines:</legend>
+                    <textarea name="address.line" value="{{item.address.line}}"></textarea>
+                </fieldset>
+                <br/>
+                <label>City:</label>
+                <input name="address.city" value="{{item.address.city}}" />
+                <br/>
+                <label>State:</label>
+                <input name="address.state" value="{{item.address.state}}" />
+                <br/>
+                <label>Zip:</label>
+                <input name="address.zip" value="{{item.address.zip}}" />
+                <br/>
+                <label>Country:</label>
+                <input name="address.country" value="{{item.address.country}}" />
+            </fieldset>
+            <br />
+            <br />
+            <fieldset>
+                <legend>Account</legend>
+                <label>Login:</label>
+                <input/>
+                <br/>
+                <label>Change password:</label>
+                <input/>
+                <br/>
+                <label>Confirm password:</label>
+                <input/>
+            </fieldset>
+            <br />
+            <div class="buttonContainer">
+                <button id="deleteItem" type="button" onclick="showModal('modalDelete')">delete</button>
+                <button type="button" onclick="window.history.back()">cancel</button>
+                <button>save</button>
+            </div>
+        </form>
+    </div>
+    <zdk-modal closebutton="false">
+        <div id="modalUpdate" class="modalContainer hidden">
+            <div class="modalTitleContainer">Update</div>
+            <div class="modalContentContainer">Are you sure you want to update this item ?</div>
+            <div class="modalButtonContainer">
+                <button onclick="updateItem()">Yes</button>
+                <button onclick="closeModal()">No</button>
+            </div>
+        </div>
+        <div id="modalDelete" class="modalContainer hidden">
+            <div class="modalTitleContainer">Delete</div>
+            <div class="modalContentContainer">Are you sure you want to delete this item ?</div>
+            <div class="modalButtonContainer">
+                <button onclick="deleteItem()">Yes</button>
+                <button onclick="closeModal()">No</button>
+            </div>
+        </div>
+        <div id="modalUpdateSuccess" class="modalContainer hidden">
+            <div class="modalTitleContainer">Success</div>
+            <div class="modalContentContainer">Item successfully updated</div>
+            <div class="modalButtonContainer">
+                <button onclick="closeModal(); window.history.back()">OK</button>
+            </div>
+        </div>
+         <div id="modalCreateSuccess" class="modalContainer hidden">
+            <div class="modalTitleContainer">Success</div>
+            <div class="modalContentContainer">Item successfully created</div>
+            <div class="modalButtonContainer">
+                <button onclick="closeModal(); window.history.back()">OK</button>
+            </div>
+        </div>
+        <div id="modalDeleteSuccess" class="modalContainer hidden">
+            <div class="modalTitleContainer">Success</div>
+            <div class="modalContentContainer">Item successfully deleted</div>
+            <div class="modalButtonContainer">
+                <button onclick="closeModal(); window.history.back()">OK</button>
+            </div>
+        </div>
+        <div id="modalError" class="modalContainer hidden">
+            <div class="modalTitleContainer">Error</div>
+            <div class="modalContentContainer">An error occured</div>
+            <div class="modalButtonContainer">
+                <button onclick="closeModal()">OK</button>
+            </div>
+        </div>
+    </zdk-modal>
+</body>
+
+</html>
+
+<!--
 <body>
     <core-ajax url="/api/directory/" handleAs="json"></core-ajax>
     <div class="mainContainer">
@@ -72,7 +268,7 @@
                         <option value="{{enumCommunicationItem}}">{{enumCommunicationItem}}</option>
                     </template>
                 </select>
-                </fieldset>
+            </fieldset>
                 <br />
                 <fieldset>
                     <legend>Status</legend>
@@ -102,7 +298,7 @@
                             </select>
                             <label>Value:</label>
                             <tsante-inputtext class="telecomValue" value="{{telecomItem.value}}" type="{{telecomItem.system === 'email' ? 'email' : 'text'}}"></tsante-inputtext>
-                            <button onclick="deleteTelecom({{i}})">delete</button>
+                            <button onclick="deleteTelecom('{{i}}')">delete</button>
                         </div>
                     </template>
                     <button onclick="addTelecom()">Add</button>
@@ -139,19 +335,16 @@
                 </fieldset>
                 <br />
                 <fieldset>
-                    //A REVOIR
-                    <br/>
                     <legend>Account</legend>
                     <label>Login:</label>
-                    <tsante-inputtext value="{{item.account.login}}"></tsante-inputtext>
+                    <tsante-inputtext></tsante-inputtext>
                     <br />
-                    <label>Password:</label>
-                    <tsante-inputtext value="{{item.account.password}}"></tsante-inputtext>
+                    <label>Change password:</label>
+                    <tsante-inputtext></tsante-inputtext>
+                    <br />
+                    <label>Confirm password:</label>
+                    <tsante-inputtext></tsante-inputtext>
                 </fieldset>
-
-                <div>
-                    //TODO champ d'erreur ? //TODO verif formatage donnée
-                </div>
                 <br />
                 <div class="buttonContainer">
                     <button onclick="confirm('delete')">delete</button>
@@ -181,3 +374,4 @@
     </div>
 </body>
 </html>
+-->
