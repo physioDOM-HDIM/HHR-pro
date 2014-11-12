@@ -224,7 +224,6 @@ function apiLogin(req, res, next) {
 			res.send(403);
 			return next(false);
 		} else {
-			logger.debug("passe par là");
 			physioDOM.getAccountByCredentials(user.login, user.password )
 				.then( function(account) {
 					return account.createSession();
@@ -303,7 +302,7 @@ server.get( '/beneficiary/select', IPage.beneficiarySelect);
 server.get(/\/[^api\/]?$/, function(req, res, next) {
 	logger.trace("index");
 	if( req.cookies.sessionID ) {
-		return readFile(path.join(DOCUMENT_ROOT, '/ui.htm'), req, res, next);
+		return IPage.ui( req, res, next);
 	} else {
 		return readFile(path.join(DOCUMENT_ROOT, '/index.htm'), req, res, next);
 	}

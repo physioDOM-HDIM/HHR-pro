@@ -28,6 +28,26 @@ function IPage() {
 		});
 	}
 	
+	this.ui = function( req, res, next ) {
+		logger.trace("ui");
+		var html;
+
+		init(req);
+		
+		req.session.getPerson()
+			.then( function( session ) {
+				logger.debug("person",session.person);
+				var data = {
+					account: {
+						firstname : session.person.item.name.given.slice(0, 1).toUpperCase(),
+						lastname : session.person.item.name.family
+					} 
+				};
+				html = swig.renderFile('./static/tpl/ui.htm', data);
+				sendPage(html,res, next);
+			});
+	};
+	
 	this.beneficiaryCreate = function(req, res, next) {
 		logger.trace("beneficiaryCreate");
 		var html;
