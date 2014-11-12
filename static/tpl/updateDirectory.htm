@@ -37,7 +37,7 @@
     <core-ajax url="/api/directory/" handleAs="json"></core-ajax>
     <div class="loading">--- CHARGEMENT EN COURS ---</div>
     <div class="mainContainer hidden">
-        <form name="directoryForm" onsubmit="checkPassword(); return false;">
+        <form name="directoryForm" onsubmit="checkForm(); return false;">
             <fieldset>
                 <legend>Identity</legend>
                 <div class="row">
@@ -215,6 +215,7 @@
         <div id="trad_success_delete">Item successfully deleted</div>
         <div id="trad_error_occured">An error occured</div>
         <div id="trad_error_password">Passwords are not equal</div>
+        <div id="trad_error_email_required">You must add an email in telecom field</div>
         <div id="trad_yes">Yes</div>
         <div id="trad_no">No</div>
         <div id="trad_ok">OK</div>

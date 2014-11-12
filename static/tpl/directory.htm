@@ -70,7 +70,7 @@
             </form>
         </zdk-panel>
 
-        <tsante-list url="/api/directory" pg="3" auto="true" unresolved id="tsanteList">
+        <tsante-list url="/api/directory" auto="true" unresolved id="tsanteList">
             <template is="auto-binding" repeat="{{item, i in list.items}}">
                 <div class="item {{!item.active ? 'disabled' : ''}}">
                     <div class="leftContent">
