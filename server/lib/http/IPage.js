@@ -10,7 +10,7 @@
 
 var swig = require("swig"),
 	Logger = require("logger"),
-	promise = require("RSVP").Promise;
+	promise = require("rsvp").Promise;
 var logger = new Logger("IPage");
 var i18n = new (require('i18n-2'))({
 	// setup some locales - other locales default to the first locale
