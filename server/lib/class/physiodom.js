@@ -101,9 +101,12 @@ function PhysioDOM( ) {
 		var that = this;
 		return new promise( function(resolve, reject) {
 			that.db.collection("account").findOne(search, function (err, record) {
-				if(err) { reject(err); }
-				if(!record) { reject({code:404, msg:"Account not found"}); }
-				resolve( new Account( record ));
+				if(err) { throw err; }
+				if(!record) { 
+					reject({code:404, msg:"Account not found"}); 
+				} else {
+					resolve(new Account(record));
+				}
 			});
 		});
 	};
