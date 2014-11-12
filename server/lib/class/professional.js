@@ -148,11 +148,16 @@ function Professional() {
 				return reject({ error : "update bad id"});
 			}
 			updatedItem._id = new ObjectID(updatedItem._id);
+			if ( updatedItem.account && updatedItem.account !== that.account.toString()) {
+				return reject({ error : "update bad account"});
+			}
+			updatedItem.account = new ObjectID(updatedItem.account);
 			checkSchema( updatedItem )
 				.then( checkUniq )
 				.then( function(entry) {
-					for( var key in entry ) {
-						if(entry.hasOwnProperty(key) && key !== "_id") {
+					var key;
+					for( key in entry ) {
+						if(entry.hasOwnProperty(key) && ["_id","account"].indexOf(key) === -1) {
 							if( key==="active" && entry.active === true && that.active !== entry.active && !that.account ) {
 								that.active = false;
 							} else {
@@ -160,8 +165,8 @@ function Professional() {
 							}
 						}
 					}
-					for( var key in that ) {
-						if(!entry.hasOwnProperty(key)) {
+					for( key in that ) {
+						if(that.hasOwnProperty(key) && typeof that[key] !== "function" && !entry.hasOwnProperty(key)) {
 							delete that[key];
 						}
 					}

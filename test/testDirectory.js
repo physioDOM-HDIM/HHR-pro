@@ -466,7 +466,6 @@ describe('Directory', function() {
 			body               : JSON.stringify(entry1)
 		}, function (err, resp, body) {
 			var item;
-			// console.log(body);
 			should.not.exist(err);
 			resp.statusCode.should.equal(200);
 			item = JSON.parse(body);
@@ -524,6 +523,7 @@ describe('Directory', function() {
 			item = JSON.parse(body);
 			item.should.have.property("account");
 			item.active.should.equal(true);
+			entry1 = item; 
 			return done();
 		});
 	});
@@ -565,6 +565,23 @@ describe('Directory', function() {
 			resp.statusCode.should.equal(200);
 			var cookies = querystring.parse(tmpCookie.getCookieString(domain), ";");
 			cookies.should.have.property("sessionID");
+			return done();
+		});
+	});
+
+	it('modify a professional with an account', function(done) {
+		entry1.communication = "fr";
+
+		request({url           : domain + '/api/directory/'+entry1._id,
+			method             : "PUT",
+			jar                : sessionCookie,
+			headers            : { "content-type":"text/plain"},
+			body               : JSON.stringify(entry1)
+		}, function (err, resp, body) {
+			var item;
+			should.not.exist(err);
+			resp.statusCode.should.equal(200);
+			item = JSON.parse(body);
 			return done();
 		});
 	});
