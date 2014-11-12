@@ -722,7 +722,7 @@ function getUserFormData() {
 
     eltName = "address.line";
     elt = document.querySelector("form[name=directoryForm] textarea[name='" + eltName + "']");
-    debugger;
+
     if (elt.value !== "") {
         createNestedObject(itemObj, eltName, elt.value.split("\n"));
     }
