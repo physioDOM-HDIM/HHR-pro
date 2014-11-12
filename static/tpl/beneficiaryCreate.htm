@@ -1,118 +1,215 @@
+{% extends './page.htm' %} {% block title %}{{ "Select beneficiary"|i18n }}{% endblock %} {% block head %} {% parent %}
+<link rel="stylesheet" href="../styles/beneficiaryCreate.css" charset="UTF-8">{% endblock %} {% block content %}
 
-	{% extends './page.htm' %}
+<zdk-panel bgcolor="gray" heading="Beneficiary">
+    <form name="benificiary">
+        <div class="row">
+            <label>{{ "Gender"|i18n }}</label>
+            <input name="gender" type="radio" value="M" checked id="Male">
+            <label for="Male">{{ "Male"|i18n }}</label>
+            <input name="gender" type="radio" value="F" id="Female">
+            <label for="Female">{{ "Female"|i18n }}</label>
+        </div>
+        <div class="row">
+            <label>{{ "Last name"|i18n }}</label>
+            <input type="text" name="name.family" required />
+        </div>
+        <div class="row">
+            <label>{{ "First name"|i18n }}</label>
+            <input type="text" name="name.given" />
+        </div>
+        <div class="row">
+            <label>{{ "Birth date"|i18n }}</label>
+            <input type="text" name="birthdate" required placeholder="YYYY-MM-DD" />
+        </div>
+        <div class="row">
+            <label>{{ "Perimeter"|i18n }}</label>
+            <select name="perimeter">
+                <option></option>
+                <option>todo1</option>
+            </select>
+        </div>
+        <div class="row">
+            <div class="col">
+                <label>{{ "Height (meters)"|i18n }}</label>
+                <input type="number" name="height" required/>
+            </div>
+            <div class="col">
+                <label>{{ "Social ID"|i18n }}</label>
+                <input type="text" name="socialID" />
+            </div>
+        </div>
+        <hr/>
+        <div class="row">
+            <label>{{ "Phone"|i18n }}</label>
+            <input type="text" name="phone" />
+        </div>
+        <div class="row">
+            <label>{{ "Mobile"|i18n }}</label>
+            <input type="text" name="mobile" />
+        </div>
+        <hr/>
+        <div class="row">
+            <label>{{ "Street"|i18n }}</label>
+            <textarea name="street" required></textarea>
+        </div>
+        <div class="row">
+            <div class="col">
+                <label>{{ "Zip code"|i18n }}</label>
+                <input type="text" name="zipCode" required style="flex:0.5" />
+            </div>
+            <div class="col">
+                <label style="width:80px">{{ "City"|i18n }}</label>
+                <input type="text" name="city" required/>
+            </div>
+        </div>
+        <div class="row control">
+            <span class="spacer"></span>
+            <button class="blue">{{ "Save"|i18n }}</button>
+        </div>
+    </form>
+</zdk-panel>
+<zdk-panel bgcolor="gray" heading="Life condition" collapsable="true" collapsed="false">
+    <form name="life_condition">
+        <div class="row">
+            <label>{{ "Deceased"|i18n }}</label>
+            <input type="checkbox" name="deceased" />
+        </div>
+        <div class="row">
+            <label>{{ "Active"|i18n }}</label>
+            <input type="checkbox" name="active" />
+        </div>
+        <div class="row">
+            <label>{{ "Marital status"|i18n }}</label>
+            <select name="maritalStatus" required>
+                <option></option>
+                <option>todo1</option>
+            </select>
+        </div>
+        <fieldset>
+            <legend>{{ "Disability"|i18n }}</legend>
+            <div class="row">
+                <label>{{ "Type"|i18n }}</label>
+                <select name="lifeCond.disability.type" required>
+                    <option></option>
+                    <option>todo1</option>
+                </select>
+            </div>
+            <div class="row">
+                <label>{{ "Percent"|i18n }}</label>
+                <input type="number" name="lifeCond.disability.percent" />
+            </div>
+        </fieldset>
+        <div class="row">
+            <label>{{ "Way of life"|i18n }}</label>
+            <select name="lifeCond.wayOfLife" required>
+                <option></option>
+                <option>todo1</option>
+            </select>
+        </div>
+        <div class="row">
+            <label>{{ "Profession"|i18n }}</label>
+            <select name="lifeCond.profession" required>
+                <option></option>
+                <option>todo1</option>
+            </select>
+        </div>
+        <div class="row control">
+            <span class="spacer"></span>
+            <button class="blue">{{ "Save"|i18n }}</button>
+        </div>
+    </form>
+</zdk-panel>
+<zdk-panel bgcolor="gray" heading="Access to HHR-Pro" collapsable="true" collapsed="true">
+    <form name="account">
+        <div class="row">
+            <label>{{ "Login"|i18n }}</label>
+            <input type="text" name="account.login" />
+        </div>
+        <div class="row">
+            <label>{{ "Password"|i18n }}</label>
+            <input type="password" name="account.password" />
+        </div>
+        <div class="row">
+            <label>{{ "Confirm password"|i18n }}</label>
+            <input type="password" name="checkAccountPassword" />
+        </div>
+        <div class="row">
+            <label>{{ "Email"|i18n }}</label>
+            <input type="text" name="telecom.system" />
+        </div>
+        <div class="row control">
+            <span class="spacer"></span>
+            <button class="blue">{{ "Save"|i18n }}</button>
+        </div>
+    </form>
+</zdk-panel>
+<zdk-panel bgcolor="gray" heading="Professionals" collapsable="true" collapsed="false">
+    <form name="professionals">
 
-	{% block title %}{{ "Select beneficiary"|i18n }}{% endblock %}
+    </form>
+    <div class="row control">
+        <span class="spacer"></span>
+        <button class="blue">{{ "Add"|i18n }}</button>
+    </div>
+</zdk-panel>
+<zdk-panel bgcolor="gray" heading="Personnal contacts" collapsable="true" collapsed="false">
+    <form name="personnal_contacts">
 
-	{% block head %}
-	{% parent %}
-	{% endblock %}
+    </form>
+    <div class="row control">
+        <span class="spacer"></span>
+        <button class="blue">{{ "Add"|i18n }}</button>
+    </div>
+</zdk-panel>
+<zdk-panel bgcolor="gray" heading="Entry" collapsable="true" collapsed="false">
+    <form name="entry">
+        <div class="row">
+            <label>{{ "Demand"|i18n }}</label>
+            <textarea name="entry.demand" required></textarea>
+        </div>
+        <div class="row">
+            <label>{{ "Start date"|i18n }}</label>
+            <input type="text" name="entry.startDate" required placeholder="YYYY-MM-DD" />
+        </div>
+        <div class="row">
+            <label>{{ "Planned end"|i18n }}</label>
+            <input type="text" name="entry.plannedEnd" required placeholder="YYYY-MM-DD" />
+        </div>
+        <div class="row">
+            <label>{{ "End date"|i18n }}</label>
+            <input type="text" name="entry.endDate" required placeholder="YYYY-MM-DD" />
+        </div>
+        <div class="row">
+            <label>{{ "Come from"|i18n }}</label>
+            <select name="entry.comeFrom" required>
+                <option></option>
+                <option>todo1</option>
+            </select>
+        </div>
+        <div class="row">
+            <label>{{ "PhysioDom-Box"|i18n }}</label>
+            <input type="text" name="biomaster" />
+        </div>
+        <div class="row control">
+            <span class="spacer"></span>
+            <button class="blue">{{ "Save"|i18n }}</button>
+        </div>
+    </form>
+</zdk-panel>
+<zdk-panel bgcolor="gray" heading="Diagnosis" collapsable="true" collapsed="false">
+    <form name="diagnosis">
+        <p class="head">{{ "General status"|i18n }}</p>
+        <p class="head">{{ "Nutritional status"|i18n }}</p>
+        <p class="head">{{ "Chronic pathologies"|i18n }}</p>
+    </form>
+</zdk-panel>
+<div class="row control" style="height:60px; align-content: center">
+    <span class="spacer"></span>
+    <a href="javascript:history.back()">
+        <button class="red big">{{ "Cancel"|i18n }}</button>
+    </a>
+    <button class="green big">{{ "Validate"|i18n }}</button>
+</div>
 
-	{% block content %}
-
-	<zdk-panel bgcolor="gray" heading="Beneficiary">
-		<form name="identity">
-			<div class="row">
-				<label>{{ "Gender"|i18n }}</label>
-				<input name="gender" type="radio" value="M" checked id="Male"> <label for="Male">{{ "Male"|i18n }}</label>
-				<input name="gender" type="radio" value="F" id="Female"> <label for="Female">{{ "Female"|i18n }}</label>
-			</div>
-			<div class="row">
-				<label>{{ "Last name"|i18n }}</label><input type="text" name="name.family" required />
-			</div>
-			<div class="row">
-				<label>{{ "First name"|i18n }}</label><input type="text" name="name.given"/>
-			</div>
-			<div class="row">
-				<label>{{ "Birth date"|i18n }}</label><input type="text" name="birthdate" required placeholder="YYYY-MM-DD"/>
-			</div>
-			<div class="row">
-				<label>{{ "Perimeter"|i18n }}</label><select name="perimeter">
-				<option></option>
-				<option>Perim 1</option>
-				<option>Perim 1</option>
-				<option>Perim 1</option>
-				<option>Perim 1</option>
-				<option>Perim 1</option>
-				</select>
-			</div>
-			<div class="row">
-				<div class="col">
-					<label>{{ "Height (meters)"|i18n }}</label><input type="number" name="height" required/>
-				</div>
-				<div class="col">
-					<label>{{ "Social ID"|i18n }}</label><input type="text" name="socialID" />
-				</div>
-			</div>
-			<hr/>
-			<div class="row">
-				<label>{{ "Phone"|i18n }}</label><input type="text" name="phone"/>
-			</div>
-			<div class="row">
-				<label>{{ "Mobile"|i18n }}</label><input type="text" name="mobile"/>
-			</div>
-			<hr/>
-			<div class="row">
-				<label>{{ "Street"|i18n }}</label><textarea name="mobile"></textarea>
-			</div>
-			<div class="row">
-				<div class="col">
-					<label>{{ "Zip code"|i18n }}</label><input type="text" name="zipCode" style="flex:0.5"/>
-				</div>
-				<div class="col">
-					<label style="width:80px">{{ "City"|i18n }}</label><input type="text" name="city"/>
-				</div>
-			</div>
-			<div class="row control">
-				<span class="spacer"></span>
-				<button class="blue">{{ "Save"|i18n }}</button>
-			</div>
-		</form>
-	</zdk-panel>
-	<zdk-panel bgcolor="gray" heading="Access to HHR-Pro" collapsable="true" collapsed="true">
-		<form name="account">
-			<div class="row">
-				<label>Login</label><input type="text" name="name.family"/>
-			</div>
-			<div class="row">
-				<label>password</label><input type="password" name="name.family"/>
-			</div>
-			<div class="row">
-				<label>confirm password</label><input type="password" name="name.family"/>
-			</div>
-			<div class="row">
-				<label>email</label><input type="text" name="name.family"/>
-			</div>
-		</form>
-	</zdk-panel>
-	<zdk-panel bgcolor="gray" heading="Professionals" collapsable="true" collapsed="false">
-		<form name="professionals">
-			
-		</form>
-		<div class="row control">
-			<span class="spacer"></span>
-			<button class="blue">{{ "Add"|i18n }}</button>
-		</div>
-	</zdk-panel>
-	<zdk-panel bgcolor="gray" heading="Personnal contacts" collapsable="true" collapsed="false">
-		<form name="professionals">
-
-		</form>
-		<div class="row control">
-			<span class="spacer"></span>
-			<button class="blue">{{ "Add"|i18n }}</button>
-		</div>
-	</zdk-panel>
-	<zdk-panel bgcolor="gray" heading="Diagnosis" collapsable="true" collapsed="false">
-		<form name="Diagnosis">
-			<p class="head">General status</p>
-			<p class="head">Nutritional status</p>
-			<p class="head">Chronic pathologies</p>
-		</form>
-	</zdk-panel>
-	<div class="row control" style="height:60px; align-content: center">
-		<span class="spacer"></span>
-		<a href="javascript:history.back()"><button class="red big">{{ "Cancel"|i18n }}</button></a>
-		<button class="green big">{{ "Validate"|i18n }}</button>
-	</div>
-	
 {% endblock %}
