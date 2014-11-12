@@ -1,8 +1,18 @@
 .mainContainer {
     line-height: 28px;
+    padding-bottom: 60px;
 }
-.buttonContainer{
-	float: right;
+.mainContainer .row input, .mainContainer .row select{
+    margin-right: 10px;
+}
+.mainContainer textarea{
+	height: 50px;
+}
+.buttonContainer {
+    float: right;
+}
+label[disabled] {
+    opacity: 0.3;
 }
 zdk-modal {
     border: 1px solid black;
@@ -13,22 +23,28 @@ zdk-modal div.modalContainer {
     width: 100%;
     background: white;
     overflow: auto;
-    border-radius: 20px;
+    border-radius: 15px;
 }
-zdk-modal .modalTitleContainer, zdk-modal .modalButtonContainer {
+zdk-modal .modalTitleContainer {
+    border-bottom: 2px solid silver;
+    padding-bottom: 10px;
     text-align: center;
 }
 zdk-modal .modalContentContainer {
+    text-align: center;
     padding-top: 10px;
     padding-bottom: 10px;
 }
-
-zdk-modal div#bg{
-	display: block; /* FF fix */
+zdk-modal .modalButtonContainer{
+	text-align: center;
 }
-tsante-inputtext{
-	line-height: 20px;
+zdk-modal .modalButtonContainer button{
+	margin: 0 5px;
 }
-*[emptyValue]{
-	box-shadow: 0 0 3px red;
+zdk-modal div#bg {
+    display: block;
+    /* FF fix */
+}
+div.row.hidden{
+	display: none;
 }

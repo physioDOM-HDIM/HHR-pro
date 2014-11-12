@@ -165,6 +165,7 @@ function Professional() {
 							}
 						}
 					}
+
 					for( key in that ) {
 						if(that.hasOwnProperty(key) && typeof that[key] !== "function" && !entry.hasOwnProperty(key)) {
 							delete that[key];

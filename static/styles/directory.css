@@ -1,8 +1,15 @@
-.filter label, .filter select, .filter tsante-inputtext {
+.filter .row{
+    margin-bottom: 5px;
+}
+.filter .row input, .filter .row select{
     margin-right: 10px;
 }
 .filter hr {
     margin: 20px 0 10px 0;
+}
+.filter .buttonContainer{
+    float: right;
+    margin-top: 10px;
 }
 #tsanteList {
     margin-top: 20px;
@@ -76,28 +83,4 @@
 }
 #addEntry {
     float: right;
-}
-button.validFilter {
-    background: green;
-}
-button.validFilter:hover {
-    background: rgb(2, 105, 2);
-}
-button.resetFilter {
-    background: grey;
-}
-button.resetFilter:hover {
-    background: rgb(80, 80, 80);
-}
-zdk-modal {
-    border: 1px solid black;
-    box-shadow: 2px 2px 10px #ccc;
-}
-zdk-modal div.content {
-    padding: 10px;
-    width: 100%;
-    background: white;
-    border: 1px solid grey;
-    overflow: auto;
-    border-radius: 20px;
 }

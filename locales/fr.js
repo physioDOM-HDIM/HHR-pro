@@ -5,5 +5,17 @@
 	"Zip code": "Zip code",
 	"City": "City",
 	"Birth date": "Birth date",
-	"Add": "Add"
+	"Add": "Add",
+	"Gender": "Gender",
+	"Male": "Male",
+	"Female": "Female",
+	"First name": "First name",
+	"Height (meters)": "Height (meters)",
+	"Social ID": "Social ID",
+	"Phone": "Phone",
+	"Mobile": "Mobile",
+	"Street": "Street",
+	"Save": "Save",
+	"Cancel": "Cancel",
+	"Validate": "Validate"
 }

@@ -41,7 +41,12 @@ function toggleHiddenNode(node, searchPattern) {
         searchNode = node.querySelector(searchPattern);
         if (searchNode) {
             found = true;
-            searchNode.setAttribute("data-state", searchNode.getAttribute("data-state") === "hidden" ? "displayed" : "hidden");
+            if(searchNode.className.indexOf("hidden") !== -1){
+            	searchNode.className = searchNode.className.replace("hidden", "");
+            }
+            else{
+            	searchNode.className += " hidden";
+            }
         } else {
             node = node.parentNode;
         }

@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="/styles/iframe.css" charset="UTF-8">
     <link rel="stylesheet" href="/styles/theme.css" charset="UTF-8">
 
-    <link rel="stylesheet" href="/styles/common.css" charset="UTF-8">
+    <link rel="stylesheet" href="/styles/ui.css" charset="UTF-8">
     <link rel="stylesheet" href="/styles/directory.css" charset="UTF-8">
 
     <!-- Polyfills -->
@@ -32,10 +32,12 @@
 <body>
     <div class="main">
         <zdk-panel heading="Filter" collapsable="true" collapsed="true">
-            <form class="filter" name="filter" onsubmit="return false;">
-                <div>
+            <form class="filter" name="filter" onsubmit="validFilter(); return false;">
+                <div class="row">
                     <label>Name:</label>
-                    <input name="nameTxt" />
+                    <input type="text" name="nameTxt" />
+                </div>
+                <div class="row ">
                     <label>Perimeter:</label>
                     <select name="perimeter">
                         <option value="todo1">todo1</option>
@@ -48,8 +50,8 @@
                         <option value="activeFalseData">not active</option>
                     </select>
                 </div>
-                <div>
-                    <hr>
+                <hr>
+                <div class="row">
                     <label>Sort:</label>
                     <select name="sortSelection">
                         <option value="nameData">name</option>
@@ -61,10 +63,10 @@
                         <option value="descData">descending</option>
                     </select>
                 </div>
-                <footer>
-                    <button class="resetFilter" onclick="resetFilter()">Reset</button>
-                    <button class="validFilter" onclick="validFilter()">Valid</button>
-                </footer>
+                <div class="row buttonContainer">
+                    <button type="button" class="red" onclick="resetFilter()">Reset</button>
+                    <button class="green">Valid</button>
+                </div>
             </form>
         </zdk-panel>
 
@@ -88,7 +90,7 @@
                             </span>
                         </div>
                         <template if="{{item.address}}">
-                            <div class="address" data-state="hidden">
+                            <div class="address hidden">
                                 <template repeat="{{lineItem in item.address.line}}">
                                     <div class="line">{{lineItem}}</div>
                                 </template>
@@ -101,17 +103,17 @@
                         <div class="job">{{item.job}}</div>
                     </div>
                     <div class="rightContent">
-                        <template if="{{item.address}}">
-                            <button type="button" onclick="toggleHiddenNode(this, '.address')">detail</button>
+                        <template if="{{item.address && item.address.line && item.address.line.length > 0 || item.address.zip || item.address.city}}">
+                            <button type="button" class="green" onclick="toggleHiddenNode(this, '.address')">detail</button>
                         </template>
-                        <button class="editButton hidden" type="button" onclick="updateDirectory({{i}})">edit</button>
+                        <button class="editButton blue hidden" type="button" onclick="updateDirectory({{i}})">edit</button>
                     </div>
                 </div>
             </template>
         </tsante-list>
 
         <div>
-            <button id="addEntry" class="hidden" type="button" onclick="updateDirectory()">Add entry</button>
+            <button id="addEntry" class="hidden blue" type="button" onclick="updateDirectory()">Add entry</button>
         </div>
     </div>
 </body>

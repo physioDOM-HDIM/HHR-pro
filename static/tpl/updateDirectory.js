@@ -1,84 +1,123 @@
 "use strict";
 
 var _dataObj = null,
+    _accountDataObj = null,
     _useEnum = null,
     _systemEnum = null,
     _roleEnum = null,
     _jobEnum = null,
     _communicationEnum = null;
 
-function getQueryVariable(variable) {
-    console.log("getQueryVariable", arguments);
-    var query = window.location.search.substring(1);
-    var vars = query.split("&");
-    for (var i = 0; i < vars.length; i++) {
-        var pair = vars[i].split("=");
-        if (pair[0] === variable) {
-            return pair[1];
-        }
-    }
-    return (false);
-}
+var promiseXHR = function(method, url, statusOK, data) {
+    var promise = new RSVP.Promise(function(resolve, reject) {
+        var client = new XMLHttpRequest();
+        statusOK = statusOK ? statusOK : 200;
+        client.open(method, url);
+        client.onreadystatechange = function handler() {
+            if (this.readyState === this.DONE) {
+                if (this.status === statusOK) {
+                    resolve(this.response);
+                } else {
+                    reject(this);
+                }
+            }
+        };
+        client.send(data ? data : null);
+    });
+
+    return promise;
+};
 
 function closeModal() {
     console.log("closeModal", arguments);
     document.querySelector("zdk-modal").hide();
+
+    var elt = document.querySelector("zdk-modal"),
+        subElt, child;
+    subElt = elt.querySelector(".modalTitleContainer");
+    subElt.innerHTML = "";
+    subElt.className += "hidden";
+    subElt = elt.querySelector(".modalContentContainer");
+    subElt.innerHTML = "";
+    subElt.className += "hidden";
+    subElt = elt.querySelector(".modalButtonContainer");
+    for (var i = subElt.childNodes.length - 1; i >= 0; i--) {
+        child = subElt.childNodes[i];
+        subElt.removeChild(child);
+    }
+    subElt.className += "hidden";
 }
 
-function showModal(idModalContent) {
+function showModal(modalObj) {
     console.log("showModal", arguments);
 
-    var elt = document.querySelectorAll("zdk-modal .modalContainer:not(.hidden)");
-    var found = false;
-    [].map.call(elt, function(node) {
-        if (node.id !== idModalContent) {
-            node.className += "hidden";
-        } else {
-            found = true;
-        }
-    });
+    var elt = document.querySelector("zdk-modal"),
+        subElt;
+    if (modalObj.title) {
+        subElt = elt.querySelector(".modalTitleContainer");
+        subElt.innerHTML = document.querySelector("#" + modalObj.title).innerHTML;
+        subElt.className = subElt.className.replace("hidden", "");
+    }
+    if (modalObj.content) {
+        subElt = elt.querySelector(".modalContentContainer");
+        subElt.innerHTML = document.querySelector("#" + modalObj.content).innerHTML;
+        subElt.className = subElt.className.replace("hidden", "");
+    }
 
-    if (!found) {
-        elt = document.querySelector("zdk-modal #" + idModalContent);
-        elt.className = elt.className.replace("hidden", "");
+    if (modalObj.buttons) {
+        var btn, obj, color;
+        subElt = elt.querySelector(".modalButtonContainer");
+        for (var i = 0; i < modalObj.buttons.length; i++) {
+            obj = modalObj.buttons[i];
+            btn = document.createElement("button");
+            btn.innerHTML = document.querySelector("#" + obj.id).innerHTML;
+            btn.onclick = obj.action;
+            switch (obj.id) {
+                case "trad_ok":
+                    {
+                        color = "green";
+                    }
+                    break;
+                case "trad_yes":
+                    {
+                        color = "green";
+                    }
+                    break;
+                case "trad_no":
+                    {
+                        color = "blue";
+                    }
+                    break;
+            }
+            btn.className += color;
+            subElt.appendChild(btn);
+        }
+        subElt.className = subElt.className.replace("hidden", "");
     }
 
     document.querySelector("zdk-modal").show();
 }
 
 function renderPage() {
-    // document.querySelector("form[name=directoryForm] input[name='name.family']").value = "toto";
-    // var a = "F";
-    // document.querySelector("form[name=directoryForm] input[type=radio][value="+a+"]").checked = true;
-
-    // var select = document.querySelector("form[name=directoryForm] select[name=job]");
-    // var elt = document.createElement("option");
-    // select.appendChild(elt);
-    // elt = document.createElement("option");
-    // elt.setAttribute("value", "job1");
-    // elt.innerHTML = "job1";
-    // select.appendChild(elt);
-    // elt = document.createElement("option");
-    // elt.setAttribute("value", "job2");
-    // elt.innerHTML = "job2";
-    // select.appendChild(elt);
-    // select.value = "job1";
     console.log("renderPage");
 
     //Format the address.line (array) to display it in textarea with '\n'
-    if (_dataObj) {
+    if (_dataObj && _dataObj._id) {
         var address = _dataObj.address;
         if (address && address.line) {
             address.line = address.line.join("\n");
         }
     } else {
         //Hide the delete button
-        document.querySelector("#deleteItem").className += "hidden";
+        document.querySelector("#deleteItem").className += " hidden";
     }
+    var elt = document.querySelector(_dataObj && _dataObj._id ? "#saveItemBtn" : "#createItemBtn");
+    elt.className = elt.className.replace("hidden", "");
 
     var idx = 0;
     var modelData = {
         item: _dataObj,
+        account: _accountDataObj,
         idx: function() {
             idx++;
         },
@@ -91,34 +130,70 @@ function renderPage() {
         gender_f_checked: function() {
             return _dataObj && _dataObj.gender === "F" ? "checked" : "";
         },
-        job_list: _jobEnum,
+        job_list: _jobEnum.items,
         job_selected: function() {
-            return _dataObj && _dataObj.job === this ? "selected" : "";
+            if (_dataObj && _dataObj.job) {
+                return _dataObj.job === this.value ? "selected" : "";
+            } else {
+                return _jobEnum.defaultValue && _jobEnum.defaultValue === this.value ? "selected" : "";
+            }
         },
-        role_list: _roleEnum,
+        role_list: _roleEnum.items,
         role_selected: function() {
-            return _dataObj && _dataObj.role === this ? "selected" : "";
+            if (_dataObj && _dataObj.role) {
+                return _dataObj.role === this.value ? "selected" : "";
+            } else {
+                return _roleEnum.defaultValue && _roleEnum.defaultValue === this.value ? "selected" : "";
+            }
         },
-        communication_list: _communicationEnum,
+        communication_list: _communicationEnum.items,
         communication_selected: function() {
-            return _dataObj && _dataObj.communication === this ? "selected" : "";
+            if (_dataObj && _dataObj.communication) {
+                return _dataObj.communication === this.value ? "selected" : "";
+            } else {
+                return _communicationEnum.defaultValue && _communicationEnum.defaultValue === this.value ? "selected" : "";
+            }
         },
         organization_checked: function() {
             return _dataObj && _dataObj.organization ? "checked" : "";
         },
+        organization_disabled: function() {
+            return _dataObj ? "disabled" : ""; //if _dataObj, it's an edition, else it's a creation
+        },
         active_checked: function() {
             return _dataObj && _dataObj.active ? "checked" : "";
         },
-        use_list: _useEnum,
-        telecom_use_selected: function() {
-            return _dataObj && _dataObj.telecom[idx].use === this ? "selected" : "";
+        use_list: _useEnum.items,
+        telecom_use_default: function() {
+            return _useEnum.defaultValue && _useEnum.defaultValue === this.value ? "selected" : "";
         },
-        system_list: _systemEnum,
+        telecom_use_selected: function() {
+            if (_dataObj && _dataObj.telecom[idx].use) {
+                return _dataObj.telecom[idx].use === this.value ? "selected" : "";
+            } else {
+                return _useEnum.defaultValue && _useEnum.defaultValue === this.value ? "selected" : "";
+            }
+        },
+        system_list: _systemEnum.items,
+        telecom_system_default: function() {
+            return _systemEnum.defaultValue && _systemEnum.defaultValue === this.value ? "selected" : "";
+        },
         telecom_system_selected: function() {
-            return _dataObj && _dataObj.telecom[idx].system === this ? "selected" : "";
+            if (_dataObj && _dataObj.telecom[idx].system) {
+                return _dataObj.telecom[idx].system === this.value ? "selected" : "";
+            } else {
+                return _systemEnum.defaultValue && _systemEnum.defaultValue === this.value ? "selected" : "";
+            }
         },
         address_use_selected: function() {
-            return _dataObj && _dataObj.address.use === this ? "selected" : "";
+            if (_dataObj && _dataObj.address.use) {
+                return _dataObj.address.use === this.value ? "selected" : "";
+            } else {
+                return _useEnum.defaultValue && _useEnum.defaultValue === this.value ? "selected" : "";
+            }
+        },
+        telecom_email_type_default: function() {
+            return _systemEnum.defaultValue && _systemEnum.defaultValue === "email" ? "email" : "text";
         },
         telecom_email_type: function() {
             if (_dataObj && _dataObj.telecom[idx].system.toLowerCase() === "email") {
@@ -132,16 +207,237 @@ function renderPage() {
     checkDefaultGender();
 }
 
-function getEnumForSelect() {
-	console.log("getEnumForSelect", arguments);
-    //TODO get every enums values
-    _useEnum = ["", "home", "work", "temp", "old"];
-    _systemEnum = ["", "phone", "mobile", "email"];
-    _roleEnum = ["", "administrator", "coordinator", "physician", "medical", "social"];
-    _jobEnum = ["", "system administrator", "coordinator", "physician", "pharmacist", "Physician assistant", "dietitian", "therapist", "paramedic", "nurse", "professional home carer", "social worker"];
-    _communicationEnum = ["", "fr", "es", "nl", "en"];
+function getDataForRender() {
+    console.log("getDataForRender", arguments);
 
-    renderPage();
+    var _useEnum2, _systemEnum2, _roleEnum2, _jobEnum2, _communicationEnum2;
+    _useEnum2 = {
+        name: "useEnumList",
+        defaultValue: "work",
+        items: [{
+            value: "-",
+            label: ""
+        }, {
+            value: "home",
+            label: "home"
+        }, {
+            value: "work",
+            label: "work"
+        }, {
+            value: "temp",
+            label: "temp"
+        }, {
+            value: "old",
+            label: "old"
+        }]
+    };
+    _systemEnum2 = {
+        name: "systemEnumList",
+        defaultValue: "email",
+        items: [{
+            value: "-",
+            label: ""
+        }, {
+            value: "phone",
+            label: "phone"
+        }, {
+            value: "mobile",
+            label: "mobile"
+        }, {
+            value: "email",
+            label: "email"
+        }]
+    };
+    _roleEnum2 = {
+        name: "roleEnumList",
+        items: [{
+            value: "administrator",
+            label: "administrator"
+        }, {
+            value: "coordinator",
+            label: "coordinator"
+        }, {
+            value: "physician",
+            label: "physician"
+        }, {
+            value: "medical",
+            label: "medical"
+        }, {
+            value: "social",
+            label: "social"
+        }]
+    };
+    _jobEnum2 = {
+        name: "jobEnumList",
+        defaultValue: "-",
+        items: [{
+            value: "-",
+            label: ""
+        }, {
+            value: "system administrator",
+            label: "system administrator"
+        }, {
+            value: "coordinator",
+            label: "coordinator"
+        }, {
+            value: "physician",
+            label: "physician"
+        }, {
+            value: "pharmacist",
+            label: "pharmacist"
+        }, {
+            value: "Physician assistant",
+            label: "Physician assistant"
+        }, {
+            value: "dietitian",
+            label: "dietitian"
+        }, {
+            value: "therapist",
+            label: "therapist"
+        }, {
+            value: "paramedic",
+            label: "paramedic"
+        }, {
+            value: "nurse",
+            label: "nurse"
+        }, {
+            value: "professional home carer",
+            label: "professional home carer"
+        }, {
+            value: "social worker",
+            label: "social worker"
+        }]
+    };
+    _communicationEnum2 = {
+        name: "communicationEnumList",
+        defaultValue: "-",
+        items: [{
+            value: "-",
+            label: ""
+        }, {
+            value: "fr",
+            label: "fr"
+        }, {
+            value: "es",
+            label: "es"
+        }, {
+            value: "nl",
+            label: "nl"
+        }, {
+            value: "en",
+            label: "en"
+        }]
+    };
+    var fakePromise = function(data, timeout, isError) {
+        var p = new RSVP.Promise(function(resolve, reject) {
+            setTimeout(function() {
+                if (!isError) {
+                    resolve(data);
+                } else {
+                    reject("!!! FAKE ERROR !!!");
+                }
+            }, /*timeout*/ 0);
+        });
+        return p;
+    };
+    var promises = {
+        useEnum: fakePromise(_useEnum2, 500),
+        systemEnum: fakePromise(_systemEnum2, 500),
+        roleEnum: fakePromise(_roleEnum2, 600),
+        jobEnum: fakePromise(_jobEnum2, 800),
+        communicationEnum: fakePromise(_communicationEnum2, 500),
+    };
+
+    // var promises = {
+    //     useEnum: promiseXHR("GET", "/api/lists/use"),
+    //     systemEnum: promiseXHR("GET", "/api/lists/system"),
+    //     roleEnum: promiseXHR("GET", "/api/lists/role"),
+    //     jobEnum: promiseXHR("GET", "/api/lists/job"),
+    //     communicationEnum: promiseXHR("GET", "/api/lists/communication")
+    // };
+
+    if (_dataObj && _dataObj._id) {
+        promises.account = promiseXHR("GET", "/api/directory/" + _dataObj._id + "/account");
+    }
+
+    RSVP.hash(promises).then(function(response) {
+        console.log("getDataForRender - RSVP:", response);
+        _useEnum = response.useEnum;
+        _systemEnum = response.systemEnum;
+        _roleEnum = response.roleEnum;
+        _jobEnum = response.jobEnum;
+        _communicationEnum = response.communicationEnum;
+
+        if (!_useEnum.defaultValue) {
+            _useEnum.items.unshift({
+                value: "",
+                label: ""
+            });
+        }
+        if (!_systemEnum.defaultValue) {
+            _systemEnum.items.unshift({
+                value: "",
+                label: ""
+            });
+        }
+        if (!_roleEnum.defaultValue) {
+            _roleEnum.items.unshift({
+                value: "",
+                label: ""
+            });
+        }
+        if (!_jobEnum.defaultValue) {
+            _jobEnum.items.unshift({
+                value: "",
+                label: ""
+            });
+        }
+        if (!_communicationEnum.defaultValue) {
+            _communicationEnum.items.unshift({
+                value: "",
+                label: ""
+            });
+        }
+        try {
+            if (response.account) {
+                _accountDataObj = JSON.parse(response.account);
+            }
+        } catch (ex) {
+            var modalObj = {
+                title: "trad_error",
+                content: "trad_error_occured",
+                buttons: [{
+                    id: "trad_ok",
+                    action: function() {
+                        closeModal();
+                    }
+                }]
+            };
+            showModal(modalObj);
+            console.log("getDataForRender - RSVP error:", ex);
+        }
+
+        //Hide loading/Display mainContainer
+        document.querySelector(".loading").className += " hidden";
+        var elt = document.querySelector(".mainContainer");
+        elt.className = elt.className.replace("hidden", "");
+        renderPage();
+
+    }).catch(function(error) {
+        console.log("getDataForRender - error: ", error);
+        var modalObj = {
+            title: "trad_error",
+            content: "trad_error_occured",
+            buttons: [{
+                id: "trad_ok",
+                action: function() {
+                    closeModal();
+                    window.history.back();
+                }
+            }]
+        };
+        showModal(modalObj);
+    });
 }
 
 // Function: createNestedObject( base, names[, value] )
@@ -149,11 +445,12 @@ function getEnumForSelect() {
 //   names: an array of strings contaning the names of the objects
 //   value (optional): if given, will be the last object in the hierarchy
 // Returns: the last object in the hierarchy
-function createNestedObject(base, names, value) {
-	console.log("createNestedObject", arguments);
-    if (!names) {
+function createNestedObject(base, names, value, isEmptyValueAllowed) {
+    console.log("createNestedObject", arguments);
+    if (!names || value === "" && !isEmptyValueAllowed) {
         return;
     }
+
     if (!(names instanceof Array)) {
         names = names.split(".");
     }
@@ -169,42 +466,99 @@ function createNestedObject(base, names, value) {
 
     // If a value was given, set it to the last name:
     if (lastName) {
-        base = base[lastName] = value !== "" && typeof value !== "undefined" ? value : null;
+        base = base[lastName] = value;
+        //base = base[lastName] = value !== "" && typeof value !== "undefined" ? value : null;
     }
 
     // Return the last object in the hierarchy:
     return base;
 }
 
-function checkDefaultGender(){
-	var elt,
-		isGenderChecked = false;
-	//Firefox fix: set default value for radio button to avoid validation form even if the node is hidden or the required attribute removed
+function checkDefaultGender() {
+    var elt,
+        isGenderChecked = false;
+    //Firefox fix: set default value for radio button to avoid validation form even if the node is hidden or the required attribute removed
     elt = document.querySelectorAll("form[name=directoryForm] input[name='gender']");
     [].map.call(elt, function(node, idx) {
-    	if(node.checked){
-    		isGenderChecked = true;
-    	}
+        if (node.checked) {
+            isGenderChecked = true;
+        }
     });
-    if(!isGenderChecked){
-    	//Set default radio checked to avoid form validation in Firefox
-    	document.querySelector("form[name=directoryForm] input[name='gender']").checked = true;
+    if (!isGenderChecked) {
+        //Set default radio checked to avoid form validation in Firefox
+        document.querySelector("form[name=directoryForm] input[name='gender']").checked = true;
     }
 }
 
-function checkOrganization(){
-	console.log("checkOrganization", arguments);
-	var elt = document.querySelector("#nonOrgContainer"),
-		isOrganization = document.querySelector("form[name=directoryForm] input[name='organization']").checked;
+function checkOrganization() {
+    console.log("checkOrganization", arguments);
+    var elt = document.querySelector("#nonOrgContainer"),
+        isOrganization = document.querySelector("form[name=directoryForm] input[name='organization']").checked;
 
-	//Show/Hide relative information to a none organization
-	elt.className = isOrganization ? elt.className + " hidden" : elt.className.replace("hidden", "");
+    //Show/Hide relative information to a none organization
+    elt.className = isOrganization ? elt.className + " hidden" : elt.className.replace("hidden", "");
+
+    //Firefox fix: set default value for this required input due to validation form even if the node is hidden or the required attribute removed
+    elt = document.querySelector("form[name=directoryForm] input[name='name.given']");
+    elt.value = isOrganization ? " " : elt.value === " " ? "" : elt.value;
 }
 
-function checkEmailTypeValidation(node){
-	console.log("checkEmailTypeValidation", arguments);
-	var isEmail = node.options[node.selectedIndex].value.toLowerCase() === "email";
-	node.parentNode.querySelector("input[name='telecom.value']").type = isEmail ? "email" : "text";
+function checkEmailTypeValidation(node) {
+    console.log("checkEmailTypeValidation", arguments);
+    var isEmail = node.options[node.selectedIndex].value.toLowerCase() === "email";
+    node.parentNode.querySelector("input[name='telecom.value']").type = isEmail ? "email" : "text";
+}
+
+function checkPassword() {
+    var modalObj;
+    //Check if password are equals
+    if (document.querySelector("form[name=directoryForm] input[name='account.password']").value !== document.querySelector("form[name=directoryForm] input[name='checkAccountPassword']").value) {
+        modalObj = {
+            title: "trad_errorFormValidation",
+            content: "trad_error_password",
+            buttons: [{
+                id: "trad_ok",
+                action: function() {
+                    closeModal();
+                }
+            }]
+        };
+    } else {
+        if (_dataObj) {
+            modalObj = {
+                title: "trad_update",
+                content: "trad_confirm_update",
+                buttons: [{
+                    id: "trad_yes",
+                    action: function() {
+                        updateItem();
+                    }
+                }, {
+                    id: "trad_no",
+                    action: function() {
+                        closeModal();
+                    }
+                }]
+            };
+        } else {
+            modalObj = {
+                title: "trad_create",
+                content: "trad_confirm_create",
+                buttons: [{
+                    id: "trad_yes",
+                    action: function() {
+                        updateItem();
+                    }
+                }, {
+                    id: "trad_no",
+                    action: function() {
+                        closeModal();
+                    }
+                }]
+            };
+        }
+    }
+    showModal(modalObj);
 }
 
 function deleteTelecom(node) {
@@ -218,202 +572,367 @@ function addTelecom() {
         parentElt = elt.parentNode,
         cloneElt = elt.cloneNode(true);
 
+    //Set require to cloned select element
+    //Can't set required on the tplTelecomContainer select elements because when form validation, err : An invalid form control with name='telecom.system' is not focusable.
+    elt = cloneElt.querySelectorAll("select");
+    [].map.call(elt, function(node) {
+        node.setAttribute("required", true);
+    });
+
     cloneElt.className = cloneElt.className.replace("hidden", "");
     parentElt.insertBefore(cloneElt, parentElt.querySelector("#addTelecomBtn"));
 }
 
-function getFormData(){
-	console.log("getFormData");
+function getUserFormData() {
+    console.log("getUserFormData", _dataObj);
 
-	var itemObj = {},
-        elt, name;
+    var itemObj = {},
+        elt, eltName;
 
-    name = "name.family";
-    createNestedObject(itemObj, name, document.querySelector("form[name=directoryForm] input[name='" + name + "']").value);
-
-    name = "organization";
-    elt = document.querySelector("form[name=directoryForm] input[name='" + name + "']");
-    if (elt.checked) {
-        //Organization
-        createNestedObject(itemObj, name, elt.checked);
-    } else {
-        //!Organization
-        name = "name.given";
-        createNestedObject(itemObj, name, document.querySelector("form[name=directoryForm] input[name='" + name + "']").value);
-
-        name = "gender";
-        elt = document.querySelectorAll("form[name=directoryForm] input[name='" + name + "']");
-        [].map.call(elt, function(node) {
-            if (node.checked) {
-                createNestedObject(itemObj, name, node.value);
-            }
-        });
-
-        name = "job";
-        elt = document.querySelector("form[name=directoryForm] select[name='" + name + "']");
-        createNestedObject(itemObj, name, elt.options[elt.selectedIndex].value);
+    eltName = "name.family";
+    createNestedObject(itemObj, eltName, document.querySelector("form[name=directoryForm] input[name='" + eltName + "']").value);
+    if (_dataObj && _dataObj._id) { //update mode
+        _dataObj.name.family = itemObj.name.family;
     }
 
-    name = "role";
-    elt = document.querySelector("form[name=directoryForm] select[name='" + name + "']");
-    createNestedObject(itemObj, name, elt.options[elt.selectedIndex].value);
+    eltName = "organization";
+    elt = document.querySelector("form[name=directoryForm] input[name='" + eltName + "']");
+    if (elt.checked) {
+        //Organizationelt.checked;
+        createNestedObject(itemObj, eltName, elt.checked);
+        if (_dataObj && _dataObj._id) { //update mode
+            _dataObj.organization = itemObj.organization;
+        }
+    } else {
+        //!Organization
+        eltName = "name.given";
+        createNestedObject(itemObj, eltName, document.querySelector("form[name=directoryForm] input[name='" + eltName + "']").value);
+        if (_dataObj && _dataObj._id) { //update mode
+            _dataObj.name.given = itemObj.name.given;
+        }
 
-    name = "communication";
-    elt = document.querySelector("form[name=directoryForm] select[name='" + name + "']");
-    createNestedObject(itemObj, name, elt.options[elt.selectedIndex].value);
+        eltName = "gender";
+        elt = document.querySelectorAll("form[name=directoryForm] input[name='" + eltName + "']");
+        [].map.call(elt, function(node) {
+            if (node.checked) {
+                createNestedObject(itemObj, eltName, node.value);
+            }
+        });
+        if (_dataObj && _dataObj._id) {
+            _dataObj.gender = itemObj.gender;
+        }
 
-    name = "active";
-    elt = document.querySelector("form[name=directoryForm] input[name='" + name + "']");
-    createNestedObject(itemObj, name, elt.checked);
+        eltName = "job";
+        elt = document.querySelector("form[name=directoryForm] select[name='" + eltName + "']");
+        createNestedObject(itemObj, eltName, elt.options[elt.selectedIndex].value);
+        if (_dataObj && _dataObj._id) {
+            _dataObj.job = itemObj.job;
+        }
+    }
+
+    eltName = "role";
+    elt = document.querySelector("form[name=directoryForm] select[name='" + eltName + "']");
+    createNestedObject(itemObj, eltName, elt.options[elt.selectedIndex].value);
+    if (_dataObj && _dataObj._id) {
+        _dataObj.role = itemObj.role;
+    }
+
+    eltName = "communication";
+    elt = document.querySelector("form[name=directoryForm] select[name='" + eltName + "']");
+    createNestedObject(itemObj, eltName, elt.options[elt.selectedIndex].value);
+    if (_dataObj && _dataObj._id) {
+        _dataObj.communication = itemObj.communication;
+    }
+
+    eltName = "active";
+    elt = document.querySelector("form[name=directoryForm] input[name='" + eltName + "']");
+    createNestedObject(itemObj, eltName, elt.checked);
+    if (_dataObj && _dataObj._id) {
+        _dataObj.active = itemObj.active;
+    }
 
     //telecom
     elt = document.querySelectorAll("form[name=directoryForm] .telecomContainer:not(.hidden)");
-    var subElt, value;
+    var subElt;
     [].map.call(elt, function(node, idx) {
-    	if(idx === 0){
-    		itemObj.telecom = [];
-    	}
-    	itemObj.telecom.push({});
-    	name = "telecom.use";
-        subElt = node.querySelector("select[name='" + name + "']");
-        value = subElt.options[subElt.selectedIndex].value;
-		itemObj.telecom[idx].use = value !== "" ? value : null;
-		name = "telecom.system";
-        subElt = node.querySelector("select[name='" + name + "']");
-        value = subElt.options[subElt.selectedIndex].value;
-		itemObj.telecom[idx].system = value !== "" ? value : null;
-		name = "telecom.value";
-        subElt = node.querySelector("input[name='" + name + "']");
-        value = subElt.value;
-		itemObj.telecom[idx].value = value !== "" ? value : null;
+        if (idx === 0) {
+            itemObj.telecom = [];
+        }
+        itemObj.telecom.push({});
+        eltName = "telecom.use";
+        subElt = node.querySelector("select[name='" + eltName + "']");
+        itemObj.telecom[idx].use = subElt.options[subElt.selectedIndex].value;
+        eltName = "telecom.system";
+        subElt = node.querySelector("select[name='" + eltName + "']");
+        itemObj.telecom[idx].system = subElt.options[subElt.selectedIndex].value;
+        eltName = "telecom.value";
+        subElt = node.querySelector("input[name='" + eltName + "']");
+        if (subElt.value !== "") {
+            itemObj.telecom[idx].value = subElt.value;
+        }
     });
-
-    name = "address.use";
-    elt = document.querySelector("form[name=directoryForm] select[name='" + name + "']");
-    createNestedObject(itemObj, name, elt.options[elt.selectedIndex].value);
-
-    name = "address.text";
-    createNestedObject(itemObj, name, document.querySelector("form[name=directoryForm] input[name='" + name + "']").value);
-
-    name = "address.line";
-    elt = document.querySelector("form[name=directoryForm] textarea[name='" + name + "']");
-    if (elt.value !== "") {
-        createNestedObject(itemObj, name, elt.value.split("\n"));
+    if (_dataObj && _dataObj._id) {
+        if (itemObj.telecom) {
+            _dataObj.telecom = itemObj.telecom;
+        } else {
+            delete _dataObj.telecom;
+        }
     }
 
-    name = "address.city";
-    createNestedObject(itemObj, name, document.querySelector("form[name=directoryForm] input[name='" + name + "']").value);
+    eltName = "address.use";
+    elt = document.querySelector("form[name=directoryForm] select[name='" + eltName + "']");
+    createNestedObject(itemObj, eltName, elt.options[elt.selectedIndex].value);
 
-    name = "address.state";
-    createNestedObject(itemObj, name, document.querySelector("form[name=directoryForm] input[name='" + name + "']").value);
+    eltName = "address.text";
+    createNestedObject(itemObj, eltName, document.querySelector("form[name=directoryForm] input[name='" + eltName + "']").value);
 
-    name = "address.zip";
-    createNestedObject(itemObj, name, document.querySelector("form[name=directoryForm] input[name='" + name + "']").value);
+    eltName = "address.line";
+    elt = document.querySelector("form[name=directoryForm] textarea[name='" + eltName + "']");
+    if (elt.value !== "") {
+        createNestedObject(itemObj, eltName, elt.value.split("\n"));
+    }
 
-    name = "address.country";
-    createNestedObject(itemObj, name, document.querySelector("form[name=directoryForm] input[name='" + name + "']").value);
+    eltName = "address.city";
+    createNestedObject(itemObj, eltName, document.querySelector("form[name=directoryForm] input[name='" + eltName + "']").value);
 
-    console.log("getFormData - result: ", itemObj);
-    return itemObj;
+    eltName = "address.state";
+    createNestedObject(itemObj, eltName, document.querySelector("form[name=directoryForm] input[name='" + eltName + "']").value);
+
+    eltName = "address.zip";
+    createNestedObject(itemObj, eltName, document.querySelector("form[name=directoryForm] input[name='" + eltName + "']").value);
+    if (_dataObj && _dataObj._id) {
+        if (itemObj.address) {
+            _dataObj.address = itemObj.address;
+        } else {
+            delete _dataObj.address;
+        }
+    }
+
+    console.log("getUserFormData - result: ", _dataObj && _dataObj._id ? _dataObj : itemObj);
+    return _dataObj && _dataObj._id ? _dataObj : itemObj;
+}
+
+function getAccountData() {
+    console.log("getAccountData");
+
+    var accountObj = {},
+        value = document.querySelector("form[name=directoryForm] input[name='account.login']").value;
+
+    if (value && value !== "") {
+        accountObj.login = value;
+    }
+    value = document.querySelector("form[name=directoryForm] input[name='account.password']").value;
+    if (accountObj.login && value && value !== "") {
+        accountObj.password = value;
+    } else {
+        accountObj = null;
+    }
+
+    return accountObj;
 }
 
 function updateItem() {
     console.log("updateItem");
-    // console.log(document.querySelector("form[name=directoryForm] input[name='name.family']").value);
-
-    // var input = document.querySelectorAll("form[name=directoryForm] input[type=radio]");
-    // [].map.call(input, function(node){
-    // 	if (node.checked){
-    // 		console.log(node.value);
-    // 	}
-    // });
-    // //console.log(document.querySelectorAll("form[name=directoryForm] input[type=radio]").value);
-    // var select = document.querySelector("form[name=directoryForm] select[name=job]");
-    // console.log(select.options[select.selectedIndex].value);
-    // var elements = document.querySelectorAll("form[name=directoryForm] *[name]"),
-    // 	elt, itemObj = {};
-    // for(var i=0; i<elements.length; i++){
-    // 	elt = elements[i];
-    // 	switch(elt.tagName.toLowerCase()){
-    // 		case "input":{
-    // 			switch(elt.type.toLowerCase()){
-    // 				case "radio":{
-    // 					if(elt.checked){
-    // 						createNestedObject(itemObj, elt.name, elt.value);
-    // 					}
-    // 				} break;
-
-    // 				case "checkbox":{
-    // 					createNestedObject(itemObj, elt.name, elt.checked);
-    // 				} break;
-
-    // 				case "text":{
-
-    // 				} break;
-    // 			}
-    // 		}break;
-    // 		case "select":{
-
-    // 		} break;
-    // 	}
-    // 	console.log(elt, elt.value);
-    // }
-    // console.log("OBJ", itemObj);
 
     closeModal();
-    var data = getFormData(),
-    	xhr = new XMLHttpRequest(),
-        url = "/api/directory",
-        xhrHandle = function(url, method, status, idModalSuccess, idModalError) {
-            xhr.open(method, url, true);
-            xhr.onload = function() {
-                var idModal;
-                if (xhr.status === status) {
-                    idModal = idModalSuccess;
-                } else {
-                    idModal = idModalError;
-                    console.log("updateItem - error: ", xhr);
-                }
-                showModal(idModal);
-            };
-            xhr.send(JSON.stringify(data));
-        };
-
+    var modalObj,
+        data = getUserFormData(),
+        accountData = getAccountData();
     if (data._id) {
         //Update entry
-        xhrHandle(url + "/" + data._id, "PUT", 200, "modalUpdateSuccess", "modalError");
+        // promiseXHR("PUT", "/api/directory/" + data._id, 200, JSON.stringify(data)).then(function(response) {
+        //     modalObj = {
+        //         title: "trad_success",
+        //         content: "trad_success_update",
+        //         buttons: [{
+        //             id: "trad_ok",
+        //             action: function() {
+        //                 closeModal();
+        //                 window.history.back();
+        //             }
+        //         }]
+        //     };
+        //     showModal(modalObj);
+        // }, function(error) {
+        //     modalObj = {
+        //         title: "trad_error",
+        //         content: "trad_error_occured",
+        //         buttons: [{
+        //             id: "trad_ok",
+        //             action: function() {
+        //                 closeModal();
+        //             }
+        //         }]
+        //     };
+        //     showModal(modalObj);
+        //     console.log("updateItem - error: ", error);
+        // });
+
+        promiseXHR("PUT", "/api/directory/" + data._id, 200, JSON.stringify(data)).then(function(response) {
+            modalObj = {
+                title: "trad_success",
+                content: "trad_success_update",
+                buttons: [{
+                    id: "trad_ok",
+                    action: function() {
+                        closeModal();
+                        window.history.back();
+                    }
+                }]
+            };
+            showModal(modalObj);
+        }).then(function() {
+            // if (accountData) {
+            //     promiseXHR("POST", "/api/directory/" + data._id + "/account", 200, JSON.stringify(accountData));
+            // }
+        }).catch(function(error) {
+            modalObj = {
+                title: "trad_error",
+                content: "trad_error_occured",
+                buttons: [{
+                    id: "trad_ok",
+                    action: function() {
+                        closeModal();
+                    }
+                }]
+            };
+            showModal(modalObj);
+            console.log("updateItem - error: ", error);
+        });
     } else {
         //Creation of entry
-        xhrHandle(url, "POST", 200, "modalCreateSuccess", "modalError");
+        // promiseXHR("POST", "/api/directory", 200, JSON.stringify(data)).then(function(response) {
+        //     modalObj = {
+        //         title: "trad_success",
+        //         content: "trad_success_create",
+        //         buttons: [{
+        //             id: "trad_ok",
+        //             action: function() {
+        //                 closeModal();
+        //                 window.history.back();
+        //             }
+        //         }]
+        //     };
+        //     showModal(modalObj);
+        // }, function(error) {
+        //     modalObj = {
+        //         title: "trad_error",
+        //         content: "trad_error_occured",
+        //         buttons: [{
+        //             id: "trad_ok",
+        //             action: function() {
+        //                 closeModal();
+        //             }
+        //         }]
+        //     };
+        //     showModal(modalObj);
+        //     console.log("updateItem - error: ", error);
+        // });
+
+        promiseXHR("POST", "/api/directory", 200, JSON.stringify(data)).then(function(response) {
+            modalObj = {
+                title: "trad_success",
+                content: "trad_success_create",
+                buttons: [{
+                    id: "trad_ok",
+                    action: function() {
+                        closeModal();
+                        window.history.back();
+                    }
+                }]
+            };
+            showModal(modalObj);
+            return response.detail._id;
+        }).then(function(userID) {
+            // if (accountData && userID) {
+            //     promiseXHR("POST", "/api/directory/" + userID + "/account", 200, JSON.stringify(accountData));
+            // }
+        }).catch(function(error) {
+            modalObj = {
+                title: "trad_error",
+                content: "trad_error_occured",
+                buttons: [{
+                    id: "trad_ok",
+                    action: function() {
+                        closeModal();
+                    }
+                }]
+            };
+            showModal(modalObj);
+            console.log("updateItem - error: ", error);
+        });
     }
+}
+
+function confirmDelete() {
+    var modalObj = {
+        title: "trad_delete",
+        content: "trad_confirm_delete",
+        buttons: [{
+            id: "trad_yes",
+            action: function() {
+                deleteItem();
+            }
+        }, {
+            id: "trad_no",
+            action: function() {
+                closeModal();
+            }
+        }]
+    };
+    showModal(modalObj);
 }
 
 function deleteItem() {
     console.log("deleteItem", arguments);
+    var modalObj;
     closeModal();
     if (_dataObj && _dataObj._id) {
-        var xhr = new XMLHttpRequest();
-        var url = "/api/directory/" + _dataObj._id;
-        xhr.open("DELETE", url, true);
-        xhr.onload = function() {
-            var modalId;
-            //410 for delete OK
-            if (xhr.status === 410) {
-                modalId = "modalDeleteSuccess";
-            } else {
-            	modalId = "modalError";
-                console.log("deleteItem - error: ", xhr);
-            }
-            showModal(modalId);
-        };
-        xhr.send();
+        promiseXHR("DELETE", "/api/directory/" + _dataObj._id, 410).then(function(response) {
+            modalObj = {
+                title: "trad_success",
+                content: "trad_success_delete",
+                buttons: [{
+                    id: "trad_ok",
+                    action: function() {
+                        closeModal();
+                        window.history.back();
+                    }
+                }]
+            };
+            showModal(modalObj);
+        }, function(error) {
+            modalObj = {
+                title: "trad_error",
+                content: "trad_error_occured",
+                buttons: [{
+                    id: "trad_ok",
+                    action: function() {
+                        closeModal();
+                    }
+                }]
+            };
+            showModal(modalObj);
+            console.log("deleteItem - error: ", error);
+        });
     }
 }
 
 function init() {
     console.log("init");
-
-    var itemIdParam = getQueryVariable("itemId");
+    var getQueryVariable = function(variable) {
+            console.log("getQueryVariable", arguments);
+            var query = window.location.search.substring(1);
+            var vars = query.split("&");
+            for (var i = 0; i < vars.length; i++) {
+                var pair = vars[i].split("=");
+                if (pair[0] === variable) {
+                    return pair[1];
+                }
+            }
+            return (false);
+        },
+        itemIdParam = getQueryVariable("itemId");
     console.log("init - itemIdParam", itemIdParam);
 
     if (itemIdParam) {
@@ -423,7 +942,7 @@ function init() {
         coreAjaxElt.addEventListener("core-response", function(e) {
             console.log("core-response", arguments);
             _dataObj = e.detail.response;
-            getEnumForSelect();
+            getDataForRender();
         });
 
         coreAjaxElt.url += itemIdParam;
@@ -431,350 +950,8 @@ function init() {
     } else {
         //creation mode
         console.log("init - creation");
-        getEnumForSelect();
+        getDataForRender();
     }
 }
 
 window.addEventListener("polymer-ready", init, false);
-
-
-// function deleteTelecom( /*node*/ idx) {
-//     console.log("deleteTelecom", arguments);
-//     itemObj.telecom.splice(idx, 1);
-// }
-
-// function addTelecom( /*buttonNode*/ ) {
-//     console.log("addTelecom", arguments);
-//     if (!(itemObj.telecom instanceof Array)) {
-//         itemObj.telecom = [];
-//     }
-//     itemObj.telecom.push({
-//         use: "",
-//         system: "",
-//         value: ""
-//     });
-// }
-
-// function closeModal() {
-//     console.log("closeModal", arguments);
-//     document.querySelector("zdk-modal").hide();
-// }
-
-// function showModal(model) {
-//     console.log("showModal", arguments);
-//     if (model) {
-//         var modal = document.querySelector("zdk-modal"),
-//             modalTpl = modal.querySelector("template");
-//         modalTpl.model = model;
-//         modal.show();
-//     }
-// }
-
-// function deleteItem() {
-//     console.log("deleteItem", arguments);
-//     closeModal();
-//     if (itemObj._id) {
-//         var xhr = new XMLHttpRequest();
-//         var url = "/api/directory/" + itemObj._id;
-//         xhr.open("DELETE", url, true);
-//         xhr.onload = function() {
-//             var model;
-//             //410 for delete OK
-//             if (xhr.status === 410) {
-//                 model = {
-//                     msg: {
-//                         title: "Success",
-//                         content: "Item deleted",
-//                         buttons: [{
-//                             label: "OK",
-//                             action: "closeModal(); window.history.back()"
-//                         }]
-//                     }
-//                 };
-//             } else {
-//                 model = {
-//                     msg: {
-//                         title: "Error",
-//                         content: "Error occurred: " + xhr.responseText,
-//                         buttons: [{
-//                             label: "OK",
-//                             action: "closeModal();"
-//                         }]
-//                     }
-//                 };
-//             }
-//             showModal(model);
-//         };
-//         xhr.send();
-//     }
-// }
-
-// // Function: createNestedObject( base, names[, value] )
-// //   base: the object on which to create the hierarchy
-// //   names: an array of strings contaning the names of the objects
-// //   value (optional): if given, will be the last object in the hierarchy
-// // Returns: the last object in the hierarchy
-// function createNestedObject(base, names, value) {
-//     console.log("createNestedObject", arguments);
-
-//     if (!names) {
-//         return;
-//     }
-//     if (!(names instanceof Array)) {
-//         names = names.split(".");
-//     }
-
-//     // If a value is given, remove the last name and keep it for later:
-//     var lastName = arguments.length === 3 ? names.pop() : false;
-
-//     // Walk the hierarchy, creating new objects where needed.
-//     // If the lastName was removed, then the last object is not set yet:
-//     for (var i = 0; i < names.length; i++) {
-//         base = base[names[i]] = base[names[i]] || {};
-//     }
-
-//     // If a value was given, set it to the last name:
-//     if (lastName) {
-//         base = base[lastName] = (value === "" || value === null) ? (typeof base[lastName] !== "undefined" ? base[lastName] : value) : value;
-//     }
-
-//     // Return the last object in the hierarchy:
-//     return base;
-// }
-
-// function formatDataForValidity(){
-// 	console.log("formatDataForValidity", arguments);
-
-// 	if (itemObj.organization === true) {
-//         delete itemObj.name.given;
-//         delete itemObj.gender;
-//         delete itemObj.job;
-//         delete itemObj.pilot;
-//     } else {
-//         delete itemObj.organization;
-//     }
-
-//     if (itemObj.address.line === "") {
-//         delete itemObj.address.line;
-//     } else if (itemObj.address.line) {
-//         itemObj.address.line = itemObj.address.line instanceof Array ? itemObj.address.line : itemObj.address.line.split("\n");
-//     }
-
-//     //Check input validation
-//     var model,
-//         validationItem = document.querySelectorAll("tsante-inputtext"),
-//         i = 0,
-//         invalid = false,
-//         item;
-
-//     while (!invalid && i < validationItem.length) {
-//         item = validationItem[i];
-//         if (!item.validate()) {
-//             invalid = true;
-//         } else {
-//             i++;
-//         }
-//     }
-
-//     if (invalid) {
-//         model = {
-//             msg: {
-//                 title: "Error",
-//                 content: "Bad form validation, check mandatory fields",
-//                 buttons: [{
-//                     label: "OK",
-//                     action: "closeModal();"
-//                 }]
-//             }
-//         };
-//         showModal(model);
-//         return false;
-//     }
-
-//     //Check select required
-//     var selectItems = document.querySelectorAll("select[emptyValue]");
-//     if (selectItems.length > 0) {
-//         model = {
-//             msg: {
-//                 title: "Error",
-//                 content: "Check mandatory select field",
-//                 buttons: [{
-//                     label: "OK",
-//                     action: "closeModal();"
-//                 }]
-//             }
-//         };
-//         showModal(model);
-//         return false;
-//     }
-
-//     //Delete empty string before sending to DB
-//     var checkItem = function(parentObj, childObj){
-//     	if(parentObj[childObj] === "" || (typeof parentObj[childObj] === "object" && Object.keys(parentObj[childObj]).length === 0)){
-//     		delete parentObj[childObj];
-//     	}
-//     };
-
-//     itemObj.active = itemObj.active === "" ? false : itemObj.active;
-//     checkItem(itemObj.name, "given");
-//     checkItem(itemObj, "job");
-// 	checkItem(itemObj, "communication");
-// 	for(i=0; i<itemObj.telecom; i++){
-// 		checkItem(itemObj.telecom[i], "system");
-// 		checkItem(itemObj.telecom[i], "use");
-// 		checkItem(itemObj.telecom[i], "value");
-// 	}
-// 	checkItem(itemObj.address, "use");
-// 	checkItem(itemObj.address, "text");
-// 	checkItem(itemObj.address, "city");
-// 	checkItem(itemObj.address, "state");
-// 	checkItem(itemObj.address, "zip");
-// 	checkItem(itemObj.address, "country");
-// 	checkItem(itemObj, "address");
-
-// 	//TODO Account
-// 	return true;
-// }
-
-// function updateItem() {
-// 	console.log("updateItem", arguments);
-//     closeModal();
-
-//     //Check the validity of the obj to send to the DB
-//     if(!formatDataForValidity()){
-//     	return;
-//     }
-
-//     console.log("updateItem - updateItem: ", itemObj);
-
-//     var xhr = new XMLHttpRequest(),
-//         successModel = {
-//             msg: {
-//                 title: "Success",
-//                 content: "Item updated",
-//                 buttons: [{
-//                     label: "OK",
-//                     action: "closeModal(); window.history.back()"
-//                 }]
-//             }
-//         },
-//         errorModel = {
-//             msg: {
-//                 title: "Error",
-//                 content: "An error occurred",
-//                 buttons: [{
-//                     label: "OK",
-//                     action: "closeModal();"
-//                 }]
-//             }
-//         },
-//         url = "/api/directory",
-//         xhrHandle = function(url, method, status, dialogModelSuccess, dialogModelError) {
-//             xhr.open(method, url, true);
-//             xhr.onload = function() {
-//                 var model;
-//                 if (xhr.status === status) {
-//                     model = dialogModelSuccess;
-//                 } else {
-//                     model = dialogModelError;
-//                     console.log(xhr);
-//                 }
-//                 showModal(model);
-//             };
-//             xhr.send(JSON.stringify(itemObj));
-//         };
-
-//     if (itemObj._id) {
-//         //Update entry
-//         xhrHandle(url + "/" + itemObj._id, "PUT", 200, successModel, errorModel);
-//     } else {
-//         //Creation of entry
-//         successModel.msg.content = "Item created";
-//         xhrHandle(url, "POST", 200, successModel, errorModel);
-//     }
-// }
-
-// function confirm(str) {
-//     console.log("confirm", arguments);
-//     var model = {
-//         msg: {
-//             title: str.toUpperCase(),
-//             content: "Are you sure you want to " + str + " this item ?",
-//             buttons: [{
-//                 label: "Yes",
-//                 action: str + "Item()"
-//             }, {
-//                 label: "No",
-//                 action: "closeModal()"
-//             }]
-//         }
-//     };
-//     showModal(model);
-// }
-
-// function createEmptyValueForTemplateBinding() {
-//     console.log("createEmptyValueForTemplateBinding - itemObj", itemObj);
-
-//     var formElements = document.body.querySelectorAll("*[name]"),
-//         elt, eltName;
-//     for (var i = 0; i < formElements.length; i++) {
-//         elt = formElements[i];
-//         eltName = elt.name.slice(elt.name.indexOf(".") + 1); //remove the 'item.' prefixe
-//         createNestedObject(itemObj, eltName, "");
-//     }
-//     console.log("createEmptyValueForTemplateBinding - itemObj end", itemObj);
-// }
-
-// function templateReady() {
-//     console.log("templateReady");
-
-//     var itemIdParam = getQueryVariable("itemId"),
-//         initModel = function() {
-//             createEmptyValueForTemplateBinding();
-//             //Fill Combobox
-//             document.querySelector("#tplInfoContainer").model = {
-//                 item: itemObj,
-//                 enums: {
-//                     enumUse: _tmpUseEnum,
-//                     enumSystem: _tmpSystemEnum,
-//                     enumRole: _tmpRoleEnum,
-//                     enumJob: _tmpJobEnum,
-//                     enumCommunication: _tmpCommunicationEnum
-//                 }
-//             };
-//         };
-//     console.log("templateReady - itemIdParam", itemIdParam);
-
-//     if (itemIdParam) {
-//         //edit mode
-//         var coreAjaxElt = document.querySelector("core-ajax");
-
-//         coreAjaxElt.addEventListener("core-response", function(e) {
-//             console.log("core-response", arguments);
-//             itemObj = e.detail.response;
-
-//             //Due to FF limitation for filtering expression (PolymerExpressions undefined)
-//             //format the address.line data joinning the array with '/n' to display it in textarea
-//             var address = itemObj.address;
-//             if (address && address.line) {
-//                 address.line = address.line.join("\n");
-//             }
-
-//             initModel();
-//         });
-
-//         coreAjaxElt.url += itemIdParam;
-//         coreAjaxElt.go();
-//     } else {
-//         //creation mode
-//         initModel();
-//     }
-// }
-
-// function init() {
-//     //TODO internationalization
-//     console.log("init");
-//     document.querySelector("#tplInfoContainer").addEventListener("template-bound", templateReady, false);
-// }
-
-// window.addEventListener("polymer-ready", init, false);
