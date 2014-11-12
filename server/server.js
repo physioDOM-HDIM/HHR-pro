@@ -238,7 +238,9 @@ server.get( '/api/lists', ILists.getLists );
 server.get( '/api/lists/:listName', ILists.getList );
 server.get( '/api/lists/:listName/translate', ILists.getListTranslate );
 server.post('/api/lists/:listName', ILists.addItem );
-server.post('/api/lists/:listName/:itemRef', ILists.translateItem );
+server.put('/api/lists/:listName/:itemRef', ILists.translateItem );
+server.post('/api/lists/:listName/:itemRef', ILists.activateItem );
+
 
 server.post('/api/login', apiLogin);
 server.get( '/api/logout', logout);
