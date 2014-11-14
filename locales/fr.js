@@ -18,4 +18,6 @@
 	"Cancel": "Annuler",
 	"Validate": "Valider",
 	"Select beneficiary": "Selection d'un bénéficiaire",
+	"Filter":"Filtre",
+	"Sort":"Tri"
 }

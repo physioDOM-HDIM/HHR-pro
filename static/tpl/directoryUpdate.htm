@@ -1,3 +1,18 @@
+{% extends './page.htm' %}
+
+{% block title %}{{ "Professionnal directory"|i18n }}{% endblock %}
+
+{% block head %}
+{% parent %}
+<script src="../bower_components/platform/platform.js"></script>
+<script src="../bower_components/mustache/mustache.js"></script>
+<script src="../bower_components/rsvp/rsvp.min.js"></script>
+<link rel="import" href="../bower_components/zdk-modal/zdk-modal.html">
+<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<script src="updateDirectory.js"></script>
+{% endblock %}
+
+{% block content %}
 <!DOCTYPE html>
 <html>
 
@@ -21,23 +36,20 @@
     <link rel="stylesheet" href="/styles/updateDirectory.css" charset="UTF-8">
 
     <!-- Polyfills -->
-    <script src="../bower_components/platform/platform.js"></script>
-    <script src="../bower_components/mustache/mustache.js"></script>
-    <script src="../bower_components/rsvp/rsvp.min.js"></script>
+
 
     <!-- Import polymer element -->
-    <link rel="import" href="../bower_components/zdk-modal/zdk-modal.html">
-    <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+
     <!-- <link rel="import" href="../components/tsante-inputtext.html"> -->
 
-    <script src="updateDirectory.js"></script>
+    
 </head>
 
 <body>
     <core-ajax url="/api/directory/" handleAs="json"></core-ajax>
     <div class="loading">--- CHARGEMENT EN COURS ---</div>
     <div class="mainContainer hidden">
-        <form name="directoryForm" onsubmit="checkForm(); return false;">
+        <form name="directoryForm" onsubmit="checkForm(); return false;" autocomplete="off">
             <fieldset>
                 <legend>Identity</legend>
                 <div class="row">
@@ -145,12 +157,11 @@
                     <label>Text:</label>
                     <input type="text" name="address.text" value="{{item.address.text}}" />
                 </div>
-                <fieldset>
-                    <legend>Lines:</legend>
-                    <div class="row">
-                        <textarea name="address.line">{{item.address.line}}</textarea>
-                    </div>
-                </fieldset>
+                    
+                <div class="row">
+                    <label>Street :</label>
+                    <textarea name="address.line">{{item.address.line}}</textarea>
+                </div>
                 <div class="row">
                     <label>City:</label>
                     <input type="text" name="address.city" value="{{item.address.city}}" />
@@ -160,13 +171,15 @@
                     <input type="text" name="address.state" value="{{item.address.state}}" />
                 </div>
                 <div class="row">
-                    <label>Zip:</label>
+                    <label>Zip code :</label>
                     <input type="text" name="address.zip" value="{{item.address.zip}}" />
                 </div>
+                <!--
                 <div class="row">
                     <label>Country:</label>
                     <input type="text" name="address.country" value="{{item.address.country}}" />
                 </div>
+                -->
             </fieldset>
             <br />
             <fieldset>
