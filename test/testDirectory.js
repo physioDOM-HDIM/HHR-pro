@@ -26,6 +26,61 @@ describe('Directory', function() {
 				throw err;
 			});
 	});
+
+	it('login with bad password', function(done) {
+		var cookie = request.jar();
+		request({url           : domain + '/api/login',
+			method             : "POST",
+			auth               : {username: 'archer', password: 'badpassword'},
+			jar                : cookie
+		}, function (err, resp, body) {
+			should.not.exist(err);
+			resp.statusCode.should.equal(403);
+			var message = JSON.parse(body);
+			message.code.should.equal(403);
+			message.message.should.equal("bad credentials");
+			var cookies = querystring.parse(cookie.getCookieString(domain), "; ");
+			Object.keys(cookies).length.should.equal(0);
+			return done();
+		});
+	});
+
+	it('login with bad login', function(done) {
+		var cookie = request.jar();
+		request({url           : domain + '/api/login',
+			method             : "POST",
+			auth               : {username: 'archr', password: 'test'},
+			jar                : cookie
+		}, function (err, resp, body) {
+			should.not.exist(err);
+			resp.statusCode.should.equal(403);
+			var message = JSON.parse(body);
+			message.code.should.equal(403);
+			message.message.should.equal("bad credentials");
+			var cookies = querystring.parse(cookie.getCookieString(domain), "; ");
+			Object.keys(cookies).length.should.equal(0);
+			return done();
+		});
+	});
+
+	it('login with no credentials', function(done) {
+		var cookie = request.jar();
+		request({url           : domain + '/api/login',
+			method             : "POST",
+			headers            : { "content-type":"text/plain"},
+			body               : "",
+			jar                : cookie
+		}, function (err, resp, body) {
+			should.not.exist(err);
+			resp.statusCode.should.equal(403);
+			var message = JSON.parse(body);
+			message.code.should.equal(403);
+			message.message.should.equal("bad credentials");
+			var cookies = querystring.parse(cookie.getCookieString(domain), "; ");
+			Object.keys(cookies).length.should.equal(0);
+			return done();
+		});
+	});
 	
 	it('login by header', function(done) {
 		var cookie = request.jar();

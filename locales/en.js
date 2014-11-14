@@ -1,1 +1,21 @@
-{}
+{
+	"Gender": "Gender",
+	"Male": "Male",
+	"Female": "Female",
+	"Select beneficiary": "Select beneficiary",
+	"Last name": "Last name",
+	"First name": "First name",
+	"Birth date": "Birth date",
+	"Perimeter": "Perimeter",
+	"Height (meters)": "Size (meters)",
+	"Social ID": "Social ID",
+	"Phone": "Phone",
+	"Mobile": "Mobile",
+	"Street": "Street",
+	"Zip code": "Zip code",
+	"City": "City",
+	"Save": "Save",
+	"Add": "Add",
+	"Cancel": "Cancel",
+	"Validate": "Validate"
+}
