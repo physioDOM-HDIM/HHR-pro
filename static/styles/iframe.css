@@ -9,6 +9,7 @@ body {
 	font-size:14px;
 	margin: 0px;
 	padding: 8px;
+	margin-bottom:50px;
 }
 
 .main {
@@ -24,7 +25,8 @@ body {
 	-ms-flex-direction: column;
 	
 	/* overflow: hidden; */
-	padding:10px;
+	/* padding:10px; */
+	padding-bottom:50px;
 	box-sizing: border-box;
 	
 }
@@ -46,6 +48,22 @@ footer {
 	text-align: right;
 }
 
+.modalContainer {
+	background: white;
+	padding: 10px;
+}
+.modalTitleContainer {
+	font-size:120%;
+	font-weight: bold;
+	margin: 10px 0px;
+}
+.modalContentContainer {
+	margin-bottom:10px;
+}
+.modalButtonContainer {
+	text-align: right;
+	margin: 20px 0px 10px 0px;
+}
 /*
 .panel-heading[data-toggle="collapse"] .panel-title:after {
 	font-family: 'Glyphicons Halflings';
