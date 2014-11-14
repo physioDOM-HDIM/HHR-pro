@@ -7,7 +7,7 @@
 	"First name": "First name",
 	"Birth date": "Birth date",
 	"Perimeter": "Perimeter",
-	"Height (meters)": "Height (meters)",
+	"Height (meters)": "Size (meters)",
 	"Social ID": "Social ID",
 	"Phone": "Phone",
 	"Mobile": "Mobile",
