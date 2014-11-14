@@ -339,26 +339,27 @@
     <button class="green big">{{ "Save"|i18n }}</button>
     <button class="green big">{{ "Validate"|i18n }}</button>
 </div>
-<zdk-modal id="addProfessionalsModal" closebutton="false">
+<zdk-modal width="450" id="addProfessionalsModal" closebutton="false">
     <div class="modalContainer">
         <div class="modalTitleContainer">{{ "Add professionals"|i18n }}</div>
         <div class="modalContentContainer">
-            <tsante-list url="/api/directory" auto="false" unresolved id="tsanteList">
+            <tsante-list url="/api/directory" auto="false" unresolved id="tsanteListProfessional">
                 <div class="row">
-                    <p>{{ "Choose your referent and check professionals you want to add then click save"|i18n}}</p>
+                    <p>{{ "Choose your referent and check professionals you want to add"|i18n }}</p>
                 </div>
                 <template is="auto-binding" repeat="{% raw %}{{item, i in list.items}}{% endraw %}">
-                    <div class="row">
-                        <input type="radio" name="referent">
-                        <input type="checkbox">
-                        <div>{% raw %}{{item.name.family}} {{item.name.given}} {{item.job}}{% endraw %}</div>
+                    <div class="item row">
+                        <input type="radio" name="referent" checked?="{% raw %}{{item._tmpData.referent}}{% endraw %}" onchange="updateProfessionalReferent(this, {% raw %}'{{i}}'{% endraw %})"/>
+                        <input type="checkbox" checked?="{% raw %}{{item._tmpData.selected}}{% endraw %}" onchange="updateProfessionalSelection(this, {% raw %}'{{i}}'{% endraw %})"/>
+                        <div>{% raw %}{{item._id}} {{item.name.family}} {{item.name.given}}{% endraw %}</div>
+                        <div class="job">{% raw %}{{item.job}}{% endraw %}</div>
                     </div>
                 </template>
             </tsante-list>
         </div>
         <div class="modalButtonContainer">
             <button class="red" onclick="closeProfessionals()">{{ "Cancel"|i18n }}</button>
-            <button class="blue">{{ "Save"|i18n }}</button>
+            <button class="blue" onclick="saveProfessionnals()">{{ "Save"|i18n }}</button>
         </div>
     </div>
 </zdk-modal>

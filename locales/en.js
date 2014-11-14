@@ -57,5 +57,6 @@
 	"Use": "Use",
 	"Relationship": "Relationship",
 	"Add professionals": "Add professionals",
-	"Choose your referent and check professionals you want to add then click save": "Choose your referent and check professionals you want to add then click save"
+	"Choose your referent and check professionals you want to add then click save": "Choose your referent and check professionals you want to add then click save",
+	"Choose your referent and check professionals you want to add": "Choose your referent and check professionals you want to add"
 }
