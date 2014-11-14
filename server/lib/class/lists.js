@@ -33,8 +33,25 @@ function Lists( ) {
 	
 	this.getList = function( listName, lang) {
 		logger.trace("getList", listName, lang);
-		var list = new List();
-		return list.getByName(listName, lang);
+		return new promise( function(resolve, reject) {
+			var list = new List();
+			list.getByName(listName)
+				.then(function (list) {
+					if (lang) {
+						return list.lang(lang);
+					} else {
+						return list;
+					}
+				})
+				.then( function(list) {
+					logger.debug("list "+listName, list);
+					resolve(list);
+				})
+				.catch( function(err) {
+					logger.warning("list "+listName, err);
+					reject(err);
+				} );
+		});
 	};
 }
 
