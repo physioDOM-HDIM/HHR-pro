@@ -4,48 +4,32 @@
 
 {% block head %}
 {% parent %}
-<script src="../bower_components/platform/platform.js"></script>
-<script src="../bower_components/mustache/mustache.js"></script>
-<script src="../bower_components/rsvp/rsvp.min.js"></script>
-<link rel="import" href="../bower_components/zdk-modal/zdk-modal.html">
-<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
-<script src="updateDirectory.js"></script>
+<script src="/bower_components/mustache/mustache.js"></script>
+<script src="/bower_components/rsvp/rsvp.min.js"></script>
+<script src="/bower_components/form2js/src/form2js.js"></script>
+<link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
+<link rel="import" href="/bower_components/core-ajax/core-ajax.html">
+<script src="/tpl/directoryUpdate.js"></script>
 {% endblock %}
 
 {% block content %}
-<!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="utf-8">
-    <title>Update directory</title>
-
-    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-touch-fullscreen" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-
-    <link rel="shortcut icon" sizes="196x196" href="/img/physiodom_favico.png">
-    <link rel="icon" href="/img/physiodom_favico.png">
-    <link rel="apple-touch-icon" href="/img/physiodom_favico.png">
-
-    <link rel="stylesheet" href="/styles/iframe.css" charset="UTF-8">
-    <link rel="stylesheet" href="/styles/theme.css" charset="UTF-8">
-
-    <link rel="stylesheet" href="/styles/ui.css" charset="UTF-8">
-    <link rel="stylesheet" href="/styles/updateDirectory.css" charset="UTF-8">
-
-    <!-- Polyfills -->
-
-
-    <!-- Import polymer element -->
-
-    <!-- <link rel="import" href="../components/tsante-inputtext.html"> -->
-
-    
-</head>
-
-<body>
+<script type="template" id="tplTelecomContainer">
+        <label>Use:</label>
+        <select name="telecom[{%raw%}{{indx}}{%endraw%}].use">
+            {% for item in use.items %}
+            <option value="{{item.value}}" {{telecom_use_selected}}>{{item.label}}</option>
+            {% endfor %}
+        </select>
+        <label>System:</label>
+        <select name="telecom[{%raw%}{{indx}}{%endraw%}].system" onchange="checkEmailTypeValidation(this)">
+            {% for item in system.items %}
+            <option value="{{item.value}}" {{telecom_system_selected}}>{{item.label}}</option>
+            {% endfor %}
+        </select>
+        <label>Value:</label>
+        <input name="telecom[{%raw%}{{indx}}{%endraw%}].value" type="{%raw%}{{telecom_email_type_default}}{%endraw%}" />
+        <button type="button" class="red" onclick="deleteTelecom(this)">delete</button>
+</script>
     <core-ajax url="/api/directory/" handleAs="json"></core-ajax>
     <div class="loading">--- CHARGEMENT EN COURS ---</div>
     <div class="mainContainer hidden">
@@ -54,130 +38,139 @@
                 <legend>Identity</legend>
                 <div class="row">
                     <label>Name</label>
-                    <input type="text" name="name.family" placeholder="Mandatory field" required value="{{item.name.family}}" />
+                    <input type="text" name="name.family" placeholder="Mandatory field" required value="{%raw%}{{item.name.family}}{%endraw%}" />
                 </div>
                 <div id="nonOrgContainer">
                     <div class="row">
                         <label>Given:</label>
-                        <input type="text" name="name.given" placeholder="Mandatory field" required value="{{item.name.given}}" />
+                        <input type="text" name="name.given" placeholder="Mandatory field" required value="{%raw%}{{item.name.given}}{%endraw%}" />
                     </div>
                     <div class="row">
                         <label>Gender:</label>
-                        <input type="radio" name="gender" value="M" {{gender_m_checked}}/>Male
-                        <input type="radio" name="gender" value="F" {{gender_f_checked}}/>Female
+                        <input type="radio" name="gender" value="M" {%raw%}{{gender_m_checked}}{%endraw%}/>Male
+                        <input type="radio" name="gender" value="F" {%raw%}{{gender_f_checked}}{%endraw%}/>Female
                     </div>
                     <div class="row">
                         <label>Job:</label>
                         <select name="job" required>
+                            {% for item in job.items %}
+                            <option value="{{item.value}}" {{job_selected}}>{{item.label}}</option>
+                            {% endfor %}
+                            <!--
+                            {%raw%}
                             {{#job_list}}
                             <option value="{{value}}" {{job_selected}}>{{label}}</option>
                             {{/job_list}}
+                            {%endraw%}
+                            -->
                         </select>
                     </div>
                 </div>
                 <div class="row">
                     <label>Role:</label>
                     <select name="role" required>
-                        {{#role_list}}
-                        <option value="{{value}}" {{role_selected}}>{{label}}</option>
-                        {{/role_list}}
+                        {% for item in role.items %}
+                        <option value="{{item.value}}" {{role_selected}}>{{item.label}}</option>
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="row">
                     <label>Communication:</label>
-                    <select name="communication" required>
+                    <select name="communication">
+                        {% for item in communication.items %}
+                        <option value="{{item.value}}" {{communication_selected}}>{{item.label}}</option>
+                        {% endfor %}
+                        <!--
+                        {%raw%}
                         {{#communication_list}}
                         <option value="{{value}}" {{communication_selected}}>{{label}}</option>
                         {{/communication_list}}
+                        {%endraw%}
+                        -->
                     </select>
                 </div>
             </fieldset>
             <fieldset>
                 <legend>Status</legend>
                 <div class="row">
-                    <label {{organization_disabled}}>Organization:</label>
-                    <input type="checkbox" name="organization" onchange="checkOrganization()" {{organization_disabled}} {{organization_checked}}/>
+                    <label {%raw%}{{organization_disabled}}{%endraw%}>Organization:</label>
+                    <input type="checkbox" name="organization" onchange="checkOrganization()" {%raw%}{{organization_disabled}} {{organization_checked}}{%endraw%}/>
                 </div>
                 <div class="row">
                     <label>Active:</label>
-                    <input type="checkbox" name="active" {{active_checked}}/>
+                    <input type="checkbox" name="active" {%raw%}{{active_checked}}{%endraw%}/>
                 </div>
             </fieldset>
             <fieldset>
                 <legend>Telecom</legend>
-                <div id="tplTelecomContainer" class="telecomContainer hidden row">
-                    <label>Use:</label>
-                    <select name="telecom.use">
-                        {{#use_list}}
-                        <option value="{{value}}" {{telecom_use_default}}>{{label}}</option>
-                        {{/use_list}}
-                    </select>
-                    <label>System:</label>
-                    <select name="telecom.system" onchange="checkEmailTypeValidation(this)">
-                        {{#system_list}}
-                        <option value="{{value}}" {{telecom_system_default}}>{{label}}</option>
-                        {{/system_list}}
-                    </select>
-                    <label>Value:</label>
-                    <input name="telecom.value" type="{{telecom_email_type_default}}" />
-                    <button type="button" class="red" onclick="deleteTelecom(this)">delete</button>
-                </div>
-                {{#item.telecom}}
+                {%raw%}{{#item.telecom}}{%endraw%}
                 <div class="telecomContainer row">
                     <label>Use:</label>
-                    <select name="telecom.use" required>
-                        {{#use_list}}
-                        <option value="{{value}}" {{telecom_use_selected}}>{{label}}</option>
-                        {{/use_list}}
+                    <select name="{%raw%}telecom[0].use{%endraw%}" required>
+                        {% for item in use.items %}
+                        <option value="{{item.value}}" {{telecom_use_selected}}>{{item.label}}</option>
+                        {% endfor %}
                     </select>
                     <label>System:</label>
-                    <select name="telecom.system" onchange="checkEmailTypeValidation(this)" required>
-                        {{#system_list}}
-                        <option value="{{value}}" {{telecom_system_selected}}>{{label}}</option>
-                        {{/system_list}}
+                    <select name="{%raw%}telecom[0].system{%endraw%}" onchange="checkEmailTypeValidation(this)" required>
+                        {% for item in system.items %}
+                        <option value="{{item.value}}" {{telecom_system_selected}}>{{item.label}}</option>
+                        {% endfor %}
                     </select>
                     <label>Value:</label>
-                    <input name="telecom.value" value="{{value}}" type="{{telecom_email_type}}" />
+                    {%raw%}<input name="telecom[0].value" value="{{value}}" type="{{telecom_email_type}}" />{%endraw%}
                     <button type="button" class="red" onclick="deleteTelecom(this)">delete</button>
                 </div>
-                {{idx}} {{/item.telecom}} {{resetIdx}}
-                <button id="addTelecomBtn" class="blue" type="button" onclick="addTelecom()">Add</button>
+                {%raw%}{{idx}} {{/item.telecom}} {{resetIdx}}{%endraw%}
+                <div class="row">
+                    <span class="spacer"></span>
+                    <button id="addTelecomBtn" class="blue" type="button" onclick="addTelecom()">Add</button>
+                </div>
             </fieldset>
             <fieldset>
                 <legend>Address</legend>
                 <div class="row">
                     <label>Use:</label>
                     <select name="address.use" required>
+                        {% for item in use.items %}
+                        <option value="{{item.value}}" {{telecom_use_selected}}>{{item.label}}</option>
+                        {% endfor %}
+                        <!--
+                        {%raw%}
                         {{#use_list}}
                         <option value="{{value}}" {{address_use_selected}}>{{label}}</option>
                         {{/use_list}}
+                        {%endraw%}
+                        -->
                     </select>
                 </div>
                 <div class="row">
                     <label>Text:</label>
-                    <input type="text" name="address.text" value="{{item.address.text}}" />
+                    <input type="text" name="address.text" value="{%raw%}{{item.address.text}}{%endraw%}" />
                 </div>
                     
                 <div class="row">
                     <label>Street :</label>
-                    <textarea name="address.line">{{item.address.line}}</textarea>
+                    <textarea name="address.line">{%raw%}{{item.address.line}}{%endraw%}</textarea>
                 </div>
                 <div class="row">
                     <label>City:</label>
-                    <input type="text" name="address.city" value="{{item.address.city}}" />
+                    <input type="text" name="address.city" value="{%raw%}{{item.address.city}}{%endraw%}" />
                 </div>
+                <!--
                 <div class="row">
                     <label>State:</label>
-                    <input type="text" name="address.state" value="{{item.address.state}}" />
+                    <input type="text" name="address.state" value="{%raw%}{{item.address.state}}{%endraw%}" />
                 </div>
+                -->
                 <div class="row">
                     <label>Zip code :</label>
-                    <input type="text" name="address.zip" value="{{item.address.zip}}" />
+                    <input type="text" name="address.zip" value="{%raw%}{{item.address.zip}}{%endraw%}" />
                 </div>
                 <!--
                 <div class="row">
                     <label>Country:</label>
-                    <input type="text" name="address.country" value="{{item.address.country}}" />
+                    <input type="text" name="address.country" value="{%raw%}{{item.address.country}}{%endraw%}" />
                 </div>
                 -->
             </fieldset>
@@ -186,7 +179,7 @@
                 <legend>Account</legend>
                 <div class="row">
                     <label>Login:</label>
-                    <input type="text" name="account.login" value="{{account.login}}" />
+                    <input type="text" name="account.login" value="{%raw%}{{account.login}}{%endraw%}" />
                 </div>
                 <div class="row">
                     <label>Change password:</label>
@@ -198,11 +191,14 @@
                 </div>
             </fieldset>
             <br />
+            <div class="row">
+                <span class="spacer"></span>
             <div class="buttonContainer">
                 <button id="deleteItem" class="red" type="button" onclick="confirmDelete()">delete</button>
                 <button type="button" class="blue" onclick="window.history.back()">cancel</button>
                 <button id="saveItemBtn" class="green hidden">save</button>
                 <button id="createItemBtn" class="green hidden">create</button>
+            </div>
             </div>
         </form>
     </div>
@@ -229,10 +225,9 @@
         <div id="trad_error_occured">An error occured</div>
         <div id="trad_error_password">Passwords are not equal</div>
         <div id="trad_error_email_required">You must add an email in telecom field</div>
+        <div id="trad_incomplete_address">Address is incomplete</div>
         <div id="trad_yes">Yes</div>
         <div id="trad_no">No</div>
         <div id="trad_ok">OK</div>
     </div>
-</body>
-
-</html>
+{% endblock %}

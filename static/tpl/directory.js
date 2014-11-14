@@ -11,12 +11,13 @@ var dataFormat = {
     activeTrueData: "true",
     activeFalseData: "false"
 },
-isAdmin = false,
+// isAdmin = false,
 _dataObj;
 
 //Display/hide some information according to the user status
 function checkUser(e) {
 	console.log("checkUser", arguments);
+    /*
     if (isAdmin) {
         var editButtons = document.querySelectorAll(".editButton"),
             addEntry = document.querySelector("#addEntry");
@@ -29,6 +30,7 @@ function checkUser(e) {
             addEntry.className = addEntry.className.replace("hidden", "");
         }
     }
+    */
 }
 
 //Toggle display/hide a node
@@ -105,7 +107,7 @@ function validFilter() {
 function updateDirectory(idx){
 	console.log("updateDirectory", arguments);
 	if(_dataObj && _dataObj.list && _dataObj.list.items){
-		window.location = "updateDirectory.htm" + (typeof idx !== undefined && _dataObj.list.items[idx] ? "?itemId="+_dataObj.list.items[idx]._id : "");
+		window.location = "/directory/update" + (typeof idx !== undefined && _dataObj.list.items[idx] ? "?itemId="+_dataObj.list.items[idx]._id : "");
 	}
 }
 
@@ -119,7 +121,7 @@ function init() {
 
 	//TODO get the info about access user and
 	//don't forget to call checkUser()
-	isAdmin = true;
+	// isAdmin = true;
 
     var listPagerElt = document.querySelector("tsante-list");
     if(listPagerElt){

@@ -310,9 +310,9 @@ function getDataForRender() {
     };
     _communicationEnum2 = {
         name: "communicationEnumList",
-        defaultValue: "-",
+        defaultValue: "",
         items: [{
-            value: "-",
+            value: "",
             label: ""
         }, {
             value: "fr",
@@ -392,12 +392,14 @@ function getDataForRender() {
                 label: ""
             });
         }
+        /*
         if (!_communicationEnum.defaultValue) {
             _communicationEnum.items.unshift({
                 value: "",
                 label: ""
             });
         }
+        */
         try {
             if (response.account) {
                 _accountDataObj = JSON.parse(response.account);
@@ -505,6 +507,7 @@ function checkOrganization() {
 
 function checkEmailTypeValidation(node) {
     console.log("checkEmailTypeValidation", arguments);
+    /*
     var isEmail = node.options[node.selectedIndex].value.toLowerCase() === "email";
     node.parentNode.querySelector("input[name='telecom.value']").type = isEmail ? "email" : "text";
     if(isEmail){
@@ -513,26 +516,28 @@ function checkEmailTypeValidation(node) {
     else{
     	node.parentNode.querySelector("input[name='telecom.value']").removeAttribute("required");
     }
-    
+    */
 }
 
 function checkForm() {
-    var modalObj, isEmailSet = function() {
+    var modalObj, obj;
+    
+    function isEmailSet() {
         var isEmail = false,
-        	systemElt, valueElt;
-        [].map.call(document.querySelectorAll("form[name=directoryForm] .telecomContainer:not(.hidden)"), function(node) {
-            systemElt = node.querySelector("select[name='telecom.system']");
-            valueElt = node.querySelector("input[name='telecom.value']");
-            if(systemElt.options[systemElt.selectedIndex].value === "email" && valueElt.value !== ""){
-            	isEmail = true;
+            systemElt, valueElt;
+         
+        obj.telecom.forEach( function( item ) {
+            if( item.system === "email" && item.value !== "") {
+                isEmail = true;
             }
         });
-
         return isEmail;
     };
-
+    
+    obj = form2js(document.forms["directoryForm"]);
+    console.log(obj);
     //Check if password are equals
-    if (document.querySelector("form[name=directoryForm] input[name='account.password']").value !== document.querySelector("form[name=directoryForm] input[name='checkAccountPassword']").value) {
+    if( obj.account && obj.account.password !== obj.checkAccountPassword ) {
         modalObj = {
             title: "trad_errorFormValidation",
             content: "trad_error_password",
@@ -543,7 +548,8 @@ function checkForm() {
                 }
             }]
         };
-    } else if (!isEmailSet()) {
+    } 
+    if ( !modalObj && !isEmailSet()) {
         //Check if an email is set
         modalObj = {
             title: "trad_errorFormValidation",
@@ -555,42 +561,67 @@ function checkForm() {
                 }
             }]
         };
-    } else {
-        if (_dataObj) {
+    } 
+    if( !modalObj &&  (obj.address.line || obj.address.city || obj.address.zip) ) {
+        if( !(obj.address.line && obj.address.city && obj.address.zip )) {
+            console.log("address is incomplete");
             modalObj = {
-                title: "trad_update",
-                content: "trad_confirm_update",
+                title: "trad_errorFormValidation",
+                content: "trad_incomplete_address",
                 buttons: [{
-                    id: "trad_yes",
-                    action: function() {
-                        updateItem();
-                    }
-                }, {
-                    id: "trad_no",
-                    action: function() {
-                        closeModal();
-                    }
-                }]
-            };
-        } else {
-            modalObj = {
-                title: "trad_create",
-                content: "trad_confirm_create",
-                buttons: [{
-                    id: "trad_yes",
-                    action: function() {
-                        updateItem();
-                    }
-                }, {
-                    id: "trad_no",
+                    id: "trad_ok",
                     action: function() {
                         closeModal();
                     }
                 }]
             };
         }
+    } 
+    if( !modalObj ) {
+        if (_dataObj) {
+            modalObj = {
+                title  : "trad_update",
+                content: "trad_confirm_update",
+                buttons: [
+                    {
+                        id    : "trad_no",
+                        action: function () {
+                            closeModal();
+                        }
+                    },
+                    {
+                        id    : "trad_yes",
+                        action: function () {
+                            updateItem(obj);
+                        }
+                    }
+                ]
+            };
+        } else {
+            modalObj = {
+                title  : "trad_create",
+                content: "trad_confirm_create",
+                buttons: [
+                    {
+                        id    : "trad_no",
+                        action: function () {
+                            closeModal();
+                        }
+                    },
+                    {
+                        id    : "trad_yes",
+                        action: function () {
+                            updateItem(obj);
+                        }
+                    }
+                ]
+            };
+        }
     }
-    showModal(modalObj);
+    
+    if( modalObj) {
+        showModal(modalObj);
+    }
 }
 
 function deleteTelecom(node) {
@@ -600,6 +631,16 @@ function deleteTelecom(node) {
 
 function addTelecom() {
     console.log("addTelecom", arguments);
+    var elt = document.querySelector("#tplTelecomContainer").innerHTML;
+    var modelData = { indx:document.querySelectorAll(".telecomContainer").length+1};
+    var html = Mustache.render(elt, modelData);
+    var div = document.createElement("div");
+    div.classList.add("telecomContainer");
+    div.classList.add("row");
+    div.innerHTML = html;
+    var button = document.querySelector("#addTelecomBtn");
+    button.parentNode.insertBefore( div , button );
+    /*
     var elt = document.querySelector("#tplTelecomContainer"),
         parentElt = elt.parentNode,
         cloneElt = elt.cloneNode(true);
@@ -615,6 +656,7 @@ function addTelecom() {
 
     cloneElt.className = cloneElt.className.replace("hidden", "");
     parentElt.insertBefore(cloneElt, parentElt.querySelector("#addTelecomBtn"));
+    */
 }
 
 function getUserFormData() {
@@ -731,13 +773,17 @@ function getUserFormData() {
     createNestedObject(itemObj, eltName, document.querySelector("form[name=directoryForm] input[name='" + eltName + "']").value);
 
     eltName = "address.state";
-    createNestedObject(itemObj, eltName, document.querySelector("form[name=directoryForm] input[name='" + eltName + "']").value);
-
+    if(document.querySelector("form[name=directoryForm] input[name='" + eltName + "']")) {
+        createNestedObject(itemObj, eltName, document.querySelector("form[name=directoryForm] input[name='" + eltName + "']").value);
+    }
+    
     eltName = "address.zip";
     createNestedObject(itemObj, eltName, document.querySelector("form[name=directoryForm] input[name='" + eltName + "']").value);
 
     eltName = "address.country";
-    createNestedObject(itemObj, eltName, document.querySelector("form[name=directoryForm] input[name='" + eltName + "']").value);
+    if(document.querySelector("form[name=directoryForm] input[name='" + eltName + "']" )) {
+        createNestedObject(itemObj, eltName, document.querySelector("form[name=directoryForm] input[name='" + eltName + "']").value);
+    }
 
     if (_dataObj && _dataObj._id) {
         if (itemObj.address) {
@@ -751,32 +797,29 @@ function getUserFormData() {
     return _dataObj && _dataObj._id ? _dataObj : itemObj;
 }
 
-function getAccountData() {
-    console.log("getAccountData");
-
-    var accountObj = {},
-        value = document.querySelector("form[name=directoryForm] input[name='account.login']").value;
-
-    if (value && value !== "") {
-        accountObj.login = value;
-    }
-    value = document.querySelector("form[name=directoryForm] input[name='account.password']").value;
-    if (accountObj.login && value && value !== "") {
-        accountObj.password = value;
-    } else {
-        accountObj = null;
-    }
-
-    return accountObj;
-}
-
-function updateItem() {
+function updateItem(obj) {
     console.log("updateItem");
 
     closeModal();
-    var modalObj,
-        data = getUserFormData(),
-        accountData = getAccountData();
+    var modalObj, data, accountData;
+    // remove uneeded fields
+    delete obj.checkAccountPassword;  // move to check
+    accountData = obj.account?obj.account:null;
+    if( accountData && !( accountData.login && accountData.password )) {
+        accountData = null;
+    }
+    data = obj;
+    delete data.account;
+    if( _dataObj._id ) { data._id = _dataObj._id; }
+    data.active = data.active?true:false;
+    
+    // check address
+    if( !(data.address.line && data.address.zip && data.address.city) ) {
+        delete data.address;
+    } else {
+        data.address.line = data.address.line.split("\n");
+    }
+    
     if (data._id) {
         //Update entry
         var tabPromises = [promiseXHR("PUT", "/api/directory/" + data._id, 200, JSON.stringify(data))];
