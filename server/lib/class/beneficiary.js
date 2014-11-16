@@ -134,8 +134,8 @@ function Beneficiary( ) {
 			logger.trace("checkSchema");
 			var check = beneficiarySchema.validator.validate( entry, { "$ref":"/Beneficiary"} );
 			if( check.errors.length ) {
-				console.log(JSON.stringify(check.errors,null,4));
-				return reject( { error:"bad format" } );
+				// console.log(JSON.stringify(check.errors,null,4));
+				return reject( { error:"bad format", detail: check.errors } );
 			} else {
 				return resolve(entry);
 			}
