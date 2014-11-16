@@ -33,7 +33,56 @@ function Beneficiary( ) {
 							that[prop] = doc[prop];
 						}
 					}
+					if( !that.address ) {
+						that.address = [ { use:"home" }];
+					}
+					if( !that.telecom ) {
+						that.telecom = [ { system:"phone" }];
+					}
 					resolve(that);
+				}
+			});
+		});
+	};
+
+	this.getAdminById = function( beneficiaryID, professional ) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("getAdminById", beneficiaryID);
+			var result = { telecom: [ { system:"phone" } ], address:[ { use:"home"} ] };
+			that.getById(beneficiaryID, professional)
+				.then(function (beneficiary) {
+					result = beneficiary;
+					return beneficiary.getAccount();
+				})
+				.then( function(account) {
+					result.account = account;
+					resolve(result);
+				})
+				.catch( function( err ) {
+					logger.warning("error",err);
+					resolve(result);
+				});
+		});
+	};
+
+	/**
+	 * return account information about the beneficiary
+	 *
+	 * the promise resolve with account information as object,
+	 * if no account information is found the resolve return an empty object
+	 *
+	 * @returns {promise}
+	 */
+	this.getAccount = function() {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			var search = { "person.id": that._id };
+			physioDOM.db.collection("account").findOne( search, function( err, item ) {
+				if(err) {
+					throw err;
+				} else {
+					resolve(item || {});
 				}
 			});
 		});

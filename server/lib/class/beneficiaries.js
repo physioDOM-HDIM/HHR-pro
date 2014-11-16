@@ -125,6 +125,13 @@ function Beneficiaries( ) {
 		var beneficiary = new Beneficiary();
 		return beneficiary.getById(beneficiaryByID, session.person.item);
 	};
+	
+	this.getBeneficiaryAdminByID = function( session, entryID ) {
+		logger.trace("getBeneficiaryAdminByID", entryID);
+		var beneficiaryByID = new ObjectID(entryID);
+		var beneficiary = new Beneficiary();
+		return beneficiary.getAdminById(beneficiaryByID, session.person.item);
+	}
 
 	/**
 	 * remove a beneficiary
