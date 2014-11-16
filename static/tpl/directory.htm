@@ -44,7 +44,8 @@
                     <option value="descData">descending</option>
                 </select>
             </div>
-            <div class="row buttonContainer">
+            <div class="row control">
+                <span class="spacer"></span>
                 <button type="button" class="red" onclick="resetFilter()">Reset</button>
                 <button class="green">Valid</button>
             </div>
@@ -91,7 +92,7 @@
                             <button type="button" class="green small" onclick="toggleHiddenNode(this, '.address')">detail</button>
                         </template>
                         {% if admin %}
-                        <button class="blue small" type="button" onclick="updateDirectory({% raw %}{{i}}{% endraw %})">edit</button>
+                        <a href="/directory/{% raw %}{{item._id}}{% endraw %}"><button class="blue small" type="button" onclick="/* updateDirectory({% raw %}{{i}}{% endraw %}) */">edit</button></a>
                         {% endif %}
                     </div>
                 </div>
