@@ -136,6 +136,7 @@ function IPage() {
 		logger.trace("beneficiarySelect");
 		var html;
 		
+		init(req);
 		var data = { 
 			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false 
 		};
@@ -156,6 +157,37 @@ function IPage() {
 			res.end();
 			next();
 		}
+	};
+
+	this.beneficiaryOverview = function(req, res, next) {
+		logger.trace("beneficiaryOverview");
+		var html;
+		init(req);
+		var data = {
+			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
+		};
+		try {
+			html = swig.renderFile('./static/tpl/recipientDetail.htm', data, function (err, output) {
+				if (err) {
+					console.log("error", err);
+					console.log("output", output);
+					res.write(err);
+					res.end();
+					next();
+				} else {
+					sendPage(output, res, next);
+				}
+			});
+		} catch(err) {
+			res.write(err);
+			res.end();
+			next();
+		}
+		/*
+		var data = {};
+		var html = swig.renderFile('./static/tpl/recipientDetail.htm', data);
+		sendPage(html, req, res, next);
+		*/
 	};
 	
 	function sendPage( html, res, next ) {
