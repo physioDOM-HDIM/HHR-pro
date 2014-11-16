@@ -578,7 +578,7 @@ function checkForm() {
         }
     } 
     if( !modalObj ) {
-        if (_dataObj) {
+        if (obj._id) {
             modalObj = {
                 title  : "trad_update",
                 content: "trad_confirm_update",
@@ -810,7 +810,6 @@ function updateItem(obj) {
     }
     data = obj;
     delete data.account;
-    if( _dataObj._id ) { data._id = _dataObj._id; }
     data.active = data.active?true:false;
     
     // check address
@@ -922,8 +921,9 @@ function deleteItem() {
     console.log("deleteItem", arguments);
     var modalObj;
     closeModal();
-    if (_dataObj && _dataObj._id) {
-        promiseXHR("DELETE", "/api/directory/" + _dataObj._id, 410).then(function(response) {
+    var obj = form2js(document.forms["directoryForm"]);
+    if (obj._id) {
+        promiseXHR("DELETE", "/api/directory/" + obj._id, 410).then(function(response) {
             modalObj = {
                 title: "trad_success",
                 content: "trad_success_delete",
@@ -969,8 +969,9 @@ function init() {
         },
         itemIdParam = getQueryVariable("itemId");
     console.log("init - itemIdParam", itemIdParam);
-
+    
     if (itemIdParam) {
+        /*
         //edit mode
         var coreAjaxElt = document.querySelector("core-ajax");
 
@@ -982,11 +983,15 @@ function init() {
 
         coreAjaxElt.url += itemIdParam;
         coreAjaxElt.go();
+        */
     } else {
+        /*
         //creation mode
         console.log("init - creation");
         getDataForRender();
+        */
     }
+    
 }
 
-window.addEventListener("polymer-ready", init, false);
+// window.addEventListener("polymer-ready", init, false);
