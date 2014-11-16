@@ -20,9 +20,9 @@
             <div class="row ">
                 <label>Perimeter:</label>
                 <select name="perimeter">
-                    <option value=""></option>
-                    <option value="todo1">todo1</option>
-                    <option value="todo2">todo2</option>
+                    {% for item in perimeter.items %}
+                    <option value="{{item.value}}" >{{item.label}}</option>
+                    {% endfor %}
                 </select>
                 <label>Active status:</label>
                 <select name="active">

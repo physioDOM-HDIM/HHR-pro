@@ -59,8 +59,29 @@ function IPage() {
 		var data = {
 			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
 		};
-		html = swig.renderFile('./static/tpl/directory.htm', data);
-		sendPage(html,res, next);
+		physioDOM.Lists.getList("perimeter", lang)
+			.then( function(list) {
+				if (list) {
+					data.perimeter = list;
+				}
+				html = swig.renderFile('./static/tpl/directory.htm', data, function (err, output) {
+					if (err) {
+						console.log("error", err);
+						console.log("output", output);
+						res.write(err);
+						res.end();
+						next();
+					} else {
+						sendPage(output, res, next);
+					}
+				});
+			})
+			.catch( function(err) {
+				logger.error(err);
+				res.write(err);
+				res.end();
+				next();
+			});
 	};
 
 	this.directoryUpdate = function(req, res, next) {
