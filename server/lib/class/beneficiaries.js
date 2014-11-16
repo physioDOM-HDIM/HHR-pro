@@ -43,7 +43,13 @@ function Beneficiaries( ) {
 						if( ["true","false"].indexOf(search[prop]) !== -1) {
 							search[prop] = (search[prop]==="true"?true:false);
 						} else {
-							search[prop] = new RegExp("^"+search[prop],'i');
+							switch( typeof search[prop] ) {
+								case "string" :
+									search[prop] = new RegExp("^"+search[prop],'i');
+									break;
+								default:
+									search[prop] = search[prop];
+							}
 						}
 					}
 				}
@@ -58,6 +64,7 @@ function Beneficiaries( ) {
 		} else {
 			throw { code:403, message:"forbidden"};
 		}
+		console.log(search);
 		var cursor = physioDOM.db.collection("beneficiaries").find(search);
 		var cursorSort = {};
 		if(sort) {
