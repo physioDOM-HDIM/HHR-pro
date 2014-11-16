@@ -10,7 +10,12 @@ var promise = require("rsvp").Promise,
 var logger = new Logger("List");
 
 function List() {
-	
+
+	/**
+	 * backup the list in the database
+	 * 
+	 * @returns {promise}
+	 */
 	this.save = function() {
 		var that = this;
 		return new promise( function(resolve, reject) {
@@ -24,7 +29,13 @@ function List() {
 			});
 		});
 	};
-	
+
+	/**
+	 * get a list by its name
+	 * 
+	 * @param listName
+	 * @returns {promise}
+	 */
 	this.getByName = function( listName ) {
 		var that = this;
 		return new promise( function(resolve, reject) {
@@ -47,23 +58,82 @@ function List() {
 			});
 		});
 	};
-	
+
+	/**
+	 * Send back the translation of a list
+	 * 
+	 * Only item with a translation in the selected language are send
+	 * 
+	 * @param lang
+	 * @returns {promise}
+	 */
 	this.lang = function( lang ) {
 		var that = this;
 		return new promise( function( resolve, reject ) {
+			logger.trace("lang",lang);
 			if( !lang || physioDOM.lang.indexOf(lang) === -1 ) {
 				reject( { code:405, message:"unrecognized language"});
 			}
-			var options = [];
-			that.items.forEach( function(listItem) {
-				if( listItem.label[lang] ) {
-					options.push({value: listItem.ref, label: listItem.label[lang]});
-				}
-			});
-			resolve( options );
+			var options = { defaultValue: that.defaultValue, items:[] };
+			var count = that.items.length;
+			if( count === 0) {
+				resolve( options );
+			} else {
+				that.items.forEach(function (listItem) {
+					if (( !listItem.hasOwnProperty("active") || listItem.active === true) && listItem.label.hasOwnProperty(lang)) {
+						options.items.push({value: listItem.ref, label: listItem.label[lang]});
+					}
+					if (--count === 0) {
+						resolve(options);
+					}
+				});
+			}
 		});
 	};
-	
+
+	/**
+	 * Activate or deactivate an item of the list
+	 * 
+	 * the item to modify is given by its reference : `itemRef`
+	 * the activation is done by sending an object :
+	 *     { active: true|false }
+	 * 
+	 * @param itemRef
+	 * @param activate
+	 * @returns {promise}
+	 */
+	this.activateItem = function( itemRef, activate ) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			if( !activate.hasOwnProperty("active") ) {
+				throw { code:405, message:"bad activate message"};
+			}
+			logger.trace("activeItem", itemRef);
+			that.getItemIndx(itemRef)
+				.then(function (indx) {
+					that.items[indx].active = activate.active;
+					return that.save();
+				})
+				.then(function (list) {
+					resolve(list);
+				})
+				.catch(function (err) {
+					reject(err);
+				});
+		});
+	};
+
+	/**
+	 * Add an item object to the list
+	 * 
+	 * The list must be editable, if the item already exists it's updated
+	 * 
+	 * if all OK, resolve with the list
+	 * else reject an error
+	 * 
+	 * @param item
+	 * @returns {promise}
+	 */
 	this.addItem = function( item ) {
 		var that = this;
 		return new promise( function(resolve, reject) {
@@ -76,12 +146,14 @@ function List() {
 				reject( { code:405, message:"bad format", detail: check.errors });
 			} else {
 				var indx = -1;
+				item.active = true;   // adding an item automatically active it
 				that.items.forEach( function(listItem , i) {
 					if( listItem.ref === item.ref ) {
 						indx = i;
 					}
 				});
 				if( indx !== -1) {
+					// update the item
 					that.items[indx] = item;
 				} else {
 					that.items.push( item );
@@ -89,6 +161,70 @@ function List() {
 				resolve( that );
 			}
 			return that.save();
+		});
+	};
+
+	/**
+	 * get the index of an item of the list given by its reference `itemRef`
+	 * 
+	 * if found, the promise send the index
+	 * else send an error message.
+	 * 
+	 * @param itemRef
+	 * @returns {promise}
+	 */
+	this.getItemIndx = function( itemRef ) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("getItem", itemRef);
+			var indx = -1;
+			that.items.forEach( function( item, i) {
+				if( item.ref === itemRef ) {
+					indx = i;
+				} 
+			});
+			if(indx !== -1) {
+				resolve( indx );
+			} else {
+				reject( {code:404, message:"item not found"});
+			}
+		});
+	};
+
+	/**
+	 * Add translation to a list item given by its reference `itemRef`
+	 * 
+	 * translation is the object containing the translation
+	 * ex { es:"administrador", nl:"beheerder" }
+	 *
+	 * if all is OK, the promise send back the list
+	 * else send reject an error
+	 * 
+	 * @param itemRef
+	 * @param translation
+	 * @returns {promise}
+	 */
+	this.translateItem = function( itemRef, translation ) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("translateItem", itemRef);
+			that.getItemIndx( itemRef )
+				.then( function(indx) {
+					for( var lang in translation ) {
+						if( physioDOM.lang.indexOf( lang ) === -1 ) {
+							throw { code:405, message:"lang '"+lang+"' is not managed"};
+						} else {
+							that.items[indx].label[lang] = translation[lang];
+						}
+					}
+					return that.save();
+				})
+				.then( function(list) {
+					resolve(list);
+				})
+				.catch( function(err) {
+					reject(err);
+				});
 		});
 	};
 }

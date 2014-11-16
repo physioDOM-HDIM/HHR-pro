@@ -1,206 +1,117 @@
-<!DOCTYPE html>
-<html>
+{% extends './page.htm' %}
 
-<head>
-    <meta charset="utf-8">
-    <title>Professionnal directory</title>
+{% block title %}{{ "Professionnal directory"|i18n }}{% endblock %}
 
-    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-touch-fullscreen" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
+{% block head %}
+{% parent %}
+<script src="tpl/directory.js"></script>
+<style>
+    .item.disabled div:first-child { opacity:0.7 }
+</style>
+{% endblock %}
 
-    <link rel="shortcut icon" sizes="196x196" href="/img/physiodom_favico.png">
-    <link rel="icon" href="/img/physiodom_favico.png">
-    <link rel="apple-touch-icon" href="/img/physiodom_favico.png">
+{% block content %}
+    <zdk-panel heading="{{"Filter"|i18n}} / {{"Sort"|i18n}}" collapsable="true" collapsed="true">
+        <form class="filter" name="filter" onsubmit="validFilter(); return false;">
+            <div class="row">
+                <label>{{"Name"|i18n}}:</label>
+                <input type="text" name="nameTxt" />
+            </div>
+            <div class="row ">
+                <label>Perimeter:</label>
+                <select name="perimeter">
+                    <option value=""></option>
+                    <option value="todo1">todo1</option>
+                    <option value="todo2">todo2</option>
+                </select>
+                <label>Active status:</label>
+                <select name="active">
+                    <option value="activeAllData">all</option>
+                    <option value="activeTrueData">active</option>
+                    <option value="activeFalseData">not active</option>
+                </select>
+            </div>
+            <hr>
+            <div class="row">
+                <label>Sort:</label>
+                <select name="sortSelection">
+                    <option value="nameData">name</option>
+                    <option value="perimeterData">perimeter</option>
+                </select>
+                <label>Direction:</label>
+                <select name="sortDirection">
+                    <option value="ascData">ascending</option>
+                    <option value="descData">descending</option>
+                </select>
+            </div>
+            <div class="row control">
+                <span class="spacer"></span>
+                <button type="button" class="red" onclick="resetFilter()">Reset</button>
+                <button class="green">Valid</button>
+            </div>
+        </form>
+    </zdk-panel>
 
-    <link rel="stylesheet" href="/styles/iframe.css" charset="UTF-8">
-    <link rel="stylesheet" href="/styles/theme.css" charset="UTF-8">
-
-    <link rel="stylesheet" href="/styles/common.css" charset="UTF-8">
-    <link rel="stylesheet" href="/styles/directory.css" charset="UTF-8">
-
-    <!-- Polyfills -->
-    <script src="../bower_components/platform/platform.js"></script>
-    <!-- Import polymer element -->
-    <link rel="import" href="../bower_components/zdk-panel/zdk-panel.html">
-    <link rel="import" href="../bower_components/tsante-listpager/tsante-listpager.html">
-    <link rel="import" href="../bower_components/zdk-modal/zdk-modal.html">
-
-    <script src="directory.js"></script>
-</head>
-
-<body>
-    <div class="main">
-        <zdk-panel heading="Filter" collapsable="true" collapsed="true">
-            <form class="filter" name="filter" onsubmit="return false;">
-                <div>
-                    <label>Name:</label>
-                    <input type="text" name="nameTxt" />
-                    <label>Perimeter:</label>
-                    <select name="perimeter">
-                        <option value="todo1">todo1</option>
-                        <option value="todo2">todo2</option>
-                    </select>
-                    <label>Active:</label>
-                    <input type="checkbox" name="active" checked/>
-                </div>
-                <div>
-                    <hr>
-                    <label>Sort:</label>
-                    <select name="sortSelection">
-                        <option value="nameData">name</option>
-                        <option value="perimeterData">perimeter</option>
-                    </select>
-                    <label>Direction:</label>
-                    <select name="sortDirection">
-                        <option value="ascData">ascending</option>
-                        <option value="descData">descending</option>
-                    </select>
-                </div>
-                <footer>
-                    <button class="resetFilter" onclick="resetFilter()">Reset</button>
-                    <button class="validFilter" onclick="validFilter()">Valid</button>
-                </footer>
-            </form>
-        </zdk-panel>
-
-        <tsante-list url="/api/directory" pg="3" auto="true" unresolved id="tsanteList">
-            <template is="auto-binding" repeat="{{item, i in list.items}}">
-                <div class="item {{!item.active ? 'disabled' : ''}}">
-                    <div class="leftContent">
-                        <span class="name">
-                            {{!item.organization ? item.name.family+" "+item.name.given+" ("+item.gender+")" : item.name.family}}
-                        </span>
-                        <div>
-                            <span class="communication">
-                                <template repeat="{{telecomItem in item.telecom}}">
-                                    <template if="{{telecomItem.system !== 'email'}}">
-                                        <span class="{{telecomItem.system}}">{{telecomItem.value}}</span>
-                                    </template>
-                                    <template if="{{telecomItem.system === 'email'}}">
-                                        <a class="email" href="mailto:{{telecomItem.value}}">{{telecomItem.value}}</a>
-                                    </template>
-                                </template>
-                            </span>
-                        </div>
-                        <template if="{{item.address}}">
-                            <div class="address" data-state="hidden">
-                                <template repeat="{{lineItem in item.address.line}}">
-                                    <div class="line">{{lineItem}}</div>
-                                </template>
-                                <div class="line">{{item.address.zip}} {{item.address.city}}</div>
+    <tsante-list url="/api/directory" offset="20" auto="true" unresolved id="tsanteList">
+        <template is="auto-binding" repeat="{% raw %}{{item, i in list.items}}{% endraw %}">
+            <div class="item {% raw %}{{!item.active ? 'disabled' : ''}}{% endraw %}">
+                <div class="row">
+                    <div style="-webkit-flex:1; -ms-flex:1; flex:1">
+                        <div class="row">
+                            <div class="col">
+                                <span class="name" style="-webkit-flex:2; -ms-flex:2; flex:2;font-weight:bold">
+                                    {% raw %}{{!item.organization ? item.name.family+" "+(item.name.given ? item.name.given : "")+" ("+item.gender+")" : item.name.family}}{% endraw %}
+                                </span>
                             </div>
-                        </template>
+                            <div class="col">
+                                <span class="communication" style="-webkit-flex:1; -ms-flex:1; flex:1">
+                                    <template repeat="{% raw %}{{telecomItem in item.telecom}}{% endraw %}">
+                                        <template if="{% raw %}{{telecomItem.system === 'email'}}{% endraw %}">
+                                            <a class="email" href="mailto:{% raw %}{{telecomItem.value}}{% endraw %}">{% raw %}{{telecomItem.value}}{% endraw %}</a>
+                                        </template>
+                                    </template>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="role" style="padding-left:50px;flex:1">role : {% raw %}{{item.role}}{% endraw %}</div>
+                                <div class="job" style="flex:1">job : {% raw %}{{item.job}}{% endraw %}</div>
+                            </div>
+                            <div class="col">
+                                <template repeat="{% raw %}{{telecomItem in item.telecom}}{% endraw %}">
+                                    <template if="{% raw %}{{telecomItem.system !== 'email'}}{% endraw %}">
+                                        <span class="{% raw %}{{telecomItem.system}}{% endraw %}">{% raw %}{{telecomItem.value}}{% endraw %}</span>
+                                    </template>
+                                </template>
+                            </div>
+                        </div>
                     </div>
-                    <div class="middleContent">
-                        <div class="role">{{item.role}}</div>
-                        <div class="job">{{item.job}}</div>
-                    </div>
-                    <div class="rightContent">
-                        <template if="{{item.address}}">
-                            <button type="button" onclick="toggleHiddenNode(this, '.address')">detail</button>
+                    <div>
+                        <template if="{% raw %}{{item.address && item.address.line && item.address.line.length > 0 || item.address.zip || item.address.city}}{% endraw %}">
+                            <button type="button" class="green small" onclick="toggleHiddenNode(this, '.address')">detail</button>
                         </template>
-                        <button class="editButton hidden" type="button" onclick="displayModal({{i}})">edit</button>
+                        {% if admin %}
+                        <a href="/directory/{% raw %}{{item._id}}{% endraw %}"><button class="blue small" type="button" onclick="/* updateDirectory({% raw %}{{i}}{% endraw %}) */">edit</button></a>
+                        {% endif %}
                     </div>
                 </div>
-            </template>
-        </tsante-list>
-
-        <div>
-            <button id="addEntry" class="hidden" type="button" onclick="displayModal()">Add entry</button>
-        </div>
-
-        <zdk-modal width="400px" height="400px">
-            <div class="content">
-                <template is="auto-binding">
-                    <form name="modalEdit" onsubmit="return false;">
-                        <fieldset>
-                            <label>{{!item.organization ? "Name family:" : "Name"}}</label>
-                            <input type="text" value="{{item.name.family}}">
-                            <br/>
-                            <template if="{{!item.organization}}">
-                                <label>Name given:</label>
-                                <input type="text" value="{{item.name.given}}">
-                                <br/>
-                                <label>Gender:</label>
-                                <input type="radio" name="gender" value="M" checked="{{item.gender ==='M'}}" />M
-                                <input type="radio" name="gender" value="F" checked="{{item.gender ==='F'}}" />F
-                                <br/>
-                                <label>Job:</label>
-                                <select name="job">
-                                    <option value="todo1">TODO ({{item.job}})</option>
-                                </select>
-                                <br/>
-                                <label>Pilot: (?? TODO)</label>
-                                <input type="text" value="{{item.pilote}}">
-                                <br/>
-                            </template>
-                            <label>Organization:</label>
-                            <input type="checkbox" checked="{{item.organization}}" />
-                            <br/>
-                            <label>Role:</label>
-                            <select name="role">
-                                <option value="todo1">TODO ({{item.role}})</option>
-                            </select>
-                        <br/>
-                        <label>Communication:</label>
-                        <select name="communication">
-                            <option value="todo1">TODO ({{item.communication}})</option>
-                        </select>
-                        <br/>
-                        <label>Active:</label>
-                        <input type="checkbox" checked="{{item.active}}" />
-                        </fieldset>
-                        <br/>
-                        <fieldset>
-                            <legend>Telecom</legend>
-                            //TODO repeat + add/remove
-
-                        </fieldset>
-                        <br/>
-                        <fieldset>
-                            <legend>Address</legend>
-                            <label>Use:</label>
-                            <input type="text" value="{{item.address.use}}">
-                            <br/>
-                            <label>Text:</label>
-                            <input type="text" value="{{item.address.text}}">
-                            <br/>//TODO line repeat + add/remove
-                            <br/>
-                            <label>City:</label>
-                            <input type="text" value="{{item.address.city}}">
-                            <br/>
-                            <label>State:</label>
-                            <input type="text" value="{{item.address.state}}">
-                            <br/>
-                            <label>Zip:</label>
-                            <input type="text" value="{{item.address.zip}}">
-                            <br/>
-                            <label>Country:</label>
-                            <input type="text" value="{{item.address.country}}">
-                        </fieldset>
-                        <br/>
-                        <fieldset>
-                            <legend>Account</legend>
-                            <label>Login:</label>
-                            <input type="text" value="{{item.account.login}}">
-                            <br/>
-                            <label>Password:</label>
-                            <input type="text" value="{{item.account.password}}">
-                        </fieldset>
-
-                        <div>
-                            //TODO champ d'erreur ? //TODO verif formatage donnée
-                        </div>
-                        <br/>
-                        <button>save</button>
-                        <button>delete</button>
-                    </form>
+                <template if="{% raw %}{{item.address}}{% endraw %}">
+                    <div class="address hidden" style="margin-left:50px;border-top:1px solid black">
+                        <template repeat="{% raw %}{{lineItem in item.address.line}}{% endraw %}">
+                            <div class="row">{% raw %}{{lineItem}}{% endraw %}</div>
+                        </template>
+                        <div class="row">{% raw %}{{item.address.zip}} {{item.address.city}}{% endraw %}</div>
+                    </div>
                 </template>
             </div>
-        </zdk-modal>
-    </div>
-</body>
+        </template>
+    </tsante-list>
 
-</html>
+    {% if admin %}
+    <div class="row control">
+        <span class="spacer"></span>
+        <a href="/directory/create"><button id="addEntry" class="blue" type="button">Add entry</button></a>
+    </div>
+    {% endif %}
+{% endblock %}

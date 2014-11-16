@@ -12,71 +12,61 @@
 	<link rel="shortcut icon" sizes="196x196" href="img/physiodom_favico.png">
 	<link rel="icon" href="img/physiodom_favico.png">
 	<link rel="apple-touch-icon" href="img/physiodom_favico.png">
-
-	<link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
-	<link rel="stylesheet" type="text/css" href="assets/css/bootstrap-theme.min.css">
-
-	<script type="text/javascript" src="assets/js/jquery-2.1.0.min.js"></script>
-	<script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
-
+	
 	<link rel="stylesheet" href="styles/ui.css">
+	<link rel="stylesheet" type="text/css" href="styles/login.css">
+	
 	<script>
 		if(window.location !== window.parent.location ) {
 			console.info("load in iframe");
 			window.parent.location = window.location;
 		}
 	</script>
+	
+	<style>
+		body { background: aliceblue; }
+		
+	</style>
 </head>
 <body>
-<style>
-	div.r0 {
-		font-size: 20px;
-	}
-	div.r0 label {
-		font-weight: normal;
-		font-size: medium;
-	}
-	div.error {
-		border: 2px solid red;
-		padding: 10px;
-		width: 300px;
-		border-radius: 10px;
-		margin: auto;
-		margin-top: 25px;
-		display:none;
-		color: DarkRed;
-	}
-</style>
-<div style="text-align: center; margin-top:50px">
-	<img src="img/physiodom_logo.png" id="logo" style="height:150px;">
-</div>
-<div class="error">Bad login or password</div>
-<div class="container" style="width:300px; background:#d6d6d6; margin-top:25px">
-	<form id="loginForm" method="POST" >
-	<div class="r0">&nbsp;</div>
-	<div class="r0">
-		<input class="col-xs-12 col-sm-12" type="text" name="login" id="login" placeholder="login">
+	<div style="text-align: center; margin-top:50px">
+		<img src="img/physiodom_logo.png" id="logo" style="height:150px;">
 	</div>
-	<div class="r0">&nbsp;</div>
-	<div class="r0">
-		<input class="col-xs-12 col-sm-12" type="password" name="passwd" id="passwd" placeholder="password">
+	<div class="error">Bad login or password</div>
+	<div class="container" style="width:300px; background:#d6d6d6; margin-top:25px">
+		<div class="row">&nbsp;</div>
+		<div class="row">
+			<input class="col-xs-12 col-sm-12" type="text" name="login" id="login" placeholder="login" autofocus autocomplete="off"/>
+		</div>
+		<div class="row">&nbsp;</div>
+		<div class="row">
+			<input class="col-xs-12 col-sm-12" type="password" name="passwd" id="passwd" placeholder="password" autocomplete="off"/>
+		</div>
+		<div class="row">&nbsp;</div>
+		<div class="row">
+			<button class="blue" style="flex:1" onclick="login()" >Sign in</button>
+		</div>
+		<div class="row">&nbsp;</div>
 	</div>
-	<div class="r0">&nbsp;</div>
-	<div class="r0">
-		<button class="btn btn-primary col-xs-12 col-sm-12" >Sign in</button>
-	</div>
-	<div class="r0"><input type="checkbox" id="stayConnected"> <label for="stayConnected">stay connected</label></div>
-	<div class="r0">&nbsp;</div>
-	</form>
-</div>
-<script>
-window.addEventListener("DOMContentLoaded",init,false);
-function init() {
-	var hash = window.location.hash;
-	if(hash === "#403") {
-		document.querySelector(".error").style.display = "block";
-	}
-}
-</script>
+	<script>
+		document.querySelector("#passwd").addEventListener("keypress", function(evt) { 
+			if(evt.charCode === 13) { 
+				login();
+			}
+		}, false);
+		function login() {
+			var xhr = new XMLHttpRequest();
+			xhr.open("POST","/api/login",false);
+			xhr.send( JSON.stringify({ login:document.querySelector("#login").value, password:document.querySelector("#passwd").value}));
+			console.log( xhr.status );
+			switch( xhr.status ) {
+				case 403 :
+					document.querySelector(".error").style.display = "block";
+					break;
+				case 200:
+					window.location.reload();
+			}
+		}
+	</script>
 </body>
 </html>

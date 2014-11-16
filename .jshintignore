@@ -4,7 +4,8 @@ log/*
 dist/*
 docs/*
 out/*
-Documents/
+Documents/*
+locales/*
 static/scheduler/*
 static/bower_components/*
 static/assets/*

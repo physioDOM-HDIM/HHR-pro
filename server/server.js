@@ -199,6 +199,58 @@ server.use(function checkAcl(req, res, next) {
 	*/
 });
 
+function apiLogin(req, res, next) {
+	logger.trace("apiLogin");
+	var body,cookies;
+
+	if( req.headers.authorization ) {
+		logger.debug("authorization header");
+		var token = req.headers.authorization.split(/\s+/).pop() || '';            // and the encoded auth token
+		var auth = new Buffer(token, 'base64').toString();    // convert from base64
+		var parts = auth.split(/:/);                          // split on colon
+		body = JSON.stringify({login: parts[0], password: parts[1]});
+	} else {
+		body = req.body?req.body.toString():"";
+	}
+
+	cookies = new Cookies(req, res);
+
+	try {
+		var user = JSON.parse( body );
+		if( !user.login || !user.password ) {
+			cookies.set('sessionID');
+			cookies.set('role');
+			logger.warning("no login or password");
+			res.send(403);
+			return next(false);
+		} else {
+			physioDOM.getAccountByCredentials(user.login, user.password )
+				.then( function(account) {
+					return account.createSession();
+				})
+				.then( function(session) {
+					cookies.set('sessionID', session.sessionID, cookieOptions);
+					cookies.set('role', session.role, { path: '/', httpOnly : false} );
+					res.send(200, { code:200, message:"logged" } );
+					return next();
+				})
+				.catch( function(err) {
+					logger.warning(err.message || "bad login or password");
+					cookies.set('sessionID');
+					cookies.set('role');
+					res.send( 403, {code:403, message:"bad credentials"} );
+					next();
+				});
+		}
+	} catch(err) {
+		logger.warning("bad json format");
+		cookies.set('sessionID');
+		cookies.set('role');
+		res.send(403, {code:403, message:"bad credentials"});
+		return next(false);
+	}
+}
+
 server.opts(/\.*/,function (req, res, next) {
 	var allowHeaders = ['Accept', 'Accept-Version', 'Content-Type', 'Api-Version','X-Api-Version', 'X-Request-Id',' X-Response-Time','X-Custom-Header'];
 	if (res.methods.indexOf('OPTIONS') === -1) {
@@ -238,21 +290,24 @@ server.get( '/api/lists', ILists.getLists );
 server.get( '/api/lists/:listName', ILists.getList );
 server.get( '/api/lists/:listName/translate', ILists.getListTranslate );
 server.post('/api/lists/:listName', ILists.addItem );
-server.post('/api/lists/:listName/:itemRef', ILists.translateItem );
+server.put( '/api/lists/:listName/:itemRef', ILists.translateItem );
+server.post('/api/lists/:listName/:itemRef', ILists.activateItem );
+
 
 server.post('/api/login', apiLogin);
 server.get( '/api/logout', logout);
 server.get( '/logout', logout);
-server.post('/', login);
 
 server.get( '/beneficiary/create', IPage.beneficiaryCreate);
 server.get( '/beneficiary/select', IPage.beneficiarySelect);
-server.get( '/beneficiary/:entryID', IPage.beneficiaryOverview);
+server.get( '/directory', IPage.directoryList);
+server.get( '/directory/create', IPage.directoryUpdate);
+server.get( '/directory/:professionalID', IPage.directoryUpdate);
 
 server.get(/\/[^api|components\/]?$/, function(req, res, next) {
 	logger.trace("index");
 	if( req.cookies.sessionID ) {
-		return readFile(path.join(DOCUMENT_ROOT, '/ui.htm'), req, res, next);
+		return IPage.ui( req, res, next);
 	} else {
 		return readFile(path.join(DOCUMENT_ROOT, '/index.htm'), req, res, next);
 	}

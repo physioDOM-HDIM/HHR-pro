@@ -42,8 +42,8 @@ module.exports.humanName = {
 	"description" : "Human Name define name of a person",
 	"type":"object",
 	"properties": {
-		"family": { type:"string", required:true },
-		"given":  { type:"string" },
+		"family": { type:"string", minLength:1, required:true },
+		"given":  { type:"string", minLength:1 },
 		"prefix": { type:"string" },
 		"suffix": { type:"string" }
 	},

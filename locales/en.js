@@ -10,7 +10,7 @@
 	"Male": "Male",
 	"Female": "Female",
 	"First name": "First name",
-	"Height (meters)": "Height (meters)",
+	"Height (meters)": "Size (meters)",
 	"Social ID": "Social ID",
 	"Phone": "Phone",
 	"Mobile": "Mobile",
@@ -58,5 +58,9 @@
 	"Relationship": "Relationship",
 	"Add professionals": "Add professionals",
 	"Choose your referent and check professionals you want to add then click save": "Choose your referent and check professionals you want to add then click save",
-	"Choose your referent and check professionals you want to add": "Choose your referent and check professionals you want to add"
+	"Choose your referent and check professionals you want to add": "Choose your referent and check professionals you want to add",
+	"Professionnal directory": "Professionnal directory",
+	"Filter": "Filter",
+	"Sort": "Sort",
+	"Name": "Name"
 }
