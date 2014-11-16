@@ -75,11 +75,96 @@ var ILists = {
 				next(false);
 			});
 	},
-	
+
+	/**
+	 * Add translation to a item of the list
+	 *
+	 * the list is known by its name given in the url ( req.params.listName )
+	 * the item is known by its name given in the url ( req.params.itemRef )
+	 *
+	 * the translation are given as put parameter in JSON format
+	 * ex : { "en":"administrator", "fr":"administrateur" }
+	 *
+	 * With this request you could rename the translation of an item
+	 *
+	 * nota : an item that has no translation isn't displayed in the specified language
+	 *
+	 * nota : you can change the translation of a term of a non editable list
+	 *
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
 	translateItem : function( req, res, next ) {
-		logger.trace("translateItem");
-		res.send(501, { code:501, message:"not implemented"});
-		next(false);
+		logger.trace("translateItem ",req.params.itemRef );
+		physioDOM.Lists.getList( req.params.listName )
+			.then( function(list) {
+				try {
+					var translation = JSON.parse( req.body );
+					list.translateItem( req.params.itemRef, translation )
+						.then( function( list ) {
+							res.send(list);
+							next();
+						})
+						.catch( function(err) {
+							res.send(err.code || 400, err);
+							next(false);
+						});
+				} catch(err) {
+					if( err.code ) {
+						throw err;
+					} else {
+						throw {code: 405, message: "not JSON format"};
+					}
+				}
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	/**
+	 * Request activate/deactivate an item
+	 *
+	 * the list is known by its name given in the url ( req.params.listName )
+	 * the item is known by its name given in the url ( req.params.itemRef )
+	 *
+	 * the activation status is given as post parameter in JSON format
+	 * ex : { "active":true }
+	 *
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	activateItem: function( req, res, next) {
+		logger.trace("activateItem ",req.params.itemRef );
+		physioDOM.Lists.getList( req.params.listName )
+			.then( function(list) {
+				console.log("body", req.body);
+				try {
+					var activate = JSON.parse( req.body );
+					list.activateItem( req.params.itemRef, activate )
+						.then( function( list ) {
+							res.send(list);
+							next();
+						})
+						.catch( function(err) {
+							res.send(err.code || 400, err);
+							next(false);
+						});
+				} catch(err) {
+					if( err.code ) {
+						throw err;
+					} else {
+						throw {code: 405, message: "not JSON format"};
+					}
+				}
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
 	}
 };
 
