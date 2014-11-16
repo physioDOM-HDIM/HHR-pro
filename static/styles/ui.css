@@ -220,6 +220,7 @@ div.row.hidden {
 div.row.control { 
 	margin-top:10px;
 }
+
 div.col { 
 	-webkit-flex:1; 
 	-ms-flex:1; 
