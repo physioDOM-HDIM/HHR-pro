@@ -7,8 +7,8 @@
 	"Birth date": "Birth date",
 	"Add": "Add",
 	"Gender": "Gender",
-	"Male": "Male",
-	"Female": "Female",
+	"Male": "Man",
+	"Female": "Woman",
 	"First name": "First name",
 	"Height (meters)": "Size (meters)",
 	"Social ID": "Social ID",
@@ -62,5 +62,7 @@
 	"Professionnal directory": "Professionnal directory",
 	"Filter": "Filter",
 	"Sort": "Sort",
-	"Name": "Name"
+	"Name": "Name",
+	"create/update a beneficiary": "create/update a beneficiary",
+	"phone": "phone"
 }
