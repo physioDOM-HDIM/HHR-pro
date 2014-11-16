@@ -88,9 +88,20 @@ function IPage() {
 				return physioDOM.Lists.getList("communication", lang);
 			})
 			.then( function(list) {
-				if( list) { data.communication = list; }
+				if (list) {
+					data.communication = list;
+				}
+				return physioDOM.Directory();
+			})
+			.then(function(directory) {
+				return directory.getAdminEntryByID( req.params.professionalID );
+			})
+			.then( function(professional) {
 				logger.debug("data", data);
-
+				logger.debug("prof ", professional );
+				if( professional) {
+					data.professional = professional;
+				}
 				html = swig.renderFile('./static/tpl/directoryUpdate.htm', data, function (err, output) {
 					if (err) {
 						console.log("error", err);
