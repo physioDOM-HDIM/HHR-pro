@@ -15,6 +15,7 @@ zdk-modal div.modalContainer {
     overflow: auto;
     border-radius: 15px;
 }
+/*
 zdk-modal .modalTitleContainer {
     border-bottom: 2px solid silver;
     padding-bottom: 10px;
@@ -31,8 +32,9 @@ zdk-modal .modalButtonContainer{
 zdk-modal .modalButtonContainer button{
 	margin: 0 5px;
 }
+*/
 zdk-modal div#bg {
-    display: block;
+    display: fixed;
     /* FF fix */
 }
 #tsanteListProfessional .item.row {

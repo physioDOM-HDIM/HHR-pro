@@ -130,9 +130,35 @@ function updateProfessionalSelection(node, idxItem) {
 
 }
 
-function init() {
-    console.log("init");
-    document.querySelector("#tsanteListProfessional").addEventListener("tsante-response", onHaveProfessionalsData, false);
+function checkForm1() {
+    var obj = form2js(document.forms["beneficiary"]);
+    console.log(obj);
+    if( isNaN(parseFloat(obj.size)) ) {
+        alert("size must be a number");
+    } else {
+        obj.size = parseFloat(obj.size);
+    }
+    obj.validate = obj.validate==="true"?true:false;
+    obj.address[0].line = obj.address[0].line.split("\n");
+    if( !obj.telecom[0].value ) { delete obj.telecom; }
+    var xhr = new XMLHttpRequest();
+    if( obj._id) {
+        xhr.open("PUT","/api/beneficiaries/"+obj._id, false);
+        xhr.send(JSON.stringify(obj));
+        if(xhr.status === 200 ) {
+            alert("beneficiary saved");
+        } else {
+            alert("error when saving beneficiary");
+        }
+    } else {
+        xhr.open("POST","/api/beneficiaries",false);
+        xhr.send(JSON.stringify(obj));
+        if(xhr.status === 200 ) {
+            alert("beneficiary saved");
+            var result = JSON.parse(xhr.responseText);
+            document.forms["beneficiary"]._id = result._id;
+        } else {
+            alert("error when saving beneficiary");
+        }
+    }
 }
-
-window.addEventListener("DOMContentLoaded", init, false);
