@@ -13,22 +13,47 @@
 {% endblock %}
 
 {% block content %}
+<style>
+    .telecomContainer {
+        margin-top: 5px;
+        border-top: 1px solid black;
+        padding-top: 5px;
+    }
+    .telecomContainer:first-child {
+        margin-top: 5px;
+        border-top: none;
+        padding-top: 5px;
+    }
+</style>
 <script type="template" id="tplTelecomContainer">
-        <label>Use:</label>
-        <select name="telecom[{%raw%}{{indx}}{%endraw%}].use">
-            {% for item in use.items %}
-            <option value="{{item.value}}" {{telecom_use_selected}}>{{item.label}}</option>
-            {% endfor %}
-        </select>
-        <label>System:</label>
-        <select name="telecom[{%raw%}{{indx}}{%endraw%}].system" onchange="checkEmailTypeValidation(this)">
-            {% for item in system.items %}
-            <option value="{{item.value}}" {{telecom_system_selected}}>{{item.label}}</option>
-            {% endfor %}
-        </select>
-        <label>Value:</label>
-        <input name="telecom[{%raw%}{{indx}}{%endraw%}].value" type="{%raw%}{{telecom_email_type_default}}{%endraw%}" />
-        <button type="button" class="red" onclick="deleteTelecom(this)">delete</button>
+    <div class="row">
+        <div class="col">
+            <label>Use:</label>
+            <select name="telecom[{%raw%}{{indx}}{%endraw%}].use">
+                {% for item in use.items %}
+                <option value="{{item.value}}" {{telecom_use_selected}}>{{item.label}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col">
+            <label>System:</label>
+            <select name="telecom[{%raw%}{{indx}}{%endraw%}].system" onchange="checkEmailTypeValidation(this)">
+                {% for item in system.items %}
+                <option value="{{item.value}}" {{telecom_system_selected}}>{{item.label}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <label>Value:</label>
+            <input name="telecom[{%raw%}{{indx}}{%endraw%}].value" type="{%raw%}{{telecom_email_type_default}}{%endraw%}" />
+        </div>
+        <div class="col">
+            <span class="spacer"></span>
+            <button type="button" class="red" onclick="deleteTelecom(this)">delete</button>
+        </div>
+    </div>
 </script>
     <core-ajax url="/api/directory/" handleAs="json"></core-ajax>
     <div class="mainContainer">
@@ -90,47 +115,73 @@
             <fieldset>
                 <legend>Telecom</legend>
                 {% if !professional.telecom %}
-                <div class="telecomContainer row">
-                    <label>Use:</label>
-                    <select name="telecom[0].use" required>
-                        {% for item in use.items %}
-                        <option value="{{item.value}}" {% if (!entry.use && item.value=='work')||entry.use==item.value %}selected{% endif %}>{{item.label}}</option>
-                        {% endfor %}
-                    </select>
-                    <label>System:</label>
-                    <select name="telecom[0].system" onchange="checkEmailTypeValidation(this)" required>
-                        {% for item in system.items %}
-                        <option value="{{item.value}}" {% if item.value=='email' %}selected{% endif %}>{{item.label}}</option>
-                        {% endfor %}
-                    </select>
-                    <label>Value:</label>
-                    <input name="telecom[0].value" value="" type="email" />
-                    <button type="button" class="red" onclick="deleteTelecom(this)">delete</button>
+                <div class="telecomContainer">
+                    <div class="row">
+                        <div class="col">
+                            <label>Use:</label>
+                            <select name="telecom[0].use" required>
+                                {% for item in use.items %}
+                                <option value="{{item.value}}" {% if (!entry.use && item.value=='work')||entry.use==item.value %}selected{% endif %}>{{item.label}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label>System:</label>
+                            <select name="telecom[0].system" onchange="checkEmailTypeValidation(this)" required>
+                                {% for item in system.items %}
+                                <option value="{{item.value}}" {% if item.value=='email' %}selected{% endif %}>{{item.label}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label>Value:</label>
+                            <input name="telecom[0].value" value="" type="email" />
+                        </div>
+                        <div class="col">
+                            <span class="spacer"></span>
+                            <button type="button" class="red" onclick="deleteTelecom(this)">delete</button>
+                        </div>>
+                    </div>
                 </div>
                 {% else %}
                 {% for entry in professional.telecom %}
-                <div class="telecomContainer row">
-                    <label>Use:</label>
-                    <select name="telecom[{{loop.index}}].use" required>
-                        {% for item in use.items %}
-                        <option value="{{item.value}}" {% if (!entry.use && item.value=='work')||entry.use==item.value %}selected{% endif %}>{{item.label}}</option>
-                        {% endfor %}
-                    </select>
-                    <label>System:</label>
-                    <select name="telecom[{{loop.index}}].system" onchange="checkEmailTypeValidation(this)" required>
-                        {% for item in system.items %}
-                        <option value="{{item.value}}" {% if entry.system==item.value %}selected{% endif %}>{{item.label}}</option>
-                        {% endfor %}
-                    </select>
-                    <label>Value:</label>
-                    <input name="telecom[{{loop.index}}].value" value="{{entry.value}}" type="{% if entry.system=='email' %}email{% else %}text{% endif %}" />
-                    <button type="button" class="red" onclick="deleteTelecom(this)">delete</button>
+                <div class="telecomContainer">
+                    <div class="row">
+                    <div class="col">
+                        <label>Use:</label>
+                        <select name="telecom[{{loop.index}}].use" required>
+                            {% for item in use.items %}
+                            <option value="{{item.value}}" {% if (!entry.use && item.value=='work')||entry.use==item.value %}selected{% endif %}>{{item.label}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label>System:</label>
+                        <select name="telecom[{{loop.index}}].system" onchange="checkEmailTypeValidation(this)" required>
+                            {% for item in system.items %}
+                            <option value="{{item.value}}" {% if entry.system==item.value %}selected{% endif %}>{{item.label}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label>Value:</label>
+                            <input name="telecom[{{loop.index}}].value" value="{{entry.value}}" type="{% if entry.system=='email' %}email{% else %}text{% endif %}" />
+                        </div>
+                        <div class="col">
+                            <span class="spacer"></span>
+                            <button type="button" class="red" onclick="deleteTelecom(this)">delete</button>
+                        </div>
+                    </div>
                 </div>
                 {% endfor %}
                 {% endif %}
-                <div class="row">
+                <div id="addTelecomBtn" class="row control">
                     <span class="spacer"></span>
-                    <button id="addTelecomBtn" class="blue" type="button" onclick="addTelecom()">Add</button>
+                    <button class="blue" type="button" onclick="addTelecom()">Add</button>
                 </div>
             </fieldset>
             <fieldset>

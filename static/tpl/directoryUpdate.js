@@ -248,7 +248,10 @@ function checkForm() {
 
 function deleteTelecom(node) {
     console.log("deleteTelecom", arguments);
-    node.parentNode.parentNode.removeChild(node.parentNode);
+    while( !node.classList.contains("telecomContainer")) {
+        node = node.parentNode;
+    }
+    node.parentNode.removeChild(node);
 }
 
 function addTelecom() {
@@ -258,7 +261,6 @@ function addTelecom() {
     var html = Mustache.render(elt, modelData);
     var div = document.createElement("div");
     div.classList.add("telecomContainer");
-    div.classList.add("row");
     div.innerHTML = html;
     var button = document.querySelector("#addTelecomBtn");
     button.parentNode.insertBefore( div , button );
