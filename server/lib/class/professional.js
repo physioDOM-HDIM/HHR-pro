@@ -36,10 +36,24 @@ function Professional() {
 	};
 
 	this.getAdminById = function( professionalID ) {
-		this.getById()
-			.then( function( professional ) {
-				return professional.getAccount();
-			});
+		logger.trace("getAdminById", professionalID);
+		var that = this;
+		return new promise( function(resolve, reject) {
+			var result = { };
+			that.getById(professionalID)
+				.then(function (professional) {
+					result = professional;
+					return professional.getAccount();
+				})
+				.then( function(account) {
+					result.account = account;
+					resolve(result);
+				})
+				.catch( function( err ) {
+					logger.warning("error",err);
+					resolve(result);
+				});
+		});
 	};
 	
 	this.save = function() {

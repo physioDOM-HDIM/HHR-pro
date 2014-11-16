@@ -105,6 +105,18 @@ function Directory( ) {
 		var professionalID = new ObjectID(entryID);
 		return (new Professional()).getById(professionalID);
 	};
+
+	/**
+	 * get an entry given by its id
+	 *
+	 * @param entryID
+	 * @returns {*}
+	 */
+	this.getAdminEntryByID = function( entryID ) {
+		logger.trace("getEntryByID", entryID);
+		var professionalID = new ObjectID(entryID);
+		return (new Professional()).getAdminById(professionalID);
+	};
 	
 	this.updateEntry = function( updatedItem ) {
 		// the updatedItem must check the schema
