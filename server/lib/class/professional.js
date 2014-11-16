@@ -36,10 +36,24 @@ function Professional() {
 	};
 
 	this.getAdminById = function( professionalID ) {
-		this.getById()
-			.then( function( professional ) {
-				return professional.getAccount();
-			});
+		logger.trace("getAdminById", professionalID);
+		var that = this;
+		return new promise( function(resolve, reject) {
+			var result = { };
+			that.getById(professionalID)
+				.then(function (professional) {
+					result = professional;
+					return professional.getAccount();
+				})
+				.then( function(account) {
+					result.account = account;
+					resolve(result);
+				})
+				.catch( function( err ) {
+					logger.warning("error",err);
+					resolve(result);
+				});
+		});
 	};
 	
 	this.save = function() {
@@ -90,7 +104,12 @@ function Professional() {
 			logger.trace("checkSchema");
 			var check = directorySchema.validator.validate( entry, { "$ref":"/Professional"} );
 			if( check.errors.length ) {
-				return reject( {error:"bad format"} );
+				if( entry.organization ) {
+					check = directorySchema.validator.validate( entry, { "$ref":"/Organization"} );
+				} else {
+					check = directorySchema.validator.validate( entry, { "$ref":"/Practitioner"} );
+				}
+				return reject( {error:"bad format", detail: check.errors} );
 			} else {
 				return resolve(entry);
 			}
@@ -143,12 +162,27 @@ function Professional() {
 				return reject({ error : "update bad id"});
 			}
 			updatedItem._id = new ObjectID(updatedItem._id);
+			if ( updatedItem.account && updatedItem.account !== that.account.toString()) {
+				return reject({ error : "update bad account"});
+			}
+			updatedItem.account = new ObjectID(updatedItem.account);
 			checkSchema( updatedItem )
 				.then( checkUniq )
 				.then( function(entry) {
-					for( var key in entry ) {
-						if(entry.hasOwnProperty(key) && key !== "_id") {
-							that[key] = entry[key];
+					var key;
+					for( key in entry ) {
+						if(entry.hasOwnProperty(key) && ["_id","account"].indexOf(key) === -1) {
+							if( key==="active" && entry.active === true && that.active !== entry.active && !that.account ) {
+								that.active = false;
+							} else {
+								that[key] = entry[key];
+							}
+						}
+					}
+
+					for( key in that ) {
+						if(that.hasOwnProperty(key) && typeof that[key] !== "function" && !entry.hasOwnProperty(key)) {
+							delete that[key];
 						}
 					}
 					return that.save();
@@ -214,7 +248,7 @@ function Professional() {
 					var newAccount = {
 						login   : accountData.login,
 						password: md5(accountData.password),
-						active  : that.active || false,
+						active  : true,
 						role    : that.role,
 						person  : {
 							id        : that._id,
@@ -230,6 +264,7 @@ function Professional() {
 							newAccount._id = result._id;
 						}
 						that.account = newAccount._id;
+						that.active = true;
 						resolve(that.save());
 					});
 				})

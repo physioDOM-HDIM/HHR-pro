@@ -7,30 +7,8 @@
 {% endblock %}
 
 {% block content %}
-<style>
-	tsante-list { margin-top:30px; }
-	div.item {
-		display:-webkit-flex;
-		display: -ms-flexbox;
-		display:flex;
-		align-items: center;
-		padding:5px;
-	}
-	div.item:nth-child(even) {
-		background:white;
-	}
-	div.item:nth-child(odd) {
-		background:#DFDFDF;
-	}
-	div.item > span {
-		padding: 1px 5px;
-	}
-	.collabel { -webkit-flex:1; -ms-flex:1; flex:1 }
-	.colcontent { -webkit-flex:2; -ms-flex:2; flex:2 }
-	.spacer { -webkit-flex:1; -ms-flex:1; flex:1; display:inline-block; }
-</style>
-
-	<zdk-panel heading="Filter / Sort" height="250" collapsable="true" collapsed="true">
+<div class="main">
+	<zdk-panel heading="{{"Filter"|i18n}} / {{"Sort"|i18n}}" height="250" collapsable="true" collapsed="true">
 		<div>
 			<div class="row">
 				<div class="col">
@@ -90,13 +68,11 @@
 		</template>
 	</tsante-list>
 	
-  <script>
-	  window.addEventListener("polymer-ready", function() { console.log("test")}, false);
-  </script>
-    {% if admin %}
+	{% if admin %}
 	<div class="row control" style="height:60px; align-content: center">
 		<span class="spacer"></span>
 		<a href="/beneficiary/create"><button class="blue big">{{ "Add"|i18n }}</button></a>
 	</div>
-    {% endif %}
+	{% endif %}
+</div>
 {% endblock %}

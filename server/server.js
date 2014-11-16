@@ -13,7 +13,7 @@ var restify = require("restify"),
 
 var IDirectory = require('./lib/http/IDirectory'),
 	IBeneficiary = require('./lib/http/IBeneficiary'),
-	ILists = require("./lib/http/Ilists"),
+	ILists = require("./lib/http/ILists"),
 	IPage = require("./lib/http/IPage");
 
 var pkg     = require('../package.json');
@@ -290,7 +290,7 @@ server.get( '/api/lists', ILists.getLists );
 server.get( '/api/lists/:listName', ILists.getList );
 server.get( '/api/lists/:listName/translate', ILists.getListTranslate );
 server.post('/api/lists/:listName', ILists.addItem );
-server.put('/api/lists/:listName/:itemRef', ILists.translateItem );
+server.put( '/api/lists/:listName/:itemRef', ILists.translateItem );
 server.post('/api/lists/:listName/:itemRef', ILists.activateItem );
 
 
@@ -300,6 +300,9 @@ server.get( '/logout', logout);
 
 server.get( '/beneficiary/create', IPage.beneficiaryCreate);
 server.get( '/beneficiary/select', IPage.beneficiarySelect);
+server.get( '/directory', IPage.directoryList);
+server.get( '/directory/create', IPage.directoryUpdate);
+server.get( '/directory/:professionalID', IPage.directoryUpdate);
 
 server.get(/\/[^api\/]?$/, function(req, res, next) {
 	logger.trace("index");

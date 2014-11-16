@@ -158,6 +158,10 @@ describe('Directory', function() {
 			list.nb.should.be.equal(27);
 			list.items.should.have.length(10);
 			
+			// check that entries are arranged by family name
+			for( var i=1; i< list.items.length; i++ ) {
+				list.items[i].name.family.should.be.above(list.items[i-1].name.family);
+			}
 			return done();
 		});
 	});
@@ -242,6 +246,115 @@ describe('Directory', function() {
 					return done(); 
 				}
 			});
+		});
+	});
+
+	it('a new entry directory (professional) must have a family name', function(done) {
+		var newEntry = {
+			name: {
+				family:"",
+				given:"Albert"
+			},
+			gender:"M",
+			telecom: [
+				{
+					system:"email",
+					value:"albert.einstein@physiodom.loc"
+				},{
+					system:"phone",
+					value:"025558888"
+				}
+			],
+			role:"physician",
+			active:false
+		};
+		request({url           : domain + '/api/directory',
+			method             : "POST",
+			jar                : sessionCookie,
+			form	           : JSON.stringify(newEntry)
+		}, function (err, resp, body) {
+			var error;
+			should.not.exist(err);
+			resp.statusCode.should.equal(400);
+			error = JSON.parse(body);
+			error.error.should.be.equal("bad format");
+			return done();
+		});
+	});
+
+	it('a new entry directory (professional) given name if given must have a length', function(done) {
+		var newEntry = {
+			name: {
+				family:"test",
+				given:""
+			},
+			gender:"M",
+			telecom: [
+				{
+					system:"email",
+					value:"albert.einstein@physiodom.loc"
+				},{
+					system:"phone",
+					value:"025558888"
+				}
+			],
+			role:"physician",
+			active:false
+		};
+		request({url           : domain + '/api/directory',
+			method             : "POST",
+			jar                : sessionCookie,
+			form	           : JSON.stringify(newEntry)
+		}, function (err, resp, body) {
+			var error;
+			should.not.exist(err);
+			resp.statusCode.should.equal(400);
+			error = JSON.parse(body);
+			error.error.should.be.equal("bad format");
+			return done();
+		});
+	});
+
+	it('a new entry directory (professional) could not have a given name', function(done) {
+		var newEntry = {
+			name: {
+				family:"test"
+			},
+			gender:"M",
+			telecom: [
+				{
+					system:"email",
+					value:"test@physiodom.loc"
+				},{
+					system:"phone",
+					value:"025558888"
+				}
+			],
+			role:"physician",
+			active:false
+		};
+		request({url           : domain + '/api/directory',
+			method             : "POST",
+			jar                : sessionCookie,
+			form	           : JSON.stringify(newEntry)
+		}, function (err, resp, body) {
+			var item;
+			should.not.exist(err);
+			resp.statusCode.should.equal(200);
+			try {
+				item = JSON.parse(body);
+				item.should.have.property("_id");
+				for( var key in newEntry) {
+					if(newEntry.hasOwnProperty(key)) {
+						item.should.have.property(key);
+						item[key].should.be.eql(newEntry[key]);
+					}
+				}
+				entry1 = item;
+				return done();
+			} catch(err) {
+				throw {err: "bad json format"};
+			}
 		});
 	});
 	
@@ -408,7 +521,6 @@ describe('Directory', function() {
 			body               : JSON.stringify(entry1)
 		}, function (err, resp, body) {
 			var item;
-			// console.log(body);
 			should.not.exist(err);
 			resp.statusCode.should.equal(200);
 			item = JSON.parse(body);
@@ -418,7 +530,6 @@ describe('Directory', function() {
 	
 	it('update an entry (organization)', function(done) {
 		entry2.communication = "en";
-		entry2.active = true;
 		
 		request({
 			url      : domain + '/api/directory/'+entry2._id,
@@ -431,6 +542,23 @@ describe('Directory', function() {
 			should.not.exist(err);
 			resp.statusCode.should.equal(200);
 			item = JSON.parse(body);
+			return done();
+		});
+	});
+	
+	it('try to activate a professional without account', function(done) {
+		entry1.active = true;
+		request({url           : domain + '/api/directory/'+entry1._id,
+			method             : "PUT",
+			jar                : sessionCookie,
+			headers            : { "content-type":"text/plain"},
+			body               : JSON.stringify(entry1)
+		}, function (err, resp, body) {
+			var item;
+			should.not.exist(err);
+			resp.statusCode.should.equal(200);
+			item = JSON.parse(body);
+			item.active.should.be.equal(false);
 			return done();
 		});
 	});
@@ -449,6 +577,8 @@ describe('Directory', function() {
 			resp.statusCode.should.equal(200);
 			item = JSON.parse(body);
 			item.should.have.property("account");
+			item.active.should.equal(true);
+			entry1 = item; 
 			return done();
 		});
 	});
@@ -479,7 +609,7 @@ describe('Directory', function() {
 		});
 	});
 
-	it('cant\'t login if active is false', function(done) {
+	it('cant login with the activated account', function(done) {
 		var tmpCookie = request.jar();
 		request({url           : domain + '/api/login',
 			method             : "POST",
@@ -487,15 +617,32 @@ describe('Directory', function() {
 			jar                : tmpCookie
 		}, function (err, resp, body) {
 			should.not.exist(err);
-			resp.statusCode.should.equal(403);
+			resp.statusCode.should.equal(200);
 			var cookies = querystring.parse(tmpCookie.getCookieString(domain), ";");
-			cookies.should.not.have.property("sessionID");
+			cookies.should.have.property("sessionID");
 			return done();
 		});
 	});
 
-	it('activate a professional should activate the account', function(done) {
-		entry1.active = true;
+	it('modify a professional with an account', function(done) {
+		entry1.communication = "fr";
+
+		request({url           : domain + '/api/directory/'+entry1._id,
+			method             : "PUT",
+			jar                : sessionCookie,
+			headers            : { "content-type":"text/plain"},
+			body               : JSON.stringify(entry1)
+		}, function (err, resp, body) {
+			var item;
+			should.not.exist(err);
+			resp.statusCode.should.equal(200);
+			item = JSON.parse(body);
+			return done();
+		});
+	});
+
+	it('deactivate a professional should also deactivate the account', function(done) {
+		entry1.active = false;
 
 		function updateEntry(entry) {
 			return new promise( function( resolve, reject) {
@@ -510,7 +657,7 @@ describe('Directory', function() {
 					resp.statusCode.should.equal(200);
 					item = JSON.parse(body);
 					item.should.have.property("active");
-					item.active.should.equal(true);
+					item.active.should.equal(false);
 					resolve();
 				});
 			});
@@ -528,13 +675,13 @@ describe('Directory', function() {
 					resp.statusCode.should.equal(200);
 					item = JSON.parse(body);
 					item.should.have.property("active");
-					item.active.should.equal(true);
+					item.active.should.equal(false);
 					return done();
 				});
 			});
 	});
 
-	it('cant login with the activated coount', function(done) {
+	it('cant\'t login if active is false', function(done) {
 		var tmpCookie = request.jar();
 		request({url           : domain + '/api/login',
 			method             : "POST",
@@ -542,9 +689,9 @@ describe('Directory', function() {
 			jar                : tmpCookie
 		}, function (err, resp, body) {
 			should.not.exist(err);
-			resp.statusCode.should.equal(200);
+			resp.statusCode.should.equal(403);
 			var cookies = querystring.parse(tmpCookie.getCookieString(domain), ";");
-			cookies.should.have.property("sessionID");
+			cookies.should.not.have.property("sessionID");
 			return done();
 		});
 	});

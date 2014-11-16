@@ -76,14 +76,18 @@ function List() {
 			}
 			var options = { defaultValue: that.defaultValue, items:[] };
 			var count = that.items.length;
-			that.items.forEach( function(listItem) {
-				if( listItem.active === true && listItem.label[lang] ) {
-					options.items.push({value: listItem.ref, label: listItem.label[lang]});
-				}
-				if( --count === 0 ) {
-					resolve( options );
-				}
-			});
+			if( count === 0) {
+				resolve( options );
+			} else {
+				that.items.forEach(function (listItem) {
+					if (( !listItem.hasOwnProperty("active") || listItem.active === true) && listItem.label.hasOwnProperty(lang)) {
+						options.items.push({value: listItem.ref, label: listItem.label[lang]});
+					}
+					if (--count === 0) {
+						resolve(options);
+					}
+				});
+			}
 		});
 	};
 

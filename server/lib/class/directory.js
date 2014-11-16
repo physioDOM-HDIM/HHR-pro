@@ -52,12 +52,16 @@ function Directory( ) {
 	/**
 	 * Get the list of entries per page
 	 * 
-	 * @todo administrator could see account informations
+	 * Entries are arranged alphabetically by family name ( by default )
 	 * 
-	 * @param pg
-	 * @param offset
-	 * @param sort
-	 * @param filter
+	 * filter requests are case-insensitive, filters are JSON like :
+	 *  { fieldName : value }
+	 * 
+	 * @param pg {integer} page number
+	 * @param offset {integer} number of elements by page
+	 * @param sort {string} name of the field to sort
+	 * @param sortDir {-1|1} sort direction -1:descending 1:ascending
+	 * @param filter {json string} 
 	 * @returns {*}
 	 */
 	this.getEntries = function( pg, offset, sort, sortDir, filter ) {
@@ -76,15 +80,17 @@ function Directory( ) {
 					}
 				}
 			} catch(err) {
-				search = {};
+				search = { };
 			}
 		}
 		var cursor = physioDOM.db.collection("professionals").find(search);
+		var cursorSort = {};
 		if(sort) {
-			var cursorSort = {};
 			cursorSort[sort] = [-1,1].indexOf(sortDir)!==-1?sortDir:1;
-			cursor = cursor.sort( cursorSort );
+		} else {
+			cursorSort = { "name.family":1};
 		}
+		cursor = cursor.sort( cursorSort );
 		return dbPromise.getList(cursor, pg, offset);
 	};
 
@@ -99,6 +105,18 @@ function Directory( ) {
 		var professionalID = new ObjectID(entryID);
 		return (new Professional()).getById(professionalID);
 	};
+
+	/**
+	 * get an entry given by its id
+	 *
+	 * @param entryID
+	 * @returns {*}
+	 */
+	this.getAdminEntryByID = function( entryID ) {
+		logger.trace("getEntryByID", entryID);
+		var professionalID = new ObjectID(entryID);
+		return (new Professional()).getAdminById(professionalID);
+	};
 	
 	this.updateEntry = function( updatedItem ) {
 		// the updatedItem must check the schema
@@ -111,7 +129,6 @@ function Directory( ) {
 					.then(resolve)
 					.catch(function (err) {
 						logger.alert("error ", err);
-						console.log(err);
 						reject(err);
 					});
 			} else {
