@@ -299,6 +299,7 @@ server.get( '/api/logout', logout);
 server.get( '/logout', logout);
 
 server.get( '/beneficiary/create', IPage.beneficiaryCreate);
+server.get( '/beneficiary/edit/:beneficiaryID', IPage.beneficiaryCreate);
 server.get( '/beneficiary/select', IPage.beneficiarySelect);
 server.get( '/beneficiary/:entryID', IPage.beneficiaryOverview);
 server.get( '/directory', IPage.directoryList);
