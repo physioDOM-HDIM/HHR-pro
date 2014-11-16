@@ -46,8 +46,17 @@ function IPage() {
 						lastname : session.person.item.name.family
 					} 
 				};
-				html = swig.renderFile('./static/tpl/ui.htm', data);
-				sendPage(html,res, next);
+				html = swig.renderFile('./static/tpl/ui.htm', data, function (err, output) {
+					if (err) {
+						   console.log("error", err);
+						   console.log("output", output);
+						   res.write(err);
+						   res.end();
+						   next();
+					   } else {
+						   sendPage(output, res, next);
+					   }
+				});
 			});
 	};
 	
