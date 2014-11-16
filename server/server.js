@@ -301,6 +301,7 @@ server.get( '/logout', logout);
 server.get( '/beneficiary/create', IPage.beneficiaryCreate);
 server.get( '/beneficiary/select', IPage.beneficiarySelect);
 server.get( '/directory', IPage.directoryList);
+server.get( '/directory/create', IPage.directoryUpdate);
 server.get( '/directory/:professionalID', IPage.directoryUpdate);
 
 server.get(/\/[^api\/]?$/, function(req, res, next) {
