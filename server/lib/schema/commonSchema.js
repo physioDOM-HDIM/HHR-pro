@@ -3,7 +3,7 @@
 
 // @todo:  get job list from database
 var job = [
-	"system administrator",
+	"administrator",
 	"coordinator",
 	"physician",
 	"pharmacist",
