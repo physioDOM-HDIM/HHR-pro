@@ -1,3 +1,8 @@
+/**
+ * @file IPage.js
+ * @module Http
+ */
+
 /* jslint node:true */
 /* global physioDOM */
 "use strict";
@@ -18,6 +23,13 @@ var i18n = new (require('i18n-2'))({
 	locales: ["en","es","nl","fr"]
 });
 
+/**
+ * IPage
+ * 
+ * IPage is the http interface that manages the urls of the pages seen in the browser
+ * 
+ * @constructor
+ */
 function IPage() {
 	var lang;
 	
@@ -31,7 +43,14 @@ function IPage() {
 			return i18n.__(input);
 		});
 	}
-	
+
+	/**
+	 * Main Layout
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
 	this.ui = function( req, res, next ) {
 		logger.trace("ui");
 		var html;
@@ -75,6 +94,13 @@ function IPage() {
 			});
 	}
 	
+	/**
+	 * Directory list
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
 	this.directoryList = function(req, res, next) {
 		logger.trace("Directory List");
 		var html;
@@ -113,6 +139,13 @@ function IPage() {
 			});
 	};
 
+	/**
+	 * Directory Create and update
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
 	this.directoryUpdate = function(req, res, next) {
 		logger.trace("Directory update");
 		var html;
@@ -140,7 +173,7 @@ function IPage() {
 				return directory.getAdminEntryByID( req.params.professionalID );
 			})
 			.then( function(professional) {
-				logger.debug("data", data);
+				logger.debug("data", JSON.stringify(data, null, 4));
 				logger.debug("prof ", professional );
 				if( professional) {
 					data.professional = professional;
@@ -164,7 +197,14 @@ function IPage() {
 				next();
 			});
 	};
-	
+
+	/**
+	 * Beneficiary create and update
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
 	this.beneficiaryCreate = function(req, res, next) {
 		logger.trace("beneficiaryCreate");
 		var html;
@@ -228,6 +268,13 @@ function IPage() {
 			});
 	};
 
+	/**
+	 * Beneficiary select
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
 	this.beneficiarySelect = function(req, res, next) {
 		logger.trace("beneficiarySelect");
 		var html;
@@ -262,6 +309,13 @@ function IPage() {
 			});
 	};
 
+	/**
+	 * Beneficiary overview
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
 	this.beneficiaryOverview = function(req, res, next) {
 		logger.trace("beneficiaryOverview");
 		var html;
@@ -292,7 +346,16 @@ function IPage() {
 		sendPage(html, req, res, next);
 		*/
 	};
-	
+
+	/**
+	 * Send the page to the browser
+	 * 
+	 * The html code of the page is in `html`
+	 * 
+	 * @param html
+	 * @param res
+	 * @param next
+	 */
 	function sendPage( html, res, next ) {
 		logger.trace("sendPage");
 		res.writeHead(200, {

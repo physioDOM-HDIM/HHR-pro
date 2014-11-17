@@ -1,3 +1,8 @@
+/**
+ * @file ILists.js
+ * @module Http
+ */
+
 /* jslint node:true */
 /* global physioDOM */
 "use strict";
@@ -11,6 +16,13 @@
 var Logger = require("logger");
 var logger = new Logger("IList");
 
+/**
+ * IList
+ *
+ * treat http request about lists
+ * 
+ * @type {{getLists: Function, getList: Function, getListTranslate: Function, addItem: Function, translateItem: Function, activateItem: Function}}
+ */
 var ILists = {
 	
 	getLists : function( req, res, next) {

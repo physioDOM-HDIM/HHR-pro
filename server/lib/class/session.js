@@ -1,3 +1,8 @@
+/**
+ * @module Session
+ */
+
+
 /* global physioDOM */
 "use strict";
 
@@ -7,6 +12,12 @@ var promise = require("rsvp").Promise,
 
 var logger = new Logger("Session");
 
+/**
+ * Session object
+ * 
+ * @param obj
+ * @constructor
+ */
 function Session( obj ) {
 	var sessionExpire = 5 * 60 * 1000;
 	

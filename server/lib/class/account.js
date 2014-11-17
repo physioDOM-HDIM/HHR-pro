@@ -1,3 +1,7 @@
+/**
+ * @module Session
+ */
+
 /* jslint node:true */
 /* glooal physioDOM */
 "use strict";
@@ -9,6 +13,12 @@ var Session  = require("./session"),
 var Logger = require("logger");
 var logger = new Logger("Account");
 
+/**
+ * Account object
+ * 
+ * @param obj
+ * @constructor
+ */
 function Account( obj ) {
 	logger.trace("Account constructor");
 
@@ -26,6 +36,11 @@ function Account( obj ) {
 		}
 	}
 
+	/**
+	 * Create a session for the current account
+	 * 
+	 * @returns {promise}
+	 */
 	this.createSession = function () {
 		logger.trace("Account.createSession");
 		var that = this;
