@@ -204,12 +204,14 @@
                     <textarea name="address.line">{{professional.address.line}}</textarea>
                 </div>
                 <div class="row">
-                    <label>City:</label>
-                    <input type="text" name="address.city" value="{{professional.address.city}}" />
-                </div>
-                <div class="row">
-                    <label>Zip code :</label>
-                    <input type="text" name="address.zip" value="{{professional.address.zip}}" />
+                    <div class="col">
+                        <label>{{ "Zip code"|i18n }}</label>
+                        <input type="text" name="address.zip" value="{{professional.address.zip}}" />
+                    </div>
+                    <div class="col">
+                        <label style="width:80px">{{ "City"|i18n }}</label>
+                        <input type="text" name="address.city" value="{{professional.address.city}}" />
+                    </div>
                 </div>
             </fieldset>
             <br />
