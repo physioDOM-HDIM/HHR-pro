@@ -7,8 +7,6 @@
 /* global physioDOM */
 "use strict";
 
-//var Person = require("./person.js");
-// var Account = require("./account.js");
 var promise = require("rsvp").Promise,
 	dbPromise = require("./database.js"),
 	Logger = require("logger"),
@@ -60,8 +58,8 @@ function Directory( ) {
 	 * @param pg {integer} page number
 	 * @param offset {integer} number of elements by page
 	 * @param sort {string} name of the field to sort
-	 * @param sortDir {-1|1} sort direction -1:descending 1:ascending
-	 * @param filter {json string} 
+	 * @param sortDir (-1|1) sort direction -1:descending 1:ascending
+	 * @param filter {string} json object containing the filter request 
 	 * @returns {*}
 	 */
 	this.getEntries = function( pg, offset, sort, sortDir, filter ) {
@@ -117,10 +115,14 @@ function Directory( ) {
 		var professionalID = new ObjectID(entryID);
 		return (new Professional()).getAdminById(professionalID);
 	};
-	
+
+	/**
+	 * update an entry with the `updatedItem` object
+	 *
+	 * @param updatedItem
+	 * @returns {promise}
+	 */
 	this.updateEntry = function( updatedItem ) {
-		// the updatedItem must check the schema
-		// the updatedItem must have the same ID
 		return new promise( function(resolve, reject) {
 			logger.trace("updateEntry", updatedItem);
 			if (updatedItem) {

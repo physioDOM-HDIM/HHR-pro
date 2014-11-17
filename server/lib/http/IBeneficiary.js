@@ -1,12 +1,10 @@
+/**
+ * @file IBeneficiary.js
+ * @module Http
+ */
+
 /* jslint node:true */
 "use strict";
-
-/**
- * IBeneficiary
- *
- * treat http request for the directory
- * @type {exports}
- */
 
 var Logger = require("logger");
 var logger = new Logger("IBeneficiary");

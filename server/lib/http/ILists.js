@@ -1,3 +1,8 @@
+/**
+ * @file ILists.js
+ * @module Http
+ */
+
 /* jslint node:true */
 /* global physioDOM */
 "use strict";
@@ -11,6 +16,13 @@
 var Logger = require("logger");
 var logger = new Logger("IList");
 
+/**
+ * IList
+ *
+ * treat http request about lists
+ * 
+ * @type {{getLists: Function, getList: Function, getListTranslate: Function, addItem: Function, translateItem: Function, activateItem: Function}}
+ */
 var ILists = {
 	
 	getLists : function( req, res, next) {
@@ -75,22 +87,22 @@ var ILists = {
 				next(false);
 			});
 	},
-	
+
 	/**
 	 * Add translation to a item of the list
-	 * 
+	 *
 	 * the list is known by its name given in the url ( req.params.listName )
 	 * the item is known by its name given in the url ( req.params.itemRef )
-	 * 
+	 *
 	 * the translation are given as put parameter in JSON format
 	 * ex : { "en":"administrator", "fr":"administrateur" }
 	 *
 	 * With this request you could rename the translation of an item
-	 * 
+	 *
 	 * nota : an item that has no translation isn't displayed in the specified language
-	 * 
+	 *
 	 * nota : you can change the translation of a term of a non editable list
-	 * 
+	 *
 	 * @param req
 	 * @param res
 	 * @param next
@@ -126,13 +138,13 @@ var ILists = {
 
 	/**
 	 * Request activate/deactivate an item
-	 * 
+	 *
 	 * the list is known by its name given in the url ( req.params.listName )
 	 * the item is known by its name given in the url ( req.params.itemRef )
 	 *
 	 * the activation status is given as post parameter in JSON format
 	 * ex : { "active":true }
-	 * 
+	 *
 	 * @param req
 	 * @param res
 	 * @param next

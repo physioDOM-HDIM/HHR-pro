@@ -1,3 +1,8 @@
+/**
+ * @file professionals.js
+ * @module Directory
+ */
+
 /* jslint node:true */
 /* global physioDOM */
 "use strict";
@@ -10,8 +15,21 @@ var promise = require("rsvp").Promise,
 
 var logger = new Logger("Professional");
 
+/**
+ * A professional entry in the directory
+ * 
+ * @constructor
+ */
 function Professional() {
-	
+	/**
+	 * Get the profesionnal entry known by its ID
+	 * 
+	 * onsuccess the promise return the professional object,
+	 * else return an error ( code 404 )
+	 * 
+	 * @param professionalID
+	 * @returns {promise}
+	 */
 	this.getById = function( professionalID ) {
 		var that = this;
 		return new promise( function(resolve, reject) {
@@ -35,6 +53,14 @@ function Professional() {
 		});
 	};
 
+	/**
+	 * Special Access for creating/updating an entry
+	 * 
+	 * Get the professional records with its account information
+	 * 
+	 * @param professionalID
+	 * @returns {promise}
+	 */
 	this.getAdminById = function( professionalID ) {
 		logger.trace("getAdminById", professionalID);
 		var that = this;
@@ -55,7 +81,14 @@ function Professional() {
 				});
 		});
 	};
-	
+
+	/**
+	 * Save the professional in the database
+	 * 
+	 * the promise return the object completed with the _id property for new record.
+	 * 
+	 * @returns {promise}
+	 */
 	this.save = function() {
 		var that = this;
 		return new promise( function(resolve, reject) {
@@ -69,7 +102,16 @@ function Professional() {
 			});
 		});
 	};
-	
+
+	/**
+	 * Check that the entry is unique
+	 * 
+	 * The unicity is given by the email address
+	 * Two professionals cannot share the same email address
+	 * 
+	 * @param entry
+	 * @returns {promise}
+	 */
 	function checkUniq( entry ) {
 		return new promise( function(resolve, reject) {
 			logger.trace("checkUniq");
@@ -98,7 +140,13 @@ function Professional() {
 			});
 		});
 	}
-	
+
+	/**
+	 * Check that the entry is a valid professional
+	 * 
+	 * @param entry
+	 * @returns {promise}
+	 */
 	function checkSchema( entry ) {
 		return new promise( function(resolve, reject) {
 			logger.trace("checkSchema");
@@ -115,7 +163,15 @@ function Professional() {
 			}
 		});
 	}
-	
+
+	/**
+	 * Initialize the professional object with an object
+	 * 
+	 * the promise will return the record saved in the database
+	 * 
+	 * @param newEntry
+	 * @returns {promise}
+	 */
 	this.init = function( newEntry ) {
 		var that = this;
 		return new promise( function(resolve, reject) {
@@ -135,7 +191,14 @@ function Professional() {
 				.catch( reject );
 		});
 	};
-	
+
+	/**
+	 * Get the list of beneficiaries attached to the current professional
+	 * 
+	 * @param pg
+	 * @param offset
+	 * @returns {promise}
+	 */
 	this.getBeneficiaries = function(pg, offset) {
 		// depending of the role of the professional
 		// if admin or coordinators : all beneficiaries

@@ -1,3 +1,8 @@
+/**
+ * @file IPage.js
+ * @module Http
+ */
+
 /* jslint node:true */
 /* global physioDOM */
 "use strict";
@@ -9,13 +14,22 @@
  */
 
 var swig = require("swig"),
-	Logger = require("logger");
+	Logger = require("logger"),
+	RSVP = require("rsvp");
 var logger = new Logger("IPage");
 var i18n = new (require('i18n-2'))({
 	// setup some locales - other locales default to the first locale
+	devMode:true,
 	locales: ["en","es","nl","fr"]
 });
 
+/**
+ * IPage
+ * 
+ * IPage is the http interface that manages the urls of the pages seen in the browser
+ * 
+ * @constructor
+ */
 function IPage() {
 	var lang;
 	
@@ -29,7 +43,14 @@ function IPage() {
 			return i18n.__(input);
 		});
 	}
-	
+
+	/**
+	 * Main Layout
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
 	this.ui = function( req, res, next ) {
 		logger.trace("ui");
 		var html;
@@ -45,11 +66,41 @@ function IPage() {
 						lastname : session.person.item.name.family
 					} 
 				};
-				html = swig.renderFile('./static/tpl/ui.htm', data);
-				sendPage(html,res, next);
+				html = swig.renderFile('./static/tpl/ui.htm', data, function (err, output) {
+					if (err) {
+						   console.log("error", err);
+						   console.log("output", output);
+						   res.write(err);
+						   res.end();
+						   next();
+					   } else {
+						   sendPage(output, res, next);
+					   }
+				});
 			});
 	};
+
+	function promiseList(listName) {
+		return physioDOM.Lists.getList(listName, lang)
+			.then( function(list) {
+				var result = {};
+				result[listName] = list;
+				return result;
+			})
+			.catch(function() {
+				var result = {};
+				result[listName] = {};
+				return result;
+			});
+	}
 	
+	/**
+	 * Directory list
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
 	this.directoryList = function(req, res, next) {
 		logger.trace("Directory List");
 		var html;
@@ -58,10 +109,43 @@ function IPage() {
 		var data = {
 			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
 		};
-		html = swig.renderFile('./static/tpl/directory.htm', data);
-		sendPage(html,res, next);
+
+		var promises = [
+			"perimeter"
+		].map( promiseList);
+
+		RSVP.all(promises)
+			.then( function(lists) {
+				lists.forEach( function(list ) {
+					data[Object.keys(list)]=list[Object.keys(list)];
+				});
+				html = swig.renderFile('./static/tpl/directory.htm', data, function (err, output) {
+					if (err) {
+						console.log("error", err);
+						console.log("output", output);
+						res.write(err);
+						res.end();
+						next();
+					} else {
+						sendPage(output, res, next);
+					}
+				});
+			})
+			.catch( function(err) {
+				logger.error(err);
+				res.write(err);
+				res.end();
+				next();
+			});
 	};
 
+	/**
+	 * Directory Create and update
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
 	this.directoryUpdate = function(req, res, next) {
 		logger.trace("Directory update");
 		var html;
@@ -70,34 +154,26 @@ function IPage() {
 		var data = {
 			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
 		};
-		physioDOM.Lists.getList("system", lang)
-			.then( function(list) {
-				data.system = list;
-				return physioDOM.Lists.getList("use", lang);
-			})
-			.then( function(list) {
-				data.use = list;
-				return physioDOM.Lists.getList("role", lang);
-			})
-			.then( function(list) {
-				if( list) { data.role = list; }
-				return physioDOM.Lists.getList("job", lang);
-			})
-			.then( function(list) {
-				if( list) { data.job = list; }
-				return physioDOM.Lists.getList("communication", lang);
-			})
-			.then( function(list) {
-				if (list) {
-					data.communication = list;
-				}
+		
+		var promises = [
+			"system",
+			"role",
+			"job",
+			"communication"
+		].map( promiseList);
+		
+		RSVP.all(promises)
+			.then( function(lists) {
+				lists.forEach( function(list ) {
+					data[Object.keys(list)]=list[Object.keys(list)];
+				});
 				return physioDOM.Directory();
 			})
 			.then(function(directory) {
 				return directory.getAdminEntryByID( req.params.professionalID );
 			})
 			.then( function(professional) {
-				logger.debug("data", data);
+				logger.debug("data", JSON.stringify(data, null, 4));
 				logger.debug("prof ", professional );
 				if( professional) {
 					data.professional = professional;
@@ -121,26 +197,134 @@ function IPage() {
 				next();
 			});
 	};
-	
+
+	/**
+	 * Beneficiary create and update
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
 	this.beneficiaryCreate = function(req, res, next) {
 		logger.trace("beneficiaryCreate");
 		var html;
 		
 		init(req);
-		
-		html = swig.renderFile('./static/tpl/beneficiaryCreate.htm');
-		sendPage(html,res, next);
+
+		var data = {
+			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
+		};
+
+		var promises = [
+			"system",
+			"use",
+			"wayOfLife",
+			"maritalStatus",
+			"communication",
+			"profession",
+			"perimeter"
+		].map( promiseList);
+
+		RSVP.all(promises)
+			.then( function(lists) {
+				lists.forEach( function(list ) {
+					data[Object.keys(list)]=list[Object.keys(list)];
+				});
+				return physioDOM.Beneficiaries();
+			})
+			.then(function(beneficiaries) {
+				return beneficiaries.getBeneficiaryAdminByID( req.session, req.params.beneficiaryID );
+			})
+			.then( function(beneficiary) {
+				logger.debug("data", data);
+				logger.debug("bene ", beneficiary );
+				if( beneficiary) {
+					data.beneficiary = beneficiary;
+					return beneficiary.getProfessionals();
+				}
+				return null;
+			}).then(function(professionals){
+				if( professionals ){
+					data.beneficiary.professionals = professionals;
+				}
+
+				html = swig.renderFile("./static/tpl/beneficiaryCreate.htm", data, function (err, output) {
+					if (err) {
+						console.log("error", err);
+						console.log("output", output);
+						res.write(err);
+						res.end();
+						next();
+					} else {
+						sendPage(output, res, next);
+					}
+				});
+			})
+			.catch( function(err) {
+				logger.error(err);
+				res.write(err);
+				res.end();
+				next();
+			});
 	};
 
+	/**
+	 * Beneficiary select
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
 	this.beneficiarySelect = function(req, res, next) {
 		logger.trace("beneficiarySelect");
 		var html;
 		
+		init(req);
 		var data = { 
 			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false 
 		};
+		physioDOM.Lists.getList("perimeter", lang)
+			.then( function(list) {
+				if (list) {
+					data.perimeter = list;
+				}
+				
+				html = swig.renderFile('./static/tpl/beneficiaries.htm', data, function (err, output) {
+					if (err) {
+						console.log("error", err);
+						console.log("output", output);
+						res.write(err);
+						res.end();
+						next();
+					} else {
+						sendPage(output, res, next);
+					}
+				});
+			})
+			.catch( function(err) {
+				logger.error(err);
+				res.write(err);
+				res.end();
+				next();
+			});
+	};
+
+	/**
+	 * Beneficiary overview
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	this.beneficiaryOverview = function(req, res, next) {
+		logger.trace("beneficiaryOverview");
+		var html;
+		init(req);
+		var data = {
+			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
+		};
 		try {
-			html = swig.renderFile('./static/tpl/beneficiaries.htm', data, function (err, output) {
+			html = swig.renderFile('./static/tpl/recipientDetail.htm', data, function (err, output) {
 				if (err) {
 					console.log("error", err);
 					console.log("output", output);
@@ -156,8 +340,22 @@ function IPage() {
 			res.end();
 			next();
 		}
+		/*
+		var data = {};
+		var html = swig.renderFile('./static/tpl/recipientDetail.htm', data);
+		sendPage(html, req, res, next);
+		*/
 	};
-	
+
+	/**
+	 * Send the page to the browser
+	 * 
+	 * The html code of the page is in `html`
+	 * 
+	 * @param html
+	 * @param res
+	 * @param next
+	 */
 	function sendPage( html, res, next ) {
 		logger.trace("sendPage");
 		res.writeHead(200, {

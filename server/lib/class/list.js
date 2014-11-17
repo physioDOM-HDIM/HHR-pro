@@ -1,3 +1,8 @@
+/**
+ * @file list.js
+ * @module List
+ */
+
 /* jslint node:true */
 /* global physioDOM */
 "use strict";

@@ -30,7 +30,7 @@ var cookieOptions = {
 program
 	.version(pkg.version)
 	.usage('[options] [dir]')
-	.option('-p, --port <port>', 'specify the port [3000]', Number, 3000)
+	.option('-p, --port <port>', 'specify the port [8001]', Number, 8001)
 	.parse(process.argv);
 
 /**
@@ -299,12 +299,14 @@ server.get( '/api/logout', logout);
 server.get( '/logout', logout);
 
 server.get( '/beneficiary/create', IPage.beneficiaryCreate);
+server.get( '/beneficiary/edit/:beneficiaryID', IPage.beneficiaryCreate);
 server.get( '/beneficiary/select', IPage.beneficiarySelect);
+server.get( '/beneficiary/:entryID', IPage.beneficiaryOverview);
 server.get( '/directory', IPage.directoryList);
 server.get( '/directory/create', IPage.directoryUpdate);
 server.get( '/directory/:professionalID', IPage.directoryUpdate);
 
-server.get(/\/[^api\/]?$/, function(req, res, next) {
+server.get(/\/[^api|components\/]?$/, function(req, res, next) {
 	logger.trace("index");
 	if( req.cookies.sessionID ) {
 		return IPage.ui( req, res, next);
@@ -325,9 +327,8 @@ function logout(req, res, next ) {
 	logger.trace( "logout" );
 	physioDOM.deleteSession( cookies.get("sessionID") )
 		.catch( function(err) { 
-			logger.warning("Error ",err);
-		})
-		.finally( function() {
+			console.log("Error ",err);
+		}).finally( function() {
 			logger.info('unset cookies');
 			cookies.set('sessionID');
 			cookies.set('role');
@@ -416,10 +417,15 @@ var mimetypes = {
 };
 
 function readFile(filepath,req,res,next) {
-	console.log("readFile",filepath);
+	logger.trace("readFile",filepath);
 	var mimetype = mimetypes[require('path').extname(filepath).substr(1)];
 	var stats = fs.statSync(filepath);
-
+	
+	if(stats.isDirectory()) {
+		console.log("this is a directory");
+		res.send(405);
+		return next(false);
+	}
 	if(config.cache && req.headers['if-modified-since'] && (new Date(req.headers['if-modified-since'])).valueOf() === ( new Date(stats.mtime)).valueOf() ) {
 		res.statusCode = 304;
 		res.end();
