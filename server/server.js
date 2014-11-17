@@ -30,7 +30,7 @@ var cookieOptions = {
 program
 	.version(pkg.version)
 	.usage('[options] [dir]')
-	.option('-p, --port <port>', 'specify the port [3000]', Number, 3000)
+	.option('-p, --port <port>', 'specify the port [8001]', Number, 8001)
 	.parse(process.argv);
 
 /**
