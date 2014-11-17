@@ -35,18 +35,56 @@ function showProfessionals() {
 function saveProfessionals() {
     console.log("saveProfessionals");
     if (_dataObj && _dataObj.professionals) {
+        removeAllProfessionals();
         _dataObj.professionals.map(function(proItem) {
-            console.log(proItem.name.family + " " + proItem.name.given + " - " + proItem.referent);
-
+            //console.log(proItem.name.family + " " + proItem.name.given + " - " + proItem.referent);
+            addProfessional(proItem);
         });
     }
-
     closeProfessionals();
 }
 
 function closeProfessionals() {
     console.log("closeProfessionals");
     document.querySelector("#addProfessionalsModal").hide();
+}
+
+function removeAllProfessionals() {
+    var items = document.querySelectorAll("form[name='professionals'] .proItemContainer"),
+        form = document.forms.professionals;
+    [].map.call(items, function(item) {
+        form.removeChild(item);
+    });
+}
+
+function addProfessional(professionalItem) {
+    var html, div,
+        elt = document.querySelector("#tplProfessionnalContainer").innerHTML,
+        isFirstItem = true,
+        modelData = {
+            item: professionalItem,
+            display_phone: function() {
+                var res = "";
+                if (this.system !== "email") {
+                    if (isFirstItem) {
+                        isFirstItem = false;
+                    } else {
+                        res = " / ";
+                    }
+                    return res + this.value;
+                }
+                return "";
+            },
+            display_email: function() {
+                return (this.system === "email") ? "<a href=mailto:" + this.value + ">" + this.value + "</a>" : "";
+            }
+        };
+
+    html = Mustache.render(elt, modelData);
+    div = document.createElement("div");
+    div.className = "proItemContainer";
+    div.innerHTML = html;
+    document.forms.professionals.insertBefore(div, document.querySelector("form[name='professionals'] .row.control"));
 }
 
 function onHaveProfessionalsData(data) {

@@ -23,11 +23,11 @@ zdk-modal div#bg {
     font-weight: bold;
 }
 
-form[name="professionals"] .proItem:nth-child(even){
+form[name="professionals"] .proItemContainer:nth-child(even) .proItem{
     background: #DFDFDF;
 }
 
-form[name="professionals"] .proItem.referent{
+form[name="professionals"] .proItemContainer .proItem.referent{
     background: rgb(255, 255, 160);;
 }
 

@@ -7,10 +7,27 @@
 <link rel="stylesheet" href="/styles/beneficiaryCreate.css" charset="UTF-8" />
 <script src="/bower_components/form2js/src/form2js.js"></script>
 <script src="/bower_components/rsvp/rsvp.min.js"></script>
+<script src="/bower_components/mustache/mustache.js"></script>
 <script src="/tpl/beneficiaryCreate.js"></script>
 {% endblock %}
   
 {% block content %}
+<script type="template" id="tplProfessionnalContainer">
+    <div class="proItem row {%raw%}{{#item.referent}}referent{{/item.referent}}{%endraw%}">
+        <div class="col bold">{%raw%}{{item.name.family}} {{item.name.given}}{%endraw%}</div>
+        <div class="col">{%raw%}{{item.job}}{%endraw%}</div>
+        <div class="col">
+            {%raw%}{{#item.telecom}}
+                {{display_phone}}
+            {{/item.telecom}}{%endraw%}
+        </div>
+        <div class="col">
+            {%raw%}{{#item.telecom}}
+                {{&display_email}}
+            {{/item.telecom}}{%endraw%}
+        </div>
+    </div>
+</script>
 <zdk-panel bgcolor="gray" heading="Beneficiary">
     <form name="beneficiary" autocomplete="off" onsubmit="checkForm1(); return false;">
         <input type="hidden" name="_id" value="{{beneficiary._id.toString()}}">
@@ -235,27 +252,29 @@
 <zdk-panel bgcolor="gray" heading="Professionals" collapsable="true" collapsed="false">
     <form name="professionals" autocomplete="off">
         {% for professional in beneficiary.professionals %}
-        <div class="proItem row {% if professional.referent %} referent {% endif %}">
-            <div class="col bold">{{professional.name.family}} {{professional.name.given}}</div>
-            <div class="col">{{professional.job}}</div>
-            <div class="col">
-                {% set first = true %}
-                {% for telecom in professional.telecom %}
-                    {% if telecom.system !== "email" %}
-                        {% if !first %}
-                            /
+        <div class="proItemContainer">
+            <div class="proItem row {% if professional.referent %} referent {% endif %}">
+                <div class="col bold">{{professional.name.family}} {{professional.name.given}}</div>
+                <div class="col">{{professional.job}}</div>
+                <div class="col">
+                    {% set first = true %}
+                    {% for telecom in professional.telecom %}
+                        {% if telecom.system !== "email" %}
+                            {% if !first %}
+                                /
+                            {% endif %}
+                            {{telecom.value}}
+                            {% set first = false %}
                         {% endif %}
-                        {{telecom.value}}
-                        {% set first = false %}
-                    {% endif %}
-                {% endfor %}
-            </div>
-            <div class="col">
-                {% for telecom in professional.telecom %}
-                    {% if telecom.system === "email" %}
-                        <a href="mailto:{{telecom.value}}">{{telecom.value}}</a>
-                    {% endif %}
-                {% endfor %}
+                    {% endfor %}
+                </div>
+                <div class="col">
+                    {% for telecom in professional.telecom %}
+                        {% if telecom.system === "email" %}
+                            <a href="mailto:{{telecom.value}}">{{telecom.value}}</a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
             </div>
         </div>
         {% endfor %}
