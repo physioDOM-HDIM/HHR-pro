@@ -15,6 +15,23 @@ zdk-modal div.modalContainer {
     overflow: auto;
     border-radius: 15px;
 }
+zdk-modal div#bg {
+    display: fixed;
+    /* FF fix */
+}
+.bold{
+    font-weight: bold;
+}
+
+form[name="professionals"] .proItem:nth-child(even){
+    background: #DFDFDF;
+}
+
+form[name="professionals"] .proItem.referent{
+    background: rgb(255, 255, 160);;
+}
+
+
 /*
 zdk-modal .modalTitleContainer {
     border-bottom: 2px solid silver;
@@ -27,17 +44,13 @@ zdk-modal .modalContentContainer {
     padding-bottom: 10px;
 }
 zdk-modal .modalButtonContainer{
-	text-align: center;
+    text-align: center;
 }
 zdk-modal .modalButtonContainer button{
-	margin: 0 5px;
+    margin: 0 5px;
 }
 */
-zdk-modal div#bg {
-    display: fixed;
-    /* FF fix */
-}
-#tsanteListProfessional .item.row {
+/*#tsanteListProfessional .item.row {
     font-size: 18px;
     line-height: 35px;
     width: 100%;
@@ -55,4 +68,4 @@ zdk-modal div#bg {
 }
 #tsanteListProfessional .item.row .job {
     margin-left: auto;
-}
+}*/

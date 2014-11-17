@@ -6,6 +6,7 @@
 {% parent %}
 <link rel="stylesheet" href="/styles/beneficiaryCreate.css" charset="UTF-8" />
 <script src="/bower_components/form2js/src/form2js.js"></script>
+<script src="/bower_components/rsvp/rsvp.min.js"></script>
 <script src="/tpl/beneficiaryCreate.js"></script>
 {% endblock %}
   
@@ -23,7 +24,7 @@
         </div>
         <div class="row">
             <label>{{ "Last name"|i18n }}</label>
-            <input type="text" name="name.family" value="{{beneficiary.name.family}}" required />
+            <input type="text" name="name.family" value="{{beneficiary.name.family}}" required placeholder="{{ 'Mandatory field'|i18n }}"/>
         </div>
         <div class="row">
             <label>{{ "First name"|i18n }}</label>
@@ -35,7 +36,7 @@
         </div>
         <div class="row">
             <label>{{ "Perimeter"|i18n }}</label>
-            <select name="perimeter">
+            <select name="perimeter" required>
                 {% for item in perimeter.items %}
                 <option value="{{item.value}}">{{item.label}}</option>
                 {% endfor %}
@@ -233,93 +234,38 @@
 </zdk-panel>
 <zdk-panel bgcolor="gray" heading="Professionals" collapsable="true" collapsed="false">
     <form name="professionals" autocomplete="off">
-
-    </form>
-    <div class="row control">
-        <span class="spacer"></span>
-        <button class="blue" onclick="showProfessionals()">{{ "Add"|i18n }}</button>
-    </div>
-</zdk-panel>
-<zdk-panel bgcolor="gray" heading="Personnal contacts" collapsable="true" collapsed="false">
-    <form name="personnal_contacts" autocomplete="off">
-        <div class="row">
-            <label>{{ "Gender"|i18n }}</label>
-            <input name="gender" type="radio" value="M" checked id="Male">
-            <label for="Male">{{ "Male"|i18n }}</label>
-            <input name="gender" type="radio" value="F" id="Female">
-            <label for="Female">{{ "Female"|i18n }}</label>
-        </div>
-        <div class="row">
-            <label>{{ "Last name"|i18n }}</label>
-            <input type="text" name="name.family" required />
-        </div>
-        <div class="row">
-            <label>{{ "First name"|i18n }}</label>
-            <input type="text" name="name.given" />
-        </div>
-
-        <div class="row">
-            <label>{{ "Relationship"|i18n }}</label>
-            <select name="relationship" required>
-                {% for item in relatioShip.items %}
-                <option value="{{item.value}}">{{item.label}}</option>
+        {% for professional in beneficiary.professionals %}
+        <div class="proItem row {% if professional.referent %} referent {% endif %}">
+            <div class="col bold">{{professional.name.family}} {{professional.name.given}}</div>
+            <div class="col">{{professional.job}}</div>
+            <div class="col">
+                {% set first = true %}
+                {% for telecom in professional.telecom %}
+                    {% if telecom.system !== "email" %}
+                        {% if !first %}
+                            /
+                        {% endif %}
+                        {{telecom.value}}
+                        {% set first = false %}
+                    {% endif %}
                 {% endfor %}
-            </select>
-        </div>
-        <div class="row">
-            <label>{{ "Phone"|i18n }}</label>
-            <input type="text" name="phone" />
-        </div>
-        <div class="row">
-            <label>{{ "Mobile"|i18n }}</label>
-            <input type="text" name="mobile" />
-        </div>
-        <div class="row">
-            <label>{{ "Email"|i18n }}</label>
-            <input type="email" name="email" />
-        </div>
-        <fieldset>
-            <legend>Address</legend>
-            <div class="row">
-                <label>{{ "Use"|i18n }}</label>
-                <select name="use" required>
-                    {% for item in use.items %}
-                    <option value="{{item.value}}">{{item.label}}</option>
-                    {% endfor %}
-                </select>
             </div>
-            <div class="row">
-                <label>{{ "Street"|i18n }}</label>
-                <textarea name="line" required></textarea>
+            <div class="col">
+                {% for telecom in professional.telecom %}
+                    {% if telecom.system === "email" %}
+                        <a href="mailto:{{telecom.value}}">{{telecom.value}}</a>
+                    {% endif %}
+                {% endfor %}
             </div>
-            <div class="row">
-                <div class="col">
-                    <label>{{ "Zip code"|i18n }}</label>
-                    <input type="text" name="zipCode" required style="flex:0.5" />
-                </div>
-                <div class="col">
-                    <label style="width:80px">{{ "City"|i18n }}</label>
-                    <input type="text" name="city" required/>
-                </div>
-            </div>
-            <div class="row control">
-                <span class="spacer"></span>
-                <button type="button" class="blue">{{ "Add"|i18n }}</button>
-            </div>
-        </fieldset>
+        </div>
+        {% endfor %}
         <div class="row control">
             <span class="spacer"></span>
-            <button class="red">{{ "Cancel"|i18n }}</button>
+            <button type="button" class="blue" onclick="showProfessionals()">{{ "Add"|i18n }}</button>
             <button class="blue">{{ "Save"|i18n }}</button>
         </div>
-
     </form>
-    <div class="row control">
-        <span class="spacer"></span>
-        <button class="blue">{{ "Add"|i18n }}</button>
-    </div>
 </zdk-panel>
-
 <zdk-panel bgcolor="gray" heading="Diagnosis" collapsable="true" collapsed="false">
     <form name="diagnosis" autocomplete="off">
         <p class="head">{{ "General status"|i18n }}</p>
@@ -391,9 +337,9 @@
                 <template is="auto-binding" repeat="{% raw %}{{item, i in list.items}}{% endraw %}">
                     <div class="item">
                         <div class="row">
-                            <div><input type="checkbox" checked?="{% raw %}{{item._tmpData.selected}}{% endraw %}" onchange="updateProfessionalSelection(this, {% raw %}'{{i}}'{% endraw %})"/></div>
-                            <div style="margin-right:10px"><input type="radio" name="referent" checked?="{% raw %}{{item._tmpData.referent}}{% endraw %}" onchange="updateProfessionalReferent(this, {% raw %}'{{i}}'{% endraw %})"/> referent</div>
-                            <div class="col" style="font-weight:bold">{% raw %}{{item.name.family}} {{item.name.given}}{% endraw %}</div>
+                            <div><input type="checkbox" name="selected" checked?="{% raw %}{{item._tmpData.selected}}{% endraw %}" onchange="updateProfessionalSelection(this, {% raw %}'{{i}}'{% endraw %})"/></div>
+                            <div style="margin-right:10px"><input type="radio" name="referent" checked?="{% raw %}{{item._tmpData.referent}}{% endraw %}" onchange="updateProfessionalReferent(this, {% raw %}'{{i}}'{% endraw %})"/></div>
+                            <div class="col bold" >{% raw %}{{item.name.family}} {{item.name.given}}{% endraw %}</div>
                             <div class="col">{% raw %}{{item.job}}{% endraw %}</div>
                         </div>
                     </div>
@@ -402,7 +348,7 @@
         </div>
         <div class="modalButtonContainer">
             <button class="red" onclick="closeProfessionals()">{{ "Cancel"|i18n }}</button>
-            <button class="blue" onclick="saveProfessionnals()">{{ "Save"|i18n }}</button>
+            <button class="blue" onclick="saveProfessionals()">{{ "Save"|i18n }}</button>
         </div>
     </div>
 </zdk-modal>

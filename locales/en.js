@@ -57,12 +57,12 @@
 	"Use": "Use",
 	"Relationship": "Relationship",
 	"Add professionals": "Add professionals",
-	"Choose your referent and check professionals you want to add then click save": "Choose your referent and check professionals you want to add then click save",
 	"Choose your referent and check professionals you want to add": "Choose your referent and check professionals you want to add",
 	"Professionnal directory": "Professionnal directory",
 	"Filter": "Filter",
 	"Sort": "Sort",
 	"Name": "Name",
 	"create/update a beneficiary": "create/update a beneficiary",
-	"phone": "phone"
+	"phone": "phone",
+	"Mandatory field": "Mandatory field"
 }

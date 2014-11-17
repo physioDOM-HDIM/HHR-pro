@@ -201,8 +201,15 @@ function IPage() {
 				logger.debug("bene ", beneficiary );
 				if( beneficiary) {
 					data.beneficiary = beneficiary;
+					return beneficiary.getProfessionals();
 				}
-				html = swig.renderFile('./static/tpl/beneficiaryCreate.htm', data, function (err, output) {
+				return null;
+			}).then(function(professionals){
+				if( professionals ){
+					data.beneficiary.professionals = professionals;
+				}
+
+				html = swig.renderFile("./static/tpl/beneficiaryCreate.htm", data, function (err, output) {
 					if (err) {
 						console.log("error", err);
 						console.log("output", output);
