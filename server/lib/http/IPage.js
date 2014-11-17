@@ -9,7 +9,8 @@
  */
 
 var swig = require("swig"),
-	Logger = require("logger");
+	Logger = require("logger"),
+	RSVP = require("rsvp");
 var logger = new Logger("IPage");
 var i18n = new (require('i18n-2'))({
 	// setup some locales - other locales default to the first locale
@@ -59,6 +60,20 @@ function IPage() {
 				});
 			});
 	};
+
+	function promiseList(listName) {
+		return physioDOM.Lists.getList(listName, lang)
+			.then( function(list) {
+				var result = {};
+				result[listName] = list;
+				return result;
+			})
+			.catch(function() {
+				var result = {};
+				result[listName] = {};
+				return result;
+			});
+	}
 	
 	this.directoryList = function(req, res, next) {
 		logger.trace("Directory List");
@@ -68,11 +83,16 @@ function IPage() {
 		var data = {
 			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
 		};
-		physioDOM.Lists.getList("perimeter", lang)
-			.then( function(list) {
-				if (list) {
-					data.perimeter = list;
-				}
+
+		var promises = [
+			"perimeter"
+		].map( promiseList);
+
+		RSVP.all(promises)
+			.then( function(lists) {
+				lists.forEach( function(list ) {
+					data[Object.keys(list)]=list[Object.keys(list)];
+				});
 				html = swig.renderFile('./static/tpl/directory.htm', data, function (err, output) {
 					if (err) {
 						console.log("error", err);
@@ -101,27 +121,19 @@ function IPage() {
 		var data = {
 			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
 		};
-		physioDOM.Lists.getList("system", lang)
-			.then( function(list) {
-				data.system = list;
-				return physioDOM.Lists.getList("use", lang);
-			})
-			.then( function(list) {
-				data.use = list;
-				return physioDOM.Lists.getList("role", lang);
-			})
-			.then( function(list) {
-				if( list) { data.role = list; }
-				return physioDOM.Lists.getList("job", lang);
-			})
-			.then( function(list) {
-				if( list) { data.job = list; }
-				return physioDOM.Lists.getList("communication", lang);
-			})
-			.then( function(list) {
-				if (list) {
-					data.communication = list;
-				}
+		
+		var promises = [
+			"system",
+			"role",
+			"job",
+			"communication"
+		].map( promiseList);
+		
+		RSVP.all(promises)
+			.then( function(lists) {
+				lists.forEach( function(list ) {
+					data[Object.keys(list)]=list[Object.keys(list)];
+				});
 				return physioDOM.Directory();
 			})
 			.then(function(directory) {
@@ -162,35 +174,22 @@ function IPage() {
 		var data = {
 			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
 		};
-		physioDOM.Lists.getList("system", lang)
-			.then( function(list) {
-				data.system = list;
-				return physioDOM.Lists.getList("use", lang);
-			})
-			.then( function(list) {
-				data.use = list;
-				return physioDOM.Lists.getList("wayOfLife", lang);
-			})
-			.then( function(list) {
-				if( list) { data.wayOfLife = list; }
-				return physioDOM.Lists.getList("maritalStatus", lang);
-			})
-			.then( function(list) {
-				if( list) { data.maritalStatus = list; }
-				return physioDOM.Lists.getList("communication", lang);
-			})
-			.then( function(list) {
-				if( list) { data.communication = list; }
-				return physioDOM.Lists.getList("profession", lang);
-			})
-			.then( function(list) {
-				if (list) { data.profession = list; }
-				return physioDOM.Lists.getList("perimeter", lang);
-			})
-			.then( function(list) {
-				if (list) {
-					data.perimeter = list;
-				}
+
+		var promises = [
+			"system",
+			"use",
+			"wayOfLife",
+			"maritalStatus",
+			"communication",
+			"profession",
+			"perimeter"
+		].map( promiseList);
+
+		RSVP.all(promises)
+			.then( function(lists) {
+				lists.forEach( function(list ) {
+					data[Object.keys(list)]=list[Object.keys(list)];
+				});
 				return physioDOM.Beneficiaries();
 			})
 			.then(function(beneficiaries) {
