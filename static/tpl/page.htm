@@ -14,10 +14,10 @@
 	<link rel="apple-touch-icon" href="/img/physiodom_favico.png">
 
 	<link rel="stylesheet" href="/styles/iframe.css" charset="UTF-8">
-	<link rel="stylesheet" href="/styles/theme.css" charset="UTF-8">
+	<!--<link rel="stylesheet" href="/styles/theme.css" charset="UTF-8">-->
 	<link rel="stylesheet" href="/styles/ui.css" charset="UTF-8">
 
-	<script src="/bower_components/platform/platform.js"></script>
+	<script src="/bower_components/webcomponentsjs/webcomponents.min.js"></script>
 	
 	<script>
 		window.addEventListener("DOMContentLoaded", initFrame, false);
@@ -28,7 +28,7 @@
 			if(parent.setTitle) {
 				parent.setTitle();
 
-				var nav = parent.document.querySelector("nav");
+				var nav = parent.document.querySelector("[drawer]");
 				if (window.innerWidth < 993 && nav.classList.contains("show")) {
 					parent.toggleNav();
 				}
