@@ -6,7 +6,8 @@ var _dataObj = null,
     _systemEnum = null,
     _roleEnum = null,
     _jobEnum = null,
-    _communicationEnum = null;
+    _communicationEnum = null,
+    _idxNbTelecom = 0;
 
 var promiseXHR = function(method, url, statusOK, data) {
     var promise = new RSVP.Promise(function(resolve, reject) {
@@ -257,7 +258,7 @@ function deleteTelecom(node) {
 function addTelecom() {
     console.log("addTelecom", arguments);
     var elt = document.querySelector("#tplTelecomContainer").innerHTML;
-    var modelData = { indx:document.querySelectorAll(".telecomContainer").length+1};
+    var modelData = { indx:++_idxNbTelecom};
     var html = Mustache.render(elt, modelData);
     var div = document.createElement("div");
     div.classList.add("telecomContainer");
@@ -421,3 +422,9 @@ function deleteItem() {
         });
     }
 }
+
+function init() {
+    console.log("init");
+    _idxNbTelecom = document.querySelectorAll(".telecomContainer").length;
+}
+window.addEventListener("DOMContentLoaded", init, false);
