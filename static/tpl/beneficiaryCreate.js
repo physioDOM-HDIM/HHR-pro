@@ -1,6 +1,7 @@
 "use strict";
 
 var _dataObj = null,
+    _dataObjTmp = null,
     _dataAllProfessionnalObj = null;
 
 var promiseXHR = function(method, url, statusOK, data) {
@@ -28,14 +29,23 @@ function showProfessionals() {
     //TODO: check the perimeter to filter the url for the listpager
     //var url = document.querySelector("#addProfessionalsModal #tsanteListProfessional") + "?filter={perimeter: xxx}";
     document.querySelector("#addProfessionalsModal #tsanteListProfessional").go();
-
+    if (_dataObj && _dataObj.professionals) {
+        _dataObjTmp = JSON.parse(JSON.stringify(_dataObj));
+    }
     document.querySelector("#addProfessionalsModal").show();
+}
+
+function closeProfessionals() {
+    console.log("closeProfessionals");
+    _dataObjTmp = null;
+    document.querySelector("#addProfessionalsModal").hide();
 }
 
 function saveProfessionals() {
     console.log("saveProfessionals");
-    if (_dataObj && _dataObj.professionals) {
-        removeAllProfessionals();
+    if (_dataObj && _dataObjTmp && _dataObj.professionals && _dataObjTmp.professionals) {
+        _dataObj.professionals = JSON.parse(JSON.stringify(_dataObjTmp.professionals));
+        _removeAllProfessionals();
         _dataObj.professionals.map(function(proItem) {
             //console.log(proItem.name.family + " " + proItem.name.given + " - " + proItem.referent);
             addProfessional(proItem);
@@ -44,12 +54,21 @@ function saveProfessionals() {
     closeProfessionals();
 }
 
-function closeProfessionals() {
-    console.log("closeProfessionals");
-    document.querySelector("#addProfessionalsModal").hide();
+function deleteProfessional(node){
+    console.log("deleteProfessional", arguments);
+    var child = node.parentNode.parentNode.parentNode,
+        id = child.querySelector("input[name='professional_id']").value,
+        idx;
+
+    idx = _findProfessionalInBeneficiary(id, _dataObj);
+    if(idx !== null){
+        _dataObj.professionals.splice(idx, 1);
+    }
+
+    document.forms.professionals.removeChild(node.parentNode.parentNode.parentNode);
 }
 
-function removeAllProfessionals() {
+function _removeAllProfessionals() {
     var items = document.querySelectorAll("form[name='professionals'] .proItemContainer"),
         form = document.forms.professionals;
     [].map.call(items, function(item) {
@@ -91,8 +110,8 @@ function onHaveProfessionalsData(data) {
     console.log("onHaveProfessionalsData", data);
     _dataAllProfessionnalObj = data.detail.list;
     //Check already selected professionals
-    if (_dataObj && _dataObj.professionals && _dataObj.professionals.length > 0 && _dataAllProfessionnalObj && _dataAllProfessionnalObj.items) {
-        var proTab = _dataObj.professionals;
+    if (_dataObjTmp && _dataObjTmp.professionals && _dataObjTmp.professionals.length > 0 && _dataAllProfessionnalObj && _dataAllProfessionnalObj.items) {
+        var proTab = _dataObjTmp.professionals;
         _dataAllProfessionnalObj.items.map(function(item) {
             var selected = false,
                 referent = false,
@@ -120,17 +139,17 @@ function onHaveProfessionalsData(data) {
     }
 }
 
-function _findProfessionalInBeneficiary(id) {
+function _findProfessionalInBeneficiary(id, obj) {
     console.log("_findProfessionalInBeneficiary", arguments);
     var found = false,
         i = 0;
 
-    if (!_dataObj || !_dataObj.professionals) {
+    if (!obj || !obj.professionals) {
         return null;
     }
 
-    while (!found && i < _dataObj.professionals.length) {
-        if (_dataObj.professionals[i]._id === id) {
+    while (!found && i < obj.professionals.length) {
+        if (obj.professionals[i]._id === id) {
             found = true;
         } else {
             i++;
@@ -140,17 +159,17 @@ function _findProfessionalInBeneficiary(id) {
     return found ? i : null;
 }
 
-function _findReferentInBeneficiary() {
+function _findReferentInBeneficiary(obj) {
     console.log("_findReferentInBeneficiary", arguments);
     var found = false,
         i = 0;
 
-    if (!_dataObj || !_dataObj.professionals) {
+    if (!obj || !obj.professionals) {
         return null;
     }
 
-    while (!found && i < _dataObj.professionals.length) {
-        if (_dataObj.professionals[i].referent === true) {
+    while (!found && i < obj.professionals.length) {
+        if (obj.professionals[i].referent === true) {
             found = true;
         } else {
             i++;
@@ -166,23 +185,23 @@ function updateProfessionalReferent(node, idxItem) {
     var currentItem = _dataAllProfessionnalObj && _dataAllProfessionnalObj.items && _dataAllProfessionnalObj.items[idxItem];
     if (currentItem) {
         //Remove old referent
-        var oldReferentIdx = _findReferentInBeneficiary();
+        var oldReferentIdx = _findReferentInBeneficiary(_dataObjTmp);
         if (oldReferentIdx !== null) {
-            if (_dataObj.professionals[oldReferentIdx]._id !== currentItem._id) {
-                _dataObj.professionals[oldReferentIdx].referent = false;
+            if (_dataObjTmp.professionals[oldReferentIdx]._id !== currentItem._id) {
+                _dataObjTmp.professionals[oldReferentIdx].referent = false;
             }
         }
 
-        var idx = _findProfessionalInBeneficiary(currentItem._id);
+        var idx = _findProfessionalInBeneficiary(currentItem._id, _dataObjTmp);
         if (idx !== null) {
             //Professional already selected
-            _dataObj.professionals[idx].referent = true;
+            _dataObjTmp.professionals[idx].referent = true;
         } else {
             //Professional !already selected
-            _dataObj.professionals = _dataObj.professionals || [];
+            _dataObjTmp.professionals = _dataObjTmp.professionals || [];
             var newObj = JSON.parse(JSON.stringify(currentItem));
             newObj.referent = true;
-            _dataObj.professionals.push(newObj);
+            _dataObjTmp.professionals.push(newObj);
         }
     }
     //A referent is necessary selected
@@ -199,21 +218,21 @@ function updateProfessionalSelection(node, idxItem) {
     } else {
         var currentItem = _dataAllProfessionnalObj && _dataAllProfessionnalObj.items && _dataAllProfessionnalObj.items[idxItem];
         if (currentItem) {
-            var idx = _findProfessionalInBeneficiary(currentItem._id);
+            var idx = _findProfessionalInBeneficiary(currentItem._id, _dataObjTmp);
             if (idx !== null) {
                 //Professional already selected
                 if (!node.checked) {
                     //Delete it
-                    _dataObj.professionals.splice(idx, 1);
+                    _dataObjTmp.professionals.splice(idx, 1);
                 }
             } else {
                 //Professional !already selected
                 if (node.checked) {
                     //Add it
-                    _dataObj.professionals = _dataObj.professionals || [];
+                    _dataObjTmp.professionals = _dataObjTmp.professionals || [];
                     var newObj = JSON.parse(JSON.stringify(currentItem));
                     newObj.referent = false;
-                    _dataObj.professionals.push(newObj);
+                    _dataObjTmp.professionals.push(newObj);
                 }
             }
         }

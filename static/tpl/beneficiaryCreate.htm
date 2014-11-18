@@ -26,6 +26,10 @@
                 {{&display_email}}
             {{/item.telecom}}{%endraw%}
         </div>
+        <div class="col buttonContainer">
+           <button type="button" class="small blue" onclick="deleteProfessional(this)">delete</button>
+        </div>
+        <input type="hidden" name="professional_id" value="{%raw%}{{item._id}}{%endraw%}">
     </div>
 </script>
 <zdk-panel bgcolor="gray" heading="Beneficiary">
@@ -275,6 +279,10 @@
                         {% endif %}
                     {% endfor %}
                 </div>
+                <div class="col buttonContainer">
+                   <button type="button" class="small blue" onclick="deleteProfessional(this)">delete</button>
+                </div>
+                <input type="hidden" name="professional_id" value="{{professional._id.toString()}}">
             </div>
         </div>
         {% endfor %}

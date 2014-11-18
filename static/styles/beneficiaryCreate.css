@@ -31,6 +31,9 @@ form[name="professionals"] .proItemContainer .proItem.referent{
     background: rgb(255, 255, 160);;
 }
 
+form[name="professionals"] .proItem .buttonContainer{
+    flex: 0.2;
+}
 
 /*
 zdk-modal .modalTitleContainer {
