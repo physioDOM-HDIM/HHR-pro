@@ -2,7 +2,9 @@
 
 var _dataObj = null,
     _dataObjTmp = null,
-    _dataAllProfessionnalObj = null;
+    _dataAllProfessionnalObj = null,
+    _idxNbTelecom = 0,
+    _idxNbAddress = 0;
 
 var promiseXHR = function(method, url, statusOK, data) {
     var promise = new RSVP.Promise(function(resolve, reject) {
@@ -202,7 +204,9 @@ function showProfessionals() {
     //var url = document.querySelector("#addProfessionalsModal #tsanteListProfessional") + "?filter={perimeter: xxx}";
     document.querySelector("#addProfessionalsModal #tsanteListProfessional").go();
     //Store the obj in a clone (for cancel case on modal)
-    _dataObjTmp = (_dataObj && _dataObj.professionals) ? JSON.parse(JSON.stringify(_dataObj)) : {professionals:[]};
+    _dataObjTmp = (_dataObj && _dataObj.professionals) ? JSON.parse(JSON.stringify(_dataObj)) : {
+        professionals: []
+    };
     document.querySelector("#addProfessionalsModal").show();
 }
 
@@ -216,8 +220,10 @@ function addProfessionals() {
     console.log("addProfessionals");
 
     //Case of new entry
-    if(!_dataObj){
-        _dataObj = {professionals: []};
+    if (!_dataObj) {
+        _dataObj = {
+            professionals: []
+        };
     }
 
     if (_dataObjTmp && _dataObjTmp.professionals) {
@@ -249,7 +255,7 @@ function deleteProfessional(node) {
 
 function saveProfessionals() {
     console.log("saveProfessionals", _dataObj);
-    closeModal();
+    
     //TODO: waiting for updateProfessional
     ///api/beneficiaries/:entryID/professionals
 }
@@ -273,45 +279,261 @@ function confirmSaveProfessionals() {
             id: "trad_yes",
             action: function() {
                 saveProfessionals();
+                closeModal();
             }
         }]
     };
     showModal(modalObj);
 }
 
-function checkForm1() {
-    var obj = form2js(document.querySelector("form[name='beneficiary']"));
-    console.log("checkForm1", obj);
-    if (isNaN(parseFloat(obj.size))) {
-        alert("size must be a number");
-    } else {
-        obj.size = parseFloat(obj.size);
+function deleteTelecom(node) {
+    console.log("deleteTelecom", arguments);
+    while (!node.classList.contains("telecomContainer")) {
+        node = node.parentNode;
     }
+    node.parentNode.removeChild(node);
+}
+
+function addTelecom() {
+    console.log("addTelecom");
+    var elt = document.querySelector("#tplTelecomContainer").innerHTML;
+    var modelData = {
+        idx: ++_idxNbTelecom
+    };
+    var html = Mustache.render(elt, modelData);
+    var div = document.createElement("div");
+    div.classList.add("telecomContainer");
+    div.innerHTML = html;
+    var button = document.querySelector("#addTelecomBtn");
+    button.parentNode.insertBefore(div, button);
+}
+
+function deleteAddress(node) {
+    console.log("deleteAddress", arguments);
+    while (!node.classList.contains("addressContainer")) {
+        node = node.parentNode;
+    }
+    node.parentNode.removeChild(node);
+}
+
+function addAddress() {
+    console.log("addAddress");
+    var elt = document.querySelector("#tplAddressContainer").innerHTML;
+    var modelData = {
+        idx: ++_idxNbAddress
+    };
+    var html = Mustache.render(elt, modelData);
+    var div = document.createElement("div");
+    div.classList.add("addressContainer");
+    div.innerHTML = html;
+    var button = document.querySelector("#addAddressBtn");
+    button.parentNode.insertBefore(div, button);
+}
+
+function updateBeneficiary(obj) {
+    console.log("updateBeneficiary", obj);
+    var modalObj;
+
+    if(obj._id){
+        //Update
+        promiseXHR("PUT", "/api/beneficiaries/" + obj._id, 200, JSON.stringify(obj)).then(function(){
+            modalObj = {
+                title: "trad_success",
+                content: "trad_success_update",
+                buttons: [{
+                    id: "trad_ok",
+                    action: function() {
+                        closeModal();
+                    }
+                }]
+            };
+            showModal(modalObj);
+        }, function(error){
+            modalObj = {
+                title: "trad_error",
+                content: "trad_error_occured",
+                buttons: [{
+                    id: "trad_ok",
+                    action: function() {
+                        closeModal();
+                    }
+                }]
+            };
+            showModal(modalObj);
+            console.log("updateBeneficiary - update error: ", error);
+        });
+    }
+    else{
+        //Creation
+        promiseXHR("POST", "/api/beneficiaries", 200, JSON.stringify(obj)).then(function(response){
+            _dataObj = JSON.parse(response);
+            document.querySelector("form[name='beneficiary'] input[name='_id']").value = _dataObj._id;
+            //Enable others panel
+            var items = document.querySelectorAll(".waitForId");
+            [].map.call(items, function(node) {
+                node.removeAttribute("disabled");
+            });
+            //Display the delete button
+            document.querySelector("#deleteBeneficiary").classList.remove("hidden");
+
+            modalObj = {
+                title: "trad_create",
+                content: "trad_success_create",
+                buttons: [{
+                    id: "trad_ok",
+                    action: function() {
+                        closeModal();
+                    }
+                }]
+            };
+            showModal(modalObj);
+        }, function(error){
+            modalObj = {
+                title: "trad_error",
+                content: "trad_error_occured",
+                buttons: [{
+                    id: "trad_ok",
+                    action: function() {
+                        closeModal();
+                    }
+                }]
+            };
+            showModal(modalObj);
+            console.log("updateBeneficiary - create error: ", error);
+        });
+    }
+}
+
+function confirmDeleteBeneficiary() {
+    var modalObj = {
+        title: "trad_delete",
+        content: "trad_confirm_delete",
+        buttons: [{
+            id: "trad_yes",
+            action: function() {
+                deleteBeneficiary();
+                closeModal();
+            }
+        }, {
+            id: "trad_no",
+            action: function() {
+                closeModal();
+            }
+        }]
+    };
+    showModal(modalObj);
+}
+
+function deleteBeneficiary() {
+    console.log("deleteBeneficiary");
+    var modalObj;
+    if (_dataObj && _dataObj._id) {
+        promiseXHR("DELETE", "/api/beneficiaries/" + _dataObj._id, 410).then(function(response) {
+            modalObj = {
+                title: "trad_success",
+                content: "trad_success_delete",
+                buttons: [{
+                    id: "trad_ok",
+                    action: function() {
+                        closeModal();
+                        window.history.back();
+                    }
+                }]
+            };
+            showModal(modalObj);
+        }, function(error) {
+            modalObj = {
+                title: "trad_error",
+                content: "trad_error_occured",
+                buttons: [{
+                    id: "trad_ok",
+                    action: function() {
+                        closeModal();
+                    }
+                }]
+            };
+            showModal(modalObj);
+            console.log("deleteBeneficiary - error: ", error);
+        });
+    }
+}
+
+function checkBeneficiaryForm() {
+    var modalObj,
+        obj = form2js(document.querySelector("form[name='beneficiary']"));
+    console.log("checkBeneficiaryForm", obj);
+
+    if(isNaN(parseFloat(obj.size))){
+        modalObj = {
+            title: "trad_errorFormValidation",
+            content: "trad_error_size",
+            buttons: [{
+                id: "trad_ok",
+                action: function() {
+                    closeModal();
+                }
+            }]
+        };
+        showModal(modalObj);
+        return false;
+    }
+
+    if(!obj.address){
+        modalObj = {
+            title: "trad_errorFormValidation",
+            content: "trad_error_noAddress",
+            buttons: [{
+                id: "trad_ok",
+                action: function() {
+                    closeModal();
+                }
+            }]
+        };
+        showModal(modalObj);
+        return false;
+    }
+
+    if(!obj.telecom){
+        modalObj = {
+            title: "trad_errorFormValidation",
+            content: "trad_error_noTelecom",
+            buttons: [{
+                id: "trad_ok",
+                action: function() {
+                    closeModal();
+                }
+            }]
+        };
+        showModal(modalObj);
+        return false;
+    }
+
+    obj.address.map(function(addr){
+        if(addr.line){
+            addr.line = addr.line.split("\n");
+        }
+    });
+    obj.size = parseFloat(obj.size);
     obj.validate = obj.validate === "true" ? true : false;
-    obj.address[0].line = obj.address[0].line.split("\n");
-    if (!obj.telecom[0].value) {
-        delete obj.telecom;
-    }
-    var xhr = new XMLHttpRequest();
-    if (obj._id) {
-        xhr.open("PUT", "/api/beneficiaries/" + obj._id, false);
-        xhr.send(JSON.stringify(obj));
-        if (xhr.status === 200) {
-            alert("beneficiary saved");
-        } else {
-            alert("error when saving beneficiary");
-        }
-    } else {
-        xhr.open("POST", "/api/beneficiaries", false);
-        xhr.send(JSON.stringify(obj));
-        if (xhr.status === 200) {
-            alert("beneficiary saved");
-            var result = JSON.parse(xhr.responseText);
-            document.querySelector("form[name='beneficiary']")._id = result._id;
-        } else {
-            alert("error when saving beneficiary");
-        }
-    }
+
+    modalObj = {
+        title: "trad_save",
+        content: "trad_confirm_save",
+        buttons: [{
+            id: "trad_no",
+            action: function() {
+                closeModal();
+            }
+        }, {
+            id: "trad_yes",
+            action: function() {
+                updateBeneficiary(obj);
+                closeModal();
+            }
+        }]
+    };
+    showModal(modalObj);
+    return true;
 }
 
 function closeModal() {
@@ -405,9 +627,30 @@ function init() {
             }
         }).catch(function(error) {
             console.log("Init error", error);
-            //TODO modal d'erreur à afficher
+            var modalObj = {
+                title: "trad_error",
+                content: "trad_error_occured",
+                buttons: [{
+                    id: "trad_ok",
+                    action: function() {
+                        closeModal();
+                    }
+                }]
+            };
+            showModal(modalObj);
         });
+    } else {
+        //Disable panels except the first until the user save the first one (beneficiary) to get an ID
+        var items = document.querySelectorAll(".waitForId");
+        [].map.call(items, function(node) {
+            node.setAttribute("disabled", true);
+        });
+        //hide the delete button
+        document.querySelector("#deleteBeneficiary").classList.add("hidden");
     }
+
+    _idxNbTelecom = document.querySelectorAll(".telecomContainer").length;
+    _idxNbAddress = document.querySelectorAll(".addressContainer").length;
 }
 
 window.addEventListener("DOMContentLoaded", init, false);

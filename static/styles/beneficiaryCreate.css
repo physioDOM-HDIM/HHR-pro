@@ -18,10 +18,31 @@ form[name="professionals"] .proItemContainer .proItem.referent{
 }
 
 form[name="professionals"] .proItem .buttonContainer{
-    flex: 0.2;
     -ms-flex: 0.2;
+    -webkit-flex: 0.2;
+    flex: 0.2;
 }
 
 button.small{
     line-height: 0;
+}
+
+.addressContainer .zipCode{
+    -ms-flex: 0.5;
+    -webkit-flex: 0.5;
+    flex: 0.5;
+}
+
+.addressContainer .city{
+    width: 80px;
+}
+
+.addressContainer{
+    border-top: 2px solid grey;
+    margin-top: 10px;
+    padding-top: 10px;
+}
+
+.addressContainer:nth-child(2){
+    border: none;
 }

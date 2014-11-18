@@ -69,5 +69,18 @@
 	"Are you sure you want to save this part ?": "Are you sure you want to save this part ?",
 	"Yes": "Yes",
 	"No": "No",
-	"OK": "OK"
+	"OK": "OK",
+	"Error": "Error",
+	"An error occured": "An error occured",
+	"Error in form validation": "Error in form validation",
+	"Size must be a number": "Size must be a number",
+	"Success": "Success",
+	"Create": "Create",
+	"Item successfully updated": "Item successfully updated",
+	"Item successfully created": "Item successfully created",
+	"You must fill at least one address data": "You must fill at least one address data",
+	"You must fill at least one telecom data": "You must fill at least one telecom data",
+	"Delete": "Delete",
+	"Are you sure you want to delete this item ?": "Are you sure you want to delete this item ?",
+	"Item successfully deleted": "Item successfully deleted"
 }

@@ -238,11 +238,10 @@ function IPage() {
 			.then( function(beneficiary) {
 				logger.debug("data", data);
 				logger.debug("bene ", beneficiary );
-				if( beneficiary && beneficiary._id ) {
+				if(beneficiary){
 					data.beneficiary = beneficiary;
-					return beneficiary.getProfessionals();
 				}
-				return null;
+				return beneficiary._id ? beneficiary.getProfessionals() : null;
 			}).then(function(professionals){
 				if( professionals ){
 					data.beneficiary.professionals = professionals;
