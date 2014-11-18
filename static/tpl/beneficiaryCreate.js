@@ -24,124 +24,6 @@ var promiseXHR = function(method, url, statusOK, data) {
     return promise;
 };
 
-function showProfessionals() {
-    console.log("showProfessionals");
-    //TODO: check the perimeter to filter the url for the listpager
-    //var url = document.querySelector("#addProfessionalsModal #tsanteListProfessional") + "?filter={perimeter: xxx}";
-    document.querySelector("#addProfessionalsModal #tsanteListProfessional").go();
-    if (_dataObj && _dataObj.professionals) {
-        _dataObjTmp = JSON.parse(JSON.stringify(_dataObj));
-    }
-    document.querySelector("#addProfessionalsModal").show();
-}
-
-function closeProfessionals() {
-    console.log("closeProfessionals");
-    _dataObjTmp = null;
-    document.querySelector("#addProfessionalsModal").hide();
-}
-
-function saveProfessionals() {
-    console.log("saveProfessionals");
-    if (_dataObj && _dataObjTmp && _dataObj.professionals && _dataObjTmp.professionals) {
-        _dataObj.professionals = JSON.parse(JSON.stringify(_dataObjTmp.professionals));
-        _removeAllProfessionals();
-        _dataObj.professionals.map(function(proItem) {
-            //console.log(proItem.name.family + " " + proItem.name.given + " - " + proItem.referent);
-            addProfessional(proItem);
-        });
-    }
-    closeProfessionals();
-}
-
-function deleteProfessional(node){
-    console.log("deleteProfessional", arguments);
-    var child = node.parentNode.parentNode.parentNode,
-        id = child.querySelector("input[name='professional_id']").value,
-        idx;
-
-    idx = _findProfessionalInBeneficiary(id, _dataObj);
-    if(idx !== null){
-        _dataObj.professionals.splice(idx, 1);
-    }
-
-    while( !node.classList.contains("proItemContainer")) {
-        node = node.parentNode;
-    }
-    node.parentNode.removeChild(node);
-}
-
-function _removeAllProfessionals() {
-    var items = document.querySelectorAll("form[name='professionals'] .proItemContainer"),
-        form = document.querySelector("form[name='professionals']");
-    [].map.call(items, function(item) {
-        form.removeChild(item);
-    });
-}
-
-function addProfessional(professionalItem) {
-    var html, div,
-        elt = document.querySelector("#tplProfessionnalContainer").innerHTML,
-        isFirstItem = true,
-        modelData = {
-            item: professionalItem,
-            display_phone: function() {
-                var res = "";
-                if (this.system !== "email") {
-                    if (isFirstItem) {
-                        isFirstItem = false;
-                    } else {
-                        res = " / ";
-                    }
-                    return res + this.value;
-                }
-                return "";
-            },
-            display_email: function() {
-                return (this.system === "email") ? "<a href=mailto:" + this.value + ">" + this.value + "</a>" : "";
-            }
-        };
-
-    html = Mustache.render(elt, modelData);
-    div = document.createElement("div");
-    div.className = "proItemContainer";
-    div.innerHTML = html;
-    document.querySelector("form[name='professionals']").insertBefore(div, document.querySelector("form[name='professionals'] .row.control"));
-}
-
-function onHaveProfessionalsData(data) {
-    console.log("onHaveProfessionalsData", data);
-    _dataAllProfessionnalObj = data.detail.list;
-    //Check already selected professionals
-    if (_dataObjTmp && _dataObjTmp.professionals && _dataObjTmp.professionals.length > 0 && _dataAllProfessionnalObj && _dataAllProfessionnalObj.items) {
-        var proTab = _dataObjTmp.professionals;
-        _dataAllProfessionnalObj.items.map(function(item) {
-            var selected = false,
-                referent = false,
-                proItem,
-                i = 0;
-
-            while (!selected && i < proTab.length) {
-                proItem = proTab[i];
-                if (item._id === proItem._id) {
-                    selected = true;
-                    if (proItem.referent) {
-                        referent = true;
-                    }
-                }
-                i++;
-            }
-            item._tmpData = {};
-            item._tmpData.selected = selected;
-            item._tmpData.referent = referent;
-        });
-
-        document.querySelector("#tsanteListProfessional template").model = {
-            list: _dataAllProfessionnalObj
-        };
-    }
-}
-
 function _findProfessionalInBeneficiary(id, obj) {
     console.log("_findProfessionalInBeneficiary", arguments);
     var found = false,
@@ -211,7 +93,6 @@ function updateProfessionalReferent(node, idxItem) {
     node.parentNode.parentNode.querySelector("input[name='selected']").checked = true;
 }
 
-
 function updateProfessionalSelection(node, idxItem) {
     console.log("updateProfessionalSelection", arguments);
 
@@ -240,6 +121,162 @@ function updateProfessionalSelection(node, idxItem) {
             }
         }
     }
+}
+
+function _removeAllProfessionals() {
+    console.log("_removeAllProfessionals");
+    var items = document.querySelectorAll("form[name='professionals'] .proItemContainer"),
+        form = document.querySelector("form[name='professionals']");
+    [].map.call(items, function(item) {
+        form.removeChild(item);
+    });
+}
+
+function _addProfessional(professionalItem) {
+    console.log("_addProfessional", arguments);
+    var html, div,
+        elt = document.querySelector("#tplProfessionnalContainer").innerHTML,
+        isFirstItem = true,
+        modelData = {
+            item: professionalItem,
+            display_phone: function() {
+                var res = "";
+                if (this.system !== "email") {
+                    if (isFirstItem) {
+                        isFirstItem = false;
+                    } else {
+                        res = " / ";
+                    }
+                    return res + this.value;
+                }
+                return "";
+            },
+            display_email: function() {
+                return (this.system === "email") ? "<a href=mailto:" + this.value + ">" + this.value + "</a>" : "";
+            }
+        };
+
+    html = Mustache.render(elt, modelData);
+    div = document.createElement("div");
+    div.className = "proItemContainer";
+    div.innerHTML = html;
+    document.querySelector("form[name='professionals']").insertBefore(div, document.querySelector("form[name='professionals'] .row.control"));
+}
+
+function _onHaveProfessionalsData(data) {
+    console.log("onHaveProfessionalsData", data);
+    _dataAllProfessionnalObj = data.detail.list;
+    //Check already selected professionals
+    if (_dataObjTmp && _dataObjTmp.professionals && _dataObjTmp.professionals.length > 0 && _dataAllProfessionnalObj && _dataAllProfessionnalObj.items) {
+        var proTab = _dataObjTmp.professionals;
+        _dataAllProfessionnalObj.items.map(function(item) {
+            var selected = false,
+                referent = false,
+                proItem,
+                i = 0;
+
+            while (!selected && i < proTab.length) {
+                proItem = proTab[i];
+                if (item._id === proItem._id) {
+                    selected = true;
+                    if (proItem.referent) {
+                        referent = true;
+                    }
+                }
+                i++;
+            }
+            item._tmpData = {};
+            item._tmpData.selected = selected;
+            item._tmpData.referent = referent;
+        });
+
+        document.querySelector("#tsanteListProfessional template").model = {
+            list: _dataAllProfessionnalObj
+        };
+    }
+}
+
+function showProfessionals() {
+    console.log("showProfessionals");
+    //TODO: check the perimeter to filter the url for the listpager
+    //var url = document.querySelector("#addProfessionalsModal #tsanteListProfessional") + "?filter={perimeter: xxx}";
+    document.querySelector("#addProfessionalsModal #tsanteListProfessional").go();
+    //Store the obj in a clone (for cancel case on modal)
+    _dataObjTmp = (_dataObj && _dataObj.professionals) ? JSON.parse(JSON.stringify(_dataObj)) : {professionals:[]};
+    document.querySelector("#addProfessionalsModal").show();
+}
+
+function closeProfessionals() {
+    console.log("closeProfessionals");
+    _dataObjTmp = null;
+    document.querySelector("#addProfessionalsModal").hide();
+}
+
+function addProfessionals() {
+    console.log("addProfessionals");
+
+    //Case of new entry
+    if(!_dataObj){
+        _dataObj = {professionals: []};
+    }
+
+    if (_dataObjTmp && _dataObjTmp.professionals) {
+        _dataObj.professionals = JSON.parse(JSON.stringify(_dataObjTmp.professionals));
+        _removeAllProfessionals();
+        _dataObj.professionals.map(function(proItem) {
+            _addProfessional(proItem);
+        });
+    }
+    closeProfessionals();
+}
+
+function deleteProfessional(node) {
+    console.log("deleteProfessional", arguments);
+    var child = node.parentNode.parentNode.parentNode,
+        id = child.querySelector("input[name='professional_id']").value,
+        idx;
+
+    idx = _findProfessionalInBeneficiary(id, _dataObj);
+    if (idx !== null) {
+        _dataObj.professionals.splice(idx, 1);
+    }
+
+    while (!node.classList.contains("proItemContainer")) {
+        node = node.parentNode;
+    }
+    node.parentNode.removeChild(node);
+}
+
+function saveProfessionals() {
+    console.log("saveProfessionals", _dataObj);
+    closeModal();
+    //TODO: waiting for updateProfessional
+    ///api/beneficiaries/:entryID/professionals
+}
+
+function confirmSaveProfessionals() {
+    console.log("confirmSaveProfessionals");
+
+
+    //TODO: check there is a referent if selected professionals
+
+
+    var modalObj = {
+        title: "trad_save",
+        content: "trad_confirm_save",
+        buttons: [{
+            id: "trad_no",
+            action: function() {
+                closeModal();
+            }
+        }, {
+            id: "trad_yes",
+            action: function() {
+                saveProfessionals();
+            }
+        }]
+    };
+    showModal(modalObj);
 }
 
 function checkForm1() {
@@ -277,9 +314,79 @@ function checkForm1() {
     }
 }
 
+function closeModal() {
+    console.log("closeModal", arguments);
+    document.querySelector("#statusModal").hide();
+
+    var elt = document.querySelector("#statusModal"),
+        subElt, child;
+    subElt = elt.querySelector(".modalTitleContainer");
+    subElt.innerHTML = "";
+    subElt.className += " hidden";
+    subElt = elt.querySelector(".modalContentContainer");
+    subElt.innerHTML = "";
+    subElt.className += " hidden";
+    subElt = elt.querySelector(".modalButtonContainer");
+    for (var i = subElt.childNodes.length - 1; i >= 0; i--) {
+        child = subElt.childNodes[i];
+        subElt.removeChild(child);
+    }
+    subElt.className += " hidden";
+}
+
+function showModal(modalObj) {
+    console.log("showModal", arguments);
+
+    var elt = document.querySelector("#statusModal"),
+        subElt;
+    if (modalObj.title) {
+        subElt = elt.querySelector(".modalTitleContainer");
+        subElt.innerHTML = document.querySelector("#" + modalObj.title).innerHTML;
+        subElt.className = subElt.className.replace("hidden", "");
+    }
+    if (modalObj.content) {
+        subElt = elt.querySelector(".modalContentContainer");
+        subElt.innerHTML = document.querySelector("#" + modalObj.content).innerHTML;
+        subElt.className = subElt.className.replace("hidden", "");
+    }
+
+    if (modalObj.buttons) {
+        var btn, obj, color;
+        subElt = elt.querySelector(".modalButtonContainer");
+        for (var i = 0; i < modalObj.buttons.length; i++) {
+            obj = modalObj.buttons[i];
+            btn = document.createElement("button");
+            btn.innerHTML = document.querySelector("#" + obj.id).innerHTML;
+            btn.onclick = obj.action;
+            switch (obj.id) {
+                case "trad_ok":
+                    {
+                        color = "green";
+                    }
+                    break;
+                case "trad_yes":
+                    {
+                        color = "green";
+                    }
+                    break;
+                case "trad_no":
+                    {
+                        color = "blue";
+                    }
+                    break;
+            }
+            btn.className += color;
+            subElt.appendChild(btn);
+        }
+        subElt.className = subElt.className.replace("hidden", "");
+    }
+
+    document.querySelector("#statusModal").show();
+}
+
 function init() {
     console.log("init");
-    document.querySelector("#tsanteListProfessional").addEventListener("tsante-response", onHaveProfessionalsData, false);
+    document.querySelector("#tsanteListProfessional").addEventListener("tsante-response", _onHaveProfessionalsData, false);
 
     var id = document.querySelector("form[name='beneficiary'] input[name='_id']").value;
     if (id) {

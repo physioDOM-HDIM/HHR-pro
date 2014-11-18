@@ -27,7 +27,7 @@
             {{/item.telecom}}{%endraw%}
         </div>
         <div class="col buttonContainer">
-           <button type="button" class="small blue" onclick="deleteProfessional(this)">{{ "delete"|i18n }}</button>
+           <button type="button" class="small red" onclick="deleteProfessional(this)">{{ "delete"|i18n }}</button>
         </div>
         <input type="hidden" name="professional_id" value="{%raw%}{{item._id}}{%endraw%}">
     </div>
@@ -254,7 +254,7 @@
     </form>
 </zdk-panel>
 <zdk-panel bgcolor="gray" heading="Professionals" collapsable="true" collapsed="false">
-    <form name="professionals" autocomplete="off">
+    <form name="professionals" autocomplete="off" onsubmit="confirmSaveProfessionals(); return false;">
         {% for professional in beneficiary.professionals %}
         <div class="proItemContainer">
             <div class="proItem row {% if professional.referent %} referent {% endif %}">
@@ -280,7 +280,7 @@
                     {% endfor %}
                 </div>
                 <div class="col buttonContainer">
-                   <button type="button" class="small blue" onclick="deleteProfessional(this)">{{ "delete"|i18n }}</button>
+                   <button type="button" class="small red" onclick="deleteProfessional(this)">{{ "delete"|i18n }}</button>
                 </div>
                 <input type="hidden" name="professional_id" value="{{professional._id.toString()}}">
             </div>
@@ -352,7 +352,6 @@
     <button class="blue big">{{ "Save"|i18n }}</button>
     <button class="green big">{{ "Validate"|i18n }}</button>
 </div>
-  
 <zdk-modal width="450" id="addProfessionalsModal" closebutton="false">
     <div class="modalContainer">
         <div class="modalTitleContainer">{{ "Add professionals"|i18n }}</div>
@@ -375,7 +374,7 @@
         </div>
         <div class="modalButtonContainer">
             <button class="red" onclick="closeProfessionals()">{{ "Cancel"|i18n }}</button>
-            <button class="blue" onclick="saveProfessionals()">{{ "Save"|i18n }}</button>
+            <button class="blue" onclick="addProfessionals()">{{ "Save"|i18n }}</button>
         </div>
     </div>
 </zdk-modal>
@@ -386,4 +385,11 @@
         <div class="modalButtonContainer"></div>
     </div>
 </zdk-modal>
+<div class="hidden">
+    <div id="trad_save">{{ "Save"|i18n }}</div>
+    <div id="trad_confirm_save">{{ "Are you sure you want to save this part ?"|i18n }}</div>
+    <div id="trad_yes">{{ "Yes"|i18n }}</div>
+    <div id="trad_no">{{ "No"|i18n }}</div>
+    <div id="trad_ok">{{ "OK"|i18n }}</div>
+</div>
 {% endblock %}

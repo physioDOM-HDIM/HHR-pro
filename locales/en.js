@@ -65,5 +65,9 @@
 	"create/update a beneficiary": "create/update a beneficiary",
 	"phone": "phone",
 	"Mandatory field": "Mandatory field",
-	"delete": "delete"
+	"delete": "delete",
+	"Are you sure you want to save this part ?": "Are you sure you want to save this part ?",
+	"Yes": "Yes",
+	"No": "No",
+	"OK": "OK"
 }

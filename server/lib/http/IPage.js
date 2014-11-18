@@ -238,7 +238,7 @@ function IPage() {
 			.then( function(beneficiary) {
 				logger.debug("data", data);
 				logger.debug("bene ", beneficiary );
-				if( beneficiary) {
+				if( beneficiary && beneficiary._id ) {
 					data.beneficiary = beneficiary;
 					return beneficiary.getProfessionals();
 				}
