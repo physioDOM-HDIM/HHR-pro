@@ -65,12 +65,15 @@ function deleteProfessional(node){
         _dataObj.professionals.splice(idx, 1);
     }
 
-    document.forms.professionals.removeChild(node.parentNode.parentNode.parentNode);
+    while( !node.classList.contains("proItemContainer")) {
+        node = node.parentNode;
+    }
+    node.parentNode.removeChild(node);
 }
 
 function _removeAllProfessionals() {
     var items = document.querySelectorAll("form[name='professionals'] .proItemContainer"),
-        form = document.forms.professionals;
+        form = document.querySelector("form[name='professionals']");
     [].map.call(items, function(item) {
         form.removeChild(item);
     });
@@ -103,7 +106,7 @@ function addProfessional(professionalItem) {
     div = document.createElement("div");
     div.className = "proItemContainer";
     div.innerHTML = html;
-    document.forms.professionals.insertBefore(div, document.querySelector("form[name='professionals'] .row.control"));
+    document.querySelector("form[name='professionals']").insertBefore(div, document.querySelector("form[name='professionals'] .row.control"));
 }
 
 function onHaveProfessionalsData(data) {
@@ -240,7 +243,7 @@ function updateProfessionalSelection(node, idxItem) {
 }
 
 function checkForm1() {
-    var obj = form2js(document.forms["beneficiary"]);
+    var obj = form2js(document.querySelector("form[name='beneficiary']"));
     console.log("checkForm1", obj);
     if (isNaN(parseFloat(obj.size))) {
         alert("size must be a number");
@@ -267,7 +270,7 @@ function checkForm1() {
         if (xhr.status === 200) {
             alert("beneficiary saved");
             var result = JSON.parse(xhr.responseText);
-            document.forms["beneficiary"]._id = result._id;
+            document.querySelector("form[name='beneficiary']")._id = result._id;
         } else {
             alert("error when saving beneficiary");
         }

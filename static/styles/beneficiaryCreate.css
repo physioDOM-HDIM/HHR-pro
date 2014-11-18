@@ -33,6 +33,11 @@ form[name="professionals"] .proItemContainer .proItem.referent{
 
 form[name="professionals"] .proItem .buttonContainer{
     flex: 0.2;
+    -ms-flex: 0.2;
+}
+
+button.small{
+    line-height: 0;
 }
 
 /*
@@ -53,22 +58,3 @@ zdk-modal .modalButtonContainer button{
     margin: 0 5px;
 }
 */
-/*#tsanteListProfessional .item.row {
-    font-size: 18px;
-    line-height: 35px;
-    width: 100%;
-    justify-content: flex-start;
-}
-#tsanteListProfessional .item.row:nth-child(2){
-    border-top: 2px solid black;
-}
-#tsanteListProfessional .item.row:last-of-type {
-    border-bottom: 2px solid black;
-    margin-bottom: 10px;
-}
-#tsanteListProfessional .item.row:nth-child(odd) {
-    background: #DFDFDF;
-}
-#tsanteListProfessional .item.row .job {
-    margin-left: auto;
-}*/

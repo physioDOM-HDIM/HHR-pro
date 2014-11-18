@@ -27,7 +27,7 @@
             {{/item.telecom}}{%endraw%}
         </div>
         <div class="col buttonContainer">
-           <button type="button" class="small blue" onclick="deleteProfessional(this)">delete</button>
+           <button type="button" class="small blue" onclick="deleteProfessional(this)">{{ "delete"|i18n }}</button>
         </div>
         <input type="hidden" name="professional_id" value="{%raw%}{{item._id}}{%endraw%}">
     </div>
@@ -57,7 +57,7 @@
         </div>
         <div class="row">
             <label>{{ "Perimeter"|i18n }}</label>
-            <select name="perimeter" required>
+            <select name="perimeter">
                 {% for item in perimeter.items %}
                 <option value="{{item.value}}">{{item.label}}</option>
                 {% endfor %}
@@ -280,7 +280,7 @@
                     {% endfor %}
                 </div>
                 <div class="col buttonContainer">
-                   <button type="button" class="small blue" onclick="deleteProfessional(this)">delete</button>
+                   <button type="button" class="small blue" onclick="deleteProfessional(this)">{{ "delete"|i18n }}</button>
                 </div>
                 <input type="hidden" name="professional_id" value="{{professional._id.toString()}}">
             </div>
