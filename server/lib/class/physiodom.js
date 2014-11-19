@@ -124,7 +124,7 @@ function PhysioDOM( ) {
 				if(!record ) {
 					return reject( { message: "could not find session "+ sessionID });
 				}
-				record.sessionID = sessionID;
+				record.sessionID = new ObjectID(sessionID);
 				resolve( new Session( record ));
 			});
 		});
@@ -157,7 +157,7 @@ function PhysioDOM( ) {
 	 * @returns {*}
 	 */
 	this.getSessions = function(pg, offset, sort, filter) {
-		console.log("getSessions");
+		logger.trace("getSessions");
 		
 		var cursor = this.db.collection("session").find( { 'expire': { '$gt' : (new Date()).getTime() } } );
 		if(sort) {

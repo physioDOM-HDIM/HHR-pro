@@ -140,15 +140,22 @@ server.use( function(req, res, next) {
 				req.session = session;
 			}
 			requestLog(req, res);
-			if( !req.session ){
-				if( req.url.match(/^(\/|\/api\/login|\/logout)$/) ) {
+			if( !req.session ) {
+				cookies = new Cookies(req, res);
+				cookies.set('sessionID');
+				cookies.set('role');
+				if (req.url.match(/^(\/|\/api\/login|\/api\/logout|\/logout)$/)) {
+					// console.log("url match");
 					return next();
 				} else {
-					res.send(403, { error:403, message:"no session"} );
+					logger.info("redirect to home page");
+					res.header('Location', '/');
+					res.send(302);
 					return next(false);
 				}
+			} else {
+				return next();
 			}
-			return next();
 		});
 	});
 });
@@ -333,7 +340,8 @@ function logout(req, res, next ) {
 			cookies.set('sessionID');
 			cookies.set('role');
 			if(req.url.match(/^\/api/)) {
-				res.send(200);
+				// res.send(200);
+				res.send(403, { error:403, message:"no session"} );
 			} else {
 				logger.debug("redirect to /")
 				res.header('Location', '/');
@@ -344,7 +352,7 @@ function logout(req, res, next ) {
 }
 
 function getSessions( req, res, next ) {
-	console.log("getSessions");
+	logger.trace("getSessions");
 	var pg = parseInt(req.params.pg,10) || 1;
 	var offset = parseInt(req.params.offset,10) || 10;
 	var sort = req.params.sort;

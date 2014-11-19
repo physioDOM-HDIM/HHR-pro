@@ -23,11 +23,12 @@ function Session( obj ) {
 	
 	logger.trace("Session constructor");
 	
-	this.sessionID = null;
-	this.createDate = null;
-	this.expire = null;
-	this.role = null;
-	this.person = null;
+	this.sessionID   = null;
+	this.createDate  = null;
+	this.expire      = null;
+	this.role        = null;
+	this.person      = null;
+	this.beneficiary = null;
 	
 	for( var prop in this ) {
 		if( obj.hasOwnProperty(prop) ) {
@@ -38,11 +39,12 @@ function Session( obj ) {
 	this.toMongo = function() {
 		logger.trace("Session.toMongo");
 		return {
-			_id        : this.sessionID,
-			createDate : this.createDate,
-			expire     : this.expire,
-			role       : this.role,
-			person     : this.person
+			_id         : this.sessionID,
+			createDate  : this.createDate,
+			expire      : this.expire,
+			role        : this.role,
+			person      : { id: this.person.id, collection : this.person.collection },
+			beneficiary : this.beneficiary
 		};
 	};
 	
