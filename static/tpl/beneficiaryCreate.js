@@ -683,7 +683,7 @@ function init() {
 
     //Set placeholder for date input according to the local from lang cookie
     //TODO get lang cookie
-    _langCookie = "fr";
+    _langCookie = "en";
     _momentFormat = moment.localeData(_langCookie).longDateFormat("L");
     [].map.call(document.querySelectorAll(".date"), function(item){
         item.setAttribute("placeholder", _momentFormat);

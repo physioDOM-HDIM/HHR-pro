@@ -15,7 +15,8 @@
 
 var swig = require("swig"),
 	Logger = require("logger"),
-	RSVP = require("rsvp");
+	RSVP = require("rsvp"),
+	moment = require("moment");
 var logger = new Logger("IPage");
 var i18n = new (require('i18n-2'))({
 	// setup some locales - other locales default to the first locale
@@ -34,14 +35,18 @@ function IPage() {
 	var lang;
 	
 	function init(req) {
-		lang = req.session.lang || req.cookies.lang || req.params.lang || "en"
+		lang = req.session.lang || req.cookies.lang || req.params.lang || "en";
 		i18n.setLocale(lang);
 
 		swig.setDefaults({cache: false});
-		swig.setFilter('i18n', function (input, idx) {
+		swig.setFilter("i18n", function (input, idx) {
 			// console.log("input", input, idx);
 			return i18n.__(input);
 		});
+	}
+
+	function convertDate(strDate){
+		return strDate ? moment(strDate, "YYYY-MM-DD").format(moment.localeData(lang).longDateFormat("L")) : strDate;
 	}
 
 	/**
@@ -247,6 +252,14 @@ function IPage() {
 								address.line = address.line.join("\n");
 							}
 						});
+					}
+
+					//Format date to follow the locale
+					data.beneficiary.birthdate = convertDate(data.beneficiary.birthdate);
+					if(data.beneficiary.entry){
+						data.beneficiary.entry.startDate = convertDate(data.beneficiary.entry.startDate);
+						data.beneficiary.entry.plannedEnd = convertDate(data.beneficiary.entry.plannedEnd);
+						data.beneficiary.entry.endDate = convertDate(data.beneficiary.entry.endDate);
 					}
 				}
 				return beneficiary._id ? beneficiary.getProfessionals() : null;
