@@ -8,6 +8,7 @@
 <script src="/bower_components/form2js/src/form2js.js"></script>
 <script src="/bower_components/rsvp/rsvp.min.js"></script>
 <script src="/bower_components/mustache/mustache.js"></script>
+<script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
 <script src="/tpl/beneficiaryCreate.js"></script>
 {% endblock %}
   
@@ -112,7 +113,7 @@
         </div>
         <div class="row">
             <label>{{ "Birth date"|i18n }}</label>
-            <input type="text" name="birthdate" required placeholder="YYYY-MM-DD" value="{{beneficiary.birthdate}}"  />
+            <input type="text" name="birthdate" required class="date" value="{{beneficiary.birthdate}}"  />
         </div>
         <div class="row">
             <label>{{ "Perimeter"|i18n }}</label>
@@ -224,15 +225,15 @@
         </div>
         <div class="row">
             <label>{{ "Start date"|i18n }}</label>
-            <input type="text" name="entry.startDate" required placeholder="YYYY-MM-DD" />
+            <input type="text" name="entry.startDate" required class="date" />
         </div>
         <div class="row">
             <label>{{ "Planned end"|i18n }}</label>
-            <input type="text" name="entry.plannedEnd" required placeholder="YYYY-MM-DD" />
+            <input type="text" name="entry.plannedEnd" required class="date" />
         </div>
         <div class="row">
             <label>{{ "End date"|i18n }}</label>
-            <input type="text" name="entry.endDate" required placeholder="YYYY-MM-DD" />
+            <input type="text" name="entry.endDate" required class="date" />
         </div>
         <div class="row">
             <label>{{ "Come from"|i18n }}</label>
@@ -245,10 +246,6 @@
         <div class="row">
             <label>{{ "PhysioDom-Box"|i18n }}</label>
             <input type="text" name="biomaster" />
-        </div>
-        <div class="row control">
-            <span class="spacer"></span>
-            <button class="waitForId blue">{{ "Save"|i18n }}</button>
         </div>
     </form>
 </zdk-panel>
@@ -302,10 +299,6 @@
                 {% endfor %}
             </select>
         </div>
-        <div class="row control">
-            <span class="spacer"></span>
-            <button class="waitForId blue">{{ "Save"|i18n }}</button>
-        </div>
     </form>
 </zdk-panel>
 
@@ -326,10 +319,6 @@
         <div class="row">
             <label>{{ "Email"|i18n }}</label>
             <input type="text" name="telecom.system" />
-        </div>
-        <div class="row control">
-            <span class="spacer"></span>
-            <button class="waitForId blue">{{ "Save"|i18n }}</button>
         </div>
     </form>
 </zdk-panel>
@@ -420,10 +409,6 @@
                 </select>
             </div>
         </div>
-        <div class="row control">
-            <span class="spacer"></span>
-            <button class="waitForId blue">{{ "Save"|i18n }}</button>
-        </div>
     </form>
 </zdk-panel>
 
@@ -431,8 +416,8 @@
     <span class="spacer"></span>
     <button id="deleteBeneficiary" class="red big" onclick="confirmDeleteBeneficiary()">{{ "Delete"|i18n }}</button>
     <button class="red big" onclick="window.history.back();">{{ "Cancel"|i18n }}</button>
-    <button class="blue big">{{ "Save"|i18n }}</button>
-    <button class="green big">{{ "Validate"|i18n }}</button>
+    <button class="waitForId blue big">{{ "Save"|i18n }}</button>
+    <button class="waitForId green big">{{ "Validate"|i18n }}</button>
 </div>
 <zdk-modal width="450" id="addProfessionalsModal" closebutton="false">
     <div class="modalContainer">
@@ -483,6 +468,7 @@
     <div id="trad_error_size">{{ "Size must be a number"|i18n }}</div>
     <div id="trad_error_noAddress">{{ "You must fill at least one address data"|i18n }}</div>
     <div id="trad_error_noTelecom">{{ "You must fill at least one telecom data"|i18n }}</div>
+    <div id="trad_error_date">{{ "Date format is incorrect"|i18n }}</div>
     <div id="trad_yes">{{ "Yes"|i18n }}</div>
     <div id="trad_no">{{ "No"|i18n }}</div>
     <div id="trad_ok">{{ "OK"|i18n }}</div>

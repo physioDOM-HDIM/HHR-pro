@@ -4,7 +4,9 @@ var _dataObj = null,
     _dataObjTmp = null,
     _dataAllProfessionnalObj = null,
     _idxNbTelecom = 0,
-    _idxNbAddress = 0;
+    _idxNbAddress = 0,
+    _langCookie = null,
+    _momentFormat = null;
 
 var promiseXHR = function(method, url, statusOK, data) {
     var promise = new RSVP.Promise(function(resolve, reject) {
@@ -196,6 +198,15 @@ function _onHaveProfessionalsData(data) {
             list: _dataAllProfessionnalObj
         };
     }
+}
+
+function _checkDateFormat(strDate){
+    return moment(strDate, _momentFormat, _langCookie, true).isValid();
+}
+
+function _convertDate(strDate){
+    //Format date to YYYY-MM-DD for the database schema validation
+    return moment(strDate, _momentFormat).format("YYYY-MM-DD");
 }
 
 function showProfessionals() {
@@ -463,6 +474,21 @@ function checkBeneficiaryForm() {
         obj = form2js(document.querySelector("form[name='beneficiary']"));
     console.log("checkBeneficiaryForm", obj);
 
+    if(!_checkDateFormat(obj.birthdate)){
+        modalObj = {
+            title: "trad_errorFormValidation",
+            content: "trad_error_date",
+            buttons: [{
+                id: "trad_ok",
+                action: function() {
+                    closeModal();
+                }
+            }]
+        };
+        showModal(modalObj);
+        return false;
+    }
+
     if(isNaN(parseFloat(obj.size))){
         modalObj = {
             title: "trad_errorFormValidation",
@@ -508,6 +534,8 @@ function checkBeneficiaryForm() {
         return false;
     }
 
+    //Adjust data before sending
+    obj.birthdate = _convertDate(obj.birthdate);
     obj.address.map(function(addr){
         if(addr.line){
             addr.line = addr.line.split("\n");
@@ -649,8 +677,17 @@ function init() {
         document.querySelector("#deleteBeneficiary").classList.add("hidden");
     }
 
+    //Used for count index for adding new telecom/address field data
     _idxNbTelecom = document.querySelectorAll(".telecomContainer").length;
     _idxNbAddress = document.querySelectorAll(".addressContainer").length;
+
+    //Set placeholder for date input according to the local from lang cookie
+    //TODO get lang cookie
+    _langCookie = "fr";
+    _momentFormat = moment.localeData(_langCookie).longDateFormat("L");
+    [].map.call(document.querySelectorAll(".date"), function(item){
+        item.setAttribute("placeholder", _momentFormat);
+    });
 }
 
 window.addEventListener("DOMContentLoaded", init, false);
