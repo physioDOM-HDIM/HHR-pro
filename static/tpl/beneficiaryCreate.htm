@@ -324,7 +324,7 @@
 </zdk-panel>
 
 <zdk-panel bgcolor="gray" heading="Professionals" collapsable="true" collapsed="false">
-    <form name="professionals" autocomplete="off" onsubmit="confirmSaveProfessionals(); return false;">
+    <form name="professionals" autocomplete="off" onsubmit="checkProfessionalsForm(); return false;">
         {% for professional in beneficiary.professionals %}
         <div class="proItemContainer">
             <div class="proItem row {% if professional.referent %} referent {% endif %}">

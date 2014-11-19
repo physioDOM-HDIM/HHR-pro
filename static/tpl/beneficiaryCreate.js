@@ -200,11 +200,11 @@ function _onHaveProfessionalsData(data) {
     }
 }
 
-function _checkDateFormat(strDate){
+function _checkDateFormat(strDate) {
     return moment(strDate, _momentFormat, _langCookie, true).isValid();
 }
 
-function _convertDate(strDate){
+function _convertDate(strDate) {
     //Format date to YYYY-MM-DD for the database schema validation
     return moment(strDate, _momentFormat).format("YYYY-MM-DD");
 }
@@ -264,19 +264,53 @@ function deleteProfessional(node) {
     node.parentNode.removeChild(node);
 }
 
-function saveProfessionals() {
-    console.log("saveProfessionals", _dataObj);
-    
-    //TODO: waiting for updateProfessional
-    ///api/beneficiaries/:entryID/professionals
+function updateProfessionals() {
+    console.log("updateProfessionals", _dataObj);
+
+    if (_dataObj && _dataObj._id) {
+        var modalObj,
+            obj = [];
+        if (_dataObj.professionals) {
+            _dataObj.professionals.map(function(item) {
+                obj.push({
+                    professionalID: item._id,
+                    referent: item.referent
+                });
+            });
+        }
+        console.log("updateProfessionals obj", obj);
+
+        promiseXHR("POST", "/api/beneficiaries/" + _dataObj._id + "/professionals", 200, JSON.stringify(obj)).then(function() {
+            modalObj = {
+                title: "trad_success",
+                content: "trad_success_update",
+                buttons: [{
+                    id: "trad_ok",
+                    action: function() {
+                        closeModal();
+                    }
+                }]
+            };
+            showModal(modalObj);
+        }, function(error) {
+            modalObj = {
+                title: "trad_error",
+                content: "trad_error_occured",
+                buttons: [{
+                    id: "trad_ok",
+                    action: function() {
+                        closeModal();
+                    }
+                }]
+            };
+            showModal(modalObj);
+            console.log("updateProfessionals - update error: ", error);
+        });
+    }
 }
 
-function confirmSaveProfessionals() {
-    console.log("confirmSaveProfessionals");
-
-
-    //TODO: check there is a referent if selected professionals
-
+function checkProfessionalsForm() {
+    console.log("checkProfessionalsForm");
 
     var modalObj = {
         title: "trad_save",
@@ -289,7 +323,7 @@ function confirmSaveProfessionals() {
         }, {
             id: "trad_yes",
             action: function() {
-                saveProfessionals();
+                updateProfessionals();
                 closeModal();
             }
         }]
@@ -345,9 +379,9 @@ function updateBeneficiary(obj) {
     console.log("updateBeneficiary", obj);
     var modalObj;
 
-    if(obj._id){
+    if (obj._id) {
         //Update
-        promiseXHR("PUT", "/api/beneficiaries/" + obj._id, 200, JSON.stringify(obj)).then(function(){
+        promiseXHR("PUT", "/api/beneficiaries/" + obj._id, 200, JSON.stringify(obj)).then(function() {
             modalObj = {
                 title: "trad_success",
                 content: "trad_success_update",
@@ -359,7 +393,7 @@ function updateBeneficiary(obj) {
                 }]
             };
             showModal(modalObj);
-        }, function(error){
+        }, function(error) {
             modalObj = {
                 title: "trad_error",
                 content: "trad_error_occured",
@@ -373,10 +407,9 @@ function updateBeneficiary(obj) {
             showModal(modalObj);
             console.log("updateBeneficiary - update error: ", error);
         });
-    }
-    else{
+    } else {
         //Creation
-        promiseXHR("POST", "/api/beneficiaries", 200, JSON.stringify(obj)).then(function(response){
+        promiseXHR("POST", "/api/beneficiaries", 200, JSON.stringify(obj)).then(function(response) {
             _dataObj = JSON.parse(response);
             document.querySelector("form[name='beneficiary'] input[name='_id']").value = _dataObj._id;
             //Enable others panel
@@ -398,7 +431,7 @@ function updateBeneficiary(obj) {
                 }]
             };
             showModal(modalObj);
-        }, function(error){
+        }, function(error) {
             modalObj = {
                 title: "trad_error",
                 content: "trad_error_occured",
@@ -474,7 +507,7 @@ function checkBeneficiaryForm() {
         obj = form2js(document.querySelector("form[name='beneficiary']"));
     console.log("checkBeneficiaryForm", obj);
 
-    if(!_checkDateFormat(obj.birthdate)){
+    if (!_checkDateFormat(obj.birthdate)) {
         modalObj = {
             title: "trad_errorFormValidation",
             content: "trad_error_date",
@@ -489,7 +522,7 @@ function checkBeneficiaryForm() {
         return false;
     }
 
-    if(isNaN(parseFloat(obj.size))){
+    if (isNaN(parseFloat(obj.size))) {
         modalObj = {
             title: "trad_errorFormValidation",
             content: "trad_error_size",
@@ -504,7 +537,7 @@ function checkBeneficiaryForm() {
         return false;
     }
 
-    if(!obj.address){
+    if (!obj.address) {
         modalObj = {
             title: "trad_errorFormValidation",
             content: "trad_error_noAddress",
@@ -519,7 +552,7 @@ function checkBeneficiaryForm() {
         return false;
     }
 
-    if(!obj.telecom){
+    if (!obj.telecom) {
         modalObj = {
             title: "trad_errorFormValidation",
             content: "trad_error_noTelecom",
@@ -536,8 +569,8 @@ function checkBeneficiaryForm() {
 
     //Adjust data before sending
     obj.birthdate = _convertDate(obj.birthdate);
-    obj.address.map(function(addr){
-        if(addr.line){
+    obj.address.map(function(addr) {
+        if (addr.line) {
             addr.line = addr.line.split("\n");
         }
     });
@@ -685,7 +718,7 @@ function init() {
     //TODO get lang cookie
     _langCookie = "en";
     _momentFormat = moment.localeData(_langCookie).longDateFormat("L");
-    [].map.call(document.querySelectorAll(".date"), function(item){
+    [].map.call(document.querySelectorAll(".date"), function(item) {
         item.setAttribute("placeholder", _momentFormat);
     });
 }
