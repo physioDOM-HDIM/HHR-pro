@@ -308,7 +308,7 @@ server.get( '/logout', logout);
 server.get( '/beneficiary/create', IPage.beneficiaryCreate);
 server.get( '/beneficiary/edit/:beneficiaryID', IPage.beneficiaryCreate);
 server.get( '/beneficiary/select', IPage.beneficiarySelect);
-server.get( '/beneficiary/:entryID', IPage.beneficiaryOverview);
+server.get( '/beneficiary/:beneficiaryID', IPage.beneficiaryOverview);
 server.get( '/directory', IPage.directoryList);
 server.get( '/directory/create', IPage.directoryUpdate);
 server.get( '/directory/:professionalID', IPage.directoryUpdate);
@@ -365,7 +365,7 @@ function getSessions( req, res, next ) {
 }
 
 function serveStatic(req,res,next) {
-	console.log("serveStatic");
+	logger.trace("serveStatic");
 	var uri      = require('url').parse(req.url).pathname;
 	var filepath = decodeURIComponent((uri==="/")?path.join(DOCUMENT_ROOT, '/index.htm'):path.join(DOCUMENT_ROOT, uri));
 	if(!filepath) {
@@ -374,7 +374,7 @@ function serveStatic(req,res,next) {
 
 	fs.exists(filepath, function(exists){
 		if(!exists){
-			console.log("error 404 : "+filepath);
+			logger.warning("error 404 : "+filepath);
 			send404(req,res,next);
 			return next();
 		}

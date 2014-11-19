@@ -16,7 +16,8 @@
 var swig = require("swig"),
 	Logger = require("logger"),
 	RSVP = require("rsvp"),
-	moment = require("moment");
+	moment = require("moment"),
+	ObjectID = require("mongodb").ObjectID;
 var logger = new Logger("IPage");
 var i18n = new (require('i18n-2'))({
 	// setup some locales - other locales default to the first locale
@@ -343,28 +344,36 @@ function IPage() {
 		var data = {
 			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
 		};
-		try {
-			html = swig.renderFile('./static/tpl/recipientDetail.htm', data, function (err, output) {
-				if (err) {
-					console.log("error", err);
-					console.log("output", output);
-					res.write(err);
-					res.end();
-					next();
-				} else {
-					sendPage(output, res, next);
-				}
-			});
-		} catch(err) {
-			res.write(err);
-			res.end();
-			next();
+		if( req.params.beneficiaryID !== "overview") {
+			req.session.beneficiary = new ObjectID(req.params.beneficiaryID);
 		}
-		/*
-		var data = {};
-		var html = swig.renderFile('./static/tpl/recipientDetail.htm', data);
-		sendPage(html, req, res, next);
-		*/
+		req.session.save()
+			.then( function(session) {
+				return physioDOM.Beneficiaries();
+			})
+			.then( function(beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+			})
+			.then( function (beneficiary) {
+				data.beneficiary = beneficiary;
+				html = swig.renderFile('./static/tpl/recipientDetail.htm', data, function (err, output) {
+					if (err) {
+						console.log("error", err);
+						console.log("output", output);
+						res.write(err);
+						res.end();
+						next();
+					} else {
+						sendPage(output, res, next);
+					}
+				});
+			})
+			.catch( function(err) {
+				logger.error(err);
+				res.write(err);
+				res.end();
+				next();
+			});
 	};
 
 	/**

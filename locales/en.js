@@ -83,5 +83,6 @@
 	"Delete": "Delete",
 	"Are you sure you want to delete this item ?": "Are you sure you want to delete this item ?",
 	"Item successfully deleted": "Item successfully deleted",
-	"Date format is incorrect": "Date format is incorrect"
+	"Date format is incorrect": "Date format is incorrect",
+	"Beneficiary overview": "Beneficiary overview"
 }
