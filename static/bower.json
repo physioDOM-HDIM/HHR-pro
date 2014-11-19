@@ -20,7 +20,7 @@
     "zdk-calendar": "~0.2.0",
     "core-ajax": "Polymer/core-ajax#~0.5.1",
     "core-input": "Polymer/core-input#~0.5.1",
-    "tsante-listpager": "git@git.telecomsante.com:components/tsante-listpager.git#0.2.0",
+    "tsante-listpager": "git@git.telecomsante.com:components/tsante-listpager.git#0.2.1",
     "mustache": "~0.8.2",
     "rsvp": "~3.0.13",
     "form2js": "*",
