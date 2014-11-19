@@ -1,14 +1,4 @@
-body { 
-	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-	background: white;
-	position: absolute;
-	bottom: 0;
-	top: 0;
-	left: 0;
-	right: 0;
-	overflow: auto;
-	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
+
 
 section { 
 	position:absolute;
@@ -19,37 +9,11 @@ section {
 	overflow-y:hidden;
 }
 
-nav {
-	position: absolute;
-	left:0;
-	top:0;
-	bottom:0;
-	width:260px;
-	padding: 10px 0px;
-}
-
-article {
-	position:absolute;
-	top:0;
-	bottom:0;
-	left:260px;
-	right:0;
-	overflow: hidden;
-}
-
 iframe {
 	width:100%;
 	height:100%;
 	border: 0px;
 	overflow:hidden;
-}
-
-article > footer {
-	background: none;
-	line-height: 50px;
-	height: 50px;
-	padding: 0px 10px;
-	text-align: right;
 }
 
 header.hdr { 
@@ -80,6 +44,8 @@ footer + section {
 	height: 30px;
 }
 
+a { text-decoration: none; color: inherit; }
+
 @media (max-width: 992px) {
 	nav {
 		top: -50px;
@@ -103,6 +69,11 @@ footer + section {
 	.navbtn button { display:none; }
 }
 
+@media (max-width: 768px) {
+	zdk-panel div.col {
+		display:block;
+	}
+}
 /* div table */
 
 .ttable {
@@ -181,7 +152,6 @@ ul.tree li {
 }
 
 ul.tree li a {
-	text-decoration: none;
 	color: white;
 }
 ul.tree li.selected a {
@@ -279,29 +249,33 @@ select {
 	font-size:inherit;
 	font-family: inherit;
 	border:1px solid gray;
+	/*
 	-webkit-appearance:none !important;
 	-moz-appearance:none  !important;
 	appearance:none  !important;
+	*/
 	background: white;
 	display:inline-block;
 	outline:none;
 }
 button { 
 	border-radius:2px;
-	height:30px; 
+	height:30px;
 	min-width:100px; 
 	font-size:inherit; 
 	font-family:inherit; 
 	margin-left:5px; 
 	border:none;
+	box-sizing: border-box;
 }
 .blue { background:#428bca; color:white; }
 .red { background:crimson; color:white; }
 .green { background:ForestGreen ; color:white; }
 button.small { 
 	font-size: 12px; 
-	height:1.5em; 
+	height:2em; 
 	min-width:20px;
+	padding:5px;
 }
 button[disabled] { 
 	color:darkgray; 

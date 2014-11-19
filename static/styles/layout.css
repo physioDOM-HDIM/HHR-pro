@@ -1,3 +1,4 @@
+html, body { height:100%; }
 @font-face {
 	font-family: 'Roboto';
 	font-style: normal;
@@ -14,26 +15,38 @@
 }
 body {
 	font-family: "Roboto", Helvetica, Arial, sans-serif;
-	background: aliceblue; 
-}
-.container {
-	margin-right: auto;
-	margin-left: auto;
-	padding-left: 15px;
-	padding-right: 15px;
-	box-sizing: border-box;
-}
-div.error {
-	border: 2px solid red;
-	padding: 10px;
-	width: 300px;
-	border-radius: 10px;
-	margin: auto;
-	margin-top: 25px;
-	display:none;
-	color: DarkRed;
 	background: white;
-	text-align:center;
+	font-size:14px;
+	margin:0px;
+	padding:0px;
 }
-button { -webkit-flex:1; -ms-flex:1; flex:1; font-size:inherit; font-family: inherit; height:40px }
-input[type=text], input[type=password] { height: 40px; font-size:120%; }
+
+core-toolbar {
+	background: black;
+	color: white;
+	box-shadow: 0 2px 5px rgba(0,0,0,0.26);
+	z-index: 2;
+	/* font-size:160%; */
+	font-weight: 700;
+}
+
+core-drawer-panel {
+	top: 56px;
+	bottom: 0px;
+	width: 100%;
+	height: auto;
+}
+
+[drawer] {
+	background: rgb(80, 80, 80);;
+	overflow-y: auto;
+}
+
+[main] {
+	height: 100%;
+	background-color: white;
+	padding:20px 10px;
+	font-size: initial;
+	overflow: hidden;
+	padding: 0px;
+}

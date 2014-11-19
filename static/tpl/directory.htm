@@ -18,31 +18,39 @@
                 <input type="text" name="nameTxt" />
             </div>
             <div class="row ">
+                <div class="col">
                 <label>Perimeter:</label>
                 <select name="perimeter">
                     {% for item in perimeter.items %}
                     <option value="{{item.value}}" >{{item.label}}</option>
                     {% endfor %}
                 </select>
-                <label>Active status:</label>
-                <select name="active">
-                    <option value="activeAllData">all</option>
-                    <option value="activeTrueData">active</option>
-                    <option value="activeFalseData">not active</option>
-                </select>
+                </div>
+                <div class="col">
+                    <label>Active status:</label>
+                    <select name="active">
+                        <option value="activeAllData">all</option>
+                        <option value="activeTrueData">active</option>
+                        <option value="activeFalseData">not active</option>
+                    </select>
+                </div>
             </div>
             <hr>
             <div class="row">
-                <label>Sort:</label>
-                <select name="sortSelection">
-                    <option value="nameData">name</option>
-                    <option value="perimeterData">perimeter</option>
-                </select>
-                <label>Direction:</label>
-                <select name="sortDirection">
-                    <option value="ascData">ascending</option>
-                    <option value="descData">descending</option>
-                </select>
+                <div class="col">
+                    <label>Sort:</label>
+                    <select name="sortSelection">
+                        <option value="nameData">name</option>
+                        <option value="perimeterData">perimeter</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <label>Direction:</label>
+                    <select name="sortDirection">
+                        <option value="ascData">ascending</option>
+                        <option value="descData">descending</option>
+                    </select>
+                </div>
             </div>
             <div class="row control">
                 <span class="spacer"></span>
