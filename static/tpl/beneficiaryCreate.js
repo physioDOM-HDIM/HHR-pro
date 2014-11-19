@@ -331,6 +331,48 @@ function checkProfessionalsForm() {
     showModal(modalObj);
 }
 
+function checkAllForms(){
+    var forms = document.querySelectorAll("form"),
+        formsObj = {}, invalid = false,
+        btn, modalObj;
+    //To force the HTML5 form validation on each form if needed, set click on hidden submit button
+    //form.submit() doesn't call the HTML5 form validation on elements
+    [].map.call(forms, function(form){
+        formsObj[form.name] = form2js(form);
+        if (!form.checkValidity()){
+            console.log("form invalid", form.name);
+            invalid = true;
+            btn = document.querySelector("#"+form.name+"SubmitBtn");
+            if(btn){
+                btn.click();
+            }
+        }
+    });
+
+    if(invalid){
+        return false;
+    }
+
+    //Check date format
+    if (!_checkDateFormat(formsObj.entry.entry.startDate) || !_checkDateFormat(formsObj.entry.entry.plannedEnd) || !_checkDateFormat(formsObj.entry.entry.endDate)) {
+        modalObj = {
+            title: "trad_errorFormValidation",
+            content: "trad_error_date",
+            buttons: [{
+                id: "trad_ok",
+                action: function() {
+                    closeModal();
+                }
+            }]
+        };
+        showModal(modalObj);
+        return false;
+    }
+
+    //TODO
+    console.log("formsObj", formsObj);
+}
+
 function deleteTelecom(node) {
     console.log("deleteTelecom", arguments);
     while (!node.classList.contains("telecomContainer")) {

@@ -212,13 +212,13 @@
         </fieldset>
         <div class="row control">
             <span class="spacer"></span>
-            <button class="blue">{{ "Save"|i18n }}</button>
+            <button id="beneficiarySubmitBtn" class="blue">{{ "Save"|i18n }}</button>
         </div>
     </form>
 </zdk-panel>
 
 <zdk-panel bgcolor="gray" heading="Entry" collapsable="true" collapsed="false">
-    <form name="entry" autocomplete="off">
+    <form name="entry" autocomplete="off" onsubmit="return false;">
         <div class="row">
             <label>{{ "Demand"|i18n }}</label>
             <textarea name="entry.demand" required></textarea>
@@ -247,11 +247,12 @@
             <label>{{ "PhysioDom-Box"|i18n }}</label>
             <input type="text" name="biomaster" />
         </div>
+        <button id="entrySubmitBtn" class="hidden"></button>
     </form>
 </zdk-panel>
 
 <zdk-panel bgcolor="gray" heading="Life condition" collapsable="true" collapsed="false">
-    <form name="life_condition" autocomplete="off">
+    <form name="life_condition" autocomplete="off" onsubmit="return false;">
         <div class="row">
             <label>{{ "Deceased"|i18n }}</label>
             <input type="checkbox" name="deceased" />
@@ -262,7 +263,7 @@
         </div>
         <div class="row">
             <label>{{ "Marital status"|i18n }}</label>
-            <select name="maritalStatus">
+            <select name="maritalStatus" required>
                 {% for item in maritalStatus.items %}
                 <option value="{{item.value}}">{{item.label}}</option>
                 {% endfor %}
@@ -272,7 +273,7 @@
             <legend>{{ "Disability"|i18n }}</legend>
             <div class="row">
                 <label>{{ "Type"|i18n }}</label>
-                <select name="lifeCond.disability.type" required>
+                <select name="lifeCond.disability.type"> <!--required-->
                     {% for item in disability.items %}
                     <option value="{{item.value}}">{{item.label}}</option>
                     {% endfor %}
@@ -299,11 +300,12 @@
                 {% endfor %}
             </select>
         </div>
+        <button id="life_conditionSubmitBtn" class="hidden"></button>
     </form>
 </zdk-panel>
 
 <zdk-panel bgcolor="gray" heading="Access to HHR-Pro" collapsable="true" collapsed="true">
-    <form name="account" autocomplete="off">
+    <form name="account" autocomplete="off" onsubmit="return false;">
         <div class="row">
             <label>{{ "Login"|i18n }}</label>
             <input type="text" name="account.login" />
@@ -320,6 +322,7 @@
             <label>{{ "Email"|i18n }}</label>
             <input type="text" name="telecom.system" />
         </div>
+        <button id="accountSubmitBtn" class="hidden"></button>
     </form>
 </zdk-panel>
 
@@ -359,13 +362,13 @@
         <div class="row control">
             <span class="spacer"></span>
             <button type="button" class="waitForId blue" onclick="showProfessionals()">{{ "Add"|i18n }}</button>
-            <button class="waitForId blue">{{ "Save"|i18n }}</button>
+            <button id="professionalsSubmitBtn" class="waitForId blue">{{ "Save"|i18n }}</button>
         </div>
     </form>
 </zdk-panel>
 
 <zdk-panel bgcolor="gray" heading="Diagnosis" collapsable="true" collapsed="false">
-    <form name="diagnosis" autocomplete="off">
+    <form name="diagnosis" autocomplete="off" onsubmit="return false;">
         <p class="head">{{ "General status"|i18n }}</p>
         <div class="row">
             <label>{{ "Normal"|i18n }}</label>
@@ -409,6 +412,7 @@
                 </select>
             </div>
         </div>
+        <button id="diagnosisSubmitBtn" class="hidden"></button>
     </form>
 </zdk-panel>
 
@@ -416,7 +420,7 @@
     <span class="spacer"></span>
     <button id="deleteBeneficiary" class="red big" onclick="confirmDeleteBeneficiary()">{{ "Delete"|i18n }}</button>
     <button class="red big" onclick="window.history.back();">{{ "Cancel"|i18n }}</button>
-    <button class="waitForId blue big">{{ "Save"|i18n }}</button>
+    <button class="waitForId blue big" onclick="checkAllForms()">{{ "Save"|i18n }}</button>
     <button class="waitForId green big">{{ "Validate"|i18n }}</button>
 </div>
 <zdk-modal width="450" id="addProfessionalsModal" closebutton="false">
@@ -441,7 +445,7 @@
         </div>
         <div class="modalButtonContainer">
             <button class="red" onclick="closeProfessionals()">{{ "Cancel"|i18n }}</button>
-            <button class="blue" onclick="addProfessionals()">{{ "Save"|i18n }}</button>
+            <button class="blue" onclick="addProfessionals()">{{ "Add"|i18n }}</button>
         </div>
     </div>
 </zdk-modal>
