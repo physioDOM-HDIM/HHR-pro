@@ -176,11 +176,11 @@ var IBeneficiary = {
 				var item;
 				try {
 					item = JSON.parse(req.body);
-					if( typeof item.referent === "string" ) {
-						item.referent = item.referent === "true"?true:false;
+					if( Array.isArray(item)) {
+						return beneficiary.addProfessionals(item);
+					} else {
+						return beneficiary.addProfessional(item.professionalID, item.referent);
 					}
-					console.log("item", item );
-					return beneficiary.addProfessional(item.professionalID, item.referent );
 				} catch( err ) {
 					var error = err;
 					if(!error) {
