@@ -240,6 +240,14 @@ function IPage() {
 				logger.debug("bene ", beneficiary );
 				if(beneficiary){
 					data.beneficiary = beneficiary;
+					if(data.beneficiary.address){
+						data.beneficiary.address.forEach( function(address){
+							if(address.line && address.line.length > 0){
+								//To display with line break in the textarea
+								address.line = address.line.join("\n");
+							}
+						});
+					}
 				}
 				return beneficiary._id ? beneficiary.getProfessionals() : null;
 			}).then(function(professionals){

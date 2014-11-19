@@ -544,16 +544,16 @@ function closeModal() {
         subElt, child;
     subElt = elt.querySelector(".modalTitleContainer");
     subElt.innerHTML = "";
-    subElt.className += " hidden";
+    subElt.classList.add("hidden");
     subElt = elt.querySelector(".modalContentContainer");
     subElt.innerHTML = "";
-    subElt.className += " hidden";
+    subElt.classList.add("hidden");
     subElt = elt.querySelector(".modalButtonContainer");
     for (var i = subElt.childNodes.length - 1; i >= 0; i--) {
         child = subElt.childNodes[i];
         subElt.removeChild(child);
     }
-    subElt.className += " hidden";
+    subElt.classList.add("hidden");
 }
 
 function showModal(modalObj) {
@@ -564,12 +564,12 @@ function showModal(modalObj) {
     if (modalObj.title) {
         subElt = elt.querySelector(".modalTitleContainer");
         subElt.innerHTML = document.querySelector("#" + modalObj.title).innerHTML;
-        subElt.className = subElt.className.replace("hidden", "");
+        subElt.classList.remove("hidden");
     }
     if (modalObj.content) {
         subElt = elt.querySelector(".modalContentContainer");
         subElt.innerHTML = document.querySelector("#" + modalObj.content).innerHTML;
-        subElt.className = subElt.className.replace("hidden", "");
+        subElt.classList.remove("hidden");
     }
 
     if (modalObj.buttons) {
@@ -597,10 +597,10 @@ function showModal(modalObj) {
                     }
                     break;
             }
-            btn.className += color;
+            btn.classList.add(color);
             subElt.appendChild(btn);
         }
-        subElt.className = subElt.className.replace("hidden", "");
+        subElt.classList.remove("hidden");
     }
 
     document.querySelector("#statusModal").show();
