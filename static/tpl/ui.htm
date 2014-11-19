@@ -68,6 +68,9 @@
 		height: 40px;
 		background-repeat: no-repeat;
 		margin: 0px;
+		background-image: url(https://physiodom.telecomsante.loc/img/logo.svg); 
+		background-size: 100%; 
+		background-position: 50% 50%;
 	}
 	core-icon[icon=menu] {
 		margin-left: -20px;
@@ -75,6 +78,10 @@
 	@media (max-width: 992px) {
 		core-icon[icon=menu] {
 			visibility:visible;
+		}
+		.logo {
+			width:40px;
+			background-image: url(https://physiodom.telecomsante.loc/img/logo-mini.svg);
 		}
 	}
 	@media (min-width: 992px) {
@@ -91,6 +98,18 @@
 		align-items: center;
 		margin-left:0px;
 	}
+	core-toolbar div.beneficiary {
+		text-align: left; 
+		width:100px;
+		font-size: 70%;
+		overflow: hidden;
+	}
+	core-toolbar div.beneficiary label {
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		width: 100%;
+		overflow: hidden;
+	}
 </style>
 <style shim-shadowdom>
 
@@ -100,23 +119,19 @@
 <core-toolbar>
 	<div class="menu" onclick="toggleDrawer()" >
 		<core-icon icon="menu" ></core-icon>
-		<div class="logo" style="background-image: url(https://physiodom.telecomsante.loc/img/logo.svg); background-size: 100%; background-position: 50% 50%;"></div>
+		<div class="logo"></div>
 	</div>
 	<span class="spacer"></span>
 	<div class="title"></div>
 	<span class="spacer"></span>
-	<div style="text-align: left; width:150px; text-overflow: ellipsis;font-size: 70%;">beneficiary<br><label id="beneficiary"><a href="tpl/recipientDetail.htm" target="main">-</a></label></div>
+	<div class="beneficiary">beneficiary<br>
+		<label id="beneficiary"><a href="tpl/recipientDetail.htm" target="main">-</a></label>
+	</div>
 	<div style="width:100px;text-align:right;font-size: 70%;">{{account.firstname}}. {{account.lastname}}<br/><a href="/logout">Disconnect</a></div>
 </core-toolbar>
 
 <core-drawer-panel responsiveWidth="992px">
 	<div drawer>
-		<!--
-		<header class="visible-xs visible-sm" style="padding:5px;height: 50px;">
-			<button class="navbtn btn-info">=</button>
-		</header>
-		-->
-
 		<ul class="tree">
 			<li class="menuitem"><a href="/beneficiary/select" target="main">Select beneficiary</a></li>
 			<li class="menuitem"><a href="tpl/recipientDetail.htm" target="main">Beneficiary overview</a></li>
@@ -159,7 +174,7 @@
 
 	</div>
 	<div main>
-		<iframe src="/beneficiary/select" scrolling="no"></iframe>
+		<iframe name="main" src="/beneficiary/select" scrolling="no"></iframe>
 	</div>
 </core-drawer-panel>
 

@@ -69,6 +69,11 @@ a { text-decoration: none; color: inherit; }
 	.navbtn button { display:none; }
 }
 
+@media (max-width: 768px) {
+	zdk-panel div.col {
+		display:block;
+	}
+}
 /* div table */
 
 .ttable {
