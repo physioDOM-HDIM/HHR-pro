@@ -133,8 +133,8 @@
 <core-drawer-panel responsiveWidth="992px">
 	<div drawer>
 		<ul class="tree">
-			<li class="menuitem"><a href="/beneficiary/select" target="main">Select beneficiary</a></li>
-			<li class="menuitem"><a href="tpl/recipientDetail.htm" target="main">Beneficiary overview</a></li>
+			<li class="menuitem"><a href="/beneficiaries" target="main">Select beneficiary</a></li>
+			<li class="menuitem"><a href="/beneficiary/overview" target="main">Beneficiary overview</a></li>
 			<li class="collapsed">
 				<div>Quick look on HHR</div>
 				<ul class="tree">
@@ -172,11 +172,11 @@
 			<li class="menuitem"><a href="/directory" target="main">Directory</a></li>
 		</ul>
 
-	</div>
-	<div main>
-		<iframe name="main" src="/beneficiary/select" scrolling="no"></iframe>
-	</div>
-</core-drawer-panel>
+	</nav>
+	<article>
+		<iframe id="main" name="main" src="/beneficiaries" scrolling="no"></iframe>
+	</article>
+</section>
 
 <script>
 

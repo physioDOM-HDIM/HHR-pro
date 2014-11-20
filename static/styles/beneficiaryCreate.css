@@ -4,68 +4,45 @@ zdk-panel {
 fieldset {
     margin-bottom: 10px;
 }
-zdk-modal {
-    border: 1px solid black;
-    box-shadow: 2px 2px 10px #ccc;
-}
-zdk-modal div.modalContainer {
-    padding: 10px;
-    width: 100%;
-    background: white;
-    overflow: auto;
-    border-radius: 15px;
-}
-zdk-modal div#bg {
-    display: fixed;
-    /* FF fix */
-}
+
 .bold{
     font-weight: bold;
 }
 
-form[name="professionals"] .proItem:nth-child(even){
+form[name="professionals"] .proItemContainer:nth-child(even) .proItem{
     background: #DFDFDF;
 }
 
-form[name="professionals"] .proItem.referent{
+form[name="professionals"] .proItemContainer .proItem.referent{
     background: rgb(255, 255, 160);;
 }
 
+form[name="professionals"] .proItem .buttonContainer{
+    -ms-flex: 0.2;
+    -webkit-flex: 0.2;
+    flex: 0.2;
+}
 
-/*
-zdk-modal .modalTitleContainer {
-    border-bottom: 2px solid silver;
-    padding-bottom: 10px;
-    text-align: center;
+button.small{
+    line-height: 0;
 }
-zdk-modal .modalContentContainer {
-    text-align: center;
+
+.addressContainer .zipCode{
+    -ms-flex: 0.5;
+    -webkit-flex: 0.5;
+    flex: 0.5;
+}
+
+.addressContainer .city{
+    width: 80px;
+}
+
+.addressContainer{
+    border-top: 2px solid grey;
+    margin-top: 10px;
     padding-top: 10px;
-    padding-bottom: 10px;
 }
-zdk-modal .modalButtonContainer{
-    text-align: center;
+
+.addressContainer:nth-child(2){
+    border: none;
 }
-zdk-modal .modalButtonContainer button{
-    margin: 0 5px;
-}
-*/
-/*#tsanteListProfessional .item.row {
-    font-size: 18px;
-    line-height: 35px;
-    width: 100%;
-    justify-content: flex-start;
-}
-#tsanteListProfessional .item.row:nth-child(2){
-    border-top: 2px solid black;
-}
-#tsanteListProfessional .item.row:last-of-type {
-    border-bottom: 2px solid black;
-    margin-bottom: 10px;
-}
-#tsanteListProfessional .item.row:nth-child(odd) {
-    background: #DFDFDF;
-}
-#tsanteListProfessional .item.row .job {
-    margin-left: auto;
-}*/

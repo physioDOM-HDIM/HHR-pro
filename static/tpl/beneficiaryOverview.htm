@@ -1,0 +1,254 @@
+{% extends './page.htm' %}
+
+{% block title %}{{ "Beneficiary overview"|i18n }}{% endblock %}
+
+{% block head %}
+{% parent %}
+
+{% endblock %}
+<!--<script src="beneficiaryOverview.js"></script>-->
+{% block content %}
+<style>
+	@media (min-width: 768px) {
+		div.colContainer {
+			display: flex;
+			box-sizing: border-box;
+			overflow: hidden;
+		}
+		
+		div.colContainer > zdk-panel {
+			width:50%;
+			padding-left:5px;
+			padding-right:5px;
+		}
+	}
+	
+	zdk-panel {
+		overflow: hidden;
+		box-sizing: border-box;
+		-webkit-box-sizing:border-box;
+		width:100%;
+	}
+	
+
+	div.colContainer zdk-panel:first-child {
+		padding-left:0px;
+	}
+
+	div.colContainer zdk-panel:last-child {
+		padding-right:0px;
+	}
+	
+	div.event {
+		height:30px;
+		border-bottom:1px solid black;
+	}
+</style>
+  
+<div class="colContainer">
+	<zdk-panel id="personal" heading="personnal">
+		<div><label>{{beneficiary.name.family}} {{beneficiary.name.given}}</label></div>
+		<div>Birth date : <label>{{beneficiary.birthdate}}</label></div>
+		<div>Size : <label>{{ Math.floor(beneficiary.size) }}m{{ (beneficiary.size+"").split(".")[1] }}</label></div>
+		<div>Social id : <label></label></div>
+		<div>Referent : <label>Dr. Julius</label></div>
+		<div class="tph">
+			<div>phone : 04 99 03 02 01</div>
+			<div>mobile : 06 10 20 30 40</div>
+		</div>
+		<div class="biomaster">
+			<div>biomaster : xxxxxxx</div>
+		</div>
+		{% if admin %}
+		<a href="/beneficiary/update"><button class="green small">Edit</button></a>
+		{% endif %}
+	</zdk-panel>
+	 
+	<zdk-panel id="addresses" heading="Addresses">
+		<div>152 RUE DES JEUX OLYMPIQUES 1968</div>
+		<div>38250 VILLARD DE LANS</div>
+	</zdk-panel>
+</div>
+
+<zdk-panel heading="Events log" collapsable="true" collapsed="false">
+	<div class="event"></div>
+	<div class="event"></div>
+	<div class="event"></div>
+	<div class="event"></div>
+	<div class="event"></div>
+</zdk-panel>
+
+<zdk-panel heading="Active services" collapsable="true" collapsed="false">
+	<ul class="request" id="active">
+		<li>
+			<div class="ttable">
+				<div class="trow">
+					<div class="cell title">Meal delivery</div>
+					<div class="cell startdate">from : 2014-03-27</div>
+					<div class="cell stopdate">to : 2014-04-27</div>
+				</div>
+			</div>
+			<div class="ttable">
+				<div class="trow">
+					<div class="cell spacer"></div>
+					<div class="cell detail">All days at 11:30</div>
+				</div>
+			</div>
+		</li>
+		<li>
+			<div class="ttable">
+				<div class="trow">
+					<div class="cell title">Accompaniment aged person</div>
+					<div class="cell startdate">from : 2014-03-27</div>
+					<div class="cell stopdate">to : -</div>
+				</div>
+			</div>
+			<div class="ttable">
+				<div class="trow">
+					<div class="cell spacer"></div>
+					<div class="cell detail">All weekdays from 10:30 to 11:30</div>
+				</div>
+			</div>
+		</li>
+	</ul>
+</zdk-panel>
+
+<zdk-panel heading="Professional contacts" collapsable="true" collapsed="true">
+	<div class="fixedTable" style="height:300px;">
+		<table id="stakeholders">
+			<colgroup>
+				<col>
+				<col style="width:150px">
+				<col style="width:150px">
+				<col style="width:250px">
+			</colgroup>
+			<thead>
+			<tr>
+				<th>Name</th>
+				<th>Role</th>
+				<th>Phone</th>
+				<th>Email</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr>
+				<td>ROLLAND Anne</td>
+				<td>pharmacist</td>
+				<td>03 25 12 45 22</td>
+				<td>anne.rolland@gmail.com</td>
+			</tr>
+			<tr>
+				<td>COTTE Jean</td>
+				<td>pharmacist</td>
+				<td>03 25 12 45 22</td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>OFFROY Remy</td>
+				<td>Nurse</td>
+				<td></td>
+				<td>roffroy@care.com</td>
+			</tr>
+			<tr>
+				<td>GUEDON Magalie</td>
+				<td>Nurse</td>
+				<td></td>
+				<td>mguedon@care.com</td>
+			</tr>
+			<tr>
+				<td>ROLLAND Anne</td>
+				<td>pharmacist</td>
+				<td>03 25 12 45 22</td>
+				<td>anne.rolland@gmail.com</td>
+			</tr>
+			<tr>
+				<td>COTTE Jean</td>
+				<td>pharmacist</td>
+				<td>03 25 12 45 22</td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>OFFROY Remy</td>
+				<td>Nurse</td>
+				<td></td>
+				<td>roffroy@care.com</td>
+			</tr>
+			<tr>
+				<td>GUEDON Magalie</td>
+				<td>Nurse</td>
+				<td></td>
+				<td>mguedon@care.com</td>
+			</tr>
+			<tr>
+				<td>ROLLAND Anne</td>
+				<td>pharmacist</td>
+				<td>03 25 12 45 22</td>
+				<td>anne.rolland@gmail.com</td>
+			</tr>
+			<tr>
+				<td>COTTE Jean</td>
+				<td>pharmacist</td>
+				<td>03 25 12 45 22</td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>OFFROY Remy</td>
+				<td>Nurse</td>
+				<td></td>
+				<td>roffroy@care.com</td>
+			</tr>
+			<tr>
+				<td>GUEDON Magalie</td>
+				<td>Nurse</td>
+				<td></td>
+				<td>mguedon@care.com</td>
+			</tr>
+			<tr>
+				<td>ROLLAND Anne</td>
+				<td>pharmacist</td>
+				<td>03 25 12 45 22</td>
+				<td>anne.rolland@gmail.com</td>
+			</tr>
+			<tr>
+				<td>COTTE Jean</td>
+				<td>pharmacist</td>
+				<td>03 25 12 45 22</td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>OFFROY Remy</td>
+				<td>Nurse</td>
+				<td></td>
+				<td>roffroy@care.com</td>
+			</tr>
+			<tr>
+				<td>GUEDON Magalie</td>
+				<td>Nurse</td>
+				<td></td>
+				<td>mguedon@care.com</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+</zdk-panel>
+
+<zdk-panel heading="Details" collapsable="true" collapsed="true">
+	<div class="row">
+		<div class="col-xs-6">Marital status : Cohabitee</div>
+		<div class="col-xs-6">Profession : without activity (over 60 years)</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-6">Type of disability : respiratory problem</div>
+		<div class="col-xs-6">Disability level : 30</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-6">Life condtion : Liviving in a couple or same generation</div>
+		<div class="col-xs-6">Profession : without activity (over 60 years)</div>
+	</div>
+</zdk-panel>
+  
+<script>
+	parent.document.querySelector("#beneficiary a").innerHTML = '{{ beneficiary.name.family }}';
+</script>
+  
+{% endblock %}

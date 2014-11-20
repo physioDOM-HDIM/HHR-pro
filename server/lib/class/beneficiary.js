@@ -7,7 +7,8 @@
 /* global physioDOM */
 "use strict";
 
-var promise = require("rsvp").Promise,
+var RSVP = require("rsvp"),
+	promise = require("rsvp").Promise,
 	Logger = require("logger"),
 	ObjectID = require("mongodb").ObjectID,
 	beneficiarySchema = require("./../schema/beneficiarySchema");
@@ -34,9 +35,9 @@ function Beneficiary( ) {
 	this.getById = function( beneficiaryID, professional ) {
 		var that = this;
 		return new promise( function(resolve, reject) {
-			logger.trace("getById");
-			var search = {_id: beneficiaryID };
-			if( ["adminstrator","coordinator"].indexOf(professional.role) === -1) {
+			logger.trace("getById", beneficiaryID);
+			var search = { _id: beneficiaryID };
+			if( ["administrator","coordinator"].indexOf(professional.role) === -1) {
 				search["$elemMatch"] = { professionalID: professional._id };
 			}
 			physioDOM.db.collection("beneficiaries").findOne(search, function (err, doc) {
@@ -373,6 +374,58 @@ function Beneficiary( ) {
 		});
 	};
 
+	/**
+	 * Attach an array of professionals to the beneficiary
+	 *
+	 * @param professionals {array} array of objects 
+	 *        { professionalID: xxxx, referent: true|false }`
+	 * @param referent
+	 * @returns {promise}
+	 */
+	this.addProfessionals = function( professionals ) {
+		var that = this;
+		if( !that.professionals ) {
+			that.professionals = [];
+		}
+		
+		return new promise(function (resolve, reject) {
+			logger.trace("addProfessionals ");
+			physioDOM.Directory()
+				.then(function (directory) {
+					function check( professionalObj ) {
+						return new promise(function (resolve, reject) {
+							directory.getEntryByID(professionalObj.professionalID)
+								.then(function( professional) {
+									resolve({
+										professionalID: professional._id,
+										referent: professionalObj.referent && professionalObj.referent===true?true:false
+									});
+								})
+								.catch( function(err) {
+									reject(err);
+								} );
+						});
+					}
+					
+					return RSVP.all(professionals.map(check));
+				})
+				.then( function( professionals ) {
+					that.professionals = professionals;
+					return that.save();
+				})
+				.then( function() {
+					return that.getProfessionals();
+				})
+				.then( function(professionals) {
+					resolve(professionals);
+				})
+				.catch( function(err) {
+					logger.error("error ",err);
+					reject(err);
+				});
+		});
+	};
+	
 	/**
 	 * remove a professional from a beneficiary
 	 * 

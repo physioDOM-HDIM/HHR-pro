@@ -140,15 +140,22 @@ server.use( function(req, res, next) {
 				req.session = session;
 			}
 			requestLog(req, res);
-			if( !req.session ){
-				if( req.url.match(/^(\/|\/api\/login|\/logout)$/) ) {
+			if( !req.session ) {
+				cookies = new Cookies(req, res);
+				cookies.set('sessionID');
+				cookies.set('role');
+				if (req.url.match(/^(\/|\/api\/login|\/api\/logout|\/logout)$/)) {
+					// console.log("url match");
 					return next();
 				} else {
-					res.send(403, { error:403, message:"no session"} );
+					logger.info("redirect to home page");
+					res.header('Location', '/');
+					res.send(302);
 					return next(false);
 				}
+			} else {
+				return next();
 			}
-			return next();
 		});
 	});
 });
@@ -298,10 +305,11 @@ server.post('/api/login', apiLogin);
 server.get( '/api/logout', logout);
 server.get( '/logout', logout);
 
+server.get( '/beneficiaries', IPage.beneficiaries);
 server.get( '/beneficiary/create', IPage.beneficiaryCreate);
 server.get( '/beneficiary/edit/:beneficiaryID', IPage.beneficiaryCreate);
-server.get( '/beneficiary/select', IPage.beneficiarySelect);
-server.get( '/beneficiary/:entryID', IPage.beneficiaryOverview);
+server.get( '/beneficiary/update', IPage.beneficiaryCreate);
+server.get( '/beneficiary/:beneficiaryID', IPage.beneficiaryOverview);
 server.get( '/directory', IPage.directoryList);
 server.get( '/directory/create', IPage.directoryUpdate);
 server.get( '/directory/:professionalID', IPage.directoryUpdate);
@@ -333,7 +341,8 @@ function logout(req, res, next ) {
 			cookies.set('sessionID');
 			cookies.set('role');
 			if(req.url.match(/^\/api/)) {
-				res.send(200);
+				// res.send(200);
+				res.send(403, { error:403, message:"no session"} );
 			} else {
 				logger.debug("redirect to /")
 				res.header('Location', '/');
@@ -344,7 +353,7 @@ function logout(req, res, next ) {
 }
 
 function getSessions( req, res, next ) {
-	console.log("getSessions");
+	logger.trace("getSessions");
 	var pg = parseInt(req.params.pg,10) || 1;
 	var offset = parseInt(req.params.offset,10) || 10;
 	var sort = req.params.sort;
@@ -357,7 +366,7 @@ function getSessions( req, res, next ) {
 }
 
 function serveStatic(req,res,next) {
-	console.log("serveStatic");
+	logger.trace("serveStatic");
 	var uri      = require('url').parse(req.url).pathname;
 	var filepath = decodeURIComponent((uri==="/")?path.join(DOCUMENT_ROOT, '/index.htm'):path.join(DOCUMENT_ROOT, uri));
 	if(!filepath) {
@@ -366,7 +375,7 @@ function serveStatic(req,res,next) {
 
 	fs.exists(filepath, function(exists){
 		if(!exists){
-			console.log("error 404 : "+filepath);
+			logger.warning("error 404 : "+filepath);
 			send404(req,res,next);
 			return next();
 		}

@@ -15,7 +15,9 @@
 
 var swig = require("swig"),
 	Logger = require("logger"),
-	RSVP = require("rsvp");
+	RSVP = require("rsvp"),
+	moment = require("moment"),
+	ObjectID = require("mongodb").ObjectID;
 var logger = new Logger("IPage");
 var i18n = new (require('i18n-2'))({
 	// setup some locales - other locales default to the first locale
@@ -34,14 +36,18 @@ function IPage() {
 	var lang;
 	
 	function init(req) {
-		lang = req.session.lang || req.cookies.lang || req.params.lang || "en"
+		lang = req.session.lang || req.cookies.lang || req.params.lang || "en";
 		i18n.setLocale(lang);
 
 		swig.setDefaults({cache: false});
-		swig.setFilter('i18n', function (input, idx) {
+		swig.setFilter("i18n", function (input, idx) {
 			// console.log("input", input, idx);
 			return i18n.__(input);
 		});
+	}
+
+	function convertDate(strDate){
+		return strDate ? moment(strDate, "YYYY-MM-DD").format(moment.localeData(lang).longDateFormat("L")) : strDate;
 	}
 
 	/**
@@ -197,7 +203,7 @@ function IPage() {
 				next();
 			});
 	};
-
+	
 	/**
 	 * Beneficiary create and update
 	 * 
@@ -233,16 +239,33 @@ function IPage() {
 				return physioDOM.Beneficiaries();
 			})
 			.then(function(beneficiaries) {
-				return beneficiaries.getBeneficiaryAdminByID( req.session, req.params.beneficiaryID );
+				var beneficiaryID = req.params.beneficiaryID?req.params.beneficiaryID:req.session.beneficiary;
+				return beneficiaries.getBeneficiaryAdminByID( req.session, beneficiaryID );
 			})
 			.then( function(beneficiary) {
-				logger.debug("data", data);
-				logger.debug("bene ", beneficiary );
-				if( beneficiary) {
+				// logger.debug("data", data);
+				// logger.debug("bene ", beneficiary );
+				if(beneficiary){
 					data.beneficiary = beneficiary;
-					return beneficiary.getProfessionals();
+					if(data.beneficiary.address){
+						data.beneficiary.address.forEach( function(address){
+							if(address.line && address.line.length > 0){
+								//To display with line break in the textarea
+								address.line = address.line.join("\n");
+							}
+						});
+					}
+					
+					//Format date to follow the locale
+					data.beneficiary.birthdate = convertDate(data.beneficiary.birthdate);
+					if(data.beneficiary.entry){
+						data.beneficiary.entry.startDate = convertDate(data.beneficiary.entry.startDate);
+						data.beneficiary.entry.plannedEnd = convertDate(data.beneficiary.entry.plannedEnd);
+						data.beneficiary.entry.endDate = convertDate(data.beneficiary.entry.endDate);
+					}
 				}
-				return null;
+				
+				return beneficiary._id ? beneficiary.getProfessionals() : null;
 			}).then(function(professionals){
 				if( professionals ){
 					data.beneficiary.professionals = professionals;
@@ -269,13 +292,13 @@ function IPage() {
 	};
 
 	/**
-	 * Beneficiary select
+	 * get the beneficiaries list
 	 * 
 	 * @param req
 	 * @param res
 	 * @param next
 	 */
-	this.beneficiarySelect = function(req, res, next) {
+	this.beneficiaries = function(req, res, next) {
 		logger.trace("beneficiarySelect");
 		var html;
 		
@@ -323,28 +346,36 @@ function IPage() {
 		var data = {
 			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
 		};
-		try {
-			html = swig.renderFile('./static/tpl/recipientDetail.htm', data, function (err, output) {
-				if (err) {
-					console.log("error", err);
-					console.log("output", output);
-					res.write(err);
-					res.end();
-					next();
-				} else {
-					sendPage(output, res, next);
-				}
-			});
-		} catch(err) {
-			res.write(err);
-			res.end();
-			next();
+		if( req.params.beneficiaryID !== "overview") {
+			req.session.beneficiary = new ObjectID(req.params.beneficiaryID);
 		}
-		/*
-		var data = {};
-		var html = swig.renderFile('./static/tpl/recipientDetail.htm', data);
-		sendPage(html, req, res, next);
-		*/
+		req.session.save()
+			.then( function(session) {
+				return physioDOM.Beneficiaries();
+			})
+			.then( function(beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+			})
+			.then( function (beneficiary) {
+				data.beneficiary = beneficiary;
+				html = swig.renderFile('./static/tpl/beneficiaryOverview.htm', data, function (err, output) {
+					if (err) {
+						console.log("error", err);
+						console.log("output", output);
+						res.write(err);
+						res.end();
+						next();
+					} else {
+						sendPage(output, res, next);
+					}
+				});
+			})
+			.catch( function(err) {
+				logger.error(err);
+				res.write(err);
+				res.end();
+				next();
+			});
 	};
 
 	/**
