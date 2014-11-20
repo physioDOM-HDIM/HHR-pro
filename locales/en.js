@@ -84,5 +84,7 @@
 	"Are you sure you want to delete this item ?": "Are you sure you want to delete this item ?",
 	"Item successfully deleted": "Item successfully deleted",
 	"Date format is incorrect": "Date format is incorrect",
-	"Beneficiary overview": "Beneficiary overview"
+	"Beneficiary overview": "Beneficiary overview",
+	"Passwords are not equal": "Passwords are not equal",
+	"Can't have password with empty login": "Can't have password with empty login"
 }

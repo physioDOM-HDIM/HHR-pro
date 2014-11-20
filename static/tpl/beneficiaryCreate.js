@@ -264,22 +264,10 @@ function deleteProfessional(node) {
     node.parentNode.removeChild(node);
 }
 
-function updateProfessionals() {
-    console.log("updateProfessionals", _dataObj);
-
-    if (_dataObj && _dataObj._id) {
-        var modalObj,
-            obj = [];
-        if (_dataObj.professionals) {
-            _dataObj.professionals.map(function(item) {
-                obj.push({
-                    professionalID: item._id,
-                    referent: item.referent
-                });
-            });
-        }
-        console.log("updateProfessionals obj", obj);
-
+function updateProfessionals(obj) {
+    console.log("updateProfessionals", obj);
+    var modalObj;
+    if (obj && _dataObj && _dataObj._id) {
         promiseXHR("POST", "/api/beneficiaries/" + _dataObj._id + "/professionals", 200, JSON.stringify(obj)).then(function() {
             modalObj = {
                 title: "trad_success",
@@ -309,52 +297,13 @@ function updateProfessionals() {
     }
 }
 
-function checkProfessionalsForm() {
-    console.log("checkProfessionalsForm");
-
-    var modalObj = {
-        title: "trad_save",
-        content: "trad_confirm_save",
-        buttons: [{
-            id: "trad_no",
-            action: function() {
-                closeModal();
-            }
-        }, {
-            id: "trad_yes",
-            action: function() {
-                updateProfessionals();
-                closeModal();
-            }
-        }]
-    };
-    showModal(modalObj);
-}
-
-function checkAllForms(){
-    var forms = document.querySelectorAll("form"),
-        formsObj = {}, invalid = false,
-        btn, modalObj;
-    //To force the HTML5 form validation on each form if needed, set click on hidden submit button
-    //form.submit() doesn't call the HTML5 form validation on elements
-    [].map.call(forms, function(form){
-        formsObj[form.name] = form2js(form);
-        if (!form.checkValidity()){
-            console.log("form invalid", form.name);
-            invalid = true;
-            btn = document.querySelector("#"+form.name+"SubmitBtn");
-            if(btn){
-                btn.click();
-            }
-        }
-    });
-
-    if(invalid){
-        return false;
-    }
+function checkEntryForm() {
+    console.log("checkEntryForm");
+    var modalObj,
+        formObj = form2js(document.querySelector("form[name='entry']"));
 
     //Check date format
-    if (!_checkDateFormat(formsObj.entry.entry.startDate) || !_checkDateFormat(formsObj.entry.entry.plannedEnd) || !_checkDateFormat(formsObj.entry.entry.endDate)) {
+    if (!_checkDateFormat(formObj.entry.startDate) || !_checkDateFormat(formObj.entry.plannedEnd) || !_checkDateFormat(formObj.entry.endDate)) {
         modalObj = {
             title: "trad_errorFormValidation",
             content: "trad_error_date",
@@ -369,8 +318,245 @@ function checkAllForms(){
         return false;
     }
 
-    //TODO
+    //Convert date
+    formObj.entry.startDate = _convertDate(formObj.entry.startDate);
+    formObj.entry.plannedEnd = _convertDate(formObj.entry.plannedEnd);
+    formObj.entry.endDate = _convertDate(formObj.entry.endDate);
+
+    return formObj;
+}
+
+function checkLifeCondForm() {
+    console.log("checkLifeCondForm");
+    //Nothing to check
+    return form2js(document.querySelector("form[name='life_condition']"));
+}
+
+function checkAccountForm() {
+    console.log("checkAccountForm");
+    var modalObj,
+        formObj = form2js(document.querySelector("form[name='account']"));
+
+    //Check if password are equals
+    if ((formObj.checkAccountPassword && !formObj.account) ||
+        (formObj.account && formObj.account.password !== formObj.checkAccountPassword)) {
+        modalObj = {
+            title: "trad_errorFormValidation",
+            content: "trad_error_password",
+            buttons: [{
+                id: "trad_ok",
+                action: function() {
+                    closeModal();
+                }
+            }]
+        };
+        showModal(modalObj);
+        return false;
+    }
+
+    if (formObj.account && !formObj.account.login && formObj.account.password) {
+        modalObj = {
+            title: "trad_errorFormValidation",
+            content: "trad_error_passwordNoLogin",
+            buttons: [{
+                id: "trad_ok",
+                action: function() {
+                    closeModal();
+                }
+            }]
+        };
+        showModal(modalObj);
+        return false;
+    }
+
+    delete formObj.checkAccountPassword;
+    if (formObj.telecom) {
+        formObj.telecom.system = "email";
+    }
+
+    return formObj;
+}
+
+function checkProfessionalsForm(backgroundTask) {
+    console.log("checkProfessionalsForm");
+
+    var modalObj,
+        obj = [];
+    if (_dataObj.professionals) {
+        _dataObj.professionals.map(function(item) {
+            obj.push({
+                professionalID: item._id,
+                referent: item.referent
+            });
+        });
+    }
+
+    if (!backgroundTask) {
+        var modalObj = {
+            title: "trad_save",
+            content: "trad_confirm_save",
+            buttons: [{
+                id: "trad_no",
+                action: function() {
+                    closeModal();
+                }
+            }, {
+                id: "trad_yes",
+                action: function() {
+                    updateProfessionals(obj);
+                    closeModal();
+                }
+            }]
+        };
+        showModal(modalObj);
+    }
+
+    return obj;
+}
+
+function checkDiagnosisForm() {
+    console.log("checkDiagnosisForm");
+    //Nothing to check
+    return form2js(document.querySelector("form[name='diagnosis']"));
+}
+
+function updateAll(obj) {
+    console.log("updateAll", obj);
+    var modalObj;
+    if (_dataObj && _dataObj._id) {
+        promiseXHR("PUT", "/api/beneficiaries/" + _dataObj._id, 200, JSON.stringify(obj)).then(function() {
+            modalObj = {
+                title: "trad_success",
+                content: "trad_success_update",
+                buttons: [{
+                    id: "trad_ok",
+                    action: function() {
+                        closeModal();
+                    }
+                }]
+            };
+            showModal(modalObj);
+        }, function(error) {
+            modalObj = {
+                title: "trad_error",
+                content: "trad_error_occured",
+                buttons: [{
+                    id: "trad_ok",
+                    action: function() {
+                        closeModal();
+                    }
+                }]
+            };
+            showModal(modalObj);
+            console.log("updateAll - update error: ", error);
+        });
+    }
+}
+
+function checkAllForms() {
+    console.log("checkAllForms");
+    var forms = document.querySelectorAll("form"),
+        formsObj = {},
+        obj, invalid = false,
+        btn, modalObj;
+    //To force the HTML5 form validation on each form if needed, set click on hidden submit button
+    //form.submit() doesn't call the HTML5 form validation on elements
+    [].map.call(forms, function(form) {
+        if (!form.checkValidity()) {
+            console.log("form invalid", form.name);
+            invalid = true;
+            btn = document.querySelector("#" + form.name + "SubmitBtn");
+            if (btn) {
+                btn.click();
+            }
+        }
+    });
+
+    if (invalid) {
+        return false;
+    }
+
+    var mixin = function(dest, source) {
+        for (var prop in source) {
+            if (source.hasOwnProperty(prop)) {
+                dest[prop] = source[prop];
+            }
+        }
+    };
+
+    //Beneficiary
+    obj = checkBeneficiaryForm(true);
+    if (!obj) {
+        return false;
+    }
+    mixin(formsObj, obj);
+
+    //Entry
+    obj = checkEntryForm();
+    if (!obj) {
+        return false;
+    }
+    mixin(formsObj, obj);
+
+    //Life condition
+    obj = checkLifeCondForm();
+    if (!obj) {
+        return false;
+    }
+    mixin(formsObj, obj);
+
+    //Account
+    obj = checkAccountForm();
+    if (!obj) {
+        return false;
+    }
+    if (obj.telecom) {
+        //Carefull, the telecom.system "email" is set in this panel, so adjust data to put it in the telecom subObj
+        formsObj.telecom = formsObj.telecom || [];
+        formsObj.telecom.push(obj.telecom);
+    }
+    if (obj.account) {
+        formsObj.account = formsObj.account || {};
+        mixin(formsObj.account, obj.account);
+    }
+
+    //Professionals
+    obj = checkProfessionalsForm(true);
+    if (!obj) {
+        return false;
+    }
+    formsObj.professionals = obj;
+
+    //Diagnosis
+    obj = checkDiagnosisForm();
+    if (!obj) {
+        return false;
+    }
+    mixin(formsObj, obj);
+
+
+    //TODO: add request for account
     console.log("formsObj", formsObj);
+
+    modalObj = {
+        title: "trad_save",
+        content: "trad_confirm_save",
+        buttons: [{
+            id: "trad_no",
+            action: function() {
+                closeModal();
+            }
+        }, {
+            id: "trad_yes",
+            action: function() {
+                updateAll(formsObj);
+                closeModal();
+            }
+        }]
+    };
+    showModal(modalObj);
+
+    return true;
 }
 
 function deleteTelecom(node) {
@@ -544,7 +730,7 @@ function deleteBeneficiary() {
     }
 }
 
-function checkBeneficiaryForm() {
+function checkBeneficiaryForm(backgroundTask) {
     var modalObj,
         obj = form2js(document.querySelector("form[name='beneficiary']"));
     console.log("checkBeneficiaryForm", obj);
@@ -619,24 +805,26 @@ function checkBeneficiaryForm() {
     obj.size = parseFloat(obj.size);
     obj.validate = obj.validate === "true" ? true : false;
 
-    modalObj = {
-        title: "trad_save",
-        content: "trad_confirm_save",
-        buttons: [{
-            id: "trad_no",
-            action: function() {
-                closeModal();
-            }
-        }, {
-            id: "trad_yes",
-            action: function() {
-                updateBeneficiary(obj);
-                closeModal();
-            }
-        }]
-    };
-    showModal(modalObj);
-    return true;
+    if (!backgroundTask) {
+        modalObj = {
+            title: "trad_save",
+            content: "trad_confirm_save",
+            buttons: [{
+                id: "trad_no",
+                action: function() {
+                    closeModal();
+                }
+            }, {
+                id: "trad_yes",
+                action: function() {
+                    updateBeneficiary(obj);
+                    closeModal();
+                }
+            }]
+        };
+        showModal(modalObj);
+    }
+    return obj;
 }
 
 function closeModal() {

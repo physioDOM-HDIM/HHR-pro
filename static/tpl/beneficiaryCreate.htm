@@ -255,11 +255,11 @@
     <form name="life_condition" autocomplete="off" onsubmit="return false;">
         <div class="row">
             <label>{{ "Deceased"|i18n }}</label>
-            <input type="checkbox" name="deceased" />
+            <input type="checkbox" name="deceased" value="true"/>
         </div>
         <div class="row">
             <label>{{ "Active"|i18n }}</label>
-            <input type="checkbox" name="active" />
+            <input type="checkbox" name="active" value="true"/>
         </div>
         <div class="row">
             <label>{{ "Marital status"|i18n }}</label>
@@ -281,7 +281,7 @@
             </div>
             <div class="row">
                 <label>{{ "Percent"|i18n }}</label>
-                <input type="number" name="lifeCond.disability.percent" />
+                <input type="number" name="lifeCond.disability.percent" min="0" max="100"/>
             </div>
         </fieldset>
         <div class="row">
@@ -316,11 +316,11 @@
         </div>
         <div class="row">
             <label>{{ "Confirm password"|i18n }}</label>
-            <input type="password" name="checkAccountPassword" />
+            <input type="password" name="checkAccountPassword"/>
         </div>
         <div class="row">
             <label>{{ "Email"|i18n }}</label>
-            <input type="text" name="telecom.system" />
+            <input type="email" name="telecom.value" />
         </div>
         <button id="accountSubmitBtn" class="hidden"></button>
     </form>
@@ -473,6 +473,8 @@
     <div id="trad_error_noAddress">{{ "You must fill at least one address data"|i18n }}</div>
     <div id="trad_error_noTelecom">{{ "You must fill at least one telecom data"|i18n }}</div>
     <div id="trad_error_date">{{ "Date format is incorrect"|i18n }}</div>
+    <div id="trad_error_password">{{ "Passwords are not equal"|i18n }}</div>
+    <div id="trad_error_passwordNoLogin">{{ "Can't have password with empty login"|i18n }}</div>
     <div id="trad_yes">{{ "Yes"|i18n }}</div>
     <div id="trad_no">{{ "No"|i18n }}</div>
     <div id="trad_ok">{{ "OK"|i18n }}</div>
