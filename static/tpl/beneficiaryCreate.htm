@@ -10,6 +10,7 @@
 <script src="/bower_components/mustache/mustache.js"></script>
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
 <script src="/tpl/beneficiaryCreate.js"></script>
+<link rel="import" href="/bower_components/zdk-calendar/zdk-calendar.html">
 {% endblock %}
   
 {% block content %}
@@ -109,11 +110,11 @@
         </div>
         <div class="row">
             <label>{{ "First name"|i18n }}</label>
-            <input type="text" name="name.given" value="{{beneficiary.name.given}}"  />
+            <input type="text" name="name.given" value="{{beneficiary.name.given}}" />
         </div>
         <div class="row">
             <label>{{ "Birth date"|i18n }}</label>
-            <input type="text" name="birthdate" required class="date" value="{{beneficiary.birthdate}}"  />
+            <input type="text" name="birthdate" required class="date" value="{{beneficiary.birthdate}}" onclick="showCalendar(this)" />
         </div>
         <div class="row">
             <label>{{ "Perimeter"|i18n }}</label>
@@ -225,15 +226,15 @@
         </div>
         <div class="row">
             <label>{{ "Start date"|i18n }}</label>
-            <input type="text" name="entry.startDate" required class="date" />
+            <input type="text" name="entry.startDate" required class="date" onclick="showCalendar(this)" />
         </div>
         <div class="row">
             <label>{{ "Planned end"|i18n }}</label>
-            <input type="text" name="entry.plannedEnd" required class="date" />
+            <input type="text" name="entry.plannedEnd" required class="date" onclick="showCalendar(this)" />
         </div>
         <div class="row">
             <label>{{ "End date"|i18n }}</label>
-            <input type="text" name="entry.endDate" required class="date" />
+            <input type="text" name="entry.endDate" required class="date" onclick="showCalendar(this)" />
         </div>
         <div class="row">
             <label>{{ "Come from"|i18n }}</label>
@@ -421,7 +422,7 @@
     <button id="deleteBeneficiary" class="red big" onclick="confirmDeleteBeneficiary()">{{ "Delete"|i18n }}</button>
     <button class="red big" onclick="window.history.back();">{{ "Cancel"|i18n }}</button>
     <button class="waitForId blue big" onclick="checkAllForms()">{{ "Save"|i18n }}</button>
-    <button class="waitForId green big">{{ "Validate"|i18n }}</button>
+    <button class="waitForId green big" onclick="checkAllForms(true)">{{ "Validate"|i18n }}</button>
 </div>
 <zdk-modal width="450" id="addProfessionalsModal" closebutton="false">
     <div class="modalContainer">
@@ -449,6 +450,9 @@
         </div>
     </div>
 </zdk-modal>
+<zdk-modal id="calendarModal">
+    <zdk-calendar></zdk-calendar>
+</zdk-modal>
 <zdk-modal id="statusModal" closebutton="false">
     <div class="modalContainer">
         <div class="modalTitleContainer"></div>
@@ -472,6 +476,7 @@
     <div id="trad_error_size">{{ "Size must be a number"|i18n }}</div>
     <div id="trad_error_noAddress">{{ "You must fill at least one address data"|i18n }}</div>
     <div id="trad_error_noTelecom">{{ "You must fill at least one telecom data"|i18n }}</div>
+    <div id="trad_error_date_before">{{ "Start date must be before end or planned end date"|i18n }}</div>
     <div id="trad_error_date">{{ "Date format is incorrect"|i18n }}</div>
     <div id="trad_error_password">{{ "Passwords are not equal"|i18n }}</div>
     <div id="trad_error_passwordNoLogin">{{ "Can't have password with empty login"|i18n }}</div>

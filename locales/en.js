@@ -86,5 +86,6 @@
 	"Date format is incorrect": "Date format is incorrect",
 	"Beneficiary overview": "Beneficiary overview",
 	"Passwords are not equal": "Passwords are not equal",
-	"Can't have password with empty login": "Can't have password with empty login"
+	"Can't have password with empty login": "Can't have password with empty login",
+	"Start date must be before end or planned end date": "Start date must be before end or planned end date"
 }

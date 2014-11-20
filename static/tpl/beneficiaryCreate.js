@@ -6,7 +6,8 @@ var _dataObj = null,
     _idxNbTelecom = 0,
     _idxNbAddress = 0,
     _langCookie = null,
-    _momentFormat = null;
+    _momentFormat = null,
+    _currentNodeCalendar = null;
 
 var promiseXHR = function(method, url, statusOK, data) {
     var promise = new RSVP.Promise(function(resolve, reject) {
@@ -204,6 +205,10 @@ function _checkDateFormat(strDate) {
     return moment(strDate, _momentFormat, _langCookie, true).isValid();
 }
 
+function _checkIsBeforeDate(firstDate, secondDate) {
+    return moment(firstDate, _momentFormat, _langCookie, true).isBefore(secondDate, "day");
+}
+
 function _convertDate(strDate) {
     //Format date to YYYY-MM-DD for the database schema validation
     return moment(strDate, _momentFormat).format("YYYY-MM-DD");
@@ -317,6 +322,24 @@ function checkEntryForm() {
         showModal(modalObj);
         return false;
     }
+
+    //Check date before/after
+    if (!_checkIsBeforeDate(formObj.entry.startDate, formObj.entry.plannedEnd) || !_checkIsBeforeDate(formObj.entry.startDate, formObj.entry.endDate)) {
+        modalObj = {
+            title: "trad_errorFormValidation",
+            content: "trad_error_date_before",
+            buttons: [{
+                id: "trad_ok",
+                action: function() {
+                    closeModal();
+                }
+            }]
+        };
+        showModal(modalObj);
+        return false;
+    }
+
+
 
     //Convert date
     formObj.entry.startDate = _convertDate(formObj.entry.startDate);
@@ -453,7 +476,7 @@ function updateAll(obj) {
     }
 }
 
-function checkAllForms() {
+function checkAllForms(isValidate) {
     console.log("checkAllForms");
     var forms = document.querySelectorAll("form"),
         formsObj = {},
@@ -534,9 +557,11 @@ function checkAllForms() {
     }
     mixin(formsObj, obj);
 
-
     //TODO: add request for account
     console.log("formsObj", formsObj);
+    if (isValidate) {
+        formsObj.validate = true;
+    }
 
     modalObj = {
         title: "trad_save",
@@ -897,6 +922,18 @@ function showModal(modalObj) {
     document.querySelector("#statusModal").show();
 }
 
+function showCalendar(node) {
+    _currentNodeCalendar = node;
+    document.querySelector("#calendarModal").show();
+}
+
+function onHaveDateSelection(data) {
+    if (data && data.detail && data.detail.day && _currentNodeCalendar) {
+        _currentNodeCalendar.value = data.detail.day;
+    }
+    document.querySelector("#calendarModal").hide();
+}
+
 function init() {
     console.log("init");
     document.querySelector("#tsanteListProfessional").addEventListener("tsante-response", _onHaveProfessionalsData, false);
@@ -951,6 +988,11 @@ function init() {
     [].map.call(document.querySelectorAll(".date"), function(item) {
         item.setAttribute("placeholder", _momentFormat);
     });
+
+    //Set locale to the calendar and add listener for date selection
+    var elt = document.querySelector("#calendarModal zdk-calendar");
+    elt.setAttribute("i18n", _langCookie);
+    elt.addEventListener("select", onHaveDateSelection);
 }
 
 window.addEventListener("DOMContentLoaded", init, false);
