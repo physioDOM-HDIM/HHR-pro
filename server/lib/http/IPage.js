@@ -203,7 +203,7 @@ function IPage() {
 				next();
 			});
 	};
-
+	
 	/**
 	 * Beneficiary create and update
 	 * 
@@ -239,11 +239,12 @@ function IPage() {
 				return physioDOM.Beneficiaries();
 			})
 			.then(function(beneficiaries) {
-				return beneficiaries.getBeneficiaryAdminByID( req.session, req.params.beneficiaryID );
+				var beneficiaryID = req.params.beneficiaryID?req.params.beneficiaryID:req.session.beneficiary;
+				return beneficiaries.getBeneficiaryAdminByID( req.session, beneficiaryID );
 			})
 			.then( function(beneficiary) {
-				logger.debug("data", data);
-				logger.debug("bene ", beneficiary );
+				// logger.debug("data", data);
+				// logger.debug("bene ", beneficiary );
 				if(beneficiary){
 					data.beneficiary = beneficiary;
 					if(data.beneficiary.address){
@@ -254,7 +255,7 @@ function IPage() {
 							}
 						});
 					}
-
+					
 					//Format date to follow the locale
 					data.beneficiary.birthdate = convertDate(data.beneficiary.birthdate);
 					if(data.beneficiary.entry){
@@ -263,6 +264,7 @@ function IPage() {
 						data.beneficiary.entry.endDate = convertDate(data.beneficiary.entry.endDate);
 					}
 				}
+				
 				return beneficiary._id ? beneficiary.getProfessionals() : null;
 			}).then(function(professionals){
 				if( professionals ){
@@ -356,7 +358,7 @@ function IPage() {
 			})
 			.then( function (beneficiary) {
 				data.beneficiary = beneficiary;
-				html = swig.renderFile('./static/tpl/recipientDetail.htm', data, function (err, output) {
+				html = swig.renderFile('./static/tpl/beneficiaryOverview.htm', data, function (err, output) {
 					if (err) {
 						console.log("error", err);
 						console.log("output", output);
