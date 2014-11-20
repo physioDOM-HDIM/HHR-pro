@@ -305,9 +305,10 @@ server.post('/api/login', apiLogin);
 server.get( '/api/logout', logout);
 server.get( '/logout', logout);
 
+server.get( '/beneficiaries', IPage.beneficiaries);
 server.get( '/beneficiary/create', IPage.beneficiaryCreate);
 server.get( '/beneficiary/edit/:beneficiaryID', IPage.beneficiaryCreate);
-server.get( '/beneficiary/select', IPage.beneficiarySelect);
+server.get( '/beneficiary/update', IPage.beneficiaryCreate);
 server.get( '/beneficiary/:beneficiaryID', IPage.beneficiaryOverview);
 server.get( '/directory', IPage.directoryList);
 server.get( '/directory/create', IPage.directoryUpdate);

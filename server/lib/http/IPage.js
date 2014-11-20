@@ -292,13 +292,13 @@ function IPage() {
 	};
 
 	/**
-	 * Beneficiary select
+	 * get the beneficiaries list
 	 * 
 	 * @param req
 	 * @param res
 	 * @param next
 	 */
-	this.beneficiarySelect = function(req, res, next) {
+	this.beneficiaries = function(req, res, next) {
 		logger.trace("beneficiarySelect");
 		var html;
 		
