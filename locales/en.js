@@ -102,5 +102,6 @@
 	"Events log": "Events log",
 	"Active services": "Active services",
 	"Professional contacts": "Professional contacts",
-	"Details": "Details"
+	"Details": "Details",
+	"Planned end date": "Planned end date"
 }

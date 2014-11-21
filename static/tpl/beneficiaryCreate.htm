@@ -222,19 +222,19 @@
     <form name="entry" autocomplete="off" onsubmit="return false;">
         <div class="row">
             <label>{{ "Demand"|i18n }}</label>
-            <textarea name="entry.demand" required>{{entry.demand}}</textarea>
+            <textarea name="entry.demand" required>{{beneficiary.entry.demand}}</textarea>
         </div>
         <div class="row">
             <label>{{ "Start date"|i18n }}</label>
-            <input type="text" name="entry.startDate" value="{{entry.startDate}}" required class="date" onclick="showCalendar(this)" />
+            <input type="text" name="entry.startDate" value="{{beneficiary.entry.startDate}}" required class="date" onclick="showCalendar(this)" />
         </div>
         <div class="row">
             <label>{{ "Planned end"|i18n }}</label>
-            <input type="text" name="entry.plannedEnd" value="{{entry.plannedEnd}}" required class="date" onclick="showCalendar(this)" />
+            <input type="text" name="entry.plannedEnd" value="{{beneficiary.entry.plannedEnd}}" required class="date" onclick="showCalendar(this)" />
         </div>
         <div class="row">
             <label>{{ "End date"|i18n }}</label>
-            <input type="text" name="entry.endDate" value="{{entry.endDate}}" required class="date" onclick="showCalendar(this)" />
+            <input type="text" name="entry.endDate" value="{{beneficiary.entry.endDate}}" required class="date" onclick="showCalendar(this)" />
         </div>
         <div class="row">
             <label>{{ "Come from"|i18n }}</label>

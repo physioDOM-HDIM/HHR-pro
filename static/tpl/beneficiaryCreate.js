@@ -924,6 +924,10 @@ function showModal(modalObj) {
 
 function showCalendar(node) {
     _currentNodeCalendar = node;
+    if(node.value !== ""){
+        //if there is a value, open the calendar to this date
+        document.querySelector("#calendarModal zdk-calendar").setAttribute("date", node.value);
+    }
     document.querySelector("#calendarModal").show();
 }
 
