@@ -20,8 +20,9 @@ var beneficiarySchema = {
 		"maritalStatus": {type: "string", "enum": maritalStatus},
 		"active"       : {type: "boolean" },
 		"contact"      : {type: "array", "$ref": "/ContactPartner"},
-		"account"      : {"type": "object"},
+		"account"      : {type: "object"},
 		"socialID"     : {type: "string"},
+		"perimeter"    : {type:"string"},
 		"lifeCond"     : {
 			type:"object",
 			properties: {
