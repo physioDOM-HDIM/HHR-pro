@@ -6,7 +6,6 @@
 {% parent %}
 
 {% endblock %}
-<!--<script src="beneficiaryOverview.js"></script>-->
 {% block content %}
 <style>
 	@media (min-width: 768px) {
@@ -46,31 +45,58 @@
 </style>
   
 <div class="colContainer">
-	<zdk-panel id="personal" heading="personnal">
-		<div><label>{{beneficiary.name.family}} {{beneficiary.name.given}}</label></div>
-		<div>Birth date : <label>{{beneficiary.birthdate}}</label></div>
-		<div>Size : <label>{{ Math.floor(beneficiary.size) }}m{{ (beneficiary.size+"").split(".")[1] }}</label></div>
-		<div>Social id : <label></label></div>
-		<div>Referent : <label>Dr. Julius</label></div>
-		<div class="tph">
-			<div>phone : 04 99 03 02 01</div>
-			<div>mobile : 06 10 20 30 40</div>
+	<zdk-panel id="personal" heading="{{ 'Personnal'|i18n }}">
+		<div class="row">
+			<div class="bold">{{beneficiary.name.family}} {{beneficiary.name.given}} ({{beneficiary.gender}})</div>
 		</div>
-		<div class="biomaster">
-			<div>biomaster : xxxxxxx</div>
+		<div class="row">
+			<label>{{ "Birth date"|i18n }} :</label><div>{{beneficiary.birthdate}}</div>
+		</div>
+		<div class="row">
+			<label>{{ "Size"|i18n }} :</label><div>{{ Math.floor(beneficiary.size) }}{{ "m"|i18n }}{{ (beneficiary.size+"").split(".")[1] }}</div>
+		</div>
+		<div class="row">
+			<label>{{ "Social id"|i18n }} : </label><div>{{beneficiary.socialID}}</div>
+		</div>
+		<div class="row">
+			<label>{{ "Perimeter"|i18n }} : </label><div>{{beneficiary.perimeter}}</div>
+		</div>
+		<div class="row">
+			<label>{{ "Referent"|i18n }} : </label><div>{%if beneficiary.referent %}{{beneficiary.referent.name.family}} {{beneficiary.referent.name.given}}{% else %}---{% endif %}</div>
+		</div>
+		<div class="telecom">
+			{% for telecom in beneficiary.telecom %}
+				<div class="row">
+					<label>{{telecom.system}}  {% if telecom.use %}({{telecom.use}}){% endif %} : </label><div>{{telecom.value}}</div>
+				</div>
+			{% endfor %}
+		</div>
+		<div class="row">
+			<label>{{ "PhysioDom-Box"|i18n }} : </label><div>{{beneficiary.biomaster}}</div>
 		</div>
 		{% if admin %}
-		<a href="/beneficiary/update"><button class="green small">Edit</button></a>
+		<div class="row control">
+            <span class="spacer"></span>
+            <a href="/beneficiary/update"><button class="green small">{{ "Edit"|i18n }}</button></a>
+        </div>
 		{% endif %}
 	</zdk-panel>
 	 
-	<zdk-panel id="addresses" heading="Addresses">
-		<div>152 RUE DES JEUX OLYMPIQUES 1968</div>
-		<div>38250 VILLARD DE LANS</div>
+	<zdk-panel id="addresses" heading="{{ 'Addresses'|i18n }}">
+		{% for addr in beneficiary.address %}
+			{% if !loop.first %}
+				<hr>
+			{% endif %}
+			{% if addr.use %}<div>({{addr.use}})</div>{% endif %}
+			{% for line in addr.line %}
+				<div>{{line}}</div>
+			{% endfor %}
+			<div>{{addr.zip}} {{addr.city}}</div>
+		{% endfor %}
 	</zdk-panel>
 </div>
 
-<zdk-panel heading="Events log" collapsable="true" collapsed="false">
+<zdk-panel heading="{{ 'Events log'|i18n }}" collapsable="true" collapsed="false">
 	<div class="event"></div>
 	<div class="event"></div>
 	<div class="event"></div>
@@ -78,7 +104,7 @@
 	<div class="event"></div>
 </zdk-panel>
 
-<zdk-panel heading="Active services" collapsable="true" collapsed="false">
+<zdk-panel heading="{{ 'Active services'|i18n }}" collapsable="true" collapsed="false">
 	<ul class="request" id="active">
 		<li>
 			<div class="ttable">
@@ -113,8 +139,8 @@
 	</ul>
 </zdk-panel>
 
-<zdk-panel heading="Professional contacts" collapsable="true" collapsed="true">
-	<div class="fixedTable" style="height:300px;">
+<zdk-panel heading="{{ 'Professional contacts'|i18n }}" collapsable="true" collapsed="true">
+	<div class="fixedTable" style="max-height: 300px">
 		<table id="stakeholders">
 			<colgroup>
 				<col>
@@ -124,131 +150,105 @@
 			</colgroup>
 			<thead>
 			<tr>
-				<th>Name</th>
-				<th>Role</th>
-				<th>Phone</th>
-				<th>Email</th>
+				<th>{{ "Name"|i18n }}</th>
+				<th>{{ "Role"|i18n }}</th>
+				<th>{{ "Phone"|i18n }}</th>
+				<th>{{ "Email"|i18n }}</th>
 			</tr>
 			</thead>
 			<tbody>
+			{% for prof in beneficiary.professionals %}
 			<tr>
-				<td>ROLLAND Anne</td>
-				<td>pharmacist</td>
-				<td>03 25 12 45 22</td>
-				<td>anne.rolland@gmail.com</td>
+				<td>{{prof.name.family}} {{prof.name.given}}</td>
+				<td>{{prof.name.role}}</td>
+				<td>
+					{% for telecom in prof.telecom %}
+						{% if telecom.system !== "email" %}
+							{{telecom.value}}
+						{% endif %}
+					{% endfor %}
+				</td>
+				<td>
+					{% for telecom in prof.telecom %}
+						{% if telecom.system === "email" %}
+							{{telecom.value}}
+						{% endif %}
+					{% endfor %}
+				</td>
 			</tr>
-			<tr>
-				<td>COTTE Jean</td>
-				<td>pharmacist</td>
-				<td>03 25 12 45 22</td>
-				<td></td>
-			</tr>
-			<tr>
-				<td>OFFROY Remy</td>
-				<td>Nurse</td>
-				<td></td>
-				<td>roffroy@care.com</td>
-			</tr>
-			<tr>
-				<td>GUEDON Magalie</td>
-				<td>Nurse</td>
-				<td></td>
-				<td>mguedon@care.com</td>
-			</tr>
-			<tr>
-				<td>ROLLAND Anne</td>
-				<td>pharmacist</td>
-				<td>03 25 12 45 22</td>
-				<td>anne.rolland@gmail.com</td>
-			</tr>
-			<tr>
-				<td>COTTE Jean</td>
-				<td>pharmacist</td>
-				<td>03 25 12 45 22</td>
-				<td></td>
-			</tr>
-			<tr>
-				<td>OFFROY Remy</td>
-				<td>Nurse</td>
-				<td></td>
-				<td>roffroy@care.com</td>
-			</tr>
-			<tr>
-				<td>GUEDON Magalie</td>
-				<td>Nurse</td>
-				<td></td>
-				<td>mguedon@care.com</td>
-			</tr>
-			<tr>
-				<td>ROLLAND Anne</td>
-				<td>pharmacist</td>
-				<td>03 25 12 45 22</td>
-				<td>anne.rolland@gmail.com</td>
-			</tr>
-			<tr>
-				<td>COTTE Jean</td>
-				<td>pharmacist</td>
-				<td>03 25 12 45 22</td>
-				<td></td>
-			</tr>
-			<tr>
-				<td>OFFROY Remy</td>
-				<td>Nurse</td>
-				<td></td>
-				<td>roffroy@care.com</td>
-			</tr>
-			<tr>
-				<td>GUEDON Magalie</td>
-				<td>Nurse</td>
-				<td></td>
-				<td>mguedon@care.com</td>
-			</tr>
-			<tr>
-				<td>ROLLAND Anne</td>
-				<td>pharmacist</td>
-				<td>03 25 12 45 22</td>
-				<td>anne.rolland@gmail.com</td>
-			</tr>
-			<tr>
-				<td>COTTE Jean</td>
-				<td>pharmacist</td>
-				<td>03 25 12 45 22</td>
-				<td></td>
-			</tr>
-			<tr>
-				<td>OFFROY Remy</td>
-				<td>Nurse</td>
-				<td></td>
-				<td>roffroy@care.com</td>
-			</tr>
-			<tr>
-				<td>GUEDON Magalie</td>
-				<td>Nurse</td>
-				<td></td>
-				<td>mguedon@care.com</td>
-			</tr>
+			{% endfor %}
 			</tbody>
 		</table>
 	</div>
 </zdk-panel>
 
-<zdk-panel heading="Details" collapsable="true" collapsed="true">
+<zdk-panel heading="{{ 'Details'|i18n }}" collapsable="true" collapsed="true">
+	{% if beneficiary.entry %}
+		<div class="row">
+			<label>{{ "Demand"|i18n }} : </label><div>{{beneficiary.entry.demand}}</div>
+		</div>
+		<div class="row">
+			<label>{{ "Start date"|i18n }} : </label><div>{{beneficiary.entry.startDate}}</div>
+		</div>
+		<div class="row">
+			<label>{{ "Planned end date"|i18n }} : </label><div>{{beneficiary.entry.plannedEnd}}</div>
+		</div>
+		<div class="row">
+			<label>{{ "End date"|i18n }} : </label><div>{{beneficiary.entry.endDate}}</div>
+		</div>
+		<div class="row">
+			<label>{{ "Come from"|i18n }} : </label><div>{{beneficiary.entry.comeFrom}}</div>
+		</div>
+	{% endif %}
 	<div class="row">
-		<div class="col-xs-6">Marital status : Cohabitee</div>
-		<div class="col-xs-6">Profession : without activity (over 60 years)</div>
+		<label>{{ "Deceased"|i18n }} : </label><div>{% if beneficiary.deceased %}{{ "Yes"|i18n }}{% else %}{{ "No"|i18n }}{% endif %}</div>
 	</div>
 	<div class="row">
-		<div class="col-xs-6">Type of disability : respiratory problem</div>
-		<div class="col-xs-6">Disability level : 30</div>
+		<label>{{ "Active"|i18n }} : </label><div>{% if beneficiary.active %}{{ "Yes"|i18n }}{% else %}{{ "No"|i18n }}{% endif %}</div>
 	</div>
 	<div class="row">
-		<div class="col-xs-6">Life condtion : Liviving in a couple or same generation</div>
-		<div class="col-xs-6">Profession : without activity (over 60 years)</div>
+		<label>{{ "Marital status"|i18n }} : </label><div>{{beneficiary.maritalStatus}}</div>
 	</div>
+	{% if beneficiary.lifeCond %}
+		<div class="row">
+			<label>{{ "Way of life"|i18n }} : </label><div>{{beneficiary.lifeCond.wayOfLife}}</div>
+		</div>
+		<div class="row">
+			<label>{{ "Profession"|i18n }} : </label><div>{{beneficiary.lifeCond.profession}}</div>
+		</div>
+		{% if beneficiary.lifeCond.disability %}
+			<div class="row">
+				<label>{{ "Type of disability"|i18n }} : </label><div>{{beneficiary.lifeCond.disability.type}}</div>
+			</div>
+			<div class="row">
+				<label>{{ "Disability level"|i18n }} : </label><div>{{beneficiary.lifeCond.disability.percent}}</div>
+			</div>
+		{% endif %}
+	{% endif %}
+	{% if beneficiary.diagnosis %}
+		<div class="row">
+			<label>{{ "General status"|i18n }} : </label><div>{{beneficiary.diagnosis.general}}</div>
+		</div>
+		<div class="row">
+			<label>{{ "Nutritional status"|i18n }} : </label><div>{{beneficiary.diagnosis.nutritional}}</div>
+		</div>
+		<p>{{ "Chronic pathologies"|i18n }}</p>
+		<div class="row">
+			<label>{{ "Main diagnosis"|i18n }} : </label><div>{{beneficiary.diagnosis.chronic.main}}</div>
+		</div>
+		{% for assoDiag in beneficiary.diagnosis.chronic.associated %}
+			{% if loop.first %}
+				<ul>
+			{% endif %}
+				<li>
+					<div class="row">
+						<div>{{assoDiag}}</div>
+					</div>
+				</li>
+			{% if loop.last %}
+				</ul>
+			{% endif %}
+		{% endfor %}
+	{% endif %}
 </zdk-panel>
-  
-<script>
-	parent.document.querySelector("#beneficiary a").innerHTML = '{{ beneficiary.name.family }}';
-</script>
-  
 {% endblock %}

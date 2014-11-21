@@ -87,5 +87,20 @@
 	"Beneficiary overview": "Beneficiary overview",
 	"Passwords are not equal": "Passwords are not equal",
 	"Can't have password with empty login": "Can't have password with empty login",
-	"Start date must be before end or planned end date": "Start date must be before end or planned end date"
+	"Start date must be before end or planned end date": "Start date must be before end or planned end date",
+	"Size": "Size",
+	"Social id": "Social id",
+	"Referent": "Referent",
+	"Edit": "Edit",
+	"m": "m",
+	"Role": "Role",
+	"Type of disability": "Type of disability",
+	"Disability level": "Disability level",
+	"Life condtion": "Life condtion",
+	"Addresses": "Addresses",
+	"Personnal": "Personnal",
+	"Events log": "Events log",
+	"Active services": "Active services",
+	"Professional contacts": "Professional contacts",
+	"Details": "Details"
 }

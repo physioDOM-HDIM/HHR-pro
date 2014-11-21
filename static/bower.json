@@ -18,7 +18,7 @@
     "polymer": "Polymer/polymer#~0.4.2",
     "zdk-panel": "~0.2.2",
     "zdk-modal": "~0.2.0",
-    "zdk-calendar": "~0.1.0",
+    "zdk-calendar": "~0.1.1",
     "core-ajax": "Polymer/core-ajax#~0.4.2",
     "core-input": "Polymer/core-input#~0.4.2",
     "tsante-listpager": "git@git.telecomsante.com:components/tsante-listpager.git#0.1.2",
