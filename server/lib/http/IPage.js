@@ -228,7 +228,9 @@ function IPage() {
 			"maritalStatus",
 			"communication",
 			"profession",
-			"perimeter"
+			"perimeter",
+			"comeFrom",
+			"disability"
 		].map( promiseList);
 
 		RSVP.all(promises)
