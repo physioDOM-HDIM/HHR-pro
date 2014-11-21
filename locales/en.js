@@ -84,5 +84,14 @@
 	"Are you sure you want to delete this item ?": "Are you sure you want to delete this item ?",
 	"Item successfully deleted": "Item successfully deleted",
 	"Date format is incorrect": "Date format is incorrect",
-	"Beneficiary overview": "Beneficiary overview"
+	"Beneficiary overview": "Beneficiary overview",
+	"Lists management": "Lists management",
+	"List name": "List name",
+	"Editable": "Editable",
+	"Default value": "Default value",
+	"No default value": "No default value",
+	"-- No default value --": "-- No default value --",
+	"Reference": "Reference",
+	"Value": "Value",
+	"New list": "New list"
 }

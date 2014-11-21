@@ -16,6 +16,7 @@
 var swig = require("swig"),
 	Logger = require("logger"),
 	RSVP = require("rsvp"),
+	promise = RSVP.Promise,
 	moment = require("moment"),
 	ObjectID = require("mongodb").ObjectID;
 var logger = new Logger("IPage");
@@ -359,6 +360,45 @@ function IPage() {
 			.then( function (beneficiary) {
 				data.beneficiary = beneficiary;
 				html = swig.renderFile('./static/tpl/beneficiaryOverview.htm', data, function (err, output) {
+					if (err) {
+						console.log("error", err);
+						console.log("output", output);
+						res.write(err);
+						res.end();
+						next();
+					} else {
+						sendPage(output, res, next);
+					}
+				});
+			})
+			.catch( function(err) {
+				logger.error(err);
+				res.write(err);
+				res.end();
+				next();
+			});
+	};
+
+	/**
+	 * Lists manager
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	this.listsManager = function(req, res, next) {
+		logger.trace("listsManager");
+		var html;
+
+		init(req);
+		var data = {
+			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false 
+		};
+		physioDOM.Lists.getLists(null, null, true)
+			.then( function(lists) {
+				data.lists = lists;
+				data.lang = lang;
+				html = swig.renderFile('./static/tpl/listsManager.htm', data, function (err, output) {
 					if (err) {
 						console.log("error", err);
 						console.log("output", output);
