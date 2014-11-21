@@ -4,12 +4,13 @@
 
 {% block head %}
 {% parent %}
+  
 <script src="/bower_components/form2js/src/form2js.js"></script>
 <script src="/tpl/beneficiaries.js"></script>
 {% endblock %}
 
 {% block content %}
-	<zdk-panel heading="{{'Filter'|i18n}} / {{'Sort'|i18n}}" height="250" collapsable="true" collapsed="true">
+	<zdk-panel heading="{{'Filter'|i18n}} / {{'Sort'|i18n}}" collapsable="true" collapsed={% if admin %}"false"{% else %}"true"{% endif %}>
 		<form class="filter" name="filter" autocomplete="off" onsubmit="validFilter(); return false;">
 			<div>
 				<div class="row">

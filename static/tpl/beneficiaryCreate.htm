@@ -11,6 +11,9 @@
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
 <script src="/tpl/beneficiaryCreate.js"></script>
 <link rel="import" href="/bower_components/zdk-calendar/zdk-calendar.html">
+  <style>
+      div.float { float:"left"; }
+  </style>
 {% endblock %}
   
 {% block content %}
@@ -37,7 +40,7 @@
 
 <script type="template" id="tplTelecomContainer">
     <div class="row">
-        <div class="col">
+        <div class="float">
             <label>{{ "Use"|i18n }}</label>
             <select name="telecom[{%raw%}{{idx}}{%endraw%}].use" required>
                 {% for item in use.items %}
@@ -45,7 +48,7 @@
                 {% endfor %}
             </select>
         </div>
-        <div class="col">
+        <div class="float">
             <label>Type</label>
             <select name="telecom[{%raw%}{{idx}}{%endraw%}].system" required>
                 {% for item in system.items %}
@@ -55,11 +58,11 @@
                 {% endfor %}
             </select>
         </div>
-        <div class="col">
+        <div class="float">
             <label>Number</label>
             <input type="text" name="telecom[{%raw%}{{idx}}{%endraw%}].value" required/>
         </div>
-        <div class="col buttonContainer">
+        <div class="float buttonContainer">
            <button type="button" class="small red" onclick="deleteTelecom(this)">{{ "delete"|i18n }}</button>
         </div>
     </div>
