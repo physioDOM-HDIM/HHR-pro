@@ -45,13 +45,30 @@
 					</div>
 				</div>
 				<div style="height:10px">&nbsp;</div>
+				<hr/>
+				<div class="row">
+					<div class="col">
+						<label>Sort:</label>
+						<select name="sort">
+							<option value="name.family">name</option>
+							<option value="perimeter">perimeter</option>
+							<option value="address.zip">zip code</option>
+							<option value="address.city">city</option>
+						</select>
+					</div>
+					<div class="col">
+						<label>Direction:</label>
+						<select name="dir">
+							<option value="1">ascending</option>
+							<option value="-1">descending</option>
+						</select>
+					</div>
+				</div>
 				<div class="row control">
 					<span class="spacer"></span>
 					<button type="button" class="red" onclick="resetFilter()">Reset</button>
-					<button class="green">Filter</button>
+					<button class="green">Valid</button>
 				</div>
-				<hr/>
-				
 			</div>
 		</form>
 	</zdk-panel>

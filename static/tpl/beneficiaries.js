@@ -32,26 +32,14 @@ function validFilter() {
 		filterObj = {},
 		obj = form2js(filterForm);
 	
-	/*
-	params += "?sort=" + dataFormat[filterForm.sortSelection.options[filterForm.sortSelection.selectedIndex].value];
-	//ASC/DESC
-	params += "&dir=" + dataFormat[filterForm.sortDirection.options[filterForm.sortDirection.selectedIndex].value];
-	*/
-	
-	//TODO Perimeter
-	
-	//name
-	if (obj.name) {
-		filterObj[dataFormat.nameData] = obj.name;
+	if(JSON.stringify(obj) !== "{}"){
+		params += "?filter=" + JSON.stringify(obj);
 	}
-	if(obj.zip) {
-		filterObj["address"] = {"$elemMatch":{zip:obj.zip}};
+	if(obj.sort) {
+		params += (params?"&":"?")+"sort="+obj.sort;
 	}
-	if(obj.city) {
-		filterObj["address"] = {"$elemMatch":{city:obj.city}};
-	}
-	if(JSON.stringify(filterObj) !== "{}"){
-		params += "?filter=" + JSON.stringify(filterObj);
+	if(obj.dir) {
+		params += (params?"&":"?")+"dir="+obj.dir;
 	}
 	listPagerElt.url = getBaseURL(listPagerElt.url) + params;
 
