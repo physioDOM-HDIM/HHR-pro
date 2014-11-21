@@ -10,6 +10,7 @@
 <script src="/bower_components/mustache/mustache.js"></script>
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
 <script src="/tpl/beneficiaryCreate.js"></script>
+<link rel="import" href="/bower_components/zdk-calendar/zdk-calendar.html">
 {% endblock %}
   
 {% block content %}
@@ -109,11 +110,11 @@
         </div>
         <div class="row">
             <label>{{ "First name"|i18n }}</label>
-            <input type="text" name="name.given" value="{{beneficiary.name.given}}"  />
+            <input type="text" name="name.given" value="{{beneficiary.name.given}}" />
         </div>
         <div class="row">
             <label>{{ "Birth date"|i18n }}</label>
-            <input type="text" name="birthdate" required class="date" value="{{beneficiary.birthdate}}"  />
+            <input type="text" name="birthdate" required class="date" value="{{beneficiary.birthdate}}" onclick="showCalendar(this)" />
         </div>
         <div class="row">
             <label>{{ "Perimeter"|i18n }}</label>
@@ -130,7 +131,7 @@
             </div>
             <div class="col">
                 <label>{{ "Social ID"|i18n }}</label>
-                <input type="text" name="socialID" />
+                <input type="text" name="socialID" value="{{beneficiary.socialID}}"/>
             </div>
         </div>
         <hr/>
@@ -221,19 +222,19 @@
     <form name="entry" autocomplete="off" onsubmit="return false;">
         <div class="row">
             <label>{{ "Demand"|i18n }}</label>
-            <textarea name="entry.demand" required></textarea>
+            <textarea name="entry.demand" required>{{beneficiary.entry.demand}}</textarea>
         </div>
         <div class="row">
             <label>{{ "Start date"|i18n }}</label>
-            <input type="text" name="entry.startDate" required class="date" />
+            <input type="text" name="entry.startDate" value="{{beneficiary.entry.startDate}}" required class="date" onclick="showCalendar(this)" />
         </div>
         <div class="row">
             <label>{{ "Planned end"|i18n }}</label>
-            <input type="text" name="entry.plannedEnd" required class="date" />
+            <input type="text" name="entry.plannedEnd" value="{{beneficiary.entry.plannedEnd}}" required class="date" onclick="showCalendar(this)" />
         </div>
         <div class="row">
             <label>{{ "End date"|i18n }}</label>
-            <input type="text" name="entry.endDate" required class="date" />
+            <input type="text" name="entry.endDate" value="{{beneficiary.entry.endDate}}" required class="date" onclick="showCalendar(this)" />
         </div>
         <div class="row">
             <label>{{ "Come from"|i18n }}</label>
@@ -245,7 +246,7 @@
         </div>
         <div class="row">
             <label>{{ "PhysioDom-Box"|i18n }}</label>
-            <input type="text" name="biomaster" />
+            <input type="text" name="biomaster" value="{{beneficiary.biomaster}}"/>
         </div>
         <button id="entrySubmitBtn" class="hidden"></button>
     </form>
@@ -255,11 +256,11 @@
     <form name="life_condition" autocomplete="off" onsubmit="return false;">
         <div class="row">
             <label>{{ "Deceased"|i18n }}</label>
-            <input type="checkbox" name="deceased" />
+            <input type="checkbox" name="deceased" value="true" {% if beneficiary.deceased %}checked{% endif %}/>
         </div>
         <div class="row">
             <label>{{ "Active"|i18n }}</label>
-            <input type="checkbox" name="active" />
+            <input type="checkbox" name="active" value="true" {% if beneficiary.active %}checked{% endif %}/>
         </div>
         <div class="row">
             <label>{{ "Marital status"|i18n }}</label>
@@ -281,7 +282,7 @@
             </div>
             <div class="row">
                 <label>{{ "Percent"|i18n }}</label>
-                <input type="number" name="lifeCond.disability.percent" />
+                <input type="number" name="lifeCond.disability.percent" value="{{beneficiary.lifeCond.disability.percent}}" min="0" max="100"/>
             </div>
         </fieldset>
         <div class="row">
@@ -308,7 +309,7 @@
     <form name="account" autocomplete="off" onsubmit="return false;">
         <div class="row">
             <label>{{ "Login"|i18n }}</label>
-            <input type="text" name="account.login" />
+            <input type="text" name="account.login" value="{{beneficiary.account.login}}" />
         </div>
         <div class="row">
             <label>{{ "Password"|i18n }}</label>
@@ -316,11 +317,16 @@
         </div>
         <div class="row">
             <label>{{ "Confirm password"|i18n }}</label>
-            <input type="password" name="checkAccountPassword" />
+            <input type="password" name="checkAccountPassword"/>
         </div>
         <div class="row">
             <label>{{ "Email"|i18n }}</label>
-            <input type="text" name="telecom.system" />
+            <input type="email" name="telecom.value"
+             value="{% for telecom in beneficiary.telecom %}
+                            {% if telecom.system === 'email' %}
+                                {{telecom.value}}
+                            {% endif %}
+                        {% endfor %}"/>
         </div>
         <button id="accountSubmitBtn" class="hidden"></button>
     </form>
@@ -370,6 +376,14 @@
 <zdk-panel bgcolor="gray" heading="Diagnosis" collapsable="true" collapsed="false">
     <form name="diagnosis" autocomplete="off" onsubmit="return false;">
         <p class="head">{{ "General status"|i18n }}</p>
+        <!-- TODO
+        {% for item in generalDiagnosis.items %}
+            <div class="row">
+                <label>{{item.label}}</label>
+                <input type="radio" name="diagnosis.general" value="{{item.value}}" {% if beneficiary.diagnosis.general === item.value %}checked{% endif %}/>
+            </div>
+        {% endfor %} -->
+
         <div class="row">
             <label>{{ "Normal"|i18n }}</label>
             <input type="radio" name="diagnosis.general" value="normal" />
@@ -382,7 +396,17 @@
             <label>{{ "Dependant"|i18n }}</label>
             <input type="radio" name="diagnosis.general" value="dependant" />
         </div>
+
+
         <p class="head">{{ "Nutritional status"|i18n }}</p>
+        <!-- TODO
+        {% for item in nutritionalDiagnosis.items %}
+            <div class="row">
+                <label>{{item.label}}</label>
+                <input type="radio" name="diagnosis.nutritional" value="{{item.value}}" {% if beneficiary.diagnosis.nutritional === item.value %}checked{% endif %}/>
+            </div>
+        {% endfor %} -->
+
         <div class="row">
             <label>{{ "Normal"|i18n }}</label>
             <input type="radio" name="diagnosis.nutritional" value="normal" />
@@ -395,11 +419,17 @@
             <label>{{ "Severe undernutrition"|i18n }}</label>
             <input type="radio" name="diagnosis.nutritional" value="severeundernutrition" />
         </div>
+
+
         <p class="head">{{ "Chronic pathologies"|i18n }}</p>
         <div class="row">
             <div class="col">
                 <div>{{ "Main diagnosis"|i18n }}</div>
                 <select name="diagnosis.chronic.main" required>
+                    <!-- TODO
+                    {% for item in mainChronicDiagnosis.items %}
+                        <option value="{{item.value}}">{{item.label}}</option>
+                    {% endfor %} -->
                     <option></option>
                     <option>todo1</option>
                 </select>
@@ -407,6 +437,10 @@
             <div class="col">
                 <div>{{ "Associated diagnosis"|i18n }}</div>
                 <select name="diagnosis.chronic.associated" multiple="multiple" required>
+                    <!-- TODO
+                    {% for item in associatedChronicDiagnosis.items %}
+                        <option value="{{item.value}}">{{item.label}}</option>
+                    {% endfor %} -->
                     <option></option>
                     <option>todo1</option>
                 </select>
@@ -421,7 +455,7 @@
     <button id="deleteBeneficiary" class="red big" onclick="confirmDeleteBeneficiary()">{{ "Delete"|i18n }}</button>
     <button class="red big" onclick="window.history.back();">{{ "Cancel"|i18n }}</button>
     <button class="waitForId blue big" onclick="checkAllForms()">{{ "Save"|i18n }}</button>
-    <button class="waitForId green big">{{ "Validate"|i18n }}</button>
+    <button class="waitForId green big" onclick="checkAllForms(true)">{{ "Validate"|i18n }}</button>
 </div>
 <zdk-modal width="450" id="addProfessionalsModal" closebutton="false">
     <div class="modalContainer">
@@ -449,6 +483,9 @@
         </div>
     </div>
 </zdk-modal>
+<zdk-modal id="calendarModal">
+    <zdk-calendar></zdk-calendar>
+</zdk-modal>
 <zdk-modal id="statusModal" closebutton="false">
     <div class="modalContainer">
         <div class="modalTitleContainer"></div>
@@ -472,7 +509,10 @@
     <div id="trad_error_size">{{ "Size must be a number"|i18n }}</div>
     <div id="trad_error_noAddress">{{ "You must fill at least one address data"|i18n }}</div>
     <div id="trad_error_noTelecom">{{ "You must fill at least one telecom data"|i18n }}</div>
+    <div id="trad_error_date_before">{{ "Start date must be before end or planned end date"|i18n }}</div>
     <div id="trad_error_date">{{ "Date format is incorrect"|i18n }}</div>
+    <div id="trad_error_password">{{ "Passwords are not equal"|i18n }}</div>
+    <div id="trad_error_passwordNoLogin">{{ "Can't have password with empty login"|i18n }}</div>
     <div id="trad_yes">{{ "Yes"|i18n }}</div>
     <div id="trad_no">{{ "No"|i18n }}</div>
     <div id="trad_ok">{{ "OK"|i18n }}</div>

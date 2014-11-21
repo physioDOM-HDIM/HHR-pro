@@ -228,7 +228,9 @@ function IPage() {
 			"maritalStatus",
 			"communication",
 			"profession",
-			"perimeter"
+			"perimeter",
+			"comeFrom",
+			"disability"
 		].map( promiseList);
 
 		RSVP.all(promises)
@@ -356,8 +358,28 @@ function IPage() {
 			.then( function(beneficiaries) {
 				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
 			})
-			.then( function (beneficiary) {
-				data.beneficiary = beneficiary;
+			.then( function(beneficiary) {
+				if(beneficiary){
+					data.beneficiary = beneficiary;
+
+					//Format date to follow the locale
+					data.beneficiary.birthdate = convertDate(data.beneficiary.birthdate);
+					if(data.beneficiary.entry){
+						data.beneficiary.entry.startDate = convertDate(data.beneficiary.entry.startDate);
+						data.beneficiary.entry.plannedEnd = convertDate(data.beneficiary.entry.plannedEnd);
+						data.beneficiary.entry.endDate = convertDate(data.beneficiary.entry.endDate);
+					}
+				}
+				return beneficiary._id ? beneficiary.getProfessionals() : null;
+			}).then(function(professionals){
+				if( professionals ){
+					data.beneficiary.professionals = professionals;
+					data.beneficiary.professionals.forEach(function(item){
+						if(item.referent){
+							data.beneficiary.referent = item;
+						}
+					});
+				}
 				html = swig.renderFile('./static/tpl/beneficiaryOverview.htm', data, function (err, output) {
 					if (err) {
 						console.log("error", err);
