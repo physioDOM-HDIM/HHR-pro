@@ -251,4 +251,7 @@
 		{% endfor %}
 	{% endif %}
 </zdk-panel>
+<script>
+	parent.document.querySelector("#beneficiary a").innerHTML = '{{ beneficiary.name.family }} {{ beneficiary.name.given }}';
+</script>
 {% endblock %}
