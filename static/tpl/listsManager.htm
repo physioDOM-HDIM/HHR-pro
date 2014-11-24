@@ -39,9 +39,9 @@
                 <label>{{ "List name"|i18n }}:</label>
                 <input type="text" name="name" required/>
             </div>
-            <div class="row">
-                <label>{{ "Editable"|i18n }}:</label>
-                <input type="checkbox" name="editable" value="true" />
+            <div class="row" style="background: red">
+                <label style="font-weight: bold">Editable (dev only)</label>
+                <input type="checkbox" name="editable" value="true" checked onclick="edit(this)"/>
             </div>
             <div class="row">
                 <label>{{ "Default value"|i18n }}:</label>
@@ -70,10 +70,6 @@
                     <input type="text" name="name" value="{{list.name}}" required/>
                 </div>
                 <div class="row">
-                    <label>{{ "Editable"|i18n }}:</label>
-                    <input type="checkbox" name="editable" value="true" {% if list.editable %}checked{% endif %}/>
-                </div>
-                <div class="row">
                     <label>{{ "Default value"|i18n }}:</label>
                     <select name="defaultValue">
                         <option value="null" {% if list.defaultValue === null %}selected{% endif %}>{{ "-- No default value --"|i18n }}</option>
@@ -88,7 +84,7 @@
                         <div class="row">
                             <div class="col">
                                 <label>{{ "Reference"|i18n }}:</label>
-                                <input type="text" name="items[{{loop.index}}].ref" value="{{item.ref}}" disabled/>
+                                <input type="text" name="items[{{loop.index}}].ref" value="{{item.ref}}" {% if !list.editable %}disabled{% endif%}/>
                             </div>
                             <div class="col">
                                 <label>{{ "Value"|i18n }}:</label>
@@ -108,6 +104,7 @@
                 <div class="row control">
                     <span class="spacer"></span>
                     <button type="button" class="blue" onclick="addItem(this)">{{ "Add"|i18n }}</button>
+                    <button type="button" class="deleteBtn red" onclick="deleteList(this)">Delete (dvp only)</button>
                     <button class="blue">{{ "Save"|i18n }}</button>
                 </div>
             </form>

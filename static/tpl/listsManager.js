@@ -72,18 +72,24 @@ function checkForm(form){
 
     //Delete disabled attribute on inputs ref before asking for form2js, ifnot disabled values doesn't set
     var obj,
-        items = document.querySelectorAll("form[name='"+formName+"'] input[name*='].ref']");
+        items = document.querySelectorAll("form[name='"+formName+"'] input[name*='].ref']"),
+        isDisabled = false;
     [].map.call(items, function(item){
-        item.removeAttribute("disabled");
+        if(item.getAttribute("disabled")){
+            isDisabled = true;
+            item.removeAttribute("disabled");
+        }
     });
 
-    //Don't skip empty value
+    //Don't skip empty values
     obj = form2js(form, ".", false);
 
-    //Add disabled attribute on inputs ref
-    [].map.call(items, function(item){
-        item.setAttribute("disabled", true);
-    });
+    if(isDisabled){
+        //Add disabled attribute on inputs ref
+        [].map.call(items, function(item){
+            item.setAttribute("disabled", true);
+        });
+    }
 
     //Refresh select default value
     refreshDefaultValue(formName);
@@ -151,8 +157,6 @@ function saveItem(node){
 
         //Remove the unSaved class
         node.classList.remove("unSaved");
-        //Disabled the ref input text
-        node.querySelector("input[name*='].ref']").setAttribute("disabled", "true");
         //Delete the save button
         btn.parentNode.removeChild(btn);
 
@@ -247,7 +251,7 @@ function addList(node){
 
 function deleteList(node){
     console.log("deleteList");
-    while(!node.classList.contains("listContainer")){
+    while(node.tagName.toLowerCase() !== "zdk-panel" && node.tagName.toLowerCase() !== "body"){
         node = node.parentNode;
     }
     node.parentNode.removeChild(node);
@@ -326,6 +330,29 @@ function showModal(modalObj) {
 function init() {
     console.log("init");
 
+}
+
+
+//DEV ONLY
+function edit(node){
+    console.log("edit", arguments);
+    
+    var formName,
+        form = node;
+    while(form.tagName.toLowerCase() !== "form" && form.tagName.toLowerCase() !== "body"){
+        form = form.parentNode;
+    }
+    formName = form.getAttribute("name");
+
+    var items = document.querySelectorAll("form[name='"+formName+"'] input[name*='].ref']");
+    [].map.call(items, function(item){
+        if(node.checked){
+            item.removeAttribute("disabled");
+        }
+        else{
+            item.setAttribute("disabled", "true");
+        }
+    });
 }
 
 window.addEventListener("DOMContentLoaded", init, false);
