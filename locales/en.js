@@ -93,5 +93,12 @@
 	"-- No default value --": "-- No default value --",
 	"Reference": "Reference",
 	"Value": "Value",
-	"New list": "New list"
+	"New list": "New list",
+	"Some values already exists": "Some values already exists",
+	"New list ... waiting for saving": "New list ... waiting for saving",
+	"Delete (dvp only)": "Delete (dvp only)",
+	"Add item": "Add item",
+	"Delete list": "Delete list",
+	"Save list": "Save list",
+	"This list name is already used": "This list name is already used"
 }

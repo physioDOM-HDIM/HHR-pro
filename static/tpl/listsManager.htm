@@ -5,13 +5,14 @@
 {% block head %}
 {% parent %}
 <script src="/bower_components/mustache/mustache.js"></script>
+<script src="/bower_components/form2js/src/form2js.js"></script>
 <link rel="stylesheet" href="/styles/listsManager.css" charset="UTF-8" />
 <script src="/tpl/listsManager.js"></script>
 {% endblock %}
   
 {% block content %}
 <script type="template" id="tplItemContainer">
-    <div class="row">
+    <div class="row unSaved">
         <div class="col">
             <label>{{ "Reference"|i18n }}:</label>
             <input type="text" name="items[{% raw %}{{idx}}{% endraw %}].ref" />
@@ -24,56 +25,38 @@
             <label>{{ "Active"|i18n }}:</label>
             <input type="checkbox" name="items[{% raw %}{{idx}}{% endraw %}].active" value="true" />
         </div>
+        <div class="col buttonContainer">
+            <button type="button" class="small red" onclick="deleteItem(this)">{{ "Delete"|i18n }}</button>
+            <button type="button" class="small blue" onclick="saveItem(this)">{{ "Save"|i18n }}</button>
+        </div>
     </div>
 </script>
 
 <script type="template" id="tplListContainer">
-   <zdk-panel bgcolor="gray" heading="{{ 'New list'|i18n }}" collapsable="true" collapsed="true">
-   /*
-        <form name="???" autocomplete="off" onsubmit="checkForm(); return false;">
+    <zdk-panel bgcolor="gray" heading="{{ 'New list ... waiting for saving'|i18n }}" collapsable="true" collapsed="false">
+      <form name="_newList" autocomplete="off" onsubmit="checkForm(this); return false;">
             <div class="row">
                 <label>{{ "List name"|i18n }}:</label>
-                <input type="text" name="name" value="{{list.name}}"/>
+                <input type="text" name="name" required/>
             </div>
             <div class="row">
                 <label>{{ "Editable"|i18n }}:</label>
-                <input type="checkbox" name="editable" value="true" {% if list.editable %}checked{% endif %}/>
+                <input type="checkbox" name="editable" value="true" />
             </div>
             <div class="row">
                 <label>{{ "Default value"|i18n }}:</label>
                 <select name="defaultValue">
                     <option value="null">{{ "-- No default value --"|i18n }}</option>
-                    {% for item in list.items %}
-                    <option value="{{item.ref}}">{{item.label[lang]}}</option>
-                    {% endfor %}
                 </select>
             </div>
             <p>Items:</p>
-            {% for item in list.items %}
-                <div class="itemContainer">
-                    <div class="row">
-                        <div class="col">
-                            <label>{{ "Reference"|i18n }}:</label>
-                            <input type="text" name="items[{{loop.index}}].ref" value="{{item.ref}}"/>
-                        </div>
-                        <div class="col">
-                            <label>{{ "Value"|i18n }}:</label>
-                            <input type="text" name="items[{{loop.index}}].label.{{lang}}" value="{{item.label[lang]}}"/>
-                        </div>
-                        <div class="col">
-                            <label>{{ "Active"|i18n }}:</label>
-                            <input type="checkbox" name="items[{{loop.index}}].active" value="true" {% if item.active %}checked{% endif %}/>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
             <div class="row control">
                 <span class="spacer"></span>
                 <button type="button" class="blue" onclick="addItem(this)">{{ "Add"|i18n }}</button>
+                <button type="button" class="deleteBtn red" onclick="deleteList(this)">{{ "Delete"|i18n }}</button>
                 <button class="blue">{{ "Save"|i18n }}</button>
             </div>
         </form>
-    */
     </zdk-panel>
 </script>
 
@@ -81,10 +64,10 @@
     <div class="listContainer">
         {% for list in lists.items %}
         <zdk-panel bgcolor="gray" heading="{{list.name}}" collapsable="true" collapsed="true">
-            <form name="{{list.name}}" autocomplete="off" onsubmit="checkForm(); return false;">
+            <form name="{{list.name}}" autocomplete="off" onsubmit="checkForm(this); return false;">
                 <div class="row">
                     <label>{{ "List name"|i18n }}:</label>
-                    <input type="text" name="name" value="{{list.name}}"/>
+                    <input type="text" name="name" value="{{list.name}}" required/>
                 </div>
                 <div class="row">
                     <label>{{ "Editable"|i18n }}:</label>
@@ -93,9 +76,9 @@
                 <div class="row">
                     <label>{{ "Default value"|i18n }}:</label>
                     <select name="defaultValue">
-                        <option value="null">{{ "-- No default value --"|i18n }}</option>
+                        <option value="null" {% if list.defaultValue === null %}selected{% endif %}>{{ "-- No default value --"|i18n }}</option>
                         {% for item in list.items %}
-                        <option value="{{item.ref}}">{{item.label[lang]}}</option>
+                        <option value="{{item.ref}}" {% if list.defaultValue === item.ref %}selected{% endif %}>{{item.label[lang]}}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -105,7 +88,7 @@
                         <div class="row">
                             <div class="col">
                                 <label>{{ "Reference"|i18n }}:</label>
-                                <input type="text" name="items[{{loop.index}}].ref" value="{{item.ref}}"/>
+                                <input type="text" name="items[{{loop.index}}].ref" value="{{item.ref}}" disabled/>
                             </div>
                             <div class="col">
                                 <label>{{ "Value"|i18n }}:</label>
@@ -114,6 +97,10 @@
                             <div class="col">
                                 <label>{{ "Active"|i18n }}:</label>
                                 <input type="checkbox" name="items[{{loop.index}}].active" value="true" {% if item.active %}checked{% endif %}/>
+                            </div>
+                            <div class="col">
+                                <!-- empty for the new item btn space -->
+                                <button class="small red" onclick="deleteItem(this)">Delete (dvp only)</button>
                             </div>
                         </div>
                     </div>
@@ -141,21 +128,13 @@
 </zdk-modal>
 <div class="hidden">
     <div id="trad_save">{{ "Save"|i18n }}</div>
-    <div id="trad_delete">{{ "Delete"|i18n }}</div>
-    <div id="trad_create">{{ "Create"|i18n }}</div>
-    <div id="trad_success">{{ "Success"|i18n }}</div>
     <div id="trad_error">{{ "Error"|i18n }}</div>
-    <div id="trad_errorFormValidation">{{ "Error in form validation"|i18n }}</div>
     <div id="trad_confirm_save">{{ "Are you sure you want to save this part ?"|i18n }}</div>
-    <div id="trad_confirm_delete">{{ "Are you sure you want to delete this item ?"|i18n }}</div>
     <div id="trad_success_update">{{ "Item successfully updated"|i18n }}</div>
-    <div id="trad_success_delete">{{ "Item successfully deleted"|i18n }}</div>
     <div id="trad_success_create">{{ "Item successfully created"|i18n }}</div>
     <div id="trad_error_occured">{{ "An error occured"|i18n }}</div>
-    <div id="trad_error_size">{{ "Size must be a number"|i18n }}</div>
-    <div id="trad_error_noAddress">{{ "You must fill at least one address data"|i18n }}</div>
-    <div id="trad_error_noTelecom">{{ "You must fill at least one telecom data"|i18n }}</div>
-    <div id="trad_error_date">{{ "Date format is incorrect"|i18n }}</div>
+    <div id="trad_error_list">{{ "This list name is already used"|i18n }}</div>
+    <div id="trad_error_ref">{{ "Some values already exists"|i18n }}</div>
     <div id="trad_yes">{{ "Yes"|i18n }}</div>
     <div id="trad_no">{{ "No"|i18n }}</div>
     <div id="trad_ok">{{ "OK"|i18n }}</div>
