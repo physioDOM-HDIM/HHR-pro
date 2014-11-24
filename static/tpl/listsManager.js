@@ -23,30 +23,9 @@ var promiseXHR = function(method, url, statusOK, data) {
 function checkForm(form){
     console.log("checkForm", arguments);
 
-    var modalObj,
-        formName = form.getAttribute("name"),
-        origListName = formName;
-
-    formName = document.querySelector("form[name='"+formName+"'] input[name='name']").value;
-
-    //check the list name alreay exists
-    if(origListName !== formName && listExists(formName)){
-        modalObj = {
-                title: "trad_error",
-                content: "trad_error_list",
-                buttons: [{
-                    id: "trad_ok",
-                    action: function() {
-                        closeModal();
-                    }
-                }]
-            };
-        showModal(modalObj);
-        return false;
-    }
-
+    var modalObj;
     //check the ref value not already exists
-    if(valueExists(formName)){
+    if(valueExists(form.getAttribute("name"))){
         modalObj = {
                     title: "trad_error",
                     content: "trad_error_ref",
@@ -61,21 +40,37 @@ function checkForm(form){
         return false;
     }
 
-    //if new list: update form name, zdkpanel heading, remove deleteList btn
-    if(origListName === "_newList"){
-        var elt = document.querySelector("form[name='_newList'] .deleteBtn");
-        elt.parentNode.removeChild(elt);
-    }
-    
-    form.setAttribute("name", formName);
-    form.parentNode.setAttribute("heading", formName);
+    modalObj = {
+                title: "trad_save",
+                content: "trad_confirm_save",
+                buttons: [{
+                    id: "trad_yes",
+                    action: function() {
+                        updateForm(form);
+                        closeModal();
+                    }
+                },
+                {
+                    id: "trad_no",
+                    action: function() {
+                        closeModal();
+                    }
+                }]
+            };
+    showModal(modalObj);
+    return true;
+}
 
+function updateForm(form){
+    console.log("updateForm", arguments)
     //Delete disabled attribute on inputs ref before asking for form2js, ifnot disabled values doesn't set
-    var obj,
-        items = document.querySelectorAll("form[name='"+formName+"'] input[name*='].ref']"),
+    var obj, elt,
+        formName = form.getAttribute("name"),
+        items = document.querySelectorAll("form[name='"+formName+"'] *[name]"),
         isDisabled = false;
+
     [].map.call(items, function(item){
-        if(item.getAttribute("disabled")){
+        if(item.getAttribute("disabled") !== null){
             isDisabled = true;
             item.removeAttribute("disabled");
         }
@@ -94,19 +89,18 @@ function checkForm(form){
     //Refresh select default value
     refreshDefaultValue(formName);
 
-    //Delete the unSave class
-    items = document.querySelectorAll("form[name='"+formName+"'] .unSaved");
-    [].map.call(items, function(item){
-        item.classList.remove("unSaved");
-    });
-
-    //Remove the buttons
-    items = document.querySelectorAll("form[name='"+formName+"'] .buttonContainer");
+    //Remove add/delete item buttons
+    items = document.querySelectorAll("form[name='"+formName+"'] .itemBtnContainer");
     [].map.call(items, function(item){
         for(var i=item.children.length - 1; i>=0; i--){
             item.removeChild(item.children[i]);
         }
     });
+
+    if(isDisabled){
+        elt = document.querySelector("form[name='"+formName+"'] .mainBtnContainer");
+        elt.parentNode.removeChild(elt);
+    }
 
     console.log("obj", obj);
     //TODO
@@ -124,46 +118,6 @@ function deleteItem(node){
     refreshDefaultValue(form.getAttribute("name"));
 }
 
-function saveItem(node){
-    console.log("saveItem", arguments);
-    var btn = node,
-        form = node,
-        formName;
-
-    //Set this new value in the default value <select>
-    while(form.tagName.toLowerCase() !== "form" && form.tagName.toLowerCase() !== "body"){
-        form = form.parentNode;
-    }
-    formName = form.getAttribute("name");
-
-    //check the ref value not already exists
-    if(valueExists(formName)){
-        var modalObj = {
-                    title: "trad_error",
-                    content: "trad_error_ref",
-                    buttons: [{
-                        id: "trad_ok",
-                        action: function() {
-                            closeModal();
-                        }
-                    }]
-                };
-        showModal(modalObj);
-    }
-    else{
-        while(!node.classList.contains("unSaved")){
-            node = node.parentNode;
-        }
-
-        //Remove the unSaved class
-        node.classList.remove("unSaved");
-        //Delete the save button
-        btn.parentNode.removeChild(btn);
-
-        refreshDefaultValue(formName);
-    }
-}
-
 function valueExists(formName){
     console.log("valueExists", arguments);
     var res = false, values = [],
@@ -174,23 +128,6 @@ function valueExists(formName){
         }
         else{
             values.push(item.value);
-        }
-    });
-
-    return res;
-}
-
-function listExists(listName){
-    console.log("listExists", arguments);
-    var res = false, values = [], name,
-        items = document.querySelectorAll("form");
-    [].map.call(items, function(item){
-        name = item.getAttribute("name");
-        if(listName.toLowerCase() === name.toLowerCase()){
-            res = true;
-        }
-        else{
-            values.push(name);
         }
     });
 
@@ -222,9 +159,18 @@ function refreshDefaultValue(formName){
 
 function addItem(node){
     console.log("addItem");
+    var name,
+        form = node;
+    //Set this new value in the default value <select>
+    while(form.tagName.toLowerCase() !== "form" && form.tagName.toLowerCase() !== "body"){
+        form = form.parentNode;
+    }
+    name = form.getAttribute("name");
+
     var elt = document.querySelector("#tplItemContainer").innerHTML;
     var modelData = {
-        idx: new Date().getTime()
+        idx: new Date().getTime(),
+        listName: name
     };
     var html = Mustache.render(elt, modelData);
     var div = document.createElement("div");
@@ -234,27 +180,6 @@ function addItem(node){
         node = node.parentNode;
     }
     node.parentNode.insertBefore(div, node);
-}
-
-function addList(node){
-    console.log("addList");
-    var elt = document.querySelector("#tplListContainer").innerHTML;
-    var modelData = {
-        idx: new Date().getTime()
-    };
-    var html = Mustache.render(elt, modelData);
-    var div = document.createElement("div");
-    div.classList.add("listContainer");
-    div.innerHTML = html;
-    node.parentNode.parentNode.insertBefore(div, node.parentNode);
-}
-
-function deleteList(node){
-    console.log("deleteList");
-    while(node.tagName.toLowerCase() !== "zdk-panel" && node.tagName.toLowerCase() !== "body"){
-        node = node.parentNode;
-    }
-    node.parentNode.removeChild(node);
 }
 
 function closeModal() {
@@ -327,16 +252,9 @@ function showModal(modalObj) {
     document.querySelector("#statusModal").show();
 }
 
-function init() {
-    console.log("init");
-
-}
-
-
-//DEV ONLY
 function edit(node){
     console.log("edit", arguments);
-    
+
     var formName,
         form = node;
     while(form.tagName.toLowerCase() !== "form" && form.tagName.toLowerCase() !== "body"){
@@ -344,15 +262,23 @@ function edit(node){
     }
     formName = form.getAttribute("name");
 
-    var items = document.querySelectorAll("form[name='"+formName+"'] input[name*='].ref']");
+    var items = document.querySelectorAll("form[name='"+formName+"'] *[name]");
     [].map.call(items, function(item){
-        if(node.checked){
-            item.removeAttribute("disabled");
-        }
-        else{
-            item.setAttribute("disabled", "true");
+        //Don't disable the checkbox
+        if(item.getAttribute("name") !== "editable"){
+            if(node.checked){
+                item.removeAttribute("disabled");
+            }
+            else{
+                item.setAttribute("disabled", "true");
+            }
         }
     });
+}
+
+function init() {
+    console.log("init");
+
 }
 
 window.addEventListener("DOMContentLoaded", init, false);
