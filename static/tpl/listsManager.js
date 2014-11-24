@@ -100,6 +100,9 @@ function updateForm(form){
     if(isDisabled){
         elt = document.querySelector("form[name='"+formName+"'] .mainBtnContainer");
         elt.parentNode.removeChild(elt);
+
+        //TODO: doesn't work
+        form.parentNode.setAttribute("bgcolor", "silver");
     }
 
     console.log("obj", obj);
@@ -182,6 +185,30 @@ function addItem(node){
     node.parentNode.insertBefore(div, node);
 }
 
+function edit(node){
+    console.log("edit", arguments);
+
+    var formName,
+        form = node;
+    while(form.tagName.toLowerCase() !== "form" && form.tagName.toLowerCase() !== "body"){
+        form = form.parentNode;
+    }
+    formName = form.getAttribute("name");
+
+    var items = document.querySelectorAll("form[name='"+formName+"'] *[name]");
+    [].map.call(items, function(item){
+        //Don't disable the checkbox
+        if(item.getAttribute("name") !== "editable"){
+            if(node.checked){
+                item.removeAttribute("disabled");
+            }
+            else{
+                item.setAttribute("disabled", "true");
+            }
+        }
+    });
+}
+
 function closeModal() {
     console.log("closeModal", arguments);
     document.querySelector("#statusModal").hide();
@@ -251,34 +278,3 @@ function showModal(modalObj) {
 
     document.querySelector("#statusModal").show();
 }
-
-function edit(node){
-    console.log("edit", arguments);
-
-    var formName,
-        form = node;
-    while(form.tagName.toLowerCase() !== "form" && form.tagName.toLowerCase() !== "body"){
-        form = form.parentNode;
-    }
-    formName = form.getAttribute("name");
-
-    var items = document.querySelectorAll("form[name='"+formName+"'] *[name]");
-    [].map.call(items, function(item){
-        //Don't disable the checkbox
-        if(item.getAttribute("name") !== "editable"){
-            if(node.checked){
-                item.removeAttribute("disabled");
-            }
-            else{
-                item.setAttribute("disabled", "true");
-            }
-        }
-    });
-}
-
-function init() {
-    console.log("init");
-
-}
-
-window.addEventListener("DOMContentLoaded", init, false);

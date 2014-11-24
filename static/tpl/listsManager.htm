@@ -34,7 +34,7 @@
 <div class="mainContainer">
     <div class="listContainer">
         {% for list in lists.items %}
-        <zdk-panel bgcolor="gray" heading="{{list.name}}" collapsable="true" collapsed="true">
+        <zdk-panel bgcolor="{% if !list.editable %} silver {% else %} gray {% endif %}" heading="{{list.name}}" collapsable="true" collapsed="true">
             <form name="{{list.name}}" autocomplete="off" onsubmit="checkForm(this); return false;">
                 <input type="hidden" name="name" value="{{list.name}}"/>
                 <input type="hidden" name="editable" value="{{list.editable}}"/>
