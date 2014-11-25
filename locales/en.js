@@ -100,5 +100,12 @@
 	"Add item": "Add item",
 	"Delete list": "Delete list",
 	"Save list": "Save list",
-	"This list name is already used": "This list name is already used"
+	"This list name is already used": "This list name is already used",
+	"Unity": "Unity",
+	"Threshold Min": "Threshold Min",
+	"Threshold Max": "Threshold Max",
+	"Range Min": "Range Min",
+	"Range Max": "Range Max",
+	"AutoInput": "AutoInput",
+	"Role type code": "Role type code"
 }

@@ -20,57 +20,56 @@ var promiseXHR = function(method, url, statusOK, data) {
     return promise;
 };
 
-function checkForm(form){
+function checkForm(form) {
     console.log("checkForm", arguments);
 
     var modalObj;
     //check the ref value not already exists
-    if(valueExists(form.getAttribute("name"))){
+    if (valueExists(form.getAttribute("name"))) {
         modalObj = {
-                    title: "trad_error",
-                    content: "trad_error_ref",
-                    buttons: [{
-                        id: "trad_ok",
-                        action: function() {
-                            closeModal();
-                        }
-                    }]
-                };
+            title: "trad_error",
+            content: "trad_error_ref",
+            buttons: [{
+                id: "trad_ok",
+                action: function() {
+                    closeModal();
+                }
+            }]
+        };
         showModal(modalObj);
         return false;
     }
 
     modalObj = {
-                title: "trad_save",
-                content: "trad_confirm_save",
-                buttons: [{
-                    id: "trad_yes",
-                    action: function() {
-                        updateForm(form);
-                        closeModal();
-                    }
-                },
-                {
-                    id: "trad_no",
-                    action: function() {
-                        closeModal();
-                    }
-                }]
-            };
+        title: "trad_save",
+        content: "trad_confirm_save",
+        buttons: [{
+            id: "trad_yes",
+            action: function() {
+                updateForm(form);
+                closeModal();
+            }
+        }, {
+            id: "trad_no",
+            action: function() {
+                closeModal();
+            }
+        }]
+    };
     showModal(modalObj);
     return true;
 }
 
-function updateForm(form){
+function updateForm(form) {
     console.log("updateForm", arguments)
-    //Delete disabled attribute on inputs ref before asking for form2js, ifnot disabled values doesn't set
+        //Delete disabled attribute on inputs ref before asking for form2js, ifnot disabled values doesn't set
     var obj, elt,
         formName = form.getAttribute("name"),
-        items = document.querySelectorAll("form[name='"+formName+"'] *[name]"),
+        items = document.querySelectorAll("form[name='" + formName + "'] *[name]"),
         isDisabled = false;
 
-    [].map.call(items, function(item){
-        if(item.getAttribute("disabled") !== null){
+    [].map.call(items, function(item) {
+        if (item.getAttribute("disabled") !== null) {
             isDisabled = true;
             item.removeAttribute("disabled");
         }
@@ -79,9 +78,9 @@ function updateForm(form){
     //Don't skip empty values
     obj = form2js(form, ".", false);
 
-    if(isDisabled){
+    if (isDisabled) {
         //Add disabled attribute on inputs ref
-        [].map.call(items, function(item){
+        [].map.call(items, function(item) {
             item.setAttribute("disabled", true);
         });
     }
@@ -90,29 +89,55 @@ function updateForm(form){
     refreshDefaultValue(formName);
 
     //Remove add/delete item buttons
-    items = document.querySelectorAll("form[name='"+formName+"'] .itemBtnContainer");
-    [].map.call(items, function(item){
-        for(var i=item.children.length - 1; i>=0; i--){
+    items = document.querySelectorAll("form[name='" + formName + "'] .itemBtnContainer");
+    [].map.call(items, function(item) {
+        for (var i = item.children.length - 1; i >= 0; i--) {
             item.removeChild(item.children[i]);
         }
     });
 
-    if(isDisabled){
-        elt = document.querySelector("form[name='"+formName+"'] .mainBtnContainer");
+    if (isDisabled) {
+        elt = document.querySelector("form[name='" + formName + "'] .mainBtnContainer");
         elt.parentNode.removeChild(elt);
 
         //TODO: doesn't work
         form.parentNode.setAttribute("bgcolor", "silver");
     }
 
-    console.log("obj", obj);
-    //TODO
+    console.log("updateItem obj", obj);
+    var modalObj;
+    promiseXHR("PUT", "/api/lists/" + obj.name, 200, JSON.stringify(obj)).then(function(response) {
+        modalObj = {
+            title: "trad_success",
+            content: "trad_success_update",
+            buttons: [{
+                id: "trad_ok",
+                action: function() {
+                    closeModal();
+                }
+            }]
+        };
+        showModal(modalObj);
+    }, function(error) {
+        modalObj = {
+            title: "trad_error",
+            content: "trad_error_occured",
+            buttons: [{
+                id: "trad_ok",
+                action: function() {
+                    closeModal();
+                }
+            }]
+        };
+        showModal(modalObj);
+        console.log("updateItem - error: ", error);
+    });
 }
 
-function deleteItem(node){
+function deleteItem(node) {
     console.log("deleteItem", arguments);
     var form;
-    while(!node.classList.contains("itemContainer")){
+    while (!node.classList.contains("itemContainer")) {
         node = node.parentNode;
     }
     form = node.parentNode;
@@ -121,15 +146,15 @@ function deleteItem(node){
     refreshDefaultValue(form.getAttribute("name"));
 }
 
-function valueExists(formName){
+function valueExists(formName) {
     console.log("valueExists", arguments);
-    var res = false, values = [],
-        items = document.querySelectorAll("form[name='"+formName+"'] input[name*='].ref']");
-    [].map.call(items, function(item){
-        if(values.indexOf(item.value) !== -1){
+    var res = false,
+        values = [],
+        items = document.querySelectorAll("form[name='" + formName + "'] input[name*='].ref']");
+    [].map.call(items, function(item) {
+        if (values.indexOf(item.value) !== -1) {
             res = true;
-        }
-        else{
+        } else {
             values.push(item.value);
         }
     });
@@ -137,22 +162,22 @@ function valueExists(formName){
     return res;
 }
 
-function refreshDefaultValue(formName){
+function refreshDefaultValue(formName) {
     console.log("refreshDefaultValue", arguments);
-    var select = document.querySelector("form[name='"+formName+"'] select[name='defaultValue']"),
+    var select = document.querySelector("form[name='" + formName + "'] select[name='defaultValue']"),
         selectedItemValue = select.options[select.selectedIndex].value;
     //Don't delete the first item ('no default value')
-    for(var i=select.children.length - 1; i>0; i--){
+    for (var i = select.children.length - 1; i > 0; i--) {
         select.removeChild(select.children[i]);
     }
 
     var elt,
-        items = document.querySelectorAll("form[name='"+formName+"'] input[name*='].ref']");
-    [].map.call(items, function(item){
+        items = document.querySelectorAll("form[name='" + formName + "'] input[name*='].ref']");
+    [].map.call(items, function(item) {
         elt = document.createElement("option");
         elt.value = item.value;
         //Select the previous selected item
-        if(item.value === selectedItemValue){
+        if (item.value === selectedItemValue) {
             elt.setAttribute("selected", "true");
         }
         elt.innerHTML = elt.value;
@@ -160,49 +185,68 @@ function refreshDefaultValue(formName){
     });
 }
 
-function addItem(node){
+function addItem(node) {
     console.log("addItem");
-    var name,
-        form = node;
+    var cn = "hidden",
+        isMeasurableItem = false,
+        form = node,
+        name, elt;
     //Set this new value in the default value <select>
-    while(form.tagName.toLowerCase() !== "form" && form.tagName.toLowerCase() !== "body"){
+    while (form.tagName.toLowerCase() !== "form" && form.tagName.toLowerCase() !== "body") {
         form = form.parentNode;
     }
     name = form.getAttribute("name");
 
-    var elt = document.querySelector("#tplItemContainer").innerHTML;
-    var modelData = {
-        idx: new Date().getTime(),
-        listName: name
-    };
+    isMeasurableItem = document.querySelector("form[name='" + name + "'] input[name*='].autoInput']") ? true : false;
+    if(isMeasurableItem){
+        elt = document.querySelector("#tplItemMeasurableContainer").innerHTML;
+        var modelData = {
+            idx: new Date().getTime(),
+            listName: name
+        };
+    }
+    else{
+        //Don't display this item if not present in the list
+        elt = document.querySelector("form[name='" + name + "'] select[name*='].roleTypeCode']");
+        if(elt && !elt.parentNode.classList.contains("hidden")){
+            cn = "";
+        }
+
+        elt = document.querySelector("#tplItemBasicContainer").innerHTML;
+        var modelData = {
+            idx: new Date().getTime(),
+            classRoleTypeCode : cn,
+            listName: name
+        };
+    }
+
     var html = Mustache.render(elt, modelData);
     var div = document.createElement("div");
     div.classList.add("itemContainer");
     div.innerHTML = html;
-    while(!node.classList.contains("row") && !node.classList.contains("control")){
+    while (!node.classList.contains("row") && !node.classList.contains("control")) {
         node = node.parentNode;
     }
     node.parentNode.insertBefore(div, node);
 }
 
-function edit(node){
+function edit(node) {
     console.log("edit", arguments);
 
     var formName,
         form = node;
-    while(form.tagName.toLowerCase() !== "form" && form.tagName.toLowerCase() !== "body"){
+    while (form.tagName.toLowerCase() !== "form" && form.tagName.toLowerCase() !== "body") {
         form = form.parentNode;
     }
     formName = form.getAttribute("name");
 
-    var items = document.querySelectorAll("form[name='"+formName+"'] *[name]");
-    [].map.call(items, function(item){
+    var items = document.querySelectorAll("form[name='" + formName + "'] *[name]");
+    [].map.call(items, function(item) {
         //Don't disable the checkbox
-        if(item.getAttribute("name") !== "editable"){
-            if(node.checked){
+        if (item.getAttribute("name") !== "editable") {
+            if (node.checked) {
                 item.removeAttribute("disabled");
-            }
-            else{
+            } else {
                 item.setAttribute("disabled", "true");
             }
         }
