@@ -206,7 +206,8 @@ function _checkDateFormat(strDate) {
 }
 
 function _checkIsBeforeDate(firstDate, secondDate) {
-    return moment(firstDate, _momentFormat, _langCookie, true).isBefore(secondDate, "day");
+    // return moment(firstDate, _momentFormat, _langCookie, true).isBefore(secondDate, "day");
+    return ( firstDate < secondDate );
 }
 
 function _convertDate(strDate) {
@@ -308,6 +309,7 @@ function checkEntryForm() {
         formObj = form2js(document.querySelector("form[name='entry']"));
 
     //Check date format
+    /*
     if (!_checkDateFormat(formObj.entry.startDate) || !_checkDateFormat(formObj.entry.plannedEnd) || !_checkDateFormat(formObj.entry.endDate)) {
         modalObj = {
             title: "trad_errorFormValidation",
@@ -322,9 +324,9 @@ function checkEntryForm() {
         showModal(modalObj);
         return false;
     }
-
+    */
     //Check date before/after
-    if (!_checkIsBeforeDate(formObj.entry.startDate, formObj.entry.plannedEnd) || !_checkIsBeforeDate(formObj.entry.startDate, formObj.entry.endDate)) {
+    if (formObj.entry.startDate && formObj.entry.plannedEnd && !_checkIsBeforeDate(formObj.entry.startDate, formObj.entry.plannedEnd)) {
         modalObj = {
             title: "trad_errorFormValidation",
             content: "trad_error_date_before",
@@ -339,13 +341,20 @@ function checkEntryForm() {
         return false;
     }
 
-
-
-    //Convert date
-    formObj.entry.startDate = _convertDate(formObj.entry.startDate);
-    formObj.entry.plannedEnd = _convertDate(formObj.entry.plannedEnd);
-    formObj.entry.endDate = _convertDate(formObj.entry.endDate);
-
+    if( formObj.entry.startDate &&  formObj.entry.endDate && !_checkIsBeforeDate(formObj.entry.startDate, formObj.entry.endDate)) {
+        modalObj = {
+            title: "trad_errorFormValidation",
+            content: "trad_error_date_before",
+            buttons: [{
+                id: "trad_ok",
+                action: function() {
+                    closeModal();
+                }
+            }]
+        };
+        showModal(modalObj);
+        return false;
+    }
     return formObj;
 }
 
@@ -641,6 +650,7 @@ function updateBeneficiary(obj) {
                 buttons: [{
                     id: "trad_ok",
                     action: function() {
+                        window.location.href = "/beneficiary/overview";
                         closeModal();
                     }
                 }]

@@ -180,7 +180,8 @@ div.row {
 	display:-webkit-flex; 
 	display: -ms-flexbox; 
 	display:flex; 
-	align-items: center 
+	align-items: center;
+	box-sizing: border-box;
 }
 
 div.row.hidden {
@@ -215,6 +216,7 @@ div.row label {
 	white-space: nowrap; 
 	overflow: hidden; 
 	padding-right:5px
+	display:inline;
 }
 div.row textarea { 
 	-webkit-flex:1; 

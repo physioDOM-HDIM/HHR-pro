@@ -42,6 +42,29 @@
 		height:30px;
 		border-bottom:1px solid black;
 	}
+	
+	zdk-panel[heading="Details"] div.row {
+		display:block;
+		height:25px;
+	}
+	zdk-panel[heading="Details"] div.row * {
+		display:inline-block;
+		height:25px;
+		vertical-align: middle;
+	}
+	table#stakeholders {
+		min-width:700px;
+		white-space: nowrap"
+	}
+	table tr {
+		height:30px;
+	}
+	table td {
+		padding-left:5px;
+	}
+	tr.referent {
+		background: LightYellow;
+	}
 </style>
   
 <div class="colContainer">
@@ -77,7 +100,7 @@
 		{% if admin %}
 		<div class="row control">
             <span class="spacer"></span>
-            <a href="/beneficiary/update"><button class="green small">{{ "Edit"|i18n }}</button></a>
+            <a href="/beneficiary/update"><button class="green">{{ "Edit"|i18n }}</button></a>
         </div>
 		{% endif %}
 	</zdk-panel>
@@ -97,14 +120,19 @@
 </div>
 
 <zdk-panel heading="{{ 'Events log'|i18n }}" collapsable="true" collapsed="false">
+	<div class="event">Not yet implemented</div>
+	<!--
 	<div class="event"></div>
 	<div class="event"></div>
 	<div class="event"></div>
 	<div class="event"></div>
 	<div class="event"></div>
+	-->
 </zdk-panel>
 
 <zdk-panel heading="{{ 'Active services'|i18n }}" collapsable="true" collapsed="false">
+	<div>Not yet implemented</div>
+	<!--
 	<ul class="request" id="active">
 		<li>
 			<div class="ttable">
@@ -137,52 +165,46 @@
 			</div>
 		</li>
 	</ul>
+	-->
 </zdk-panel>
 
 <zdk-panel heading="{{ 'Professional contacts'|i18n }}" collapsable="true" collapsed="true">
-	<div class="fixedTable" style="max-height: 300px">
-		<table id="stakeholders">
-			<colgroup>
-				<col>
-				<col style="width:150px">
-				<col style="width:150px">
-				<col style="width:250px">
-			</colgroup>
-			<thead>
-			<tr>
-				<th>{{ "Name"|i18n }}</th>
-				<th>{{ "Role"|i18n }}</th>
-				<th>{{ "Phone"|i18n }}</th>
-				<th>{{ "Email"|i18n }}</th>
-			</tr>
-			</thead>
-			<tbody>
-			{% for prof in beneficiary.professionals %}
-			<tr>
-				<td>{{prof.name.family}} {{prof.name.given}}</td>
-				<td>{{prof.name.role}}</td>
-				<td>
-					{% for telecom in prof.telecom %}
-						{% if telecom.system !== "email" %}
-							{{telecom.value}}
-						{% endif %}
-					{% endfor %}
-				</td>
-				<td>
-					{% for telecom in prof.telecom %}
-						{% if telecom.system === "email" %}
-							{{telecom.value}}
-						{% endif %}
-					{% endfor %}
-				</td>
-			</tr>
-			{% endfor %}
-			</tbody>
-		</table>
-	</div>
+	<table id="stakeholders">
+		<thead>
+		<tr>
+			<th style="min-width:200px">{{ "Name"|i18n }}</th>
+			<th style="width:150px">{{ "Role"|i18n }}</th>
+			<th style="width:150px">{{ "Phone"|i18n }}</th>
+			<th style="width:250px">{{ "Email"|i18n }}</th>
+		</tr>
+		</thead>
+		<tbody>
+		{% for prof in beneficiary.professionals %}
+		<tr {% if prof.referent %}class="referent"{% endif %}>
+			<td>{{prof.name.family}} {{prof.name.given}}</td>
+			<td>{{prof.name.role}}</td>
+			<td>
+				{% for telecom in prof.telecom %}
+					{% if telecom.system !== "email" %}
+						{{telecom.value}}
+					{% endif %}
+				{% endfor %}
+			</td>
+			<td>
+				{% for telecom in prof.telecom %}
+					{% if telecom.system === "email" %}
+						{{telecom.value}}
+					{% endif %}
+				{% endfor %}
+			</td>
+		</tr>
+		{% endfor %}
+		</tbody>
+	</table>
 </zdk-panel>
 
 <zdk-panel heading="{{ 'Details'|i18n }}" collapsable="true" collapsed="true">
+	<div style="-webkit-column-count: 2; -webkit-column-gap: 10px; -webkit-column-rule: 1px solid black; box-sizing: border-box">
 	{% if beneficiary.entry %}
 		<div class="row">
 			<label>{{ "Demand"|i18n }} : </label><div>{{beneficiary.entry.demand}}</div>
@@ -250,6 +272,7 @@
 			{% endif %}
 		{% endfor %}
 	{% endif %}
+	</div>
 </zdk-panel>
 <script>
 	parent.document.querySelector("#beneficiary a").innerHTML = '{{ beneficiary.name.family }} {{ beneficiary.name.given }}';

@@ -261,9 +261,9 @@ function IPage() {
 					//Format date to follow the locale
 					data.beneficiary.birthdate = convertDate(data.beneficiary.birthdate);
 					if(data.beneficiary.entry){
-						data.beneficiary.entry.startDate = convertDate(data.beneficiary.entry.startDate);
-						data.beneficiary.entry.plannedEnd = convertDate(data.beneficiary.entry.plannedEnd);
-						data.beneficiary.entry.endDate = convertDate(data.beneficiary.entry.endDate);
+						data.beneficiary.entry.startDate  = data.beneficiary.entry.startDate;
+						data.beneficiary.entry.plannedEnd = data.beneficiary.entry.plannedEnd;
+						data.beneficiary.entry.endDate    = data.beneficiary.entry.endDate;
 					}
 				}
 				

@@ -41,9 +41,9 @@ var beneficiarySchema = {
 		"entry"        : {
 			type:"object",
 			properties: {
-				"demand"    : {type: "string", required:true},
+				"demand"    : {type: "string"},
 				"startDate" : {format: "date", required:true},
-				"plannedEnd": {format: "date", required:true},
+				"plannedEnd": {format: "date"},
 				"endDate"   : {format: "date"},
 				"comeFrom"  : {type: "string"}
 			},
@@ -55,13 +55,27 @@ var beneficiarySchema = {
 			items: {
 				type                  : "object",
 				"properties"          : {
-					"professionalID": {type: "object", required: true},
+					"professionalID": {type: "string", required: true},
 					"referent"      : {type: "boolean", required: true}
 				},
 				"additionalProperties": false
 			}
 		},
-		"validate"     : {type: "boolean", required: true }
+		"validate"     : {type: "boolean", required: true },
+		"diagnosis": {
+			type:"object",
+			properties:{
+				"general": { type:"string" },
+				"nutritional": { type:"string" },
+				"chronic": {
+					type:"object",
+					properties: {
+						main: { type: "string" }
+					}
+				}
+			},
+			"additionalProperties": false
+		}
 	},
 	"additionalProperties": false
 };
