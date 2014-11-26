@@ -313,6 +313,8 @@ server.get( '/beneficiary/:beneficiaryID', IPage.beneficiaryOverview);
 server.get( '/directory', IPage.directoryList);
 server.get( '/directory/create', IPage.directoryUpdate);
 server.get( '/directory/:professionalID', IPage.directoryUpdate);
+server.get( '/questionnaires', IPage.questionnaires);
+server.get( '/questionnaire/:questionnaireName', IPage.questionnaireOverview);
 
 server.get(/\/[^api|components\/]?$/, function(req, res, next) {
 	logger.trace("index");

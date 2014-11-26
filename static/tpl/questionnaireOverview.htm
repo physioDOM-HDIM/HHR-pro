@@ -1,0 +1,48 @@
+{% extends './page.htm' %}
+
+{% block title %}{{ "Questionnaire overview"|i18n }}{% endblock %}
+
+{% block head %}
+{% parent %}
+
+{% endblock %}
+{% block content %}
+
+<style>
+	div.row label{
+		width: 350px;
+	}
+</style>
+
+{% macro tpl(q) %}
+	{% if q.header %}
+		<div class="bold">{{q.header}}</div>
+		<hr>
+		{% for subQ in q.questions %}
+			{{tpl(subQ)}}
+		{% endfor %}
+	{% else %}
+		<div class="row">
+			<div>{{q.text}}</div>
+		</div>
+		<br/>
+	{% endif %}
+	{% for c in q.choice %}
+		<div class="row">
+			<label for="{{q.text}}">{{c.text}}</label>
+			<input type="radio" name="{{q.text}}" value="{{c.value}}"/>
+		</div>
+		{% if loop.last %}
+			<br/>
+		{% endif %}
+	{% endfor %}
+{% endmacro %}
+
+	<div class="mainContainer">
+		<h2>{{questionnaire.text}}</h2>
+		<br/>
+		{% for q in questionnaire.questions %}
+			{{tpl(q)}}
+		{% endfor%}
+	</div>
+{% endblock %}

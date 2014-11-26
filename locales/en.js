@@ -103,5 +103,10 @@
 	"Active services": "Active services",
 	"Professional contacts": "Professional contacts",
 	"Details": "Details",
-	"Planned end date": "Planned end date"
+	"Planned end date": "Planned end date",
+	"Select a questionnaire": "Select a questionnaire",
+	"Questionnaire overview": "Questionnaire overview",
+	"List of questionnaires": "List of questionnaires",
+	"List name": "List name",
+	"List text": "List text"
 }
