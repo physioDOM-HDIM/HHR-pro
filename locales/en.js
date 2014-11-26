@@ -107,5 +107,12 @@
 	"Range Min": "Range Min",
 	"Range Max": "Range Max",
 	"AutoInput": "AutoInput",
-	"Role type code": "Role type code"
+	"Role type code": "Role type code",
+	"Language": "Language",
+	"Unit": "Unit",
+	"Default reference": "Default reference",
+	"Automatic input": "Automatic input",
+	"Lists": "Lists",
+	"providers role": "providers role",
+	"Choose all providers roles": "Choose all providers roles"
 }

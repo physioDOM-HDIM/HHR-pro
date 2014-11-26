@@ -62,7 +62,8 @@ function checkForm(form) {
 
 function updateForm(form) {
     console.log("updateForm", arguments)
-        //Delete disabled attribute on inputs ref before asking for form2js, ifnot disabled values doesn't set
+    
+    //Delete disabled attribute on inputs ref before asking for form2js, if not disabled values doesn't set
     var obj, elt,
         formName = form.getAttribute("name"),
         items = document.querySelectorAll("form[name='" + formName + "'] *[name]"),
@@ -106,6 +107,8 @@ function updateForm(form) {
 
     console.log("updateItem obj", obj);
     var modalObj;
+    console.log(JSON.stringify(obj));
+    /*
     promiseXHR("PUT", "/api/lists/" + obj.name, 200, JSON.stringify(obj)).then(function(response) {
         modalObj = {
             title: "trad_success",
@@ -132,6 +135,7 @@ function updateForm(form) {
         showModal(modalObj);
         console.log("updateItem - error: ", error);
     });
+    */
 }
 
 function deleteItem(node) {

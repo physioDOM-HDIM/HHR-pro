@@ -396,7 +396,8 @@ function IPage() {
         var data = {
             admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false
         };
-
+        
+        // nested lists
         var promises = [
             "unity",
             "job"
@@ -407,14 +408,14 @@ function IPage() {
                 lists.forEach(function(list) {
                     data[Object.keys(list)] = list[Object.keys(list)];
                 });
-
+                
                 physioDOM.Lists.getLists(1, 100, true)
                     .then(function(lists) {
                         data.lists = lists;
                         data.lang = lang;
-                        //logger.debug("DATA", data);
+                        // logger.debug("DATA", data);
 
-                        html = swig.renderFile('./static/tpl/listsManager.htm', data, function(err, output) {
+                        html = swig.renderFile('./static/tpl/listsManager1.htm', data, function(err, output) {
                             if (err) {
                                 console.log("error", err);
                                 console.log("output", output);
@@ -425,9 +426,7 @@ function IPage() {
                                 sendPage(output, res, next);
                             }
                         });
-                    })
-
-
+                    });
             }).catch(function(err) {
                 logger.error(err);
                 res.write(err);
@@ -436,6 +435,118 @@ function IPage() {
             });
     };
 
+    /**
+     * return the lists page
+     *
+     * @param req
+     * @param res
+     * @param next
+     */
+    this.lists = function(req, res, next) {
+        logger.trace("lists");
+        var html;
+
+        init(req);
+        var data = {
+            admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false
+        };
+
+        var promises = [
+            "communication",
+            "unity",
+            "job"
+        ].map(promiseList);
+
+        RSVP.all(promises)
+            .then(function(lists) {
+                lists.forEach(function (list) {
+                    data[Object.keys(list)] = list[Object.keys(list)];
+                });
+                
+                physioDOM.Lists.getLists(1, 100, true)
+                    .then(function (lists) {
+                        data.lists = lists;
+                        data.lang = lang;
+                        //logger.debug("DATA", data);
+
+                        html = swig.renderFile('./static/tpl/lists.htm', data, function (err, output) {
+                            if (err) {
+                                console.log("error", err);
+                                console.log("output", output);
+                                res.write(err);
+                                res.end();
+                                next();
+                            } else {
+                                sendPage(output, res, next);
+                            }
+                        });
+                    });
+            })
+            .catch(function(err) {
+                logger.error(err);
+                res.write(err);
+                res.end();
+                next();
+            });
+    };
+
+    /**
+     * return a list page
+     * 
+     * the list name is given by req.params.listName
+     *
+     * @param req
+     * @param res
+     * @param next
+     */
+    this.list = function(req, res, next) {
+        logger.trace("lists");
+        var html;
+
+        init(req);
+        var data = {
+            admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false
+        };
+
+        var promises = [
+            "communication",
+            "unity",
+            "job"
+        ].map(promiseList);
+
+        RSVP.all(promises)
+            .then(function(lists) {
+                lists.forEach(function (list) {
+                    data[Object.keys(list)] = list[Object.keys(list)];
+                });
+
+                physioDOM.Lists.getList(req.params.listName)
+                    .then(function (list) {
+                        data.list = list;
+                        data.lang = lang;
+                        logger.debug("DATA", data);
+
+                        html = swig.renderFile('./static/tpl/list.htm', data, function (err, output) {
+                            if (err) {
+                                console.log("error", err);
+                                console.log("output", output);
+                                res.write(err);
+                                res.end();
+                                next();
+                            } else {
+                                sendPage(output, res, next);
+                            }
+                        });
+                    });
+            })
+            .catch(function(err) {
+                logger.error(err);
+                res.write(err);
+                res.end();
+                next();
+            });
+    };
+    
     /**
      * Send the page to the browser
      *
