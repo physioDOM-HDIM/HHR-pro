@@ -40,9 +40,14 @@
 
 	<div class="mainContainer">
 		<h2>{{questionnaire.text}}</h2>
-		<br/>
-		{% for q in questionnaire.questions %}
-			{{tpl(q)}}
-		{% endfor%}
+		<form autocomplete="off" name="questionnaire" onsubmit="return false;">
+			{% for q in questionnaire.questions %}
+				{{tpl(q)}}
+			{% endfor%}
+			<div class="row control">
+				<span class="spacer"></span>
+				<button class="green">Validate</button>
+			</div>
+		</form>
 	</div>
 {% endblock %}
