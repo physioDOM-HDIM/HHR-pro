@@ -25,6 +25,7 @@ header.hdr {
 	padding:10px;
 }
 
+/*
 footer {
 	position:absolute;
 	height: 30px;
@@ -37,6 +38,7 @@ footer {
 footer + section {
 	bottom:30px;
 }
+*/
 
 .navbtn button {
 	border:none;
@@ -181,7 +183,8 @@ div.row {
 	min-height:20px; 
 	display:-webkit-flex; 
 	display: -ms-flexbox; 
-	display:flex; 
+	display:flex;
+	-webkit-align-items: center;
 	align-items: center 
 }
 
@@ -325,11 +328,17 @@ ul.admin {
 }
 
 div[drawer] {
+	display:-ms-flexbox; 
+	display:-webkit-flex;
 	display: flex;
+	-webkit-flex-direction: column;
+	-ms-flex-direction: column;
 	flex-direction: column;
 }
 
 div[drawer] ul.menu {
-	flex: 1;
+	-webkit-flex:1;
+	-ms-flex:1;
+	flex:1;
 	overflow: auto;
 }
