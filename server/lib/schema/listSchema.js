@@ -11,6 +11,8 @@ var listSchema = {
 		"_id": { type:"object" },
 		"name": { type:"string", required:true, description:"name of the list" },
 		"editable": { type: "boolean", required: true},
+		"measure": { type: "boolean"},
+		"service": { type: "boolean"},
 		"items": {
 			type:"array",
 			"anyOf": [
