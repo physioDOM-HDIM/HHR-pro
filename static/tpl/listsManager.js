@@ -194,44 +194,63 @@ function addItem(node) {
     var cn = "hidden",
         isMeasurableItem = false,
         form = node,
-        name, elt;
+        name, tpl, html;
     //Set this new value in the default value <select>
     while (form.tagName.toLowerCase() !== "form" && form.tagName.toLowerCase() !== "body") {
         form = form.parentNode;
     }
     name = form.getAttribute("name");
 
-    isMeasurableItem = document.querySelector("form[name='" + name + "'] input[name*='].autoInput']") ? true : false;
-    if(isMeasurableItem){
-        elt = document.querySelector("#tplItemMeasurableContainer").innerHTML;
+    // isMeasurableItem = document.querySelector("form[name='" + name + "'] input[name*='].autoInput']") ? true : false;
+    if(list.measure){
+        tpl = document.querySelector("#tplItemsMeasure").innerHTML;
+        var modelData = {
+            items: [ {
+                idx: new Date().getTime(),
+                new:true,
+                ref:"",
+                label:""
+            }]
+        };
+        /*
         var modelData = {
             idx: new Date().getTime(),
             listName: name
         };
+        */
     }
     else{
         //Don't display this item if not present in the list
-        elt = document.querySelector("form[name='" + name + "'] select[name*='].roleTypeCode']");
-        if(elt && !elt.parentNode.classList.contains("hidden")){
+        /*
+        tpl = document.querySelector("form[name='" + name + "'] select[name*='].roleTypeCode']");
+        if(tpl && !tpl.parentNode.classList.contains("hidden")){
             cn = "";
         }
+        */
 
-        elt = document.querySelector("#tplItemBasicContainer").innerHTML;
+        tpl = document.querySelector("#tplItems").innerHTML;
         var modelData = {
-            idx: new Date().getTime(),
-            classRoleTypeCode : cn,
-            listName: name
+            editable:true,
+            
+            items: [ {
+                idx: new Date().getTime(),
+                new:true,
+                ref:"",
+                label:""
+            }]
         };
     }
 
-    var html = Mustache.render(elt, modelData);
+    html = Mustache.render(tpl, modelData);
     var div = document.createElement("div");
-    div.classList.add("itemContainer");
     div.innerHTML = html;
+    document.getElementById("newItems").appendChild(div.querySelector("div"));
+    /*
     while (!node.classList.contains("row") && !node.classList.contains("control")) {
         node = node.parentNode;
     }
     node.parentNode.insertBefore(div, node);
+    */
 }
 
 function edit(node) {
