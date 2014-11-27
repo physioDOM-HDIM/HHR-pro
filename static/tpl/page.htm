@@ -38,6 +38,8 @@
 		if(window.location === window.parent.location ) {
 			console.info("not in iframe");
 			window.location = "/?url="+window.location;
+		} else {
+			parent.closeDrawer();
 		}
 	</script>
 

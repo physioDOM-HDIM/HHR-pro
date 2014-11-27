@@ -125,7 +125,7 @@
 	<div class="title"></div>
 	<span class="spacer"></span>
 	<div class="beneficiary">beneficiary<br>
-		<label id="beneficiary"><a href="tpl/recipientDetail.htm" target="main">-</a></label>
+		<label id="beneficiary"><a href="tpl/recipientDetail.htm" target="main"></a></label>
 	</div>
 	<div style="width:100px;text-align:right;font-size: 70%;">{{account.firstname}}. {{account.lastname}}<br/><a href="/logout">Disconnect</a></div>
 </core-toolbar>
@@ -172,10 +172,12 @@
 			<li class="menuitem"><a href="/directory" target="main">Directory</a></li>
 			</li>
 		</ul>
+		{% if admin %}
 		<ul class="admin tree">
 			<li class="menuitem"><a href="/settings/listsManager" target="main">Lists management</a></li>
 			<li class="menuitem"><a href="/settings/lists" target="main">Lists management</a></li>
 		</ul>
+		{% endif %}
 	</div>
 	<div main>
 		<iframe name="main" src="/beneficiaries" scrolling="no"></iframe>
@@ -213,6 +215,11 @@
 	function toggleDrawer() {
 		var drawer = document.querySelector("core-drawer-panel");
 		drawer.togglePanel();
+	}
+	
+	function closeDrawer() {
+		var drawer = document.querySelector("core-drawer-panel");
+		drawer.closeDrawer();
 	}
 </script>
 </body>
