@@ -53,42 +53,6 @@ function IPage() {
         return strDate ? moment(strDate, "YYYY-MM-DD").format(moment.localeData(lang).longDateFormat("L")) : strDate;
     }
 
-    /**
-     * Main Layout
-     *
-     * @param req
-     * @param res
-     * @param next
-     */
-    this.ui = function(req, res, next) {
-        logger.trace("ui");
-        var html;
-
-        init(req);
-
-        req.session.getPerson()
-            .then(function(session) {
-                logger.debug("person", session.person);
-                var data = {
-                    account: {
-                        firstname: session.person.item.name.given.slice(0, 1).toUpperCase(),
-                        lastname: session.person.item.name.family
-                    }
-                };
-                html = swig.renderFile('./static/tpl/ui.htm', data, function(err, output) {
-                    if (err) {
-                        console.log("error", err);
-                        console.log("output", output);
-                        res.write(err);
-                        res.end();
-                        next();
-                    } else {
-                        sendPage(output, res, next);
-                    }
-                });
-            });
-    };
-
     function promiseList(listName) {
         return physioDOM.Lists.getList(listName, lang)
             .then(function(list) {
@@ -102,6 +66,43 @@ function IPage() {
                 return result;
             });
     }
+    
+    /**
+     * Main Layout
+     *
+     * @param req
+     * @param res
+     * @param next
+     */
+    this.ui = function(req, res, next) {
+        logger.trace("ui");
+        var html;
+
+        init(req);
+        var data = {
+            admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false
+        };
+        
+        req.session.getPerson()
+            .then(function(session) {
+                logger.debug("person", session.person);
+                data.account = {
+                        firstname: session.person.item.name.given.slice(0, 1).toUpperCase(),
+                        lastname: session.person.item.name.family
+                    };
+                html = swig.renderFile('./static/tpl/ui.htm', data, function(err, output) {
+                    if (err) {
+                        console.log("error", err);
+                        console.log("output", output);
+                        res.write(err);
+                        res.end();
+                        next();
+                    } else {
+                        sendPage(output, res, next);
+                    }
+                });
+            });
+    };
 
     /**
      * Directory list
