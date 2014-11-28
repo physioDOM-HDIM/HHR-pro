@@ -97,7 +97,7 @@ function checkForm(){
 
     var sum = 0;
     var compute = function(tab){
-        var item, res = 0;
+        var item, tmp, res = 0;
         for(var i=0; i<tab.length; i++){
             item = tab[i];
             if(item.answers){
@@ -105,11 +105,17 @@ function checkForm(){
                 if(item.subscore){
                     sum = eval(item.subscore);
                 }
-                res += parseFloat(sum);
+                tmp = parseFloat(sum);
+                if(!isNaN(tmp)){
+                    res += parseFloat(tmp);
+                }
                 sum = 0;
             }
             else{
-                res += parseFloat(item.choice);
+                tmp = parseFloat(item.choice);
+                if(!isNaN(tmp)){
+                    res += tmp;
+                }
             }
         }
 
