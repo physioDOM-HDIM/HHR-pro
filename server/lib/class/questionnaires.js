@@ -10,7 +10,8 @@
 var promise = require("rsvp").Promise,
 	dbPromise = require("./database.js"),
 	Logger = require("logger"),
-	ObjectID = require("mongodb").ObjectID;
+	ObjectID = require("mongodb").ObjectID,
+	Questionnaire = require("./questionnaire");
 
 var logger = new Logger("Questionnaires");
 
@@ -22,6 +23,27 @@ var logger = new Logger("Questionnaires");
  * @constructor
  */
 function Questionnaires( ) {
+
+	/**
+	 * DEV ONLY
+	 */
+	this.createQuestionnaire = function( newQuestionnaire ) {
+		return new promise( function(resolve, reject) {
+			logger.trace("createQuestionnaire", newQuestionnaire);
+			if (newQuestionnaire) {
+				var entry = new Questionnaire();
+				return entry.setup(newQuestionnaire)
+					.then(resolve)
+					.catch(function (err) {
+						logger.alert("error ", err);
+						console.log(err);
+						reject(err);
+					});
+			} else {
+				return reject("Error no entry");
+			}
+		});
+	};
 
 	/**
 	 * return the list of questionnaires per page

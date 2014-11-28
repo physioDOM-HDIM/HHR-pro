@@ -10,7 +10,7 @@ var questionnaireSchema = {
         "text": { type:"string", description:"name of the questionnaire displaying on the TV"},
         "questions": {
             type:"array",
-            items: {
+            item: {
                 anyOf: [
                     { $ref:"/Questionnaire.group"},
                     { $ref:"/Questionnaire.question"}
@@ -29,7 +29,7 @@ var questionnaireGroupSchema = {
         "header": { type:"string", description:"header text of the group" },
         "questions": {
             type:"array",
-            items: {
+            item: {
                 anyOf: [
                     { $ref:"/Questionnaire.group"},
                     { $ref:"/Questionnaire.question"}
@@ -48,7 +48,7 @@ var questionnaireQuestionSchema = {
         {
             properties: {
                 "text": { type:"string", required:true },
-                "choice": { type:"array", items: { $ref:"/Questionnaire.simplequestion" } }
+                "choice": { type:"array", item: { $ref:"/Questionnaire.simplequestion" } }
             },
             additionalProperties:false
         },

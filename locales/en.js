@@ -108,5 +108,8 @@
 	"Questionnaire overview": "Questionnaire overview",
 	"List of questionnaires": "List of questionnaires",
 	"List name": "List name",
-	"List text": "List text"
+	"List text": "List text",
+	"Create a questionnaire": "Create a questionnaire",
+	"Result": "Result",
+	"Your score is: ": "Your score is: "
 }

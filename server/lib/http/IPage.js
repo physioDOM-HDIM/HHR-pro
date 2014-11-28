@@ -486,6 +486,36 @@ function IPage() {
 	};
 
 	/**
+	 * Questionnaire
+	 *
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	this.createQuestionnaire = function(req, res, next) {
+		logger.trace("createQuestionnaire");
+		var html;
+
+		init(req);
+		var data = {
+			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
+		};
+
+		html = swig.renderFile('./static/tpl/questionnaireCreation.htm', null, function (err, output) {
+			if (err) {
+				console.log("error", err);
+				console.log("output", output);
+				res.write(err);
+				res.end();
+				next();
+			} else {
+				sendPage(output, res, next);
+			}
+		});
+
+	};
+
+	/**
 	 * Send the page to the browser
 	 * 
 	 * The html code of the page is in `html`
