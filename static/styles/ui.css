@@ -276,11 +276,18 @@ button {
 .blue { background:#428bca; color:white; }
 .red { background:crimson; color:white; }
 .green { background:ForestGreen ; color:white; }
+/*
 button.small { 
 	font-size: 12px; 
 	height:2em; 
 	min-width:20px;
 	padding:5px;
+}
+*/
+button.small {
+	min-width: 50px;
+	font-size: 75%;
+	height: 75%;
 }
 button[disabled] { 
 	color:darkgray; 
