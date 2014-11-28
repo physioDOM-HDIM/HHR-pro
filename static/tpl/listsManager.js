@@ -23,6 +23,7 @@ var promiseXHR = function(method, url, statusOK, data) {
 function checkForm(form) {
     console.log("checkForm", arguments);
 
+    var form = document.querySelector("form[name=items]");
     var modalObj;
     //check the ref value not already exists
     if (valueExists(form.getAttribute("name"))) {
@@ -60,62 +61,29 @@ function checkForm(form) {
     return true;
 }
 
-function updateForm(form) {
-    console.log("updateForm", arguments)
+function save() {
+    console.log("save");
+    update();
     
-    //Delete disabled attribute on inputs ref before asking for form2js, if not disabled values doesn't set
-    var obj, elt,
-        formName = form.getAttribute("name"),
-        items = document.querySelectorAll("form[name='" + formName + "'] *[name]"),
-        isDisabled = false;
-
-    [].map.call(items, function(item) {
-        if (item.getAttribute("disabled") !== null) {
-            isDisabled = true;
-            item.removeAttribute("disabled");
+    newItems.forEach( function(item, i) {
+        if( item.ref ) {
+            delete item.new;
+            delete item.units;
+            list.items.push( item );
         }
     });
-
-    //Don't skip empty values
-    obj = form2js(form, ".", false);
-
-    if (isDisabled) {
-        //Add disabled attribute on inputs ref
-        [].map.call(items, function(item) {
-            item.setAttribute("disabled", true);
-        });
-    }
-
-    //Refresh select default value
-    refreshDefaultValue(formName);
-
-    //Remove add/delete item buttons
-    items = document.querySelectorAll("form[name='" + formName + "'] .itemBtnContainer");
-    [].map.call(items, function(item) {
-        for (var i = item.children.length - 1; i >= 0; i--) {
-            item.removeChild(item.children[i]);
-        }
-    });
-
-    if (isDisabled) {
-        elt = document.querySelector("form[name='" + formName + "'] .mainBtnContainer");
-        elt.parentNode.removeChild(elt);
-
-        //TODO: doesn't work
-        form.parentNode.setAttribute("bgcolor", "silver");
-    }
-
-    console.log("updateItem obj", obj);
+    
+    newItems = [];
+    
     var modalObj;
-    console.log(JSON.stringify(obj));
-    /*
-    promiseXHR("PUT", "/api/lists/" + obj.name, 200, JSON.stringify(obj)).then(function(response) {
+    promiseXHR("PUT", "/api/lists/" + list.name, 200, JSON.stringify(list)).then(function(response) {
         modalObj = {
             title: "trad_success",
             content: "trad_success_update",
             buttons: [{
                 id: "trad_ok",
                 action: function() {
+                    showLang();
                     closeModal();
                 }
             }]
@@ -128,6 +96,7 @@ function updateForm(form) {
             buttons: [{
                 id: "trad_ok",
                 action: function() {
+                    showLang();
                     closeModal();
                 }
             }]
@@ -135,7 +104,6 @@ function updateForm(form) {
         showModal(modalObj);
         console.log("updateItem - error: ", error);
     });
-    */
 }
 
 function deleteItem(node) {
@@ -194,63 +162,74 @@ function addItem(node) {
     var cn = "hidden",
         isMeasurableItem = false,
         form = node,
-        name, tpl, html;
-    //Set this new value in the default value <select>
-    while (form.tagName.toLowerCase() !== "form" && form.tagName.toLowerCase() !== "body") {
-        form = form.parentNode;
-    }
-    name = form.getAttribute("name");
+        name, tpl, html,
+        modelData, obj, newItem;
 
-    // isMeasurableItem = document.querySelector("form[name='" + name + "'] input[name*='].autoInput']") ? true : false;
+    var lang = document.querySelector("#lang").value;
+    var indx = newItems.length + list.items.length;
+    newItem = { ref:"", label:{}, new:true };
+    
+    modelData = {
+        editable: true,
+        lang    : lang,
+        items   : []
+    };
+    
     if(list.measure){
         tpl = document.querySelector("#tplItemsMeasure").innerHTML;
-        var modelData = {
-            items: [ {
-                idx: new Date().getTime(),
-                new:true,
-                ref:"",
-                label:""
-            }]
+        
+        obj = {
+            idx: indx, 
+            new:true, 
+            ref:"", 
+            label:"",
+            "unity": "",
+            "autoInput": false,
+            "threshold": {
+                "min": null,
+                "max": null
+            },
+            "range": {
+                "min": null,
+                "max": null
+            },
+            units:[]
         };
-        /*
-        var modelData = {
-            idx: new Date().getTime(),
-            listName: name
-        };
-        */
+        units.items.forEach( function(unit) {
+            var option = { 
+                value: unit.ref, 
+                label: unit.label[lang] || unit.label.en,
+                selected:false
+            };
+            obj.units.push(option);
+        });
+        modelData.items.push(obj);
     }
     else{
-        //Don't display this item if not present in the list
-        /*
-        tpl = document.querySelector("form[name='" + name + "'] select[name*='].roleTypeCode']");
-        if(tpl && !tpl.parentNode.classList.contains("hidden")){
-            cn = "";
-        }
-        */
-
         tpl = document.querySelector("#tplItems").innerHTML;
-        var modelData = {
-            editable:true,
-            
-            items: [ {
-                idx: new Date().getTime(),
+        obj = {
+                idx: indx,
                 new:true,
                 ref:"",
-                label:""
-            }]
+                label: ""
         };
+        modelData.items.push(obj);
     }
-
+    newItem = JSON.parse(JSON.stringify(obj));
+    delete newItem.idx;
+    newItem.label = {};
+    newItems.push( newItem );
+    if( list.service ) { 
+        modelData.service = true; 
+        modelData.items[0].roles = "[]";
+        modelData.items[0].roleTypeCode = "";
+    }
     html = Mustache.render(tpl, modelData);
     var div = document.createElement("div");
     div.innerHTML = html;
-    document.getElementById("newItems").appendChild(div.querySelector("div"));
-    /*
-    while (!node.classList.contains("row") && !node.classList.contains("control")) {
-        node = node.parentNode;
-    }
-    node.parentNode.insertBefore(div, node);
-    */
+    div = div.querySelector("div");
+    document.getElementById("newItems").appendChild(div);
+    // div.scrollIntoView();
 }
 
 function edit(node) {
