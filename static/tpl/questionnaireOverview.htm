@@ -14,32 +14,53 @@
 	div.row label{
 		width: 350px;
 	}
-
+	.answers{
+		margin-left: 30px;
+	}
 	.space{
 		width: 20%;
 		margin: 30px auto;
 		border-color: black;
 	}
+	.nestedQuestionnaire{
+		margin-left: 20px;
+	}
 </style>
 
-{% macro tpl(q, idx, subIdx) %}
+{% macro tpl(q, idx) %}
+	{% set name = "answers" %}
+	{% for key, val in idx %}
+		{% set name += "["+val+"]" %}
+		{% if !loop.last %}
+			{% set name += ".answers" %}
+		{% endif %}
+	{% endfor %}
+
 	{% if q.header %}
-		<div class="bold">{{idx}}{%if subIdx%}.{{subIdx}}{%endif%} - {{q.header}}</div>
-		<input type="hidden" name="answers[{{idx}}].subscore" value="{{q.subscore}}" />
+		<div class="bold">{{idx|join("-")}} - {{q.header}}</div>
+		<input type="hidden" name="{{name}}.subscore" value="{{q.subscore}}" />
 		<hr>
 		{% for subQ in q.questions %}
-			{{tpl(subQ, idx, loop.index)}}
+			{% set idx = idx|push(loop.index) %}
+			<div class="nestedQuestionnaire">
+				{{tpl(subQ, idx)}}
+			</div>
+			{% set idx = idx|pop() %}
 		{% endfor %}
 	{% else %}
 		<div class="row">
-			<div>{{idx}}{%if subIdx%}.{{subIdx}}{%endif%} - {{q.text}}</div>
+			<div>{{idx|join("-")}} - {{q.text}}</div>
 		</div>
 		<br/>
 	{% endif %}
 	{% for c in q.choice %}
-		<div class="row">
-			<label for="{%if subIdx%}answers[{{idx}}].choices[{{subIdx}}]{%else%}answers[{{idx}}]{%endif%}">{{c.text}}</label>
-			<input type="radio" name="{%if subIdx%}answers[{{idx}}].choices[{{subIdx}}]{%else%}answers[{{idx}}]{%endif%}" value="{{c.value}}" required />
+		<div class="row answers">
+			{% if !c.text %}
+				<input type="text" name="{{name}}.choice" required />
+			{% else %}
+				<label for="{{name}}.choice">{{c.text}}</label>
+				<input type="radio" name="{{name}}.choice" value="{{c.value}}" required />
+			{% endif %}
 		</div>
 		{% if loop.last %}
 			<br/>
@@ -52,7 +73,8 @@
 	<form autocomplete="off" name="questionnaire" onsubmit="checkForm(); return false;">
 		{% for q in questionnaire.questions %}
 			<div class="itemContainer">
-				{{tpl(q, loop.index)}}
+				{% set number = "" %}
+				{{tpl(q, [loop.index])}}
 			</div>
 			{% if !loop.last %}
 				<hr class="space">

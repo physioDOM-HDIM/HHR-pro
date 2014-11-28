@@ -44,6 +44,14 @@ function IPage() {
 			// console.log("input", input, idx);
 			return i18n.__(input);
 		});
+		swig.setFilter("push", function (arr, val) {
+				arr.push(val);
+				return arr;
+		});
+		swig.setFilter("pop", function (arr) {
+				arr.pop();
+				return arr;
+		});
 	}
 
 	function convertDate(strDate){

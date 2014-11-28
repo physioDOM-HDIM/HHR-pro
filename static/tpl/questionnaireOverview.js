@@ -43,6 +43,7 @@ function closeModal() {
 function showModal(modalObj) {
     console.log("showModal", arguments);
 
+    closeModal();
     var elt = document.querySelector("#statusModal"),
         subElt;
     if (modalObj.title) {
@@ -94,23 +95,31 @@ function checkForm(){
     var obj = form2js(document.querySelector("form[name='questionnaire']"));
     console.log("res", obj);
 
-    var a, res = 0, sum = 0;
-    for(var i = 0; i<obj.answers.length; i++){
-        a = obj.answers[i];
-        if(a.choices instanceof Array){
-            sum = 0;
-            for(var j=0; j<a.choices.length; j++){
-                sum += parseFloat(a.choices[j]);
+    var sum = 0;
+    var compute = function(tab){
+        var item, res = 0;
+        for(var i=0; i<tab.length; i++){
+            item = tab[i];
+            if(item.answers){
+                sum += compute(item.answers);
+                if(item.subscore){
+                    sum = eval(item.subscore);
+                }
+                res += parseFloat(sum);
+                sum = 0;
             }
-            if(a.subscore){
-                sum = eval(a.subscore);
+            else{
+                res += parseFloat(item.choice);
             }
-            res += sum;
         }
-        else{
-            res += parseFloat(a);
-        }
-    }
+
+        return res;
+    };
+
+    var res = compute(obj.answers);
+    obj.globalScore = parseFloat(res);
+    //TODO : utiliser le parseFloat sur l'obj retourné par form2js, car se sont des strings
+    //Ajouter les propriétés necessaire et envoyer l'object au server pour sauvegarde dans la base
 
     var modalObj = {
         title: "trad_result",
