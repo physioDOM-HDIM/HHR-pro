@@ -7,6 +7,11 @@ var humanName     = require("./commonSchema").humanName,
 	account       = require("./commonSchema").account,
 	job = require("./commonSchema").job;
 
+/*
+@todo
+ - get job from list
+ */
+
 var practitionerSchema = {
 	"id": "/Practitioner",
 	"description" : "practitioner JSON Schema",
@@ -17,7 +22,7 @@ var practitionerSchema = {
 		"telecom": { "type":"array",item: { "$ref":"/Contact" } },
 		"address": {"$ref": "/SimpleAddress"},
 		"gender": { type:"string", "enum": [ "F" , "M" ] , "required":true},
-		"job": { type:"string", "enum": job },
+		"job": { type:"string"},
 		"role": { type:"string", required:true },
 		"communication": { type:"string", "enum": [ "fr", "es", "nl", "en" ] },
 		"active": { type:"boolean", required:true },
