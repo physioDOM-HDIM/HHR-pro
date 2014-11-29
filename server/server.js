@@ -14,7 +14,8 @@ var restify = require("restify"),
 var IDirectory = require('./lib/http/IDirectory'),
 	IBeneficiary = require('./lib/http/IBeneficiary'),
 	ILists = require("./lib/http/ILists"),
-	IPage = require("./lib/http/IPage");
+	IPage = require("./lib/http/IPage"),
+	IQuestionnaire = require("./lib/http/IQuestionnaire");
 
 var pkg     = require('../package.json');
 var logger = new Logger( "PhysioDOM App");
@@ -301,6 +302,9 @@ server.post('/api/lists/:listName', ILists.addItem );
 server.put( '/api/lists/:listName/:itemRef', ILists.translateItem );
 server.post('/api/lists/:listName/:itemRef', ILists.activateItem );
 
+//DEV ONLY for creation
+server.post( '/api/questionnaires', IQuestionnaire.createQuestionnaire);
+//DEV ONLY
 
 server.post('/api/login', apiLogin);
 server.get( '/api/logout', logout);
@@ -317,6 +321,9 @@ server.get( '/directory/:professionalID', IPage.directoryUpdate);
 server.get( '/settings/listsManager', IPage.listsManager);
 server.get( '/settings/lists', IPage.lists);
 server.get( '/settings/lists/:listName', IPage.list);
+server.get( '/questionnaires', IPage.questionnaires);
+server.get( '/questionnaires/create', IPage.createQuestionnaire);
+server.get( '/questionnaire/:questionnaireName', IPage.questionnaireOverview);
 
 
 server.get(/\/[^api|components\/]?$/, function(req, res, next) {

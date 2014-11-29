@@ -1,0 +1,31 @@
+{% extends './page.htm' %}
+
+{% block title %}{{ "Select a questionnaire"|i18n }}{% endblock %}
+
+{% block head %}
+{% parent %}
+{% endblock %}
+
+{% block content %}
+<style>
+	li a:hover{
+		background: silver;
+	}
+</style>
+
+<div class="mainContainer">
+	<ul>
+	{% for q in questionnaires.items %}
+		<li>
+			<a href="/questionnaire/{{q.name}}">{{q.text}}</a>
+		</li>
+	{% endfor %}
+	</ul>
+	<div class="row control">
+		<span class="spacer"></span>
+		<a href="/questionnaires/create">
+			<button class="blue">Create Questionnaire (dev only)</button>
+		</a>
+	</div>
+</div>
+{% endblock %}

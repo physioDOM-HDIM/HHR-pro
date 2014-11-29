@@ -104,6 +104,12 @@
 	"Professional contacts": "Professional contacts",
 	"Details": "Details",
 	"Planned end date": "Planned end date",
+	"Select a questionnaire": "Select a questionnaire",
+	"Questionnaire overview": "Questionnaire overview",
+	"List of questionnaires": "List of questionnaires",
+	"Create a questionnaire": "Create a questionnaire",
+	"Result": "Result",
+	"Your score is: ": "Your score is: "
 	"Lists management": "Lists management",
 	"List name": "List name",
 	"Editable": "Editable",

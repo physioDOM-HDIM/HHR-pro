@@ -40,14 +40,20 @@ function IPage() {
         lang = req.session.lang || req.cookies.lang || req.params.lang || "en";
         i18n.setLocale(lang);
 
-        swig.setDefaults({
-            cache: false
-        });
-        swig.setFilter("i18n", function(input, idx) {
-            // console.log("input", input, idx);
-            return i18n.__(input);
-        });
-    }
+		swig.setDefaults({cache: false});
+		swig.setFilter("i18n", function (input, idx) {
+			// console.log("input", input, idx);
+			return i18n.__(input);
+		});
+		swig.setFilter("push", function (arr, val) {
+				arr.push(val);
+				return arr;
+		});
+		swig.setFilter("pop", function (arr) {
+				arr.pop();
+				return arr;
+		});
+	}
 
     function convertDate(strDate) {
         return strDate ? moment(strDate, "YYYY-MM-DD").format(moment.localeData(lang).longDateFormat("L")) : strDate;
@@ -490,6 +496,36 @@ function IPage() {
                 next();
             });
     };
+
+	/**
+	 * Questionnaire
+	 *
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	this.createQuestionnaire = function(req, res, next) {
+		logger.trace("createQuestionnaire");
+		var html;
+
+		init(req);
+		var data = {
+			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
+		};
+
+		html = swig.renderFile('./static/tpl/questionnaireCreation.htm', null, function (err, output) {
+			if (err) {
+				console.log("error", err);
+				console.log("output", output);
+				res.write(err);
+				res.end();
+				next();
+			} else {
+				sendPage(output, res, next);
+			}
+		});
+
+	};
 
     /**
      * return a list page

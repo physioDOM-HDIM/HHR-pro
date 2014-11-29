@@ -18,7 +18,8 @@ var Account = require("./account"),
 	Session = require("./session"),
 	Directory = require("./directory"),
 	Beneficiaries = require("./beneficiaries"),
-	Lists = require("./lists");
+	Lists = require("./lists"),
+	Questionnaires = require("./questionnaires");
 
 /**
  * PhysioDOM
@@ -83,6 +84,18 @@ function PhysioDOM( ) {
 		});
 	};
 	
+	/**
+	 * return a promise with the Questionnaires Object
+	 * {@link module:Questionnaires}
+	 * @returns {promise}
+	 */
+	this.Questionnaires = function() {
+		return new promise( function(resolve, reject) {
+			logger.trace("Questionnaires");
+			resolve( new Questionnaires() );
+		});
+	};
+
 	/**
 	 * return a promise with the Session Object
 	 */
