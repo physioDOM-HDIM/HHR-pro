@@ -110,6 +110,8 @@ function IPage() {
             });
     };
 
+    // -------------- Directory pages ---------------------
+    
     /**
      * Directory list
      *
@@ -217,6 +219,8 @@ function IPage() {
             });
     };
 
+    // -------------- Beneficiaries pages ---------------------
+    
     /**
      * Beneficiary create and update
      *
@@ -398,6 +402,8 @@ function IPage() {
 			});
 	};
 
+    // -------------- Lists pages ---------------------
+    
     /**
      * Lists manager
      *
@@ -564,6 +570,8 @@ function IPage() {
             });
     };
 
+    // -------------- Questionnaires pages ---------------------
+    
     /**
      * Questionnaire
      *
