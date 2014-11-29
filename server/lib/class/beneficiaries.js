@@ -65,14 +65,15 @@ function Beneficiaries( ) {
 		if( address.city || address.zip ) { 
 			search.address = { "$elemMatch": address }; 
 		}
-		console.log( "search",search );
+		
 		if( session.role) { 
 			if( ["administrator","coordinator"].indexOf(session.role.toLowerCase())===-1 ) {
-				search.professionals= { "$elemMatch": {professionalID: new ObjectID(session.person.id)}};
+				search.professionals= { "$elemMatch": {professionalID: session.person.id.toString() }};
 			}
 		} else {
 			throw { code:403, message:"forbidden"};
 		}
+		// logger.debug("search filter", search);
 		var cursor = physioDOM.db.collection("beneficiaries").find(search);
 		var cursorSort = {};
 		if(sort) {
@@ -131,7 +132,13 @@ function Beneficiaries( ) {
 		logger.trace("getBeneficiaryByID", entryID);
 		var beneficiaryByID = new ObjectID(entryID);
 		var beneficiary = new Beneficiary();
-		return beneficiary.getById(beneficiaryByID, session.person.item);
+		return beneficiary.getById(beneficiaryByID, session.person.item)
+			.then( function( beneficiary) {
+				return beneficiary.getProfessionals();
+			})
+			.then(function(professionals) {
+				return beneficiary;
+			});
 	};
 	
 	this.getBeneficiaryAdminByID = function( session, entryID ) {

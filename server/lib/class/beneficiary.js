@@ -38,8 +38,9 @@ function Beneficiary( ) {
 			logger.trace("getById", beneficiaryID);
 			var search = { _id: beneficiaryID };
 			if( ["administrator","coordinator"].indexOf(professional.role) === -1) {
-				search["$elemMatch"] = { professionalID: professional._id };
+				search.professionals = { '$elemMatch' : { professionalID: professional._id.toString() }};
 			}
+			
 			physioDOM.db.collection("beneficiaries").findOne(search, function (err, doc) {
 				if (err) {
 					logger.alert("Error");
