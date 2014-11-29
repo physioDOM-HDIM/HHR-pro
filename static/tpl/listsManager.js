@@ -1,5 +1,10 @@
 "use strict";
 
+var list,            // the list to edit
+    newItems= [],    // new items
+    units,           // units list
+    jobs;            // job list
+
 var promiseXHR = function(method, url, statusOK, data) {
     var promise = new RSVP.Promise(function(resolve, reject) {
         var client = new XMLHttpRequest();
@@ -19,6 +24,209 @@ var promiseXHR = function(method, url, statusOK, data) {
 
     return promise;
 };
+
+function showLang() {
+    var tpl, prop;
+
+    if(list.measure) {
+        tpl = document.querySelector("#tplItemsMeasure").innerHTML;
+    } else {
+        tpl = document.querySelector("#tplItems").innerHTML;
+    }
+
+    var lang = document.querySelector("#lang");
+    var modelData = {
+        lang: lang.value,
+        editable: list.editable,
+        service: list.service?list.service:false,
+        items: []
+    };
+    list.items.forEach( function(item, i) {
+        var option, obj = { idx:i };
+        for( prop in item ) {
+            if( item.hasOwnProperty(prop) ) {
+                switch(prop) {
+                    case "label" :
+                        obj.label = item.label[lang.value];
+                        break;
+                    case "unity":
+                        obj.units = [];
+                        units.items.forEach( function(unit) {
+                            option = { value: unit.ref, label: unit.label[lang] || unit.label.en  };
+                            if( item.unity === unit.ref) {
+                                option.selected = true;
+                            } else {
+                                option.selected = false;
+                            }
+                            obj.units.push(option);
+                        });
+                        break;
+                    case "roleTypeCode":
+                        obj.roles = [];
+                        obj.roleTypeCode = "";
+                        jobs.items.forEach( function(job) {
+                            if( item.roleTypeCode.indexOf(job.ref) !== -1 ) {
+                                obj.roleTypeCode += (obj.roleTypeCode.length?", ":"")+( job.label[lang] || job.label.en );
+                                obj.roles.push(job.ref);
+                            }
+                        });
+                        break;
+                    default:
+                        obj[prop] = item[prop];
+                }
+            }
+        }
+        if( obj.roles ) { obj.roles = JSON.stringify(obj.roles); }
+        modelData.items.push(obj);
+    });
+    var html = Mustache.render(tpl, modelData);
+    document.getElementById("items").innerHTML = html;
+
+    var modelData = {
+        lang: lang.value,
+        editable: list.editable,
+        service: list.service?list.service:false,
+        items: []
+    };
+    newItems.forEach( function(item, i) {
+        var option, obj = { idx:i + list.items.length };
+        for( prop in item ) {
+            if( item.hasOwnProperty(prop) ) {
+                switch(prop) {
+                    case "label" :
+                        obj.label = item.label[lang.value];
+                        break;
+                    case "unity":
+                        obj.units = [];
+                        units.items.forEach( function(unit) {
+                            option = { value: unit.ref, label: unit.label[lang] || unit.label.en  };
+                            if( item.unity === unit.ref) {
+                                option.selected = true;
+                            } else {
+                                option.selected = false;
+                            }
+                            obj.units.push(option);
+                        });
+                        break;
+                    case "roleTypeCode":
+                        obj.roles = [];
+                        obj.roleTypeCode = "";
+                        jobs.items.forEach( function(job) {
+                            if( item.roleTypeCode.indexOf(job.ref) !== -1 ) {
+                                obj.roleTypeCode += (obj.roleTypeCode.length?", ":"")+( job.label[lang] || job.label.en );
+                                obj.roles.push(job.ref);
+                            }
+                        });
+                        break;
+                    default:
+                        obj[prop] = item[prop];
+                }
+            }
+        }
+        if( obj.roles ) { obj.roles = JSON.stringify(obj.roles); }
+        modelData.items.push(obj);
+    });
+    var html = Mustache.render(tpl, modelData);
+    document.getElementById("newItems").innerHTML = html;
+}
+
+function update() {
+    var lang = document.querySelector("#lang").value;
+    var form = document.querySelector("form[name=items]");
+    var obj = form2js(form,null,false);
+    var listItem;
+    obj.items.forEach( function(item,i) {
+        if( item.new ) {
+            listItem = newItems[i - list.items.length];
+            listItem.ref = item.ref?item.ref:"";
+        } else {
+            listItem = list.items[i];
+        }
+        for( prop in item ) {
+            if( item.hasOwnProperty(prop)) {
+                switch (prop) {
+                    case "ref":
+                        break;
+                    case "label":
+                        listItem.label[lang] = item.label[lang];
+                        break;
+                    case "threshold":
+                    case "range":
+                        if (typeof item[prop].min !== 'undefined' && item[prop].min && !isNaN(item[prop].min) ) {
+                            listItem[prop].min = parseInt(item[prop].min, 10);
+                        } else {
+                            item[prop].min = null;
+                            listItem[prop].min = null;
+                        }
+                        if (typeof item[prop].max !== 'undefined' && item[prop].max && !isNaN(item[prop].max)  ) {
+                            listItem[prop].max = parseInt(item[prop].max, 10);
+                        } else {
+                            item[prop].max = null;
+                            listItem[prop].max = null;
+                        }
+                        break;
+                    default:
+                        if (["active", "autoInput"].indexOf(prop) !== -1) {
+                            listItem[prop] = item[prop] ? true : false;
+                        } else {
+                            listItem[prop] = item[prop];
+                        }
+                }
+            }
+        }
+    });
+    /* for debug 
+     var modal = document.querySelector("zdk-modal#debug");
+     modal.querySelector(".content").innerHTML = "<pre>"+JSON.stringify(list,null,4)+"</pre>" + "<pre>"+JSON.stringify(newItems,null,4)+"</pre>";
+     modal.show();
+     */
+}
+
+function addRoles() {
+    update();
+    var form = document.forms["providers"];
+    var obj = form2js(form);
+    // {"itemref":"0","items":["111N00000N","203BD0300N","HOMESERV"]}
+    var item;
+    item = obj.itemnew?newItems[obj.itemref - list.items.length]:list.items[obj.itemref];
+    item.roleTypeCode = obj.items;
+    closeRoles();
+    showLang();
+}
+
+function closeRoles() {
+    document.getElementById("editRole").hide();
+}
+
+function editRole(itemref, roles, newItem) {
+    var tpl, modal, html,
+        lang, modelData;
+    
+    modal = document.getElementById("editRole");
+    modal.show();
+    tpl = document.querySelector("#tplJobs").innerHTML;
+
+    lang = document.querySelector("#lang").value;
+    modelData = {
+        lang: lang,
+        itemref : itemref,
+        itemnew: newItem?newItem:false,
+        items: []
+    };
+    jobs.items.forEach( function(item, i) {
+        if( item.active ) {
+            var obj = {
+                idx  : i,
+                label: item.label[lang] || item.label.en,
+                ref  : item.ref,
+                check: roles.indexOf(item.ref) !== -1?true:false
+            };
+            modelData.items.push(obj);
+        }
+    });
+    html = Mustache.render(tpl, modelData);
+    document.querySelector("#editRole .modalContentContainer").innerHTML = html;
+}
 
 function checkForm(form) {
     console.log("checkForm", arguments);
@@ -106,6 +314,7 @@ function save() {
     });
 }
 
+/*
 function deleteItem(node) {
     console.log("deleteItem", arguments);
     var form;
@@ -116,6 +325,14 @@ function deleteItem(node) {
     form.removeChild(node);
 
     refreshDefaultValue(form.getAttribute("name"));
+}
+*/
+
+function deleteItem(obj) {
+    while( !obj.classList.contains("item")) {
+        obj = obj.parentNode;
+    }
+    obj.parentNode.removeChild(obj);
 }
 
 function valueExists(formName) {
@@ -230,29 +447,6 @@ function addItem(node) {
     div = div.querySelector("div");
     document.getElementById("newItems").appendChild(div);
     // div.scrollIntoView();
-}
-
-function edit(node) {
-    console.log("edit", arguments);
-
-    var formName,
-        form = node;
-    while (form.tagName.toLowerCase() !== "form" && form.tagName.toLowerCase() !== "body") {
-        form = form.parentNode;
-    }
-    formName = form.getAttribute("name");
-
-    var items = document.querySelectorAll("form[name='" + formName + "'] *[name]");
-    [].map.call(items, function(item) {
-        //Don't disable the checkbox
-        if (item.getAttribute("name") !== "editable") {
-            if (node.checked) {
-                item.removeAttribute("disabled");
-            } else {
-                item.setAttribute("disabled", "true");
-            }
-        }
-    });
 }
 
 function closeModal() {
