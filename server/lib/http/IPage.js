@@ -432,7 +432,7 @@ function IPage() {
                         data.lang = lang;
                         // logger.debug("DATA", data);
 
-                        html = swig.renderFile('./static/tpl/listsManager1.htm', data, function(err, output) {
+                        html = swig.renderFile('./static/tpl/listsManager.htm', data, function(err, output) {
                             if (err) {
                                 console.log("error", err);
                                 console.log("output", output);
