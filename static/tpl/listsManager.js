@@ -134,7 +134,7 @@ function update() {
     var lang = document.querySelector("#lang").value;
     var form = document.querySelector("form[name=items]");
     var obj = form2js(form,null,false);
-    var listItem;
+    var listItem, prop;
     obj.items.forEach( function(item,i) {
         if( item.new ) {
             listItem = newItems[i - list.items.length];
