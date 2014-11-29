@@ -141,5 +141,6 @@
 	"providers role": "providers role",
 	"Choose all providers roles": "Choose all providers roles",
 	"New item": "New item",
-	"Label": "Label"
+	"Label": "Label",
+	"Questionnaires": "Questionnaires"
 }
