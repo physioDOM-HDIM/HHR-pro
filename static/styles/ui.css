@@ -289,7 +289,9 @@ button.small {
 button.small {
 	min-width: 50px;
 	font-size: 75%;
-	height: 75%;
+	/* height: 75%; */
+	height: 19px;
+	box-sizing: border-box;
 }
 button[disabled] { 
 	color:darkgray; 

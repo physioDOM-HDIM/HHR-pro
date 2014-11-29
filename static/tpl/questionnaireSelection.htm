@@ -11,7 +11,37 @@
 	li a:hover{
 		background: silver;
 	}
+	ul {
+		padding: 0px;
+		
+		-webkit-column-count: 2;
+		-webkit-column-gap: 10px;
+		-webkit-column-rule: 1px solid LightGray;
+		
+		-moz-column-count: 2;
+		-moz-column-gap: 10px;
+		-moz-column-rule: 1px solid LightGray;
+		
+		column-count: 2;
+		column-gap: 10px;
+		column-rule: 1px solid LightGray;
+	}
+	ul li {
+		height:30px;
+		line-height:30px;
+		padding-left:10px;
+	}
+	ul li:hover {
+		background: lightgray;
+	}
 </style>
+
+<style>
+	div.row { height:30px; }
+	div.row.title { height:40px; background:rgb(80, 80, 80); color:white; padding:0px 10px; margin-bottom:20px; }
+	label.title { font-size:1.3em; width:initial !important }
+</style>
+<div class="row title"><label class="title">{{ "Questionnaires"|i18n }}</label></div>
 
 <div class="mainContainer">
 	<ul>

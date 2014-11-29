@@ -22,11 +22,11 @@ form[name="professionals"] .proItem .buttonContainer{
     -webkit-flex: 0.2;
     flex: 0.2;
 }
-
+/*
 button.small{
     line-height: 0;
 }
-
+*/
 .addressContainer .zipCode{
     -ms-flex: 0.5;
     -webkit-flex: 0.5;
