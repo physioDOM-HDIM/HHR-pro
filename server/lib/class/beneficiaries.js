@@ -132,13 +132,7 @@ function Beneficiaries( ) {
 		logger.trace("getBeneficiaryByID", entryID);
 		var beneficiaryByID = new ObjectID(entryID);
 		var beneficiary = new Beneficiary();
-		return beneficiary.getById(beneficiaryByID, session.person.item)
-			.then( function( beneficiary) {
-				return beneficiary.getProfessionals();
-			})
-			.then(function(professionals) {
-				return beneficiary;
-			});
+		return beneficiary.getById(beneficiaryByID, session.person.item);
 	};
 	
 	this.getBeneficiaryAdminByID = function( session, entryID ) {
