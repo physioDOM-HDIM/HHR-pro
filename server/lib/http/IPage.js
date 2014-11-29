@@ -497,36 +497,6 @@ function IPage() {
             });
     };
 
-	/**
-	 * Questionnaire
-	 *
-	 * @param req
-	 * @param res
-	 * @param next
-	 */
-	this.createQuestionnaire = function(req, res, next) {
-		logger.trace("createQuestionnaire");
-		var html;
-
-		init(req);
-		var data = {
-			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
-		};
-
-		html = swig.renderFile('./static/tpl/questionnaireCreation.htm', null, function (err, output) {
-			if (err) {
-				console.log("error", err);
-				console.log("output", output);
-				res.write(err);
-				res.end();
-				next();
-			} else {
-				sendPage(output, res, next);
-			}
-		});
-
-	};
-
     /**
      * return a list page
      * 
@@ -583,6 +553,123 @@ function IPage() {
                 next();
             });
     };
+
+    /**
+     * Questionnaire
+     *
+     * @param req
+     * @param res
+     * @param next
+     */
+    this.questionnaires = function(req, res, next) {
+        logger.trace("questionnaires");
+        var html;
+
+        init(req);
+        var data = {
+            admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
+        };
+
+        physioDOM.Questionnaires()
+            .then(function(questionnaires){
+                return questionnaires.getQuestionnaires();
+            })
+            .then( function(questionnaires) {
+                data.questionnaires = questionnaires;
+                //logger.debug("DATA", data);
+                html = swig.renderFile('./static/tpl/questionnaireSelection.htm', data, function (err, output) {
+                    if (err) {
+                        console.log("error", err);
+                        console.log("output", output);
+                        res.write(err);
+                        res.end();
+                        next();
+                    } else {
+                        sendPage(output, res, next);
+                    }
+                });
+            })
+            .catch( function(err) {
+                logger.error(err);
+                res.write(err);
+                res.end();
+                next();
+            });
+    };
+    
+    /**
+     * Questionnaire
+     *
+     * @param req
+     * @param res
+     * @param next
+     */
+    this.createQuestionnaire = function(req, res, next) {
+        logger.trace("createQuestionnaire");
+        var html;
+
+        init(req);
+        var data = {
+            admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
+        };
+
+        html = swig.renderFile('./static/tpl/questionnaireCreation.htm', null, function (err, output) {
+            if (err) {
+                console.log("error", err);
+                console.log("output", output);
+                res.write(err);
+                res.end();
+                next();
+            } else {
+                sendPage(output, res, next);
+            }
+        });
+
+    };
+
+    /**
+     * Questionnaire Overview
+     *
+     * @param req
+     * @param res
+     * @param next
+     */
+    this.questionnaireOverview = function(req, res, next) {
+        logger.trace("questionnaireOverview");
+        var html;
+        init(req);
+        var data = {
+            admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
+        };
+
+        physioDOM.Questionnaires()
+            .then(function(questionnaires){
+                return questionnaires.getQuestionnaire(req.params.questionnaireName);
+            })
+            .then( function(questionnaire) {
+                data.questionnaire = questionnaire;
+                //logger.debug("DATA", data);
+                html = swig.renderFile('./static/tpl/questionnaireOverview.htm', data, function (err, output) {
+                    if (err) {
+                        console.log("error", err);
+                        console.log("output", output);
+                        res.write(err);
+                        res.end();
+                        next();
+                    } else {
+                        sendPage(output, res, next);
+                    }
+                });
+            })
+            .catch( function(err) {
+                logger.error(err);
+                res.write(err);
+                res.end();
+                next();
+            });
+    };
+    
+    
     
     /**
      * Send the page to the browser
