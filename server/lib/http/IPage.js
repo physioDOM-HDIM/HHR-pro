@@ -363,6 +363,12 @@ function IPage() {
 		if( req.params.beneficiaryID !== "overview") {
 			req.session.beneficiary = new ObjectID(req.params.beneficiaryID);
 		}
+        if(!req.session.beneficiary) {
+            logger.debug("no beneficiary selected");
+            res.header('Location', '/beneficiaries');
+            res.send(302);
+            return next();
+        }
 		req.session.save()
 			.then( function(session) {
 				return physioDOM.Beneficiaries();
