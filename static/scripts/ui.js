@@ -11,8 +11,7 @@ function initUI() {
 	});
 
 	document.querySelector('iframe').addEventListener("load",function () {
-		var doc = this.contentDocument;
-		document.querySelector('header div.title').innerHTML = doc.title;
+		setTitle();
 	}, false);
 }
 
@@ -59,7 +58,7 @@ function show(page, title) {
 
 function setTitle() {
 	var iframe = document.querySelector("iframe");
-	var title = document.querySelector(".hdr .title");
+	var title = document.querySelector("core-toolbar .title");
 	title.innerHTML = iframe.contentDocument.title;
 }
 

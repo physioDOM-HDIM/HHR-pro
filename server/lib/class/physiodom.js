@@ -17,7 +17,9 @@ var logger = new Logger("PhysioDOM");
 var Account = require("./account"),
 	Session = require("./session"),
 	Directory = require("./directory"),
-	Beneficiaries = require("./beneficiaries");
+	Beneficiaries = require("./beneficiaries"),
+	Lists = require("./lists"),
+	Questionnaires = require("./questionnaires");
 
 /**
  * PhysioDOM
@@ -29,6 +31,11 @@ var Account = require("./account"),
 function PhysioDOM( ) {
 	this.db = null;
 
+	this.Lists = new Lists();
+	
+	// @todo report lang into a config file.
+	this.lang = ["en","es","nl","fr"];
+	
 	/**
 	 * Connect to the database
 	 * 
@@ -76,6 +83,18 @@ function PhysioDOM( ) {
 			resolve( new Directory() );
 		});
 	};
+	
+	/**
+	 * return a promise with the Questionnaires Object
+	 * {@link module:Questionnaires}
+	 * @returns {promise}
+	 */
+	this.Questionnaires = function() {
+		return new promise( function(resolve, reject) {
+			logger.trace("Questionnaires");
+			resolve( new Questionnaires() );
+		});
+	};
 
 	/**
 	 * return a promise with the Session Object
@@ -95,9 +114,12 @@ function PhysioDOM( ) {
 		var that = this;
 		return new promise( function(resolve, reject) {
 			that.db.collection("account").findOne(search, function (err, record) {
-				if(err) { reject(err); }
-				if(!record) { reject({code:404, msg:"Account not found"}); }
-				resolve( new Account( record ));
+				if(err) { throw err; }
+				if(!record) { 
+					reject({code:404, msg:"Account not found"}); 
+				} else {
+					resolve(new Account(record));
+				}
 			});
 		});
 	};
@@ -115,7 +137,7 @@ function PhysioDOM( ) {
 				if(!record ) {
 					return reject( { message: "could not find session "+ sessionID });
 				}
-				record.sessionID = sessionID;
+				record.sessionID = new ObjectID(sessionID);
 				resolve( new Session( record ));
 			});
 		});
@@ -148,7 +170,7 @@ function PhysioDOM( ) {
 	 * @returns {*}
 	 */
 	this.getSessions = function(pg, offset, sort, filter) {
-		console.log("getSessions");
+		logger.trace("getSessions");
 		
 		var cursor = this.db.collection("session").find( { 'expire': { '$gt' : (new Date()).getTime() } } );
 		if(sort) {

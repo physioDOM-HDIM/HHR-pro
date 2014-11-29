@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>{% block title %}PhysioDOM{% endblock %}</title>
+
+	<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<meta name="apple-touch-fullscreen" content="yes">
+	<meta name="mobile-web-app-capable" content="yes">
+
+	<link rel="shortcut icon" sizes="196x196" href="/img/physiodom_favico.png">
+	<link rel="icon" href="/img/physiodom_favico.png">
+	<link rel="apple-touch-icon" href="/img/physiodom_favico.png">
+
+	<link rel="stylesheet" href="/styles/iframe.css" charset="UTF-8">
+	<!--<link rel="stylesheet" href="/styles/theme.css" charset="UTF-8">-->
+	<link rel="stylesheet" href="/styles/ui.css" charset="UTF-8">
+
+	<script src="/bower_components/webcomponentsjs/webcomponents.min.js"></script>
+	
+	<script>
+		window.addEventListener("DOMContentLoaded", initFrame, false);
+
+		function initFrame() {
+			if(!parent) return;
+
+			if(parent.setTitle) {
+				parent.setTitle();
+
+				var nav = parent.document.querySelector("[drawer]");
+				if (window.innerWidth < 993 && nav.classList.contains("show")) {
+					parent.toggleNav();
+				}
+			}
+		}
+		
+		if(window.location === window.parent.location ) {
+			console.info("not in iframe");
+			window.location = "/?url="+window.location;
+		} else {
+			parent.closeDrawer();
+		}
+	</script>
+
+	{% block head %}
+	<link rel="import" href="/bower_components/tsante-listpager/tsante-listpager.html">
+	<link rel="import" href="/bower_components/zdk-panel/zdk-panel.html">
+	<link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
+	{% endblock %}
+</head>
+<body unresolved>
+	<div class="main">
+		{% block content %}{% endblock %}
+	</div>
+</body>
+</html>

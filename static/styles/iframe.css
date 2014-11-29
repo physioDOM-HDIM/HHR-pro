@@ -3,12 +3,41 @@ html, body {
 	overflow: auto;
 	-webkit-overflow-scrolling: touch;
 }
-
+@font-face {
+	font-family: 'Roboto';
+	font-style: normal;
+	font-weight: 400;
+	src: local('Roboto Regular'), local('Roboto-Regular'), url(/fonts/Roboto.woff2) format('woff2');
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+@font-face {
+	font-family: 'Roboto';
+	font-style: normal;
+	font-weight: 300;
+	src: local('Roboto Light'), local('Roboto-Light'), url(/fonts/Roboto-Light.woff2) format('woff2');
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+@font-face {
+	font-family: 'Roboto';
+	font-style: normal;
+	font-weight: 700;
+	src: local('Roboto Bold'), local('Roboto-Bold'), url(/fonts/Roboto-Bold.woff2) format('woff2');
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+@font-face {
+	font-family: 'Roboto';
+	font-style: normal;
+	font-weight: 900;
+	src: local('Roboto Black'), local('Roboto-Black'), url(/fonts/Roboto-Black.woff2) format('woff2');
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
 body {
-	font-family:Verdana;
+	/*font-family:Verdana;*/
+	font-family: "Roboto", Helvetica, Arial, sans-serif;
 	font-size:14px;
 	margin: 0px;
 	padding: 8px;
+	margin-bottom:50px;
 }
 
 .main {
@@ -25,12 +54,13 @@ body {
 	
 	/* overflow: hidden; */
 	padding:10px;
+	padding-bottom:50px;
 	box-sizing: border-box;
 	
 }
 
+/*
 footer {
-	/* position:absolute; */
 	height: 30px;
 	bottom:0;
 	left:0;
@@ -45,24 +75,42 @@ footer {
 	padding: 0px 10px;
 	text-align: right;
 }
+*/
 
+.modalContainer {
+	background: white;
+	padding: 10px;
+}
+.modalTitleContainer {
+	font-size:120%;
+	font-weight: bold;
+	margin: 10px 0px;
+}
+.modalContentContainer {
+	margin-bottom:10px;
+}
+.modalButtonContainer {
+	text-align: right;
+	margin: 20px 0px 10px 0px;
+}
+/*
 .panel-heading[data-toggle="collapse"] .panel-title:after {
-	/* symbol for "opening" panels */
-	font-family: 'Glyphicons Halflings'; /* essential for enabling glyphicon */
-	content: "\e114"; /* adjust as needed, taken from bootstrap.css */
-	float: right; /* adjust as needed */
-	color: grey; /* adjust as needed */
+	font-family: 'Glyphicons Halflings';
+	content: "\e114";
+	float: right;
+	color: grey;
 }
 
 .panel-heading.collapsed[data-toggle="collapse"] .panel-title:after {
-	/* symbol for "collapsed" panels */
-	content: "\e080"; /* adjust as needed, taken from bootstrap.css */
+	content: "\e080";
 }
 
 .panel-heading[data-toggle="collapse"] {
 	cursor: pointer;
 }
+*/
 
+/*
 div.dlg {
 	position: absolute;
 	top: 0;
@@ -109,26 +157,4 @@ div#bg {
 	right: 0px;
 	background: rgba(0, 0, 0, 0.6);
 }
-
-polymer-ui-accordion {
-    border:1px solid #ddd;
-    margin-bottom:20px;
-    border-radius: 3px;
-
-}
-
-.polymer-ui-collapsible-header {
-    background-image: -webkit-linear-gradient(top,#f5f5f5 0,#e8e8e8 100%);
-    background-image: linear-gradient(to bottom,#f5f5f5 0,#e8e8e8 100%);
-    background-repeat: repeat-x;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff5f5f5', endColorstr='#ffe8e8e8', GradientType=0);
-    color: #333;
-    background-color: #f5f5f5;
-    border-color: #ddd;
-    padding: 10px 15px;
-    border-bottom: 1px solid transparent;
-    border-top-right-radius: 3px;
-    border-top-left-radius: 3px;
-    font-weight:bold;
-    font-size:16px;
-}
+*/

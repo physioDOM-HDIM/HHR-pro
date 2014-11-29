@@ -1,3 +1,8 @@
+/**
+ * @file IDirectory.js
+ * @module Http
+ */
+
 /* jslint node:true */
 /* global physioDOM */
 "use strict";
@@ -17,11 +22,12 @@ var logger = new Logger("IDirectory");
  *
  * treat http request for the directory
  * 
- * @type {{getEntries: Function, createEntry: Function, getEntry: Function}}
+ * @type {object}
  */
 var IDirectory = {
 	/**
 	 * retrieve directory entry and send it as json object
+	 * 
 	 * @param req
 	 * @param res
 	 * @param next
@@ -140,10 +146,10 @@ var IDirectory = {
 	},
 
 	/**
-	 * @method accountUpdate
-	 * 
 	 * adds account information to a directory entry
 	 * the directory entry is given by req.params.entryID
+	 * 
+	 * request POST /api/directory/:entryID/account
 	 * 
 	 * @param req
 	 * @param res
@@ -172,7 +178,16 @@ var IDirectory = {
 				});
 		}
 	},
-	
+
+	/**
+	 * Get account information of a professional
+	 * 
+	 * request GET /api/directory/:entryID/account
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
 	account: function(req, res, next) {
 		physioDOM.Directory()
 			.then(function (directory) {

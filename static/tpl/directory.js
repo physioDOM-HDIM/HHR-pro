@@ -7,12 +7,17 @@ var dataFormat = {
     nameData: "name.family",
     perimeterData: "perimeter",
     ascData: "1",
-    descData: "-1"
+    descData: "-1",
+    activeTrueData: "true",
+    activeFalseData: "false"
 },
-isAdmin = false;
+// isAdmin = false,
+_dataObj;
 
 //Display/hide some information according to the user status
 function checkUser(e) {
+	console.log("checkUser", arguments);
+    /*
     if (isAdmin) {
         var editButtons = document.querySelectorAll(".editButton"),
             addEntry = document.querySelector("#addEntry");
@@ -25,17 +30,25 @@ function checkUser(e) {
             addEntry.className = addEntry.className.replace("hidden", "");
         }
     }
+    */
 }
 
 //Toggle display/hide a node
 function toggleHiddenNode(node, searchPattern) {
+    console.log("toggleHiddenNode", arguments);
     var found = false,
         searchNode;
+    node = node.parentNode;
     while (!found && node) {
         searchNode = node.querySelector(searchPattern);
         if (searchNode) {
             found = true;
-            searchNode.setAttribute("data-state", searchNode.getAttribute("data-state") === "hidden" ? "displayed" : "hidden");
+            if(searchNode.className.indexOf("hidden") !== -1){
+            	searchNode.className = searchNode.className.replace("hidden", "");
+            }
+            else{
+            	searchNode.className += " hidden";
+            }
         } else {
             node = node.parentNode;
         }
@@ -44,24 +57,21 @@ function toggleHiddenNode(node, searchPattern) {
 
 //Get the base url of the tsante-list component (without potential params)
 function getBaseURL(url) {
+    console.log("getBaseURL", arguments);
     var idx = url.indexOf("?");
     return url.slice(0, idx !== -1 ? idx : url.length);
 }
 
 function resetFilter() {
-    var filterForm = document.forms.filter;
-    filterForm.nameTxt.value = "";
-    filterForm.perimeter.selectedIndex = 0;
-    filterForm.active.checked = true;
-    filterForm.sortSelection.selectedIndex = 0;
-    filterForm.sortDirection.selectedIndex = 0;
-
+	console.log("resetFilter", arguments);
+    document.forms.filter.reset();
     var listPagerElt = document.querySelector("tsante-list");
     listPagerElt.url = getBaseURL(listPagerElt.url);
     listPagerElt.go();
 }
 
 function validFilter() {
+	console.log("validFilter", arguments);
     var filterForm = document.forms.filter,
         listPagerElt = document.querySelector("tsante-list"),
         params = "",
@@ -74,49 +84,50 @@ function validFilter() {
 
     //TODO Perimeter
     //active
-    filterObj.active = JSON.stringify(filterForm.active.checked);
+    var activeStatus = filterForm.active.options[filterForm.active.selectedIndex].value;
+    if(activeStatus !== "activeAllData"){
+    	filterObj.active = dataFormat[activeStatus];
+    }
     //name
-    nameValue = filterForm.nameTxt.value;
+    nameValue = filterForm.querySelector("input[name=nameTxt]").value;
     if (nameValue) {
         filterObj[dataFormat.nameData] = nameValue;
     }
-    params += "&filter=" + JSON.stringify(filterObj);
+    if(JSON.stringify(filterObj) !== "{}"){
+    	params += "&filter=" + JSON.stringify(filterObj);
+    }
     listPagerElt.url = getBaseURL(listPagerElt.url) + params;
 
-    //console.log(listPagerElt.url);
+    console.log("validFilter - url: ", listPagerElt.url);
 
     listPagerElt.pg = 1;
     listPagerElt.go();
 }
 
-function displayModal(param){
-	var zdkModalElt = document.querySelector("zdk-modal"),
-		model;
-	//Edit mode
-	if(typeof param !== "undefined"){
-		//Get model from the tsant-list component
-		model = document.querySelector("tsante-list template").model;
-		if(model && model.list && model.list.items && param < model.list.items.length){
-			// Clone the object to avoid the binding between the listPage item and the modal item in case of cancel
-			zdkModalElt.querySelector("template").model = JSON.parse(JSON.stringify({item: model.list.items[param]}));
-		}
+function updateDirectory(idx){
+	console.log("updateDirectory", arguments);
+	if(_dataObj && _dataObj.list && _dataObj.list.items){
+		window.location = "/directory/update" + (typeof idx !== undefined && _dataObj.list.items[idx] ? "?itemId="+_dataObj.list.items[idx]._id : "");
 	}
-	else{
-		//Add new entry mode
-		zdkModalElt.querySelector("template").model = "";
-	}
-	zdkModalElt.show();
+}
+
+function onHaveData(data){
+	_dataObj = data.detail;
 }
 
 function init() {
+	console.log("init");
     //TODO internationalization
 
 	//TODO get the info about access user and
 	//don't forget to call checkUser()
-	isAdmin = true;
+	// isAdmin = true;
 
     var listPagerElt = document.querySelector("tsante-list");
-    listPagerElt.addEventListener("tsante-draw", checkUser, false);
+    if(listPagerElt){
+    	listPagerElt.addEventListener("tsante-draw", checkUser, false);
+    	listPagerElt.addEventListener("tsante-response", onHaveData, false);
+    }
 }
 
 window.addEventListener("DOMContentLoaded", init, false);

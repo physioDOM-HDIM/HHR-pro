@@ -34,16 +34,27 @@ function Beneficiaries( ) {
 	this.getBeneficiaries = function( session, pg, offset, sort, sortDir, filter) {
 		logger.trace("getBeneficiaries");
 		
-		var search = {};
+		var search = {}, address = {};
 		if(filter) {
+			console.log("filter", filter);
 			try {
-				search = JSON.parse(filter);
-				for( var prop in search) {
-					if(search.hasOwnProperty(prop)) {
-						if( ["true","false"].indexOf(search[prop]) !== -1) {
-							search[prop] = (search[prop]==="true"?true:false);
-						} else {
-							search[prop] = new RegExp("^"+search[prop],'i');
+				var tmp  = JSON.parse(filter);
+				for( var prop in tmp) {
+					if(tmp.hasOwnProperty(prop)) {
+						console.log("prop",prop);
+						switch(prop) {
+							case "name":
+								search["name.family"] = new RegExp("^"+tmp.name,"i");
+								break;
+							case "perimeter":
+								search.perimeter = tmp.perimeter;
+								break;
+							case "zip":
+								address.zip = new RegExp("^"+tmp.zip,"i");
+								break;
+							case "city":
+								address.city = new RegExp("^"+tmp.city,"i");
+								break;
 						}
 					}
 				}
@@ -51,13 +62,18 @@ function Beneficiaries( ) {
 				search = { };
 			}
 		}
+		if( address.city || address.zip ) { 
+			search.address = { "$elemMatch": address }; 
+		}
+		
 		if( session.role) { 
 			if( ["administrator","coordinator"].indexOf(session.role.toLowerCase())===-1 ) {
-				search.professionals= { "$elemMatch": {professionalID: new ObjectID(session.person.id)}};
+				search.professionals= { "$elemMatch": {professionalID: session.person.id.toString() }};
 			}
 		} else {
 			throw { code:403, message:"forbidden"};
 		}
+		// logger.debug("search filter", search);
 		var cursor = physioDOM.db.collection("beneficiaries").find(search);
 		var cursorSort = {};
 		if(sort) {
@@ -118,6 +134,13 @@ function Beneficiaries( ) {
 		var beneficiary = new Beneficiary();
 		return beneficiary.getById(beneficiaryByID, session.person.item);
 	};
+	
+	this.getBeneficiaryAdminByID = function( session, entryID ) {
+		logger.trace("getBeneficiaryAdminByID", entryID);
+		var beneficiaryByID = new ObjectID(entryID);
+		var beneficiary = new Beneficiary();
+		return beneficiary.getAdminById(beneficiaryByID, session.person.item);
+	}
 
 	/**
 	 * remove a beneficiary

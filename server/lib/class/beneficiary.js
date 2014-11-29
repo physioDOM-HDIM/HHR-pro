@@ -1,25 +1,46 @@
+/**
+ * @file beneficiary.js
+ * @module Beneficiary
+ */
+
 /* jslint node:true */
 /* global physioDOM */
 "use strict";
 
-var promise = require("rsvp").Promise,
+var RSVP = require("rsvp"),
+	promise = require("rsvp").Promise,
 	Logger = require("logger"),
 	ObjectID = require("mongodb").ObjectID,
 	beneficiarySchema = require("./../schema/beneficiarySchema");
 
 var logger = new Logger("Beneficiary");
 
-
+/**
+ * Manage a beneficiary record
+ * 
+ * @constructor
+ */
 function Beneficiary( ) {
 
+	/**
+	 * Get a beneficiary in the database known by its ID
+	 * 
+	 * on success the promise returns the beneficiary record,
+	 * else return an error ( code 404 )
+	 * 
+	 * @param beneficiaryID
+	 * @param professional
+	 * @returns {promise}
+	 */
 	this.getById = function( beneficiaryID, professional ) {
 		var that = this;
 		return new promise( function(resolve, reject) {
-			logger.trace("getById");
-			var search = {_id: beneficiaryID };
-			if( ["adminstrator","coordinator"].indexOf(professional.role) === -1) {
-				search["$elemMatch"] = { professionalID: professional._id };
+			logger.trace("getById", beneficiaryID);
+			var search = { _id: beneficiaryID };
+			if( ["administrator","coordinator"].indexOf(professional.role) === -1) {
+				search.professionals = { '$elemMatch' : { professionalID: professional._id.toString() }};
 			}
+			
 			physioDOM.db.collection("beneficiaries").findOne(search, function (err, doc) {
 				if (err) {
 					logger.alert("Error");
@@ -33,12 +54,80 @@ function Beneficiary( ) {
 							that[prop] = doc[prop];
 						}
 					}
+					if( !that.address ) {
+						that.address = [ { use:"home" }];
+					}
+					if( !that.telecom ) {
+						that.telecom = [ { system:"phone" }];
+					}
 					resolve(that);
 				}
 			});
 		});
 	};
-	
+
+	/**
+	 * Get a beneficiary known by its ID : `beneficiaryID`
+	 * 
+	 * This method is used to create or modify a beneficiary
+	 * the professional must be an administrator or a coordinator
+	 * 
+	 * if beneficiaryID is null the promise return an empty structure
+	 * 
+	 * @param beneficiaryID
+	 * @param professional
+	 * @returns {promise}
+	 */
+	this.getAdminById = function( beneficiaryID, professional ) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("getAdminById", beneficiaryID);
+			var result = { telecom: [ { system:"phone" } ], address:[ { use:"home"} ] };
+			that.getById(beneficiaryID, professional)
+				.then(function (beneficiary) {
+					result = beneficiary;
+					return beneficiary.getAccount();
+				})
+				.then( function(account) {
+					result.account = account;
+					resolve(result);
+				})
+				.catch( function( err ) {
+					logger.warning("error",err);
+					resolve(result);
+				});
+		});
+	};
+
+	/**
+	 * return account information about the beneficiary
+	 *
+	 * the promise resolve with account information as object,
+	 * if no account information is found the resolve return an empty object
+	 *
+	 * @returns {promise}
+	 */
+	this.getAccount = function() {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			var search = { "person.id": that._id };
+			physioDOM.db.collection("account").findOne( search, function( err, item ) {
+				if(err) {
+					throw err;
+				} else {
+					resolve(item || {});
+				}
+			});
+		});
+	};
+
+	/**
+	 * save the beneficiary in the database
+	 * 
+	 * the promise return the beneficiary object completed with the `_id` for a new record
+	 * 
+	 * @returns {promise}
+	 */
 	this.save = function() {
 		var that = this;
 		return new promise( function(resolve, reject) {
@@ -55,7 +144,16 @@ function Beneficiary( ) {
 			});
 		});
 	};
-	
+
+	/**
+	 * Check that there's no beneficiary already exists with the same
+	 *  name, birthdate and telecom
+	 *  
+	 * @todo set a regexp case insensitive for the name
+	 * 
+	 * @param entry
+	 * @returns {promise}
+	 */
 	function checkUniq( entry ) {
 		return new promise( function(resolve, reject) {
 			logger.trace("checkUniq");
@@ -80,19 +178,33 @@ function Beneficiary( ) {
 		});
 	}
 
+	/**
+	 * Check the schema of a beneficiary record
+	 * 
+	 * @param entry
+	 * @returns {promise}
+	 */
 	function checkSchema( entry ) {
 		return new promise( function(resolve, reject) {
 			logger.trace("checkSchema");
 			var check = beneficiarySchema.validator.validate( entry, { "$ref":"/Beneficiary"} );
 			if( check.errors.length ) {
-				console.log(JSON.stringify(check.errors,null,4));
-				return reject( { error:"bad format" } );
+				// console.log(JSON.stringify(check.errors,null,4));
+				return reject( { error:"bad format", detail: check.errors } );
 			} else {
 				return resolve(entry);
 			}
 		});
 	}
-	
+
+	/**
+	 * initialize a beneficiary with the object `newEntry`
+	 * 
+	 * the promise return on success the beneficiary record
+	 * 
+	 * @param newEntry
+	 * @returns {promise}
+	 */
 	this.setup = function( newEntry ) {
 		var that = this;
 		return new promise( function(resolve, reject) {
@@ -111,7 +223,15 @@ function Beneficiary( ) {
 				.catch(reject);
 		});
 	};
-	
+
+	/**
+	 * Update the beneficiary
+	 * 
+	 * `updatedEntry` is a full object that replace the old one
+	 * 
+	 * @param updatedEntry
+	 * @returns {promise}
+	 */
 	this.update = function( updatedEntry ) {
 		var that = this;
 		return new promise( function(resolve, reject) {
@@ -139,27 +259,36 @@ function Beneficiary( ) {
 	this.getEvents = function() {
 		return new promise( function(resolve, reject) {
 			logger.trace("getEvents");
+			resolve({});
 		});
 	};
 
 	this.getHealthServices = function() {
 		return new promise( function(resolve, reject) {
 			logger.trace("getHealthServices");
+			resolve({});
 		});
 	};
 
 	this.getSocialServices = function() {
 		return new promise( function(resolve, reject) {
 			logger.trace("getSocialServices");
+			resolve({});
 		});
 	};
 
 	this.getDietaryServices = function() {
 		return new promise( function(resolve, reject) {
 			logger.trace("getDietaryServices");
+			resolve({});
 		});
 	};
 
+	/**
+	 * Get Professionals list attached to the beneficiary
+	 * 
+	 * @returns {promise}
+	 */
 	this.getProfessionals = function() {
 		var that = this;
 		if( that.professionals === undefined ) {
@@ -198,6 +327,13 @@ function Beneficiary( ) {
 		});
 	};
 
+	/**
+	 * Attach a professional to the beneficiary
+	 * 
+	 * @param professionalID
+	 * @param referent
+	 * @returns {promise}
+	 */
 	this.addProfessional = function( professionalID, referent ) {
 		var that = this;
 		if( !that.professionals ) {
@@ -239,6 +375,64 @@ function Beneficiary( ) {
 		});
 	};
 
+	/**
+	 * Attach an array of professionals to the beneficiary
+	 *
+	 * @param professionals {array} array of objects 
+	 *        { professionalID: xxxx, referent: true|false }`
+	 * @param referent
+	 * @returns {promise}
+	 */
+	this.addProfessionals = function( professionals ) {
+		var that = this;
+		if( !that.professionals ) {
+			that.professionals = [];
+		}
+		
+		return new promise(function (resolve, reject) {
+			logger.trace("addProfessionals ");
+			physioDOM.Directory()
+				.then(function (directory) {
+					function check( professionalObj ) {
+						return new promise(function (resolve, reject) {
+							directory.getEntryByID(professionalObj.professionalID)
+								.then(function( professional) {
+									resolve({
+										professionalID: professional._id,
+										referent: professionalObj.referent && professionalObj.referent===true?true:false
+									});
+								})
+								.catch( function(err) {
+									reject(err);
+								} );
+						});
+					}
+					
+					return RSVP.all(professionals.map(check));
+				})
+				.then( function( professionals ) {
+					that.professionals = professionals;
+					return that.save();
+				})
+				.then( function() {
+					return that.getProfessionals();
+				})
+				.then( function(professionals) {
+					resolve(professionals);
+				})
+				.catch( function(err) {
+					logger.error("error ",err);
+					reject(err);
+				});
+		});
+	};
+	
+	/**
+	 * remove a professional from a beneficiary
+	 * 
+	 * @param professionalID
+	 * @returns {promise}
+	 */
 	this.delProfessional = function( professionalID ) {
 		var that = this;
 		if( !that.professionals ) {
@@ -283,6 +477,11 @@ function Beneficiary( ) {
 		});	
 	};
 
+	/**
+	 * Not implemented
+	 * 
+	 * @returns {promise}
+	 */
 	this.getContacts = function() {
 		return new promise( function(resolve, reject) {
 			logger.trace("getContact");

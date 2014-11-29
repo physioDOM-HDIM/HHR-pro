@@ -1,0 +1,101 @@
+{% extends './page.htm' %}
+
+{% block title %}{{ "Questionnaire overview"|i18n }}{% endblock %}
+
+{% block head %}
+{% parent %}
+<script src="/bower_components/rsvp/rsvp.min.js"></script>
+<script src="/bower_components/form2js/src/form2js.js"></script>
+<script src="/tpl/questionnaireOverview.js"></script>
+{% endblock %}
+{% block content %}
+
+<style>
+	div.row label{
+		width: 350px;
+	}
+	.answers{
+		margin-left: 30px;
+	}
+	.space{
+		/* width: 20%; */
+		margin: 30px auto;
+		border-color: black;
+	}
+	.nestedQuestionnaire{
+		margin-left: 20px;
+	}
+</style>
+
+{% macro tpl(q, idx) %}
+	{% set name = "answers" %}
+	{% for key, val in idx %}
+		{% set name += "["+val+"]" %}
+		{% if !loop.last %}
+			{% set name += ".answers" %}
+		{% endif %}
+	{% endfor %}
+
+	{% if q.header %}
+		<div class="bold">{{idx|join("-")}} - {{q.header}}</div>
+		<input type="hidden" name="{{name}}.subscore" value="{{q.subscore}}" />
+		<hr>
+		{% for subQ in q.questions %}
+			{% set idx = idx|push(loop.index) %}
+			<div class="nestedQuestionnaire">
+				{{tpl(subQ, idx)}}
+			</div>
+			{% set idx = idx|pop() %}
+		{% endfor %}
+	{% else %}
+		<div class="row">
+			<div>{{idx|join("-")}} - {{q.text}}</div>
+		</div>
+		<br/>
+	{% endif %}
+	{% for c in q.choice %}
+		<div class="row answers">
+			{% if !c.text %}
+				<input type="text" name="{{name}}.choice" required />
+			{% else %}
+				<label for="{{name}}.choice">{{c.text}}</label>
+				<input type="radio" name="{{name}}.choice" value="{{c.value}}" required />
+			{% endif %}
+		</div>
+		{% if loop.last %}
+			<br/>
+		{% endif %}
+	{% endfor %}
+{% endmacro %}
+
+<div class="mainContainer">
+	<h2>{{questionnaire.text}}</h2>
+	<form autocomplete="off" name="questionnaire" onsubmit="checkForm(); return false;">
+		{% for q in questionnaire.questions %}
+			<div class="itemContainer">
+				{% set number = "" %}
+				{{tpl(q, [loop.index])}}
+			</div>
+			{% if !loop.last %}
+				<hr class="space">
+			{% endif %}
+		{% endfor%}
+		<div class="row control">
+			<span class="spacer"></span>
+			<button class="green">Validate</button>
+		</div>
+	</form>
+	<zdk-modal id="statusModal" closebutton="false">
+	    <div class="modalContainer">
+	        <div class="modalTitleContainer"></div>
+	        <div class="modalContentContainer"></div>
+	        <div class="modalButtonContainer"></div>
+	    </div>
+	</zdk-modal>
+	<div class="hidden">
+	    <div id="trad_result">{{ "Result"|i18n }}</div>
+	    <div id="trad_success_result">{{ "Your score is: "|i18n }}</div>
+	    <div id="trad_ok">{{ "OK"|i18n }}</div>
+	</div>
+</div>
+{% endblock %}

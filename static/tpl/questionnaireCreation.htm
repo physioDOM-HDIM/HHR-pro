@@ -1,0 +1,263 @@
+{% extends './page.htm' %}
+
+{% block title %}{{ "Create a questionnaire"|i18n }}{% endblock %}
+
+{% block head %}
+{% parent %}
+<script src="/bower_components/mustache/mustache.js"></script>
+<script src="/bower_components/rsvp/rsvp.min.js"></script>
+<script src="/bower_components/form2js/src/form2js.js"></script>
+{% endblock %}
+
+{% block content %}
+<script type="text/template" id="tplHeaderQuestion">
+    <div class="row">
+    	<label>Question Header</label>
+    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].header" />
+    </div>
+    <div class="row">
+    	<label>SubScore</label>
+    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].subscore" placeholder="Use this format : sum==3?1:(sum==2)?0.5:0"/>
+    </div>
+    <br/>
+    <div class="row">
+    	<label>Question text</label>
+    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].questions[{%raw%}{{subQIdx}}{%endraw%}].text" />
+    </div>
+    <div class="row">
+    	<div class="col">
+	    	<label>Choice Text {%raw%}{{qIdx}}{%endraw%}-{%raw%}{{subQIdx}}{%endraw%}-{%raw%}{{cIdx}}{%endraw%} </label>
+	    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].questions[{%raw%}{{subQIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].text" />
+	    </div>
+	    <div class="col">
+	    	<label>Choice Value</label>
+	    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].questions[{%raw%}{{subQIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].value" />
+	    </div>
+	    <div class="col">
+	    	<label>Choice System</label>
+	    	<select name="questions[{%raw%}{{qIdx}}{%endraw%}].questions[{%raw%}{{subQIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].system">
+	    		<option value="integer">integer</option>
+	    		<option value="boolean">boolean</option>
+	    		<option value="decimal">decimal</option>
+	    		<option value="string">string</option>
+	    	</select>
+	    </div>
+    </div>
+    <div class="row control">
+		<span class="spacer"></span>
+		<button id="btnAddHeaderChoice{%raw%}{{qIdx}}{%endraw%}" type="button" class="small blue" onclick="addHeaderChoice({%raw%}{{qIdx}}{%endraw%})">Add choice</button>
+		<button id="btnAddHeaderQuestion{%raw%}{{qIdx}}{%endraw%}" type="button" class="small blue" onclick="addHeaderNewQuestion({%raw%}{{qIdx}}{%endraw%})">Add question</button>
+	</div>
+	<hr>
+</script>
+<script type="text/template" id="tplHeaderNewQuestion">
+    <br/>
+    <div class="row">
+    	<label>Question text</label>
+    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].questions[{%raw%}{{subQIdx}}{%endraw%}].text" />
+    </div>
+    <div class="row">
+    	<div class="col">
+	    	<label>Choice Text {%raw%}{{qIdx}}{%endraw%}-{%raw%}{{subQIdx}}{%endraw%}-{%raw%}{{cIdx}}{%endraw%}</label>
+	    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].questions[{%raw%}{{subQIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].text" />
+	    </div>
+	    <div class="col">
+	    	<label>Choice Value</label>
+	    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].questions[{%raw%}{{subQIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].value" />
+	    </div>
+	    <div class="col">
+	    	<label>Choice System</label>
+	    	<select name="questions[{%raw%}{{qIdx}}{%endraw%}].questions[{%raw%}{{subQIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].system">
+	    		<option value="integer">integer</option>
+	    		<option value="boolean">boolean</option>
+	    		<option value="decimal">decimal</option>
+	    		<option value="string">string</option>
+	    	</select>
+	    </div>
+    </div>
+</script>
+<script type="text/template" id="tplSimpleQuestion">
+    <div class="row">
+    	<label>Question text</label>
+    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].text" />
+    </div>
+    <div class="row">
+    	<div class="col">
+	    	<label>Choice Text {%raw%}{{qIdx}}{%endraw%}-{%raw%}{{cIdx}}{%endraw%}</label>
+	    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].text" />
+	    </div>
+	    <div class="col">
+	    	<label>Choice Value</label>
+	    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].value" />
+	    </div>
+	    <div class="col">
+	    	<label>Choice System</label>
+	    	<select name="questions[{%raw%}{{qIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].system">
+	    		<option value="integer">integer</option>
+	    		<option value="boolean">boolean</option>
+	    		<option value="decimal">decimal</option>
+	    		<option value="string">string</option>
+	    	</select>
+	    </div>
+    </div>
+    <div class="row control">
+		<span class="spacer"></span>
+		<button id="btnAddChoice{%raw%}{{qIdx}}{%endraw%}" type="button" class="small blue" onclick="addChoice({%raw%}{{qIdx}}{%endraw%})">Add choice</button>
+	</div>
+	<hr>
+</script>
+<script type="text/template" id="tplHeaderChoice">
+    <div class="row">
+    	<div class="col">
+	    	<label>Choice Text {%raw%}{{qIdx}}{%endraw%}-{%raw%}{{subQIdx}}{%endraw%}-{%raw%}{{cIdx}}{%endraw%}</label>
+	    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].questions[{%raw%}{{subQIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].text" />
+	    </div>
+	    <div class="col">
+	    	<label>Choice Value</label>
+	    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].questions[{%raw%}{{subQIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].value" />
+	    </div>
+	    <div class="col">
+	    	<label>Choice System</label>
+	    	<select name="questions[{%raw%}{{qIdx}}{%endraw%}].questions[{%raw%}{{subQIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].system">
+	    		<option value="integer">integer</option>
+	    		<option value="boolean">boolean</option>
+	    		<option value="decimal">decimal</option>
+	    		<option value="string">string</option>
+	    	</select>
+	    </div>
+    </div>
+</script>
+<script type="text/template" id="tplChoice">
+    <div class="row">
+    	<div class="col">
+	    	<label>Choice Text {%raw%}{{qIdx}}{%endraw%}-{%raw%}{{cIdx}}{%endraw%}</label>
+	    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].text" />
+	    </div>
+	    <div class="col">
+	    	<label>Choice Value</label>
+	    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].value" />
+	    </div>
+	    <div class="col">
+	    	<label>Choice System</label>
+	    	<select name="questions[{%raw%}{{qIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].system">
+	    		<option value="integer">integer</option>
+	    		<option value="boolean">boolean</option>
+	    		<option value="decimal">decimal</option>
+	    		<option value="string">string</option>
+	    	</select>
+	    </div>
+    </div>
+</script>
+<script type="text/javascript">
+	var _subQIdx = 0,
+		_qIdx = 0,
+		_cIdx = 0;
+	var promiseXHR = function(method, url, statusOK, data) {
+	    var promise = new RSVP.Promise(function(resolve, reject) {
+	        var client = new XMLHttpRequest();
+	        statusOK = statusOK ? statusOK : 200;
+	        client.open(method, url);
+	        client.onreadystatechange = function handler() {
+	            if (this.readyState === this.DONE) {
+	                if (this.status === statusOK) {
+	                    resolve(this.response);
+	                } else {
+	                    reject(this);
+	                }
+	            }
+	        };
+	        client.send(data ? data : null);
+	    });
+
+	    return promise;
+	};
+
+	function addHeaderQuestion(){
+		var elt = document.querySelector("#tplHeaderQuestion").innerHTML;
+	    var modelData = { qIdx: ++_qIdx, subQIdx: ++_subQIdx, cIdx: ++_cIdx};
+	    var html = Mustache.render(elt, modelData);
+	    var div = document.createElement("div");
+	    div.innerHTML = html;
+	    var button = document.querySelector("#addSimple");
+	    button.parentNode.parentNode.insertBefore( div , button.parentNode );
+	};
+
+	function addHeaderNewQuestion(questionIdx){
+		var elt = document.querySelector("#tplHeaderNewQuestion").innerHTML;
+	    var modelData = { qIdx: questionIdx, subQIdx: ++_subQIdx, cIdx: ++_cIdx};
+	    var html = Mustache.render(elt, modelData);
+	    var div = document.createElement("div");
+	    div.innerHTML = html;
+	    var btn = document.querySelector("#btnAddHeaderQuestion"+questionIdx);
+	    btn.parentNode.parentNode.insertBefore( div, btn.parentNode );
+	};
+
+	function addSimpleQuestion(){
+		var elt = document.querySelector("#tplSimpleQuestion").innerHTML;
+	    var modelData = { qIdx: ++_qIdx, cIdx: ++_cIdx};
+	    var html = Mustache.render(elt, modelData);
+	    var div = document.createElement("div");
+	    div.innerHTML = html;
+	    var button = document.querySelector("#addSimple");
+	    button.parentNode.parentNode.insertBefore( div , button.parentNode );
+	};
+
+	function addHeaderChoice(questionIdx){
+		var elt = document.querySelector("#tplHeaderChoice").innerHTML;
+	    var modelData = { qIdx: questionIdx, subQIdx: _subQIdx, cIdx: ++_cIdx};
+	    var html = Mustache.render(elt, modelData);
+	    var div = document.createElement("div");
+	    div.innerHTML = html;
+	    var btn = document.querySelector("#btnAddHeaderChoice"+questionIdx);
+	    btn.parentNode.parentNode.insertBefore( div, btn.parentNode );
+	};
+
+	function addChoice(questionIdx){
+		var elt = document.querySelector("#tplChoice").innerHTML;
+	    var modelData = { qIdx: questionIdx, cIdx: ++_cIdx};
+	    var html = Mustache.render(elt, modelData);
+	    var div = document.createElement("div");
+	    div.innerHTML = html;
+	    var btn = document.querySelector("#btnAddChoice"+questionIdx);
+	    btn.parentNode.parentNode.insertBefore( div, btn.parentNode );
+	};
+
+	function saveForm(){
+		console.log("saveForm");
+		var obj = form2js(document.forms.newQ);
+		console.log("res", obj);
+
+		promiseXHR("POST", "/api/questionnaires", 200, JSON.stringify(obj)).then(function(response) {
+            alert("SUCCESS");
+        }, function(error) {
+            alert("FAILED");
+            console.log("saveForm - error: ", error);
+        });
+	};
+</script>
+<div class="mainContainer">
+	<form name="newQ" autocomplete="off" onsubmit="saveForm(); return false;">
+		<div class="row">
+			<div class="col">
+				<label>Questionnaire name</label>
+				<input type="text" name="name" />
+			</div>
+			<div class="col">
+				<label>Questionnaire text</label>
+				<input type="text" name="text" />
+			</div>
+		</div>
+		<hr>
+		<div class="row control">
+			<span class="spacer"></span>
+			<button id="addHeader" type="button" class="blue" onclick="addHeaderQuestion()">New Header Question</button>
+			<button id="addSimple" type="button" class="blue" onclick="addSimpleQuestion()">New Simple Question</button>
+		</div>
+		<div class="row control">
+			<span class="spacer"></span>
+			<button type="button" class="red" onclick="window.history.back()">Cancel</button>
+			<button class="blue">Save</button>
+		</div>
+	</form>
+</div>
+{% endblock %}

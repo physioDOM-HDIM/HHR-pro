@@ -1,0 +1,15 @@
+div.col.hidden{
+    display: none;
+}
+
+.itemContainer{
+    margin-top: 10px;
+}
+
+.itemContainer:nth-child(even){
+    background: silver;
+}
+
+select[multiple]{
+    height: 100px;
+}

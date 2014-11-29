@@ -7,11 +7,15 @@ var restify = require("restify"),
 	program = require("commander"),
 	path    = require("path"),
 	Cookies = require("cookies"),
-	Logger = require("logger"),
+	Logger  = require("logger"),
+	I18n    = require("i18n-2"),
 	PhysioDOM = require("./lib/class/physiodom");
 
 var IDirectory = require('./lib/http/IDirectory'),
-	IBeneficiary = require('./lib/http/IBeneficiary');
+	IBeneficiary = require('./lib/http/IBeneficiary'),
+	ILists = require("./lib/http/ILists"),
+	IPage = require("./lib/http/IPage"),
+	IQuestionnaire = require("./lib/http/IQuestionnaire");
 
 var pkg     = require('../package.json');
 var logger = new Logger( "PhysioDOM App");
@@ -27,7 +31,7 @@ var cookieOptions = {
 program
 	.version(pkg.version)
 	.usage('[options] [dir]')
-	.option('-p, --port <port>', 'specify the port [3000]', Number, 3000)
+	.option('-p, --port <port>', 'specify the port [8001]', Number, 8001)
 	.parse(process.argv);
 
 /**
@@ -67,6 +71,13 @@ global.physioDOM = physioDOM;
 var server = restify.createServer({
 	name:    pkg.name,
 	version: pkg.version
+});
+
+I18n.expressBind(server, {
+	// setup some locales - other locales default to en silently
+	locales: physioDOM.lang,
+	// change the cookie name from 'lang' to 'locale'
+	cookieName: 'locale'
 });
 
 server.pre(function(req, res, next) {
@@ -130,15 +141,22 @@ server.use( function(req, res, next) {
 				req.session = session;
 			}
 			requestLog(req, res);
-			if( !req.session ){
-				if( req.url.match(/^(\/|\/api\/login)$/) ) {
+			if( !req.session ) {
+				cookies = new Cookies(req, res);
+				cookies.set('sessionID');
+				cookies.set('role');
+				if (req.url.match(/^(\/|\/api\/login|\/api\/logout|\/logout)$/)) {
+					// console.log("url match");
 					return next();
 				} else {
-					res.send(403, { error:403, message:"no session"} );
+					logger.info("redirect to home page");
+					res.header('Location', '/');
+					res.send(302);
 					return next(false);
 				}
+			} else {
+				return next();
 			}
-			return next();
 		});
 	});
 });
@@ -189,6 +207,58 @@ server.use(function checkAcl(req, res, next) {
 	*/
 });
 
+function apiLogin(req, res, next) {
+	logger.trace("apiLogin");
+	var body,cookies;
+
+	if( req.headers.authorization ) {
+		logger.debug("authorization header");
+		var token = req.headers.authorization.split(/\s+/).pop() || '';            // and the encoded auth token
+		var auth = new Buffer(token, 'base64').toString();    // convert from base64
+		var parts = auth.split(/:/);                          // split on colon
+		body = JSON.stringify({login: parts[0], password: parts[1]});
+	} else {
+		body = req.body?req.body.toString():"";
+	}
+
+	cookies = new Cookies(req, res);
+
+	try {
+		var user = JSON.parse( body );
+		if( !user.login || !user.password ) {
+			cookies.set('sessionID');
+			cookies.set('role');
+			logger.warning("no login or password");
+			res.send(403);
+			return next(false);
+		} else {
+			physioDOM.getAccountByCredentials(user.login, user.password )
+				.then( function(account) {
+					return account.createSession();
+				})
+				.then( function(session) {
+					cookies.set('sessionID', session.sessionID, cookieOptions);
+					cookies.set('role', session.role, { path: '/', httpOnly : false} );
+					res.send(200, { code:200, message:"logged" } );
+					return next();
+				})
+				.catch( function(err) {
+					logger.warning(err.message || "bad login or password");
+					cookies.set('sessionID');
+					cookies.set('role');
+					res.send( 403, {code:403, message:"bad credentials"} );
+					next();
+				});
+		}
+	} catch(err) {
+		logger.warning("bad json format");
+		cookies.set('sessionID');
+		cookies.set('role');
+		res.send(403, {code:403, message:"bad credentials"});
+		return next(false);
+	}
+}
+
 server.opts(/\.*/,function (req, res, next) {
 	var allowHeaders = ['Accept', 'Accept-Version', 'Content-Type', 'Api-Version','X-Api-Version', 'X-Request-Id',' X-Response-Time','X-Custom-Header'];
 	if (res.methods.indexOf('OPTIONS') === -1) {
@@ -219,20 +289,47 @@ server.get( '/api/beneficiaries/:entryID', IBeneficiary.getBeneficiary );
 server.put( '/api/beneficiaries/:entryID', IBeneficiary.updateBeneficiary );
 server.del( '/api/beneficiaries/:entryID', IBeneficiary.deleteBeneficiary );
 server.get( '/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryProfessionals );
-server.post( '/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryAddProfessional );
+server.post('/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryAddProfessional );
 server.del( '/api/beneficiaries/:entryID/professionals/:profID', IBeneficiary.beneficiaryDelProfessional );
 
-server.get('/api/sessions/', getSessions);
+server.get( '/api/sessions/', getSessions);
+
+server.get( '/api/lists', ILists.getLists );
+server.get( '/api/lists/:listName', ILists.getList );
+server.get( '/api/lists/:listName/translate', ILists.getListTranslate );
+server.put( '/api/lists/:listName', ILists.updateList );
+server.post('/api/lists/:listName', ILists.addItem );
+server.put( '/api/lists/:listName/:itemRef', ILists.translateItem );
+server.post('/api/lists/:listName/:itemRef', ILists.activateItem );
+
+//DEV ONLY for creation
+server.post( '/api/questionnaires', IQuestionnaire.createQuestionnaire);
+//DEV ONLY
 
 server.post('/api/login', apiLogin);
 server.get( '/api/logout', logout);
 server.get( '/logout', logout);
-server.post('/', login);
 
-server.get(/\/[^api\/]?$/, function(req, res, next) {
+server.get( '/beneficiaries', IPage.beneficiaries);
+server.get( '/beneficiary/create', IPage.beneficiaryCreate);
+server.get( '/beneficiary/edit/:beneficiaryID', IPage.beneficiaryCreate);
+server.get( '/beneficiary/update', IPage.beneficiaryCreate);
+server.get( '/beneficiary/:beneficiaryID', IPage.beneficiaryOverview);
+server.get( '/directory', IPage.directoryList);
+server.get( '/directory/create', IPage.directoryUpdate);
+server.get( '/directory/:professionalID', IPage.directoryUpdate);
+server.get( '/settings/listsManager', IPage.listsManager);
+server.get( '/settings/lists', IPage.lists);
+server.get( '/settings/lists/:listName', IPage.list);
+server.get( '/questionnaires', IPage.questionnaires);
+server.get( '/questionnaires/create', IPage.createQuestionnaire);
+server.get( '/questionnaire/:questionnaireName', IPage.questionnaireOverview);
+
+
+server.get(/\/[^api|components\/]?$/, function(req, res, next) {
 	logger.trace("index");
 	if( req.cookies.sessionID ) {
-		return readFile(path.join(DOCUMENT_ROOT, '/ui.htm'), req, res, next);
+		return IPage.ui( req, res, next);
 	} else {
 		return readFile(path.join(DOCUMENT_ROOT, '/index.htm'), req, res, next);
 	}
@@ -245,94 +342,9 @@ server.listen(program.port, "127.0.0.1", function() {
 	logger.info(server.name + ' listening at '+ server.url);
 });
 
-function apiLogin(req, res, next) {
-	logger.trace("apiLogin");
-	var body,cookies;
-	
-	if( req.headers.authorization ) {
-		logger.debug("authorization header");
-		var token = req.headers.authorization.split(/\s+/).pop() || '';            // and the encoded auth token
-		var auth = new Buffer(token, 'base64').toString();    // convert from base64
-		var parts = auth.split(/:/);                          // split on colon
-		body = JSON.stringify({login: parts[0], password: parts[1]});
-	} else {
-		body = req.body.toString();
-	}
-	
-	cookies = new Cookies(req, res);
-	
-	try {
-		var user = JSON.parse( body );
-		if( !user.login || !user.password ) {
-			cookies.set('sessionID');
-			cookies.set('role');
-			logger.warning("no login or password");
-			res.send(403);
-			return next(false);
-		} else {
-			physioDOM.getAccountByCredentials(user.login, user.password )
-				.then( function(account) {
-					return account.createSession();
-				})
-				.then( function(session) {
-					cookies.set('sessionID', session.sessionID, cookieOptions);
-					cookies.set('role', session.role, { path: '/', httpOnly : false} );
-					res.send(200, { code:200, message:"logged" } );
-					return next();
-				})
-				.catch( function(err) {
-					// logger.debug("err",err);
-					logger.warning(err.message || "bad login or password");
-					cookies.set('sessionID');
-					cookies.set('role');
-					res.send(err.code || 403, err);
-					return next(false);
-				});
-		}
-	} catch(err) {
-		logger.warning("bad json format");
-		cookies.set('sessionID');
-		cookies.set('role');
-		res.send(403);
-		return next(false);
-	}
-}
-
-function login(req,res,next) {
-	logger.trace("login",req.params);
-	var cookies = new Cookies(req, res);
-	
-	if( req.params.login && req.params.passwd) {
-		// check if an account exists and is active
-		physioDOM.getAccountByCredentials(req.params.login, req.params.passwd )
-			.then( function(account) {
-				return account.createSession();
-			})
-			.then( function(session) {
-				cookies.set('sessionID', session.sessionID, cookieOptions);
-				cookies.set('role', session.role, { path: '/', httpOnly : false});
-				var filepath = path.join(DOCUMENT_ROOT, '/ui.htm');
-				return readFile(filepath, req,res,next);
-			})
-			.catch( function(err) {
-				cookies.set('sessionID');
-				cookies.set('role');
-				res.header('Location', '/#401');
-				res.send(302);
-				return next();
-			});
-	} else {
-		cookies.set('sessionID');
-		cookies.set('role');
-		res.header('Location', '/#403');
-		res.send(302);
-		return next();
-	}
-}
-
 function logout(req, res, next ) {
 	var cookies = new Cookies(req, res);
-
+	logger.trace( "logout" );
 	physioDOM.deleteSession( cookies.get("sessionID") )
 		.catch( function(err) { 
 			console.log("Error ",err);
@@ -341,8 +353,10 @@ function logout(req, res, next ) {
 			cookies.set('sessionID');
 			cookies.set('role');
 			if(req.url.match(/^\/api/)) {
-				res.send(200);
+				// res.send(200);
+				res.send(403, { error:403, message:"no session"} );
 			} else {
+				logger.debug("redirect to /")
 				res.header('Location', '/');
 				res.send(302);
 			}
@@ -351,7 +365,7 @@ function logout(req, res, next ) {
 }
 
 function getSessions( req, res, next ) {
-	console.log("getSessions");
+	logger.trace("getSessions");
 	var pg = parseInt(req.params.pg,10) || 1;
 	var offset = parseInt(req.params.offset,10) || 10;
 	var sort = req.params.sort;
@@ -364,7 +378,7 @@ function getSessions( req, res, next ) {
 }
 
 function serveStatic(req,res,next) {
-	console.log("serveStatic");
+	logger.trace("serveStatic");
 	var uri      = require('url').parse(req.url).pathname;
 	var filepath = decodeURIComponent((uri==="/")?path.join(DOCUMENT_ROOT, '/index.htm'):path.join(DOCUMENT_ROOT, uri));
 	if(!filepath) {
@@ -373,7 +387,7 @@ function serveStatic(req,res,next) {
 
 	fs.exists(filepath, function(exists){
 		if(!exists){
-			console.log("error 404 : "+filepath);
+			logger.warning("error 404 : "+filepath);
 			send404(req,res,next);
 			return next();
 		}
@@ -424,10 +438,15 @@ var mimetypes = {
 };
 
 function readFile(filepath,req,res,next) {
-	console.log("readFile",filepath);
+	logger.trace("readFile",filepath);
 	var mimetype = mimetypes[require('path').extname(filepath).substr(1)];
 	var stats = fs.statSync(filepath);
-
+	
+	if(stats.isDirectory()) {
+		console.log("this is a directory");
+		res.send(405);
+		return next(false);
+	}
 	if(config.cache && req.headers['if-modified-since'] && (new Date(req.headers['if-modified-since'])).valueOf() === ( new Date(stats.mtime)).valueOf() ) {
 		res.statusCode = 304;
 		res.end();

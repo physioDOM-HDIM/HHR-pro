@@ -13,15 +13,16 @@ var beneficiarySchema = {
 		"name"         : {"$ref": "/HumanName", required:true},
 		"telecom": { "type":"array",item: { "$ref":"/Contact" } },
 		"birthdate"    : { type   : "string", format: "date", required: true },
-		"height"       : {type: "number"},
+		"size"         : {type: "number"},
 		"deceased"     : {type: "boolean"},
-		"address"      : {type: "array", "$ref": "/SimpleAddress"},
-		"gender": { type:"string", "enum": [ "F" , "M" ] , "required":true},
+		"address"      : {type: "array", item: {"$ref": "/SimpleAddress"} },
+		"gender"       : { type:"string", "enum": [ "F" , "M" ] , "required":true},
 		"maritalStatus": {type: "string", "enum": maritalStatus},
 		"active"       : {type: "boolean" },
 		"contact"      : {type: "array", "$ref": "/ContactPartner"},
-		"account"      : {"type": "object"},
+		"account"      : {type: "object"},
 		"socialID"     : {type: "string"},
+		"perimeter"    : {type:"string"},
 		"lifeCond"     : {
 			type:"object",
 			properties: {
@@ -40,9 +41,9 @@ var beneficiarySchema = {
 		"entry"        : {
 			type:"object",
 			properties: {
-				"demand"    : {type: "string", required:true},
+				"demand"    : {type: "string"},
 				"startDate" : {format: "date", required:true},
-				"plannedEnd": {format: "date", required:true},
+				"plannedEnd": {format: "date"},
 				"endDate"   : {format: "date"},
 				"comeFrom"  : {type: "string"}
 			},
@@ -54,13 +55,27 @@ var beneficiarySchema = {
 			items: {
 				type                  : "object",
 				"properties"          : {
-					"professionalID": {type: "object", required: true},
+					"professionalID": {type: "string", required: true},
 					"referent"      : {type: "boolean", required: true}
 				},
 				"additionalProperties": false
 			}
 		},
-		"validate"     : {type: "boolean", required: true }
+		"validate"     : {type: "boolean", required: true },
+		"diagnosis": {
+			type:"object",
+			properties:{
+				"general": { type:"string" },
+				"nutritional": { type:"string" },
+				"chronic": {
+					type:"object",
+					properties: {
+						main: { type: "string" }
+					}
+				}
+			},
+			"additionalProperties": false
+		}
 	},
 	"additionalProperties": false
 };

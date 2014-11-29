@@ -284,7 +284,7 @@ describe('Beneficiaries', function() {
 			resp.statusCode.should.equal(200);
 			item = JSON.parse(body);
 			for( var prop in item ) {
-				if(item.hasOwnProperty(prop)) {
+				if(item.hasOwnProperty(prop) && prop !== "address") {
 					item[prop].should.eql(entry1[prop]);
 				}
 			}
@@ -322,7 +322,7 @@ describe('Beneficiaries', function() {
 			resp.statusCode.should.equal(200);
 			var item = JSON.parse(body);
 			for( var prop in item ) {
-				if(item.hasOwnProperty(prop)) {
+				if(item.hasOwnProperty(prop) && prop !== "address") {
 					item[prop].should.eql(entry1[prop]);
 				}
 			}
@@ -426,6 +426,27 @@ describe('Beneficiaries', function() {
 			items.length.should.equal(1);
 			items[0].should.have.property("_id");
 			items[0]._id.should.equal("53fb2763b3371800000d42d1");
+			return done();
+		});
+	});
+	
+	it('adds a list of professionals', function( done ) {
+		var professionals = [
+			{ professionalID:"53fb2763b3371800000d42d1", referent: true },
+			{ professionalID:"544fa92fe16488ff804612d3", referent:false }
+		]
+		request({
+			url     : domain + '/api/beneficiaries/' + entry1._id + "/professionals",
+			method  : "POST",
+			jar     : sessionCookies[0],
+			headers : { "content-type":"text/plain"},
+			body    : JSON.stringify(professionals)
+		}, function (err, resp, body) {
+			should.not.exist(err);
+			resp.statusCode.should.equal(200);
+			var items = JSON.parse(body);
+			items.should.be.a("array");
+			items.length.should.equal(2);
 			return done();
 		});
 	});

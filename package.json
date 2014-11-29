@@ -1,7 +1,7 @@
 {
   "name": "PhysioDOM-server",
   "preferGlobal": false,
-  "version": "0.0.1",
+  "version": "0.0.3",
   "author": "Telecom Sante <tech@telecomsante.com>",
   "contributors": [
     {
@@ -16,6 +16,10 @@
     "test": "node ./test/index.js"
   },
   "main": "./server/server.js",
+  "bin": {
+    "restoreDB": "./bin/restoreDB",
+    "backupDB": "./bin/backupDB"
+  },
   "repository": {
     "type": "git",
     "url": "http://git.telecomsante.com/physiodom-hdim/physiodom"
@@ -24,13 +28,15 @@
     "MD5": "^1.2.1",
     "commander": "2.1.0",
     "cookies": "~0.5.0",
+    "i18n-2": "0.4.6",
     "jsonschema": "^1.0.0",
     "logger": "git+ssh://git@git.telecomsante.com:tools/logger.git#v1.1.0",
-    "moment": "2.5.1",
+    "moment": "2.8.4",
     "mongodb": "~1.4.7",
     "restify": "2.6.3",
     "rsvp": "3.0.9",
-    "swig": "^1.4.2"
+    "swig": "^1.4.2",
+    "tar.gz": "^0.1.1"
   },
   "devDependencies": {
     "chai": "^1.9.2",
@@ -65,7 +71,6 @@
     "newcap": true,
     "browser": true,
     "camelcase": true,
-    "node":true,
-    "expr":true
+    "expr": true
   }
 }

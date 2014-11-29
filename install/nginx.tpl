@@ -17,8 +17,12 @@ server {
 
     access_log  {{logDir}}/access.log;
     error_log   {{logDir}}/error.log;
+
+    location ~ (index\.htm|ui\.htm) {
+        return 301 /;
+    }
   
-    location ~  \.(jpeg|gif|png|ico|css|zip|tgz|gz|rar|bz2|pdf|txt|tar|wav|bmp|rtf|js|flv|swf|html|htm|woff)$ {
+    location ~  \.(jpeg|gif|png|ico|css|zip|tgz|gz|rar|bz2|pdf|txt|tar|wav|bmp|rtf|js|flv|swf|html|htm|woff|woff2)$ {
         # access_log off;
         expires max;
         root {{rootDir}};

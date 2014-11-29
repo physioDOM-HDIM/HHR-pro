@@ -1,0 +1,51 @@
+{% extends './page.htm' %}
+
+{% block title %}{{ "Lists management"|i18n }}{% endblock %}
+
+{% block head %}
+{% parent %}
+<script src="/bower_components/mustache/mustache.js"></script>
+<script src="/bower_components/form2js/src/form2js.js"></script>
+<script src="/bower_components/rsvp/rsvp.min.js"></script>
+<link rel="stylesheet" href="/styles/listsManager.css" charset="UTF-8" />
+<script src="/tpl/listsManager.js"></script>
+{% endblock %}
+
+{% block content %}
+<style>
+	div.row { height:30px; }
+	div.row.title { height:40px; background:rgb(80, 80, 80); color:white; padding:0px 10px; margin-bottom:20px; }
+	label.title { font-size:1.3em; width:initial !important }
+</style>
+<div class="row title"><label class="title">{{ "Lists"|i18n }}</label></div>
+<style>
+	ul {
+		padding: 0px;
+		
+		-webkit-column-count: 2;
+		-webkit-column-gap: 10px;
+		-webkit-column-rule: 1px solid LightGray;
+
+		-moz-column-count: 2;
+		-moz-column-gap: 10px;
+		-moz-column-rule: 1px solid LightGray;
+		
+		column-count: 2;
+		column-gap: 10px;
+		column-rule: 1px solid LightGray;
+	}
+	ul li {
+		height:30px;
+		line-height:30px;
+		padding-left:10px;
+	}
+	ul li:hover {
+		background: lightgray;
+	}
+</style>
+<ul>
+	{% for list in lists.items %}
+	<a href="/settings/lists/{{list.name}}"><li>{{list.name}}</li></a>
+	{% endfor%}
+</ul>
+{% endblock %}
