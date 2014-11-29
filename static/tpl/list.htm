@@ -1,0 +1,277 @@
+{% extends './page.htm' %}
+
+{% block title %}{{ "Lists management"|i18n }}{% endblock %}
+
+{% block head %}
+{% parent %}
+<script src="/bower_components/mustache/mustache.js"></script>
+<script src="/bower_components/form2js/src/form2js.js"></script>
+<script src="/bower_components/rsvp/rsvp.min.js"></script>
+<link rel="stylesheet" href="/styles/listsManager.css" charset="UTF-8" />
+<script src="/tpl/listsManager.js"></script>
+{% endblock %}
+
+{% block content %}
+<style>
+	div.row { height:30px; }
+	div.row.title { height:40px; background:rgb(80, 80, 80); color:white; padding:0px 10px; margin-bottom:20px; }
+	label.title { font-size:1.3em; width:initial !important }
+	/*
+	div.main { height: 100%; padding-bottom: 0px;}
+	div.content { flex: 1; overflow: auto; padding-bottom:30px}
+	footer { background: silver; height: 50px; padding: 0px 10px; display: flex; align-items: center; box-sizing: border-box; }
+	*/
+	zdk-modal footer {
+		height: 50px;
+		display: flex;
+		align-items: center;
+	}
+	zdk-modal .content {
+		flex: 1;
+		overflow: auto;
+	}
+	zdk-modal#debug .modalContainer {
+		height: 500px;
+		display: flex;
+		flex-direction: column;
+	}
+</style>
+<div class="row title">
+	<label class="title">{{list.name}}</label>
+	<span class="spacer"></span>
+	<label>{{ "Language"| i18n }} :</label>
+	<select name="lang" id="lang" onchange="update(); showLang()">
+		{% for item in communication.items %}
+		<option value="{{item.value}}">{{item.label}}</option>
+		{% endfor %}
+	</select>
+</div>
+	
+<div class="content">
+	<div class="row">
+		<label>{{ "Editable"|i18n }}:</label>
+		<input type="checkbox" name="editable" value="true" {% if list.editable %}checked{% else %}disabled{% endif %} />
+	</div>
+	
+	<div class="row">
+		<label>{{ "Default reference"|i18n }}:</label>
+		<select name="defaultValue" {% if !list.editable %}disabled{% endif%}>
+			<option value="null" {% if list.defaultValue === null %}selected{% endif %}>{{ "-- No default value --"|i18n }}</option>
+			{% for item in list.items %}
+			<option value="{{item.ref}}" {% if list.defaultValue === item.ref %}selected{% endif %}>{{item.ref}}</option>
+			{% endfor %}
+		</select>
+	</div>
+	
+	<script type="template" id="tplItems">
+		{%raw%}{{#items}}{%endraw%}
+		<div class="item">
+			<div class="row">
+				<div class="col">
+					<label>{{ "Reference"|i18n }}:</label>
+					<input type="text" name="{% raw %}items[{{idx}}].ref{% endraw %}" value="{% raw %}{{ref}}{% endraw %}" {%raw%}{{^new}}disabled{{/new}}{%endraw%} required />
+				</div>
+				<div class="col">
+					<label>{{ "Active"|i18n }}:</label>
+					<input type="checkbox" name="{% raw %}items[{{idx}}].active{% endraw %}" value="true" {%raw%}{{#active}}checked{{/active}}{%endraw%}/>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<label>{{ "Label"|i18n }}:</label>
+					<input type="text" name="{% raw %}items[{{idx}}].label.{{lang}}{% endraw %}" value="{% raw %}{{label}}{% endraw %}" {% raw %}{{^editable}}disabled{{/editable}}{% endraw %} />
+				</div>
+			</div>
+			{% raw %}{{#service}}{% endraw %}
+			<div class="row">Provider roles <button type="button" class="small blue" onclick="editRole({% raw %}{{idx}},{{roles}}{{#new}},true{{/new}}{% endraw %})" >Edit</button></div>
+			<div class="row" style="padding-left:50px">
+				{% raw %}{{roleTypeCode}}{% endraw %}
+			</div>
+			{% raw %}{{/service}}{% endraw %}
+			{% raw %}{{#new}}{% endraw %}
+				<input type="hidden" name="{% raw %}items[{{idx}}].new{% endraw %}" value="true" />
+				<div class="row">
+					<span class="spacer"></span>
+					<button type="button" class="small red" onclick="deleteItem(this)">{{ "Delete" | i18n }}</button>
+				</div>
+			{% raw %}{{/new}}{% endraw %}
+		</div>
+		{%raw%}{{/items}}{%endraw%}
+	</script>
+	
+	<script type="template" id="tplItemsMeasure">
+		{%raw%}{{#items}}{%endraw%}
+		<div class="item">
+			<div class="row">
+				<div class="col">
+					<label>{{ "Reference"|i18n }}:</label>
+					<input type="text" name="{% raw %}items[{{idx}}].ref{% endraw %}" value="{% raw %}{{ref}}{% endraw %}" required />
+				</div>
+				<div class="col">
+					<label>{{ "Active"|i18n }}:</label>
+					<input type="checkbox" name="{% raw %}items[{{idx}}].active{% endraw %}" value="true" {%raw%}{{#active}}checked{{/active}}{%endraw%} />
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<label>{{ "Label"|i18n }}:</label>
+					<input type="text" name="{% raw %}items[{{idx}}].label.{{lang}}{% endraw %}" value="{% raw %}{{label}}{% endraw %}" />
+				</div>
+				<div class="col">
+					<label>{{ "Unit"|i18n }}:</label>
+					<select name="{% raw %}items[{{idx}}].unity{% endraw %}">
+						{% raw %}
+						{{#units}}
+						<option value="{{value}}" {{#selected}}selected{{/selected}} >{{label}}</option>
+						{{/units}}
+						{% endraw %}
+					</select>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<label>{{ "Automatic input"|i18n }}:</label>
+					<input type="checkbox" name="{% raw %}items[{{idx}}].autoInput{% endraw %}" value="true" {%raw%}{{#autoInput}}checked{{/autoInput}}{%endraw%} />
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<label>{{ "Threshold Min"|i18n }}:</label>
+					<input type="text" name="{% raw %}items[{{idx}}].threshold.min{% endraw %}" value="{% raw %}{{threshold.min}}{% endraw %}"/>
+				</div>
+				<div class="col">
+					<label>{{ "Threshold Max"|i18n }}:</label>
+					<input type="text" name="{% raw %}items[{{idx}}].threshold.max{% endraw %}" value="{% raw %}{{threshold.max}}{% endraw %}" />
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<label>{{ "Range Min"|i18n }}:</label>
+					<input type="text" name="{% raw %}items[{{idx}}].range.min{% endraw %}" value="{% raw %}{{range.min}}{% endraw %}" />
+				</div>
+				<div class="col">
+					<label>{{ "Range Max"|i18n }}:</label>
+					<input type="text" name="{% raw %}items[{{idx}}].range.max{% endraw %}" value="{% raw %}{{range.max}}{% endraw %}" />
+				</div>
+			</div>
+			{% raw %}{{#new}}{% endraw %}
+			<div class="row control itemBtnContainer">
+				<input type="hidden" name="{% raw %}items[{{idx}}].new{% endraw %}" value="true" />
+				<span class="spacer"></span>
+				<button type="button" class="small red" onclick="deleteItem(this)">{{ "Delete"|i18n }}</button>
+			</div>
+			{% raw %}{{/new}}{% endraw %}
+		</div>
+		{%raw%}{{/items}}{%endraw%}
+	</script>
+	
+	<script type="template" id="tplJobs">
+		<div class="row">
+			<p>{{ "Choose all providers roles"|i18n }}</p>
+		</div>
+		<div style="height:300px; overflow:auto" id="jobList">
+			<form name="providers" autocomplete="off" onsubmit="AddProvidersRoles(); return false;">
+				<input type="hidden" name="itemref" value="{% raw %}{{itemref}}{% endraw %}" />
+				<input type="hidden" name="itemnew" value="{% raw %}{{itemnew}}{% endraw %}" />
+				{%raw%}{{#items}}{%endraw%}
+				<div class="item">
+					<div class="row">
+						<div>
+							<input type="checkbox" id="{% raw %}{{ref}}{% endraw %}" name="{% raw %}items[{{ref}}]{% endraw %}" value="{% raw %}{{ref}}{% endraw %}" {%raw%}{{#check}}checked{{/check}}{%endraw%} />
+							<label for="{% raw %}{{ref}}{% endraw %}">{% raw %}{{label}}{% endraw %}</label>
+						</div>
+					</div>
+				</div>
+				{%raw%}{{/items}}{%endraw%}
+			</form>
+		</div>
+		</div>
+		<div class="modalButtonContainer">
+			<button type="button" class="red" onclick="closeRoles()">{{ "Cancel"|i18n }}</button>
+			<button class="blue" onclick="addRoles()">{{ "Add"|i18n }}</button>
+		</div>
+	</script>
+		
+	<form name="items" autocomplete="off" onsubmit="return false;">
+		<div id="items">
+			<!-- template are renderred here -->
+		</div>
+		<div id="newItems" style="margin:20px 0px">
+			
+		</div>
+		{% if list.editable %}
+		<div class="row" style="margin-bottom:20px">
+			<span class="spacer"></span>
+			<button type="button" class="blue" onclick="addItem(this)">{{ "New item"|i18n }}</button>
+		</div>
+		{% endif %}
+	</form>
+</div>
+<footer>
+	<div class="row">
+		<span class="spacer"></span>
+		<button type="button" class="red" onclick="window.history.back(1)">{{ "Cancel"|i18n }}</button>
+		<button class="blue" onclick="save()">{{ "Save"|i18n }}</button>
+	</div>
+</footer>
+	
+<zdk-modal width="450" id="editRole" closebutton="false">
+	<div class="modalContainer">
+		<div class="modalTitleContainer">{{ "providers role"|i18n }}</div>
+		<div class="modalContentContainer">
+			<!-- here come the content of the template tplJobs -->
+		</div>
+	</div>
+</zdk-modal>
+	
+<zdk-modal id="statusModal" closebutton="false">
+	<div class="modalContainer">
+		<div class="modalTitleContainer"></div>
+		<div class="modalContentContainer"></div>
+		<div class="modalButtonContainer"></div>
+	</div>
+</zdk-modal>
+
+<zdk-modal id="debug" closebutton="false">
+	<div class="modalContainer">
+		<div class="content">
+			
+		</div>
+		<footer>
+			<span class="spacer"></span>
+			<button class="green" onclick="document.querySelector('zdk-modal#debug').hide()">Close</button>
+		</footer>
+	</div>
+</zdk-modal>
+	
+<div class="hidden">
+	<div id="trad_save">{{ "Save"|i18n }}</div>
+	<div id="trad_success">{{ "Success"|i18n }}</div>
+	<div id="trad_error">{{ "Error"|i18n }}</div>
+	<div id="trad_confirm_save">{{ "Are you sure you want to save this part ?"|i18n }}</div>
+	<div id="trad_success_update">{{ "Item successfully updated"|i18n }}</div>
+	<div id="trad_error_occured">{{ "An error occured"|i18n }}</div>
+	<div id="trad_error_ref">{{ "Some values already exists"|i18n }}</div>
+	<div id="trad_yes">{{ "Yes"|i18n }}</div>
+	<div id="trad_no">{{ "No"|i18n }}</div>
+	<div id="trad_ok">{{ "OK"|i18n }}</div>
+</div>
+
+<script>
+	promiseXHR("GET","/api/lists/unity")
+		.then( function(response) {
+			units = JSON.parse(response);
+		})
+		.then( function() {
+			return promiseXHR("GET", "/api/lists/job");
+		})
+		.then( function(response) {
+			jobs = JSON.parse(response);
+			return promiseXHR("GET", "/api/lists/{{list.name}}");
+		})
+		.then( function(response) {
+			list = JSON.parse(response);
+			showLang();
+		});
+</script>
+{% endblock %}
