@@ -25,6 +25,7 @@ header.hdr {
 	padding:10px;
 }
 
+/*
 footer {
 	position:absolute;
 	height: 30px;
@@ -37,6 +38,7 @@ footer {
 footer + section {
 	bottom:30px;
 }
+*/
 
 .navbtn button {
 	border:none;
@@ -123,6 +125,8 @@ a { text-decoration: none; color: inherit; }
 	border-bottom: 1px solid black;
 }
 
+ul { overflow: auto; }
+
 /* ul tree list */
 ul.tree {
 	list-style-type: none;
@@ -180,6 +184,7 @@ div.row {
 	display:-webkit-flex; 
 	display: -ms-flexbox; 
 	display:flex; 
+	-webkit-align-items: center;
 	align-items: center;
 	box-sizing: border-box;
 }
@@ -273,11 +278,18 @@ button {
 .blue { background:#428bca; color:white; }
 .red { background:crimson; color:white; }
 .green { background:ForestGreen ; color:white; }
+/*
 button.small { 
 	font-size: 12px; 
 	height:2em; 
 	min-width:20px;
 	padding:5px;
+}
+*/
+button.small {
+	min-width: 50px;
+	font-size: 75%;
+	height: 75%;
 }
 button[disabled] { 
 	color:darkgray; 
@@ -317,6 +329,28 @@ div.item > span {
 .collabel { -webkit-flex:1; -ms-flex:1; flex:1 }
 .colcontent { -webkit-flex:2; -ms-flex:2; flex:2 }
 .spacer { -webkit-flex:1; -ms-flex:1; flex:1; display:inline-block; }
+
+ul.admin {
+	background: orangered;
+	margin:0px;
+	height: 150px;
+}
+
+div[drawer] {
+	display:-ms-flexbox; 
+	display:-webkit-flex;
+	display: flex;
+	-webkit-flex-direction: column;
+	-ms-flex-direction: column;
+	flex-direction: column;
+}
+
+div[drawer] ul.menu {
+	-webkit-flex:1;
+	-ms-flex:1;
+	flex:1;
+	overflow: auto;
+}
 
 .bold{
 	font-weight: bold;

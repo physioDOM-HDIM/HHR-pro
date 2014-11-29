@@ -296,6 +296,7 @@ server.get( '/api/sessions/', getSessions);
 server.get( '/api/lists', ILists.getLists );
 server.get( '/api/lists/:listName', ILists.getList );
 server.get( '/api/lists/:listName/translate', ILists.getListTranslate );
+server.put( '/api/lists/:listName', ILists.updateList );
 server.post('/api/lists/:listName', ILists.addItem );
 server.put( '/api/lists/:listName/:itemRef', ILists.translateItem );
 server.post('/api/lists/:listName/:itemRef', ILists.activateItem );
@@ -313,6 +314,10 @@ server.get( '/beneficiary/:beneficiaryID', IPage.beneficiaryOverview);
 server.get( '/directory', IPage.directoryList);
 server.get( '/directory/create', IPage.directoryUpdate);
 server.get( '/directory/:professionalID', IPage.directoryUpdate);
+server.get( '/settings/listsManager', IPage.listsManager);
+server.get( '/settings/lists', IPage.lists);
+server.get( '/settings/lists/:listName', IPage.list);
+
 
 server.get(/\/[^api|components\/]?$/, function(req, res, next) {
 	logger.trace("index");

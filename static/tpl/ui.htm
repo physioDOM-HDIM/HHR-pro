@@ -132,7 +132,7 @@
 
 <core-drawer-panel responsiveWidth="992px">
 	<div drawer>
-		<ul class="tree">
+		<ul class="tree menu">
 			<li class="menuitem"><a href="/beneficiaries" target="main">Select beneficiary</a></li>
 			<li class="menuitem"><a href="/beneficiary/overview" target="main">Beneficiary overview</a></li>
 			<li class="collapsed">
@@ -171,7 +171,11 @@
 			</li>
 			<li class="menuitem"><a href="/directory" target="main">Directory</a></li>
 		</ul>
-
+		{% if admin %}
+		<ul class="admin tree">
+			<li class="menuitem"><a href="/settings/lists" target="main">Lists management</a></li>
+		</ul>
+		{% endif %}
 	</div>
 	<div main>
 		<iframe name="main" src="/beneficiaries" scrolling="no"></iframe>
@@ -209,6 +213,11 @@
 	function toggleDrawer() {
 		var drawer = document.querySelector("core-drawer-panel");
 		drawer.togglePanel();
+	}
+	
+	function closeDrawer() {
+		var drawer = document.querySelector("core-drawer-panel");
+		drawer.closeDrawer();
 	}
 </script>
 </body>

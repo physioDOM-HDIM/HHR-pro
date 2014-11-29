@@ -1,6 +1,50 @@
 /* jslint node:true */
 "use strict";
 
+// @todo:  get roleTypeCode list from database
+var roleTypeCode = [
+	"203BC0100Y",
+	"111N00000N",
+	"122300000N",
+	"203BD0300N",
+	"203BG0100Y",
+	"203BG0000Y",
+	"203BS0100Y",
+	"203BG0400N",
+	"291U00000N",
+	"203BN0400Y",
+	"163W00000N",
+	"133N00000N",
+	"203BX0100Y",
+	"203BS0106Y",
+	"203BX0600Y",
+	"183500000N",
+	"203BP0400Y",
+	"261QP1100N",
+	"203BP0800Y",
+	"203BP1003Y",
+	"203BR0200Y",
+	"203BU0100Y",
+	"2514H0200N",
+	"MEALDELIV",
+	"DEVIDELIV",
+	"HOMESERV",
+	"COORD"
+];
+module.exports.roleTypeCode = roleTypeCode;
+
+// @todo:  get unity list from database
+var unity = [
+	"cm",
+	"m",
+	"km",
+	"kg",
+	"%",
+	"°C",
+	"Steps/week"
+];
+module.exports.unity = unity;
+
 // @todo:  get job list from database
 var job = [
 	"administrator",

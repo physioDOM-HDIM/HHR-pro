@@ -129,6 +129,38 @@ function List() {
 	};
 
 	/**
+	 * Update the list
+	 * 
+	 * `updatedEntry` is a full object that replace the old one
+	 * 
+	 * @param updatedEntry
+	 * @returns {promise}
+	 */
+	this.update = function( updatedEntry ) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("update");
+			if( that._id.toString() !== updatedEntry._id ) {
+				logger.warning("not same beneficiary");
+				throw { code:405, message:"not same list"};
+			}
+			updatedEntry._id = that._id;
+			var check = listSchema.validator.validate( updatedEntry, { "$ref":"/List"} );
+			if( check.errors.length ) {
+				 return reject( { code:405, message:"bad format", detail: check.errors });
+			}
+
+			for (var key in updatedEntry) {
+				if (key !== "_id" && updatedEntry.hasOwnProperty(key)) {
+					that[key] = updatedEntry[key];
+				}
+			}
+			that.save();
+			resolve(that);
+		});
+	};
+
+	/**
 	 * Add an item object to the list
 	 * 
 	 * The list must be editable, if the item already exists it's updated
@@ -146,25 +178,29 @@ function List() {
 			if( that.editable === false ) {
 				return reject( {code:405, message:"list not editable"});
 			}
-			var check = listSchema.validate( item, { "$ref":'/ListItem' } );
-			if( check.errors.length ) {
-				reject( { code:405, message:"bad format", detail: check.errors });
-			} else {
-				var indx = -1;
-				item.active = true;   // adding an item automatically active it
-				that.items.forEach( function(listItem , i) {
-					if( listItem.ref === item.ref ) {
-						indx = i;
-					}
-				});
-				if( indx !== -1) {
-					// update the item
-					that.items[indx] = item;
-				} else {
-					that.items.push( item );
+			var check = listSchema.validate( item, { "$ref":'/ListItem_Basic' } );
+			if(check.errors.length){
+				check = listSchema.validate( item, { "$ref":'/ListItem_Measurable' } );
+				if( check.errors.length ) {
+					return reject( { code:405, message:"bad format", detail: check.errors });
 				}
-				resolve( that );
 			}
+
+			var indx = -1;
+			item.active = true;   // adding an item automatically active it
+			that.items.forEach( function(listItem , i) {
+				if( listItem.ref === item.ref ) {
+					indx = i;
+				}
+			});
+			if( indx !== -1) {
+				// update the item
+				that.items[indx] = item;
+			} else {
+				that.items.push( item );
+			}
+			resolve( that );
+
 			return that.save();
 		});
 	};

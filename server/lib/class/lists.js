@@ -26,15 +26,22 @@ function Lists( ) {
 	/**
 	 * Get a list of all lists managed in the database
 	 * 
+	 * if allData is true, the method resolve with all data of the lists
+	 * otherwise return only the name and editable fields of each list.
+	 * 
 	 * @param pg
 	 * @param offset
+	 * @param allData
 	 * @returns {*}
 	 */
-	this.getLists = function(pg, offset) {
+	this.getLists = function(pg, offset, allData) {
 		logger.trace("getLists");
-		var cursor = physioDOM.db.collection("lists").find({}, {name:1, editable:1});
-		var cursorSort = {};
-		cursor = cursor.sort( cursorSort );
+		var projection = {name:1, editable:1};
+		if(allData){
+			projection = {};
+		}
+		var cursor = physioDOM.db.collection("lists").find({}, projection);
+		cursor = cursor.sort( {name:1} );
 		return dbPromise.getList(cursor, pg, offset);
 	};
 
@@ -61,7 +68,7 @@ function Lists( ) {
 					}
 				})
 				.then( function(list) {
-					// logger.debug("list "+listName, list);
+					 logger.debug("list "+listName, list);
 					resolve(list);
 				})
 				.catch( function(err) {
