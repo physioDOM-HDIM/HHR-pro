@@ -19,6 +19,9 @@ var swig = require("swig"),
     promise = RSVP.Promise,
     moment = require("moment"),
     ObjectID = require("mongodb").ObjectID;
+// var DOCUMENTROOT= "/home/http/physiodom";
+var DOCUMENTROOT=require("path").join(__dirname,"../../../");
+
 var logger = new Logger("IPage");
 var i18n = new(require('i18n-2'))({
     // setup some locales - other locales default to the first locale
@@ -96,7 +99,7 @@ function IPage() {
                         firstname: session.person.item.name.given.slice(0, 1).toUpperCase(),
                         lastname: session.person.item.name.family
                     };
-                html = swig.renderFile('./static/tpl/ui.htm', data, function(err, output) {
+                html = swig.renderFile(DOCUMENTROOT+'/static/tpl/ui.htm', data, function(err, output) {
                     if (err) {
                         console.log("error", err);
                         console.log("output", output);
@@ -139,7 +142,7 @@ function IPage() {
                 lists.forEach(function(list) {
                     data[Object.keys(list)] = list[Object.keys(list)];
                 });
-                html = swig.renderFile('./static/tpl/directory.htm', data, function(err, output) {
+                html = swig.renderFile(DOCUMENTROOT+'/static/tpl/directory.htm', data, function(err, output) {
                     if (err) {
                         console.log("error", err);
                         console.log("output", output);
@@ -199,7 +202,7 @@ function IPage() {
                 if (professional) {
                     data.professional = professional;
                 }
-                html = swig.renderFile('./static/tpl/directoryUpdate.htm', data, function(err, output) {
+                html = swig.renderFile(DOCUMENTROOT+'/static/tpl/directoryUpdate.htm', data, function(err, output) {
                     if (err) {
                         console.log("error", err);
                         console.log("output", output);
@@ -289,7 +292,7 @@ function IPage() {
 					data.beneficiary.professionals = professionals;
 				}
 
-                html = swig.renderFile("./static/tpl/beneficiaryCreate.htm", data, function(err, output) {
+                html = swig.renderFile(DOCUMENTROOT+'/static/tpl/beneficiaryCreate.htm', data, function(err, output) {
                     if (err) {
                         console.log("error", err);
                         console.log("output", output);
@@ -330,7 +333,7 @@ function IPage() {
                     data.perimeter = list;
                 }
 
-                html = swig.renderFile('./static/tpl/beneficiaries.htm', data, function(err, output) {
+                html = swig.renderFile(DOCUMENTROOT+'/static/tpl/beneficiaries.htm', data, function(err, output) {
                     if (err) {
                         console.log("error", err);
                         console.log("output", output);
@@ -382,7 +385,7 @@ function IPage() {
 			})
 			.then( function (beneficiary) {
 				data.beneficiary = beneficiary;
-				html = swig.renderFile('./static/tpl/beneficiaryOverview.htm', data, function (err, output) {
+				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/beneficiaryOverview.htm', data, function (err, output) {
 					if (err) {
 						console.log("error", err);
 						console.log("output", output);
@@ -438,7 +441,7 @@ function IPage() {
                         data.lang = lang;
                         // logger.debug("DATA", data);
 
-                        html = swig.renderFile('./static/tpl/listsManager.htm', data, function(err, output) {
+                        html = swig.renderFile(DOCUMENTROOT+'/static/tpl/listsManager.htm', data, function(err, output) {
                             if (err) {
                                 console.log("error", err);
                                 console.log("output", output);
@@ -492,7 +495,7 @@ function IPage() {
                         data.lang = lang;
                         //logger.debug("DATA", data);
 
-                        html = swig.renderFile('./static/tpl/lists.htm', data, function (err, output) {
+                        html = swig.renderFile(DOCUMENTROOT+'/static/tpl/lists.htm', data, function (err, output) {
                             if (err) {
                                 console.log("error", err);
                                 console.log("output", output);
@@ -549,7 +552,7 @@ function IPage() {
                         data.lang = lang;
                         logger.debug("DATA", data);
 
-                        html = swig.renderFile('./static/tpl/list.htm', data, function (err, output) {
+                        html = swig.renderFile(DOCUMENTROOT+'/static/tpl/list.htm', data, function (err, output) {
                             if (err) {
                                 console.log("error", err);
                                 console.log("output", output);
@@ -595,7 +598,7 @@ function IPage() {
             .then( function(questionnaires) {
                 data.questionnaires = questionnaires;
                 //logger.debug("DATA", data);
-                html = swig.renderFile('./static/tpl/questionnaireSelection.htm', data, function (err, output) {
+                html = swig.renderFile(DOCUMENTROOT+'/static/tpl/questionnaireSelection.htm', data, function (err, output) {
                     if (err) {
                         console.log("error", err);
                         console.log("output", output);
@@ -631,7 +634,7 @@ function IPage() {
             admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
         };
 
-        html = swig.renderFile('./static/tpl/questionnaireCreation.htm', null, function (err, output) {
+        html = swig.renderFile(DOCUMENTROOT+'/static/tpl/questionnaireCreation.htm', null, function (err, output) {
             if (err) {
                 console.log("error", err);
                 console.log("output", output);
@@ -667,7 +670,7 @@ function IPage() {
             .then( function(questionnaire) {
                 data.questionnaire = questionnaire;
                 //logger.debug("DATA", data);
-                html = swig.renderFile('./static/tpl/questionnaireOverview.htm', data, function (err, output) {
+                html = swig.renderFile(DOCUMENTROOT+'/static/tpl/questionnaireOverview.htm', data, function (err, output) {
                     if (err) {
                         console.log("error", err);
                         console.log("output", output);
