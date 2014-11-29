@@ -127,7 +127,9 @@ function IPage() {
         };
 
         var promises = [
-            "perimeter"
+            "perimeter",
+            "job",
+            "role"
         ].map(promiseList);
 
         RSVP.all(promises)
@@ -173,6 +175,7 @@ function IPage() {
 
         var promises = [
             "system",
+            "use",
             "role",
             "job",
             "communication"
@@ -236,6 +239,7 @@ function IPage() {
 			"use",
 			"wayOfLife",
 			"maritalStatus",
+            "disability",
 			"communication",
 			"profession",
 			"perimeter"
