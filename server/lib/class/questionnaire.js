@@ -58,8 +58,7 @@ function Questionnaire( ) {
 	function checkUniq( entry ) {
 		return new promise( function(resolve, reject) {
 			logger.trace("checkUniq");
-			// check that the entry have an email
-			
+
 			var filter = { name: entry.name };
 			if( entry._id ) {
 				filter._id = { "$ne": new ObjectID(entry._id) };

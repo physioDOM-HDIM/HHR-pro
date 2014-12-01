@@ -227,27 +227,110 @@
 		var obj = form2js(document.forms.newQ);
 		console.log("res", obj);
 
-		promiseXHR("POST", "/api/questionnaires", 200, JSON.stringify(obj)).then(function(response) {
+		/*promiseXHR("POST", "/api/questionnaires", 200, JSON.stringify(obj)).then(function(response) {
             alert("SUCCESS");
         }, function(error) {
             alert("FAILED");
             console.log("saveForm - error: ", error);
-        });
+        });*/
 	};
 </script>
+<style>
+	.answers{
+		margin-left: 30px;
+	}
+	.space{
+		width: 20%;
+		margin: 30px auto;
+		border-color: black;
+	}
+	.nestedQuestionnaire{
+		margin-left: 20px;
+	}
+</style>
+
+{% macro tpl(q, idx) %}
+	{% set name = "questions" %}
+	{% for key, val in idx %}
+		{% set name += "["+val+"]" %}
+		{% if !loop.last %}
+			{% set name += ".questions" %}
+		{% endif %}
+	{% endfor %}
+
+	{% if q.header %}
+		<div class="row">
+			<label class="bold">Question header: </label>
+			<input type="text" name="{{name}}.header.{{lang}}" value="{{q.header[lang]}}" />
+		</div>
+		<div class="row">
+			<label class="bold">Subscore: </label>
+			<input type="text" name="{{name}}.subscore" value="{{q.subscore}}" />
+		</div>
+		<hr>
+		{% for subQ in q.questions %}
+			{% set idx = idx|push(loop.index) %}
+			<div class="nestedQuestionnaire">
+				{{tpl(subQ, idx)}}
+			</div>
+			{% set idx = idx|pop() %}
+		{% endfor %}
+	{% else %}
+		<div class="row">
+			<label class="bold">Question: </label>
+			<input type="text" name="{{name}}.text.{{lang}}" value="{{q.text[lang]}}" />
+		</div>
+		<br/>
+	{% endif %}
+	{% for c in q.choice %}
+		<div class="row answers">
+			<div class="col">
+				<label>Choice Text</label>
+				<input type="text" name="{{name}}.choice[{{loop.index}}].text.{{lang}}" value="{{c.text[lang]}}" />
+			</div>
+			<div class="col">
+				<label>Choice Value</label>
+				<input type="text" name="{{name}}.choice[{{loop.index}}].value" value="{{c.value}}" />
+			</div>
+			<div class="col">
+				<label>Choice System</label>
+				<select name="{{name}}.choice[{{loop.index}}].system">
+		    		<option value="integer" {% if c.system === "integer" %}selected{% endif %}>integer</option>
+		    		<option value="boolean" {% if c.system === "boolean" %}selected{% endif %}>boolean</option>
+		    		<option value="decimal" {% if c.system === "decimal" %}selected{% endif %}>decimal</option>
+		    		<option value="string" {% if c.system === "string" %}selected{% endif %}>string</option>
+		    	</select>
+			</div>
+		</div>
+		{% if loop.last %}
+			<br/>
+		{% endif %}
+	{% endfor %}
+{% endmacro %}
+
 <div class="mainContainer">
 	<form name="newQ" autocomplete="off" onsubmit="saveForm(); return false;">
+		<input type="hidden" name="_id" value="{{questionnaire._id.toString()}}"/>
 		<div class="row">
 			<div class="col">
 				<label>Questionnaire name</label>
-				<input type="text" name="name" />
+				<input type="text" name="name" value="{{questionnaire.name}}"/>
 			</div>
 			<div class="col">
 				<label>Questionnaire text</label>
-				<input type="text" name="text" />
+				<input type="text" name="text.{{lang}}" value="{{questionnaire.text[lang]}}"/>
 			</div>
 		</div>
 		<hr>
+		{% for q in questionnaire.questions %}
+			<div class="itemContainer">
+				{% set number = "" %}
+				{{tpl(q, [loop.index])}}
+			</div>
+			{% if !loop.last %}
+				<hr class="space">
+			{% endif %}
+		{% endfor %}
 		<div class="row control">
 			<span class="spacer"></span>
 			<button id="addHeader" type="button" class="blue" onclick="addHeaderQuestion()">New Header Question</button>

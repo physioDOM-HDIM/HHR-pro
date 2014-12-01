@@ -37,7 +37,7 @@
 	{% endfor %}
 
 	{% if q.header %}
-		<div class="bold">{{idx|join("-")}} - {{q.header}}</div>
+		<div class="bold">{{idx|join("-")}} - {{q.header[lang]}}</div>
 		<input type="hidden" name="{{name}}.subscore" value="{{q.subscore}}" />
 		<hr>
 		{% for subQ in q.questions %}
@@ -49,7 +49,7 @@
 		{% endfor %}
 	{% else %}
 		<div class="row">
-			<div>{{idx|join("-")}} - {{q.text}}</div>
+			<div>{{idx|join("-")}} - {{q.text[lang]}}</div>
 		</div>
 		<br/>
 	{% endif %}
@@ -58,7 +58,7 @@
 			{% if !c.text %}
 				<input type="text" name="{{name}}.choice" required />
 			{% else %}
-				<label for="{{name}}.choice">{{c.text}}</label>
+				<label for="{{name}}.choice">{{c.text[lang]}}</label>
 				<input type="radio" name="{{name}}.choice" value="{{c.value}}" required />
 			{% endif %}
 		</div>

@@ -318,7 +318,8 @@ server.get( '/directory', IPage.directoryList);
 server.get( '/directory/create', IPage.directoryUpdate);
 server.get( '/directory/:professionalID', IPage.directoryUpdate);
 server.get( '/questionnaires', IPage.questionnaires);
-server.get( '/questionnaires/create', IPage.createQuestionnaire);
+server.get( '/questionnaire/create', IPage.createQuestionnaire);
+server.get( '/questionnaire/edit/:questionnaireName', IPage.createQuestionnaire);
 server.get( '/questionnaire/:questionnaireName', IPage.questionnaireOverview);
 
 
