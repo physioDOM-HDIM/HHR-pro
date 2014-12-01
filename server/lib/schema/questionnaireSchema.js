@@ -6,6 +6,7 @@ var questionnaireSchema = {
 	description : "questionnaire JSON Schema",
 	type: "object",
 	properties: {
+        "_id": { type:"object" },
 		"name": { type:"string", required:true, "description":"name of the questionnaire"},
         "text": {
             type:"object",

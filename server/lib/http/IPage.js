@@ -430,6 +430,7 @@ function IPage() {
 			})
 			.then( function(questionnaires) {
 				data.questionnaires = questionnaires;
+				data.lang = lang;
 				//logger.debug("DATA", data);
 				html = swig.renderFile('./static/tpl/questionnaireSelection.htm', data, function (err, output) {
 					if (err) {
@@ -468,10 +469,11 @@ function IPage() {
 
 		physioDOM.Questionnaires()
 			.then(function(questionnaires){
-				return questionnaires.getQuestionnaire(req.params.questionnaireName);
+				return questionnaires.getQuestionnaireByName(req.params.questionnaireName);
 			})
 			.then( function(questionnaire) {
 				data.questionnaire = questionnaire;
+				data.lang = lang;
 				//logger.debug("DATA", data);
 				html = swig.renderFile('./static/tpl/questionnaireOverview.htm', data, function (err, output) {
 					if (err) {
@@ -512,7 +514,7 @@ function IPage() {
 		physioDOM.Questionnaires()
 			.then(function(questionnaires){
 				if(req.params.questionnaireName){
-					return questionnaires.getQuestionnaire(req.params.questionnaireName);
+					return questionnaires.getQuestionnaireByName(req.params.questionnaireName);
 				}
 				return null;
 			})

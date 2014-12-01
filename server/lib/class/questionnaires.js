@@ -64,7 +64,7 @@ function Questionnaires( ) {
 	 * @param qName
 	 * @returns {promise}
 	 */
-	this.getQuestionnaire = function(qName) {
+	this.getQuestionnaireByName = function(qName) {
 		var that = this;
 		return new promise( function(resolve, reject) {
 			logger.trace("getQuestionnaire", qName);
@@ -85,6 +85,19 @@ function Questionnaires( ) {
 				}
 			});
 		});
+	};
+
+	/**
+	 * get a questionnaire by its id
+	 *
+	 * @param qName
+	 * @returns {promise}
+	 */
+	this.getQuestionnaireByID = function(entryID) {
+		logger.trace("getBeneficiaryByID", entryID);
+		var questionnaireByID = new ObjectID(entryID);
+		var questionnaire = new Questionnaire();
+		return questionnaire.getById(questionnaireByID);
 	};
 }
 
