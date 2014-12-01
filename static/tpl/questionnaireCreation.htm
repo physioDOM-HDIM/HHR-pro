@@ -222,6 +222,45 @@
 	    btn.parentNode.parentNode.insertBefore( div, btn.parentNode );
 	};
 
+	function _deleteHeaderQuestion(node){
+		console.log("_deleteHeaderQuestion");
+		while (!node.classList.contains("itemContainer")){
+    		node = node.parentNode;
+    	}
+    	node.parentNode.removeChild(node);
+	}
+	
+	function _deleteQuestion(node){
+		console.log("_deleteQuestion");
+		while (!node.classList.contains("nestedQuestionnaire")){
+    		node = node.parentNode;
+    	}
+    	node.parentNode.removeChild(node);
+	}
+
+	function _deleteChoice(node){
+		console.log("_deleteChoice");
+		while (!node.classList.contains("answers")){
+    		node = node.parentNode;
+    	}
+    	node.parentNode.removeChild(node);
+	}
+
+	function _addHeaderQuestion(node){
+		console.log("_addHeaderQuestion");
+		
+	}
+
+	function _addQuestion(node){
+		console.log("_addQuestion");
+		
+	}
+
+	function _addChoice(node){
+		console.log("_addChoice");
+		
+	}
+
 	function saveForm(){
 		console.log("saveForm");
 		var obj = form2js(document.forms.newQ);
@@ -234,6 +273,45 @@
             console.log("saveForm - error: ", error);
         });*/
 	};
+
+
+
+
+function init() {
+	console.log("init");
+    
+    //Event click management
+    document.forms.newQ.addEventListener("click", function(evt){
+    	var node = evt.target,
+    		cl = node.classList;
+
+    	if(node.tagName.toLowerCase() !== "button"){
+    		return;
+    	}
+
+    	if(cl.contains("deleteHeaderQuestion")){
+    		_deleteHeaderQuestion(node);
+    	}
+    	else if(cl.contains("addHeaderQuestion")){
+    		_addHeaderQuestion(node);
+    	}
+    	else if(cl.contains("addQuestion")){
+    		_addQuestion(node);
+    	}
+		else if(cl.contains("deleteQuestion")){
+    		_deleteQuestion(node);
+    	}
+    	else if(cl.contains("deleteChoice")){
+    		_deleteChoice(node);
+    	}
+    	else if(cl.contains("addChoice")){
+    		_addChoice(node);
+    	}
+
+    }, true);
+}
+
+window.addEventListener("DOMContentLoaded", init, false);
 </script>
 <style>
 	.answers{
@@ -267,6 +345,10 @@
 			<label class="bold">Subscore: </label>
 			<input type="text" name="{{name}}.subscore" value="{{q.subscore}}" />
 		</div>
+		<div class="row control">
+			<span class="spacer"></span>
+			<button type="button" class="small red deleteHeaderQuestion">delete header question</button>
+		</div>
 		<hr>
 		{% for subQ in q.questions %}
 			{% set idx = idx|push(loop.index) %}
@@ -274,11 +356,24 @@
 				{{tpl(subQ, idx)}}
 			</div>
 			{% set idx = idx|pop() %}
+
+			{% if loop.last %}
+				<div class="row control">
+					<span class="spacer"></span>
+					<button type="button" class="small blue addHeaderQuestion">add header question</button>
+					<button type="button" class="small blue addQuestion">add question</button>
+				</div>
+			{% endif %}
 		{% endfor %}
 	{% else %}
 		<div class="row">
-			<label class="bold">Question: </label>
-			<input type="text" name="{{name}}.text.{{lang}}" value="{{q.text[lang]}}" />
+			<div class="col">
+				<label class="bold">Question: </label>
+				<input type="text" name="{{name}}.text.{{lang}}" value="{{q.text[lang]}}" />
+			</div>
+			<div class="col">
+				<button type="button" class="small red deleteQuestion">delete question</button>
+			</div>
 		</div>
 		<br/>
 	{% endif %}
@@ -301,8 +396,15 @@
 		    		<option value="string" {% if c.system === "string" %}selected{% endif %}>string</option>
 		    	</select>
 			</div>
+			<div class="col">
+				<button type="button" class="small red deleteChoice">delete</button>
+			</div>
 		</div>
 		{% if loop.last %}
+			<div class="row control">
+				<span class="spacer"></span>
+				<button type="button" class="small blue addChoice">add choice</button>
+			</div>
 			<br/>
 		{% endif %}
 	{% endfor %}
@@ -318,7 +420,7 @@
 			</div>
 			<div class="col">
 				<label>Questionnaire text</label>
-				<input type="text" name="text.{{lang}}" value="{{questionnaire.text[lang]}}"/>
+				<input type="text" name="text.{{lang}}" {% if questionnaire.text[lang] %}value="{{questionnaire.text[lang]}}"{% endif %}/>
 			</div>
 		</div>
 		<hr>
