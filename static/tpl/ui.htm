@@ -186,30 +186,33 @@
 
 <script>
 
-	// if(window.navigator.standalone) {
-	var menuEntries = document.querySelectorAll("nav ul.tree li");
-	[].slice.call(menuEntries).forEach( function(entry) {
-		switch( entry.className ) {
-			case "menuitem" :
-				entry.addEventListener("click", function(event) {
-					event.preventDefault();
+	document.addEventListener("DOMContentLoaded", function(event) {
 
-					var aurl = event.currentTarget.querySelector("a").getAttribute("href");
-					if (aurl) {
-						var selected = document.querySelector("[drawer] ul.tree li.selected");
-						if(selected) selected.classList.remove("selected");
-						event.currentTarget.classList.add("selected");
-						show(aurl);
-					}
-				},false);
-				break;
-			default:
-				entry.addEventListener("click", function(e) {
-					var parent = e.target.parentNode;
-					parent.classList.toggle("collapsed");
-				}, false);
-				break;
-		}
+		// if(window.navigator.standalone) {
+		var menuEntries = document.querySelectorAll("ul.tree li");
+		[].slice.call(menuEntries).forEach( function(entry) {
+			switch( entry.className ) {
+				case "menuitem" :
+					entry.addEventListener("click", function(event) {
+						event.preventDefault();
+
+						var aurl = event.currentTarget.querySelector("a").getAttribute("href");
+						if (aurl) {
+							var selected = document.querySelector("[drawer] ul.tree li.selected");
+							if(selected) selected.classList.remove("selected");
+							event.currentTarget.classList.add("selected");
+							show(aurl);
+						}
+					},false);
+					break;
+				default:
+					entry.addEventListener("click", function(e) {
+						var parent = e.target.parentNode;
+						parent.classList.toggle("collapsed");
+					}, false);
+					break;
+			}
+		});
 	});
 
 	function toggleDrawer() {
