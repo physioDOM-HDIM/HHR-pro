@@ -13,12 +13,10 @@
 <script type="text/template" id="tplHeaderQuestion">
 	<div class="row">
 		<div class="col">
-			<span class="debug">{%raw%}{{name}}.headerRef{%endraw%}</span>
 			<label class="bold">Header ref: </label>
 			<input type="text" name="{%raw%}{{name}}.headerRef{%endraw%}" />
 		</div>
 	    <div class="col">
-			<span class="debug">{%raw%}{{name}}.headerLabel.{{lang}}{%endraw%}</span>
 			<label class="bold">{%raw%}Trad: ({{lang}}) {%endraw%}</label>
 			<input type="text" name="{%raw%}{{name}}.headerLabel.{{lang}}{%endraw%}" />
 		</div>
@@ -42,12 +40,10 @@
 <script type="text/template" id="tplQuestion">
 	<div class="row">
 		<div class="col">
-			<span class="debug">{%raw%}{{name}}.ref{%endraw%}</span>
 			<label class="bold">Question ref: </label>
 			<input type="text" name="{%raw%}{{name}}.ref{%endraw%}" />
 		</div>
 		<div class="col">
-			<span class="debug">{%raw%}{{name}}.label.{{lang}}{%endraw%}</span>
 			<label class="bold">{%raw%}Trad: ({{lang}}){%endraw%}</label>
 			<input type="text" name="{%raw%}{{name}}.label.{{lang}}{%endraw%}" />
 		</div>
@@ -65,12 +61,10 @@
 
 <script type="text/template" id="tplChoice">
 	<div class="col">
-		<span class="debug">{%raw%}{{name}}.ref{%endraw%}</span>
 		<label>Choice ref</label>
 		<input type="text" name="{%raw%}{{name}}.ref{%endraw%}" />
 	</div>
 	<div class="col">
-		<span class="debug">{%raw%}{{name}}.label.{{lang}}{%endraw%}</span>
 		<label>{%raw%}Trad: ({{lang}}){%endraw%}</label>
 		<input type="text" name="{%raw%}{{name}}.label.{{lang}}{%endraw%}" />
 	</div>
@@ -282,12 +276,6 @@ window.addEventListener("DOMContentLoaded", init, false);
 	form{
 		position: relative;
 	}
-	.debug{
-		background: yellow;
-		margin-right: 10px;
-		font-size: 10px;
-		position: absolute;
-	}
 	.nestedQuestionnaire{
 		background: rgb(190, 190, 190);
 	}
@@ -308,12 +296,10 @@ window.addEventListener("DOMContentLoaded", init, false);
 	{% if q.headerRef %}
 		<div class="row">
 			<div class="col">
-				<span class="debug">{{name}}.headerRef</span>
 				<label class="bold">Header ref: </label>
 				<input type="text" name="{{name}}.headerRef" value="{{q.headerRef}}" />
 			</div>
 			<div class="col">
-				<span class="debug">{{name}}.headerLabel.{{lang}}</span>
 				<label class="bold">Trad: ({{lang}}) </label>
 				<input type="text" name="{{name}}.headerLabel.{{lang}}" value="{{q.headerLabel[lang]}}" />
 			</div>
@@ -345,12 +331,10 @@ window.addEventListener("DOMContentLoaded", init, false);
 	{% else %}
 		<div class="row">
 			<div class="col">
-				<span class="debug">{{name}}.ref</span>
 				<label class="bold">Question ref: </label>
 				<input type="text" name="{{name}}.ref" value="{{q.ref}}" />
 			</div>
 			<div class="col">
-				<span class="debug">{{name}}.label.{{lang}}</span>
 				<label class="bold">Trad: ({{lang}})</label>
 				<input type="text" name="{{name}}.label.{{lang}}" value="{{q.label[lang]}}" />
 			</div>
@@ -363,12 +347,10 @@ window.addEventListener("DOMContentLoaded", init, false);
 	{% for c in q.choice %}
 		<div class="row answers">
 			<div class="col">
-				<span class="debug">{{name}}.choice[{{loop.index}}].ref</span>
 				<label>Choice ref</label>
 				<input type="text" name="{{name}}.choice[{{loop.index}}].ref" value="{{c.ref}}" />
 			</div>
 			<div class="col">
-				<span class="debug">{{name}}.choice[{{loop.index}}].label.{{lang}}</span>
 				<label>Trad: ({{lang}})</label>
 				<input type="text" name="{{name}}.choice[{{loop.index}}].label.{{lang}}" value="{{c.label[lang]}}" />
 			</div>
