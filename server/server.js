@@ -296,6 +296,7 @@ server.get( '/api/sessions/', getSessions);
 
 server.get( '/api/lists', ILists.getLists );
 server.get( '/api/lists/:listName', ILists.getList );
+server.get( '/api/lists/:listName/array', ILists.getListArray );
 server.get( '/api/lists/:listName/translate', ILists.getListTranslate );
 server.put( '/api/lists/:listName', ILists.updateList );
 server.post('/api/lists/:listName', ILists.addItem );

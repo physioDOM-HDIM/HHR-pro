@@ -47,6 +47,31 @@ var ILists = {
             });
     },
 
+    /**
+     * retrieve list from its name, and return the associative array with ref property as key
+     * 
+     * @param req
+     * @param res
+     * @param next
+     */
+    getListArray: function(req, res, next) {
+        logger.trace("getListArray");
+        physioDOM.Lists.getList(req.params.listName)
+            .then(function(list) {
+                var i, obj = {};
+                for(i=0; i<list.items.length; i++){
+                    obj[list.items[i].ref] = list.items[i].label;
+                }
+                list.items = obj;
+                res.send(list);
+                next();
+            })
+            .catch(function(err) {
+                res.send(err.code || 400, err);
+                next(false);
+            });
+    },
+
     getListTranslate: function(req, res, next) {
         physioDOM.Lists.getList(req.params.listName)
             .then(function(list) {
