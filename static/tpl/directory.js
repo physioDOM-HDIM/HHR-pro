@@ -13,7 +13,8 @@ var dataFormat = {
 },
 // isAdmin = false,
 _dataObj,
-_dataLists;
+_dataLists,
+_lang;
 
 var promiseXHR = function(method, url, statusOK, data) {
     var promise = new RSVP.Promise(function(resolve, reject) {
@@ -134,6 +135,17 @@ function updateDirectory(idx){
 
 function onHaveData(data){
 	_dataObj = data.detail;
+
+    //TODO: temp before modifying tsante-list component
+    var item;
+    for(var i=0; i<_dataObj.list.items.length; i++){
+        item = _dataObj.list.items[i];
+        item.job = _dataLists.job.items[item.job] ? _dataLists.job.items[item.job][_lang] : item.job;
+        item.role = _dataLists.role.items[item.role] ? _dataLists.role.items[item.role][_lang] : item.role;
+    }
+    document.querySelector("#tsanteList template").model = {
+        list: _dataObj.list
+    }
 }
 
 function closeModal() {
@@ -240,6 +252,9 @@ function init() {
     }).catch(function(error) {
         errorCB(error);
     });
+
+    //TODO: get lang from cookie
+    _lang = "en";
 
     var listPagerElt = document.querySelector("tsante-list");
     if(listPagerElt){
