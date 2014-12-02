@@ -53,7 +53,7 @@ function Questionnaires( ) {
 	 */
 	this.getQuestionnaires = function(pg, offset) {
 		logger.trace("getQuestionnaires");
-		var cursor = physioDOM.db.collection("questionnaires").find({}, {name: 1, text: 1});
+		var cursor = physioDOM.db.collection("questionnaires").find({}, {name: 1, ref: 1, label: 1});
 		cursor = cursor.sort( {name: 1} );
 		return dbPromise.getList(cursor, pg, offset);
 	};

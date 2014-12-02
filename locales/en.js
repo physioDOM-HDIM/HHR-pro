@@ -111,5 +111,6 @@
 	"List text": "List text",
 	"Create a questionnaire": "Create a questionnaire",
 	"Result": "Result",
-	"Your score is: ": "Your score is: "
+	"Your score is: ": "Your score is: ",
+	"Create/Update a questionnaire": "Create/Update a questionnaire"
 }

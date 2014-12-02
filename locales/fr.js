@@ -18,6 +18,8 @@
 	"Cancel": "Annuler",
 	"Validate": "Valider",
 	"Select beneficiary": "Selection d'un bénéficiaire",
-	"Filter":"Filtre",
-	"Sort":"Tri"
+	"Filter": "Filtre",
+	"Sort": "Tri",
+	"Select a questionnaire": "Select a questionnaire",
+	"Create a questionnaire": "Create a questionnaire"
 }

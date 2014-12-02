@@ -28,16 +28,16 @@
 </style>
 
 {% macro tpl(q, idx) %}
-	{% set name = "answers" %}
+	{% set name = "questions" %}
 	{% for key, val in idx %}
 		{% set name += "["+val+"]" %}
 		{% if !loop.last %}
-			{% set name += ".answers" %}
+			{% set name += ".questions" %}
 		{% endif %}
 	{% endfor %}
 
-	{% if q.header %}
-		<div class="bold">{{idx|join("-")}} - {{q.header[lang]}}</div>
+	{% if q.headerRef %}
+		<div class="bold">{{idx|join("-")}} - {{q.headerLabel[lang]}}</div>
 		<input type="hidden" name="{{name}}.subscore" value="{{q.subscore}}" />
 		<hr>
 		{% for subQ in q.questions %}
@@ -49,16 +49,16 @@
 		{% endfor %}
 	{% else %}
 		<div class="row">
-			<div>{{idx|join("-")}} - {{q.text[lang]}}</div>
+			<div>{{idx|join("-")}} - {{q.label[lang]}}</div>
 		</div>
 		<br/>
 	{% endif %}
 	{% for c in q.choice %}
 		<div class="row answers">
-			{% if !c.text %}
+			{% if !c.label[lang] %}
 				<input type="text" name="{{name}}.choice" required />
 			{% else %}
-				<label for="{{name}}.choice">{{c.text[lang]}}</label>
+				<label for="{{name}}.choice">{{c.label[lang]}}</label>
 				<input type="radio" name="{{name}}.choice" value="{{c.value}}" required />
 			{% endif %}
 		</div>
@@ -69,7 +69,7 @@
 {% endmacro %}
 
 <div class="mainContainer">
-	<h2>{{questionnaire.text[lang]}}</h2>
+	<h2>{{questionnaire.label[lang]}}</h2>
 	<form autocomplete="off" name="questionnaire" onsubmit="checkForm(); return false;">
 		{% for q in questionnaire.questions %}
 			<div class="itemContainer">
