@@ -61,7 +61,7 @@
         </form>
     </zdk-panel>
 
-    <tsante-list url="/api/directory" offset="20" auto="true" autoRender="false" unresolved id="tsanteList">
+    <tsante-list url="/api/directory" offset="20" auto="false" autoRender="false" unresolved id="tsanteList">
         <template is="auto-binding" repeat="{% raw %}{{item, i in list.items}}{% endraw %}">
             <div class="item {% raw %}{{!item.active ? 'disabled' : ''}}{% endraw %}">
                 <div class="row">
