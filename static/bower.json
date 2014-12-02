@@ -20,7 +20,7 @@
     "zdk-panel": "~0.3.0",
     "zdk-modal": "~0.3.0",
     "zdk-calendar": "~0.2.3",
-    "tsante-listpager": "git@git.telecomsante.com:components/tsante-listpager.git#0.2.1",
+    "tsante-listpager": "git@git.telecomsante.com:components/tsante-listpager.git#0.3.0",
     "mustache": "~0.8.2",
     "rsvp": "~3.0.13",
     "form2js": "*",
