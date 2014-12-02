@@ -4,92 +4,99 @@
 
 {% block head %}
 {% parent %}
-  
+
 <script src="/bower_components/form2js/src/form2js.js"></script>
 <script src="/tpl/dataRecord.js"></script>
+<script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
+<link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
 {% endblock %}
 
 {% block content %}
-	<zdk-panel heading="{{'Filter'|i18n}} / {{'Sort'|i18n}}" collapsable="true" collapsed="false">
-		<form class="filter" name="filter" autocomplete="off" onsubmit="validFilter(); return false;">
-			<div>
-				<div class="row">
-					<div class="col">
-						<label class="collabel" for="firstDate">{{ "Since"|i18n }} : </label>
-						<div class="colcontent">
-							<input type="date" name="firstDate" id="firstDate">
-						</div>
-					</div>
-					<div class="col">
-						<label class="collabel" for="lastDate">{{ "To"|i18n }} : </label>
-						<div class="colcontent">
-							<input type="date" name="lastDate" id="lastDate">
-						</div>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col"></div>
-					<div class="col">
-						<label class="collabel" for="provider">{{ "Provider"|i18n }} : </label>
-						<div class="colcontent">
-							<input type="text" name="provider" id="provider">
-						</div>
-					</div>
-				</div>
-				<div class="row control">
-					<span class="spacer"></span>
-					<button type="button" class="red" onclick="resetFilter()">{{ "Reset"|i18n }}</button>
-					<button class="green">{{ "Filter"|i18n }}</button>
-				</div>
-				<div style="height:10px">&nbsp;</div>
-				<hr/>
-				<div class="row">
-					<div class="col">
-						<label>{{ "Sort"|i18n }}:</label>
-						<select name="sort">
-							<option value="source">{{ "Provider"|i18n }}</option>
-							<option value="perimeter">{{ "Date"|i18n }}</option>
-							<option value="home">{{ "Type"|i18n }}</option>
-						</select>
-					</div>
-					<div class="col">
-						<label>{{ "Direction"|i18n }}:</label>
-						<select name="dir">
-							<option value="1">{{ "ascending"|i18n }}</option>
-							<option value="-1">{{ "descending"|i18n }}</option>
-						</select>
-					</div>
-				</div>
-				<div class="row control">
-					<span class="spacer"></span>
-					<button type="button" class="red" onclick="resetSort()">{{ "Reset"|i18n }}</button>
-					<button class="green">{{ "Sort"|i18n }}</button>
+<zdk-panel heading="{{'Filter'|i18n}} / {{'Sort'|i18n}}" collapsable="true" collapsed="false">
+<form class="filter" name="filter" autocomplete="off" onsubmit="validFilter(); return false;">
+	<div>
+		<div class="row">
+			<div class="col">
+				<label class="collabel" for="startDate">{{ "Since"|i18n }} : </label>
+				<div class="colcontent">
+					<zdk-input-date name="startDate" style="z-index:100"></zdk-input-date>
 				</div>
 			</div>
-		</form>
-	</zdk-panel>
+			<div class="col">
+				<label class="collabel" for="endDate">{{ "To"|i18n }} : </label>
+				<div class="colcontent">
+					<zdk-input-date name="endDate" style="z-index:100"></zdk-input-date>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col"></div>
+			<div class="col">
+				<label class="collabel" for="provider">{{ "Provider"|i18n }} : </label>
+				<div class="colcontent">
+					<input type="text" name="provider" id="provider">
+				</div>
+			</div>
+		</div>
+		<div class="row control">
+			<span class="spacer"></span>
+			<button type="button" class="red" onclick="resetFilter()">{{ "Reset"|i18n }}</button>
+			<button class="green">{{ "Filter"|i18n }}</button>
+		</div>
+		<div style="height:10px">&nbsp;</div>
+		<hr/>
+		<div class="row">
+			<div class="col">
+				<label>{{ "Sort"|i18n }}:</label>
+				<select name="sort">
+					<option value="source">{{ "Provider"|i18n }}</option>
+					<option value="perimeter">{{ "Date"|i18n }}</option>
+					<option value="home">{{ "Type"|i18n }}</option>
+				</select>
+			</div>
+			<div class="col">
+				<label>{{ "Direction"|i18n }}:</label>
+				<select name="dir">
+					<option value="1">{{ "ascending"|i18n }}</option>
+					<option value="-1">{{ "descending"|i18n }}</option>
+				</select>
+			</div>
+		</div>
+		<div class="row control">
+			<span class="spacer"></span>
 
-	<tsante-list url="/api/data-record" pg="1" auto="true" unresolved id="tsanteList">
-		<template is="auto-binding" repeat="{% raw %}{{item in list.items}}{% endraw %}">
-			<div class="item">
+			<button type="button" class="red" onclick="resetSort()">{{ "Reset"|i18n }}</button>
+			<button class="green">{{ "Sort"|i18n }}</button>
+		</div>
+	</div>
+</form>
+</zdk-panel>
+
+<tsante-list url="/api/data-record" pg="1" auto="true" unresolved id="tsanteList">
+<template is="auto-binding" repeat="{% raw %}{{item in list.items}}{% endraw %}">
+	<div class="item">
+		<div class="row">
+			<div class="flex-line">
 				<div class="row">
-					<div style="-webkit-flex:1; -ms-flex:1; flex:1">
-						<div class="row">
-							<span style="-webkit-flex:1; -ms-flex:1; flex:1;font-weight:bold">{% raw %}{{item.datetime}}{% endraw %}</span>
-							<span style="-webkit-flex:2; -ms-flex:2; flex:2;font-weight:bold">{% raw %}{{item.home}}{% endraw %}</span>
-							<span style="-webkit-flex:1; -ms-flex:1; flex:1">{% raw %}{{item.source.name.family}} {{item.source.name.given}}{% endraw %}</span>
+					<div class="col bold">{% raw %}{{item.datetime}}{% endraw %}</div>
+					<div class="col">
+						<div class="{% raw %}{{item.home? 'show':'hide'}}{% endraw %}">
+							{{ "From Home" |i18n}}
+						</div>
+						<div class="{% raw %}{{item.home? 'hide':'show'}}{% endraw %}">
+							{{ "Consultation" |i18n}}
 						</div>
 					</div>
-					<div>
-						
-						<a href="/beneficiary/{%raw%}{{item._id}}{% endraw %}"><button class="blue small" style="margin:5px">view</button></a>
-					</div>
+					<div class="col">{% raw %}{{item.source.name.family}} {{item.source.name.given}}{% endraw %}</div>
 				</div>
 			</div>
-		</template>
-	</tsante-list>
-	
-	{% if admin %}
-	button add
-	{% endif %}
+			<div><a href="#"><button class="blue small" style="margin:5px">view</button></a></div>
+		</div>
+	</div>
+</template>
+</tsante-list>
+
+{% if admin %}
+button add
+{% endif %}
 {% endblock %}

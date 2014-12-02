@@ -153,5 +153,7 @@
 	"Direction": "Direction",
 	"ascending": "ascending",
 	"descending": "descending",
-	"Valid": "Valid"
+	"Valid": "Valid",
+	"From Home": "From Home",
+	"Consultation": "Consultation"
 }
