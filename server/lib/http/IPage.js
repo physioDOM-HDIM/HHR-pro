@@ -695,7 +695,36 @@ function IPage() {
 				next();
 			});
 	};
-	
+
+	/**
+	 * DataRecording
+	 *
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	this.dataRecord = function(req, res, next) {
+		logger.trace("DataRecording");
+		var html;
+
+		init(req);
+		var data = {
+			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
+		};
+
+		html = swig.renderFile(DOCUMENTROOT+'/static/tpl/dataRecord.htm', null, function (err, output) {
+			if (err) {
+				console.log("error", err);
+				console.log("output", output);
+				res.write(err);
+				res.end();
+				next();
+			} else {
+				sendPage(output, res, next);
+			}
+		});
+
+	};
 	
 	
 	/**

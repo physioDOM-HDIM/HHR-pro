@@ -1,121 +1,95 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8"/>
-	<title>Constant registration</title>
+{% extends './page.htm' %}
 
-	<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-	<meta name="apple-mobile-web-app-capable" content="yes"/>
-	<meta name="apple-touch-fullscreen" content="yes">
-	<meta name="mobile-web-app-capable" content="yes">
+{% block title %}{{ "Filter / sort"|i18n }}{% endblock %}
 
-	<link rel="shortcut icon" sizes="196x196" href="/img/physiodom_favico.png">
-	<link rel="icon" href="/img/physiodom_favico.png">
-	<link rel="apple-touch-icon" href="/img/physiodom_favico.png">
+{% block head %}
+{% parent %}
+  
+<script src="/bower_components/form2js/src/form2js.js"></script>
+<script src="/tpl/dataRecord.js"></script>
+{% endblock %}
 
-	<link rel="stylesheet" href="/styles/iframe.css" charset="UTF-8">
-	<link rel="stylesheet" href="/styles/theme.css" charset="UTF-8">
+{% block content %}
+	<zdk-panel heading="{{'Filter'|i18n}} / {{'Sort'|i18n}}" collapsable="true" collapsed="false">
+		<form class="filter" name="filter" autocomplete="off" onsubmit="validFilter(); return false;">
+			<div>
+				<div class="row">
+					<div class="col">
+						<label class="collabel" for="firstDate">{{ "Since"|i18n }} : </label>
+						<div class="colcontent">
+							<input type="date" name="firstDate" id="firstDate">
+						</div>
+					</div>
+					<div class="col">
+						<label class="collabel" for="lastDate">{{ "To"|i18n }} : </label>
+						<div class="colcontent">
+							<input type="date" name="lastDate" id="lastDate">
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col"></div>
+					<div class="col">
+						<label class="collabel" for="provider">{{ "Provider"|i18n }} : </label>
+						<div class="colcontent">
+							<input type="text" name="provider" id="provider">
+						</div>
+					</div>
+				</div>
+				<div class="row control">
+					<span class="spacer"></span>
+					<button type="button" class="red" onclick="resetFilter()">{{ "Reset"|i18n }}</button>
+					<button class="green">{{ "Filter"|i18n }}</button>
+				</div>
+				<div style="height:10px">&nbsp;</div>
+				<hr/>
+				<div class="row">
+					<div class="col">
+						<label>{{ "Sort"|i18n }}:</label>
+						<select name="sort">
+							<option value="source">{{ "Provider"|i18n }}</option>
+							<option value="perimeter">{{ "Date"|i18n }}</option>
+							<option value="home">{{ "Type"|i18n }}</option>
+						</select>
+					</div>
+					<div class="col">
+						<label>{{ "Direction"|i18n }}:</label>
+						<select name="dir">
+							<option value="1">{{ "ascending"|i18n }}</option>
+							<option value="-1">{{ "descending"|i18n }}</option>
+						</select>
+					</div>
+				</div>
+				<div class="row control">
+					<span class="spacer"></span>
+					<button type="button" class="red" onclick="resetSort()">{{ "Reset"|i18n }}</button>
+					<button class="green">{{ "Sort"|i18n }}</button>
+				</div>
+			</div>
+		</form>
+	</zdk-panel>
 
-	<link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.min.css">
-	<link rel="stylesheet" type="text/css" href="/assets/css/bootstrap-theme.min.css">
-
-	<script type="text/javascript" src="/assets/js/jquery-2.1.0.min.js"></script>
-	<script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
-
-	<!-- Accordion -->
-	<script src="/bower_components/platform/platform.js"></script>
-	<link rel="import" href="/bower_components/polymer-ui-accordion/polymer-ui-accordion.html">
-
-	<link rel="stylesheet" href="/styles/table.css" charset="UTF-8">
-	<link rel="stylesheet" href="/styles/fixedTable.css" charset="UTF-8">
-	<script src="/scripts/common.js"></script>
-</head>
-<body>
-
-<div class="main">
-<div class="fixedTable" style="-ms-flex:1;-webkit-box-flex:1;-webkit-flex-grow: 1">
-	<table id="records">
-		<colgroup>
-			<col>
-			<col style="width:100px">
-			<col style="width:150px">
-			<col style="width:150px">
-			<col style="width:100px">
-			<col style="width:80px">
-		</colgroup>
-		<thead>
-		<tr>
-			<th>Date</th>
-			<th>Daypart</th>
-			<th>Created by</th>
-			<th>Contributor</th>
-			<th>Status</th>
-			<th>&nbsp;</th>
-		</tr>
-		</thead>
-		<tbody>
-		<tr>
-			<td>2014-04-16</td>
-			<td>00h - 11h</td>
-			<td>C. Devaux</td>
-			<td>C. Deveaux</td>
-			<td>validated</td>
-			<td>
-				<a href="dataRecordEdit.htm"><button class="btn btn-xs btn-primary">edit</button></a>
-			</td>
-		</tr>
-		<tr>
-			<td>2014-04-15</td>
-			<td>00h - 11h</td>
-			<td>C. Devaux</td>
-			<td>C. Deveaux</td>
-			<td>recorded</td>
-			<td><a href="dataRecordEdit.htm"><button class="btn btn-xs btn-primary">edit</button></a></td>
-		</tr>
-		<tr>
-			<td>2014-04-16</td>
-			<td>00h - 11h</td>
-			<td>C. Devaux</td>
-			<td>C. Deveaux</td>
-			<td>validated</td>
-			<td><a href="dataRecordEdit.htm"><button class="btn btn-xs btn-primary">edit</button></a></td>
-		</tr>
-		<tr>
-			<td>2014-04-15</td>
-			<td>00h - 11h</td>
-			<td>C. Devaux</td>
-			<td>C. Deveaux</td>
-			<td>recorded</td>
-			<td><a href="dataRecordEdit.htm"><button class="btn btn-xs btn-primary">edit</button></a></td>
-		</tr>
-		<tr>
-			<td>2014-04-16</td>
-			<td>00h - 11h</td>
-			<td>C. Devaux</td>
-			<td>C. Deveaux</td>
-			<td>validated</td>
-			<td><a href="dataRecordEdit.htm"><button class="btn btn-xs btn-primary">edit</button></a></td>
-		</tr>
-		<tr>
-			<td>2014-04-15</td>
-			<td>00h - 11h</td>
-			<td>C. Devaux</td>
-			<td>C. Deveaux</td>
-			<td>recorded</td>
-			<td><a href="dataRecordEdit.htm"><button class="btn btn-xs btn-primary">edit</button></a></td>
-		</tr>
-		</tbody>
-	</table>
-</div>
+	<tsante-list url="/api/data-record" pg="1" auto="true" unresolved id="tsanteList">
+		<template is="auto-binding" repeat="{% raw %}{{item in list.items}}{% endraw %}">
+			<div class="item">
+				<div class="row">
+					<div style="-webkit-flex:1; -ms-flex:1; flex:1">
+						<div class="row">
+							<span style="-webkit-flex:1; -ms-flex:1; flex:1;font-weight:bold">{% raw %}{{item.datetime}}{% endraw %}</span>
+							<span style="-webkit-flex:2; -ms-flex:2; flex:2;font-weight:bold">{% raw %}{{item.home}}{% endraw %}</span>
+							<span style="-webkit-flex:1; -ms-flex:1; flex:1">{% raw %}{{item.source.name.family}} {{item.source.name.given}}{% endraw %}</span>
+						</div>
+					</div>
+					<div>
+						
+						<a href="/beneficiary/{%raw%}{{item._id}}{% endraw %}"><button class="blue small" style="margin:5px">view</button></a>
+					</div>
+				</div>
+			</div>
+		</template>
+	</tsante-list>
 	
-	<footer>
-		<a href="dataRecordEdit.htm"><button class="btn btn-primary">Add</button></a>
-	</footer>
-	</div>
-
-<script>
-	setFixedTable("#records");
-</script>
-
-</body>
-</html>
+	{% if admin %}
+	button add
+	{% endif %}
+{% endblock %}

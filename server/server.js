@@ -15,7 +15,8 @@ var IDirectory = require('./lib/http/IDirectory'),
 	IBeneficiary = require('./lib/http/IBeneficiary'),
 	ILists = require("./lib/http/ILists"),
 	IPage = require("./lib/http/IPage"),
-	IQuestionnaire = require("./lib/http/IQuestionnaire");
+	IQuestionnaire = require("./lib/http/IQuestionnaire"),
+	IDataRecord = require("./lib/http/IDataRecord");
 
 var pkg     = require('../package.json');
 var logger = new Logger( "PhysioDOM App");
@@ -302,6 +303,8 @@ server.post('/api/lists/:listName', ILists.addItem );
 server.put( '/api/lists/:listName/:itemRef', ILists.translateItem );
 server.post('/api/lists/:listName/:itemRef', ILists.activateItem );
 
+server.get( '/api/data-record', IDataRecord.getList);
+
 //DEV ONLY for creation
 server.post( '/api/questionnaires', IQuestionnaire.createQuestionnaire);
 //DEV ONLY
@@ -324,6 +327,8 @@ server.get( '/settings/lists/:listName', IPage.list);
 server.get( '/questionnaires', IPage.questionnaires);
 server.get( '/questionnaires/create', IPage.createQuestionnaire);
 server.get( '/questionnaire/:questionnaireName', IPage.questionnaireOverview);
+
+server.get( '/data-record/', IPage.dataRecord);
 
 
 server.get(/\/[^api|components\/]?$/, function(req, res, next) {

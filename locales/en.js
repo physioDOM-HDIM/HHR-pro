@@ -142,5 +142,16 @@
 	"Choose all providers roles": "Choose all providers roles",
 	"New item": "New item",
 	"Label": "Label",
-	"Questionnaires": "Questionnaires"
+	"Questionnaires": "Questionnaires",
+	"Filter / sort": "Filter / sort",
+	"tuto": "tuto",
+	"Since": "Since",
+	"To": "To",
+	"Provider": "Provider",
+	"Reset": "Reset",
+	"Date": "Date",
+	"Direction": "Direction",
+	"ascending": "ascending",
+	"descending": "descending",
+	"Valid": "Valid"
 }
