@@ -117,18 +117,18 @@ function updateDirectory(idx){
 
 function onHaveData(data){
 	_dataObj = data.detail;
-
-    //TODO: temp before modifying tsante-list component
+    
     var item;
     for(var i=0; i<_dataObj.list.items.length; i++){
         item = _dataObj.list.items[i];
-        item.job = _dataLists.job.items[item.job] ? _dataLists.job.items[item.job][_lang] : item.job;
-        item.role = _dataLists.role.items[item.role] ? _dataLists.role.items[item.role][_lang] : item.role;
+        if( item.job ) {
+            item.job = _dataLists.job.items[item.job] ? _dataLists.job.items[item.job][_lang] : item.job;
+        }
+        if( item.role ) {
+            item.role = _dataLists.role.items[item.role] ? _dataLists.role.items[item.role][_lang] : item.role;
+        }
     }
-    // document.querySelector("#tsanteList template").model = {
-    //    list: _dataObj.list
-    // }
-    listPagerElt.render( dataObj.list );
+    listPagerElt.render( _dataObj.list );
 }
 
 function closeModal() {
@@ -228,6 +228,15 @@ function init() {
             _dataLists = {};
             _dataLists.job = JSON.parse(results.job);
             _dataLists.role = JSON.parse(results.role);
+
+            //TODO: get lang from cookie
+            _lang = "en";
+
+            listPagerElt = document.querySelector("tsante-list");
+            if(listPagerElt){
+                listPagerElt.addEventListener("tsante-response", onHaveData, false);
+            }
+            listPagerElt.go();
         }
         catch(err){
             errorCB(err);
@@ -236,13 +245,7 @@ function init() {
         errorCB(error);
     });
 
-    //TODO: get lang from cookie
-    _lang = "en";
-
-    listPagerElt = document.querySelector("tsante-list");
-    if(listPagerElt){
-    	listPagerElt.addEventListener("tsante-response", onHaveData, false);
-    }
+    
 }
 
 window.addEventListener("polymer-ready", init, false);
