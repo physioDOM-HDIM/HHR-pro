@@ -8,7 +8,7 @@
 
 {% block content %}
 <style>
-	li a:hover{
+	.link:hover{
 		background: silver;
 	}
 	ul {
@@ -46,14 +46,19 @@
 <div class="mainContainer">
 	<ul>
 	{% for q in questionnaires.items %}
-		<li>
-			<a href="/questionnaire/{{q.name}}">{{q.text}}</a>
-		</li>
+		<div class="row">
+			<li>
+				<a href="/questionnaire/edit/{{q.name}}">
+					<button class="small blue">Edit (dev only)</button>
+				</a>
+				<a class="link" href="/questionnaire/{{q.name}}">{{q.label[lang]}} </a>
+			</li>
+		</div>
 	{% endfor %}
 	</ul>
 	<div class="row control">
 		<span class="spacer"></span>
-		<a href="/questionnaires/create">
+		<a href="/questionnaire/create">
 			<button class="blue">Create Questionnaire (dev only)</button>
 		</a>
 	</div>

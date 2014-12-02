@@ -58,8 +58,7 @@ function Questionnaire( ) {
 	function checkUniq( entry ) {
 		return new promise( function(resolve, reject) {
 			logger.trace("checkUniq");
-			// check that the entry have an email
-			
+
 			var filter = { name: entry.name };
 			if( entry._id ) {
 				filter._id = { "$ne": new ObjectID(entry._id) };
@@ -156,6 +155,39 @@ function Questionnaire( ) {
 				.catch(reject);
 		});
 	};
+
+	/**
+	 * Get a questionnaire in the database known by its ID
+	 * 
+	 * on success the promise returns the questionnaire record,
+	 * else return an error ( code 404 )
+	 * 
+	 * @param questionnaireID
+	 * @returns {promise}
+	 */
+	this.getById = function( questionnaireID ) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("getById", questionnaireID);
+			physioDOM.db.collection("questionnaires").findOne({ _id: questionnaireID }, function (err, doc) {
+				if (err) {
+					logger.alert("Database Error");
+					throw err;
+				}
+				if(!doc) {
+					reject( {code:404, error:"not found"});
+				} else {
+					for (var prop in doc) {
+						if (doc.hasOwnProperty(prop)) {
+							that[prop] = doc[prop];
+						}
+					}
+					resolve(that);
+				}
+			});
+		});
+	};
+
 }
 
 module.exports = Questionnaire;

@@ -142,5 +142,6 @@
 	"Choose all providers roles": "Choose all providers roles",
 	"New item": "New item",
 	"Label": "Label",
-	"Questionnaires": "Questionnaires"
+	"Questionnaires": "Questionnaires",
+	"Create/Update a questionnaire": "Create/Update a questionnaire"
 }

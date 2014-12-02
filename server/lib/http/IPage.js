@@ -603,6 +603,7 @@ function IPage() {
 			})
 			.then( function(questionnaires) {
 				data.questionnaires = questionnaires;
+				data.lang = lang;
 				//logger.debug("DATA", data);
 				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/questionnaireSelection.htm', data, function (err, output) {
 					if (err) {
@@ -640,18 +641,31 @@ function IPage() {
 			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
 		};
 
-		html = swig.renderFile(DOCUMENTROOT+'/static/tpl/questionnaireCreation.htm', null, function (err, output) {
-			if (err) {
-				console.log("error", err);
-				console.log("output", output);
-				res.write(err);
-				res.end();
-				next();
-			} else {
-				sendPage(output, res, next);
-			}
-		});
+		physioDOM.Questionnaires()
+			.then(function(questionnaires){
+				if(req.params.questionnaireName){
+					return questionnaires.getQuestionnaireByName(req.params.questionnaireName);
+				}
+				return null;
+			})
+			.then( function(questionnaire) {
+				if (questionnaire) {
+					data.questionnaire = questionnaire;
+				}
+				data.lang = lang;
 
+				html = swig.renderFile(DOCUMENTROOT + '/static/tpl/questionnaireCreation.htm', data, function (err, output) {
+					if (err) {
+						console.log("error", err);
+						console.log("output", output);
+						res.write(err);
+						res.end();
+						next();
+					} else {
+						sendPage(output, res, next);
+					}
+				});
+			});
 	};
 
 	/**
@@ -671,10 +685,11 @@ function IPage() {
 
 		physioDOM.Questionnaires()
 			.then(function(questionnaires){
-				return questionnaires.getQuestionnaire(req.params.questionnaireName);
+				return questionnaires.getQuestionnaireByName(req.params.questionnaireName);
 			})
 			.then( function(questionnaire) {
 				data.questionnaire = questionnaire;
+				data.lang = lang;
 				//logger.debug("DATA", data);
 				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/questionnaireOverview.htm', data, function (err, output) {
 					if (err) {

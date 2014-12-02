@@ -302,8 +302,9 @@ server.post('/api/lists/:listName', ILists.addItem );
 server.put( '/api/lists/:listName/:itemRef', ILists.translateItem );
 server.post('/api/lists/:listName/:itemRef', ILists.activateItem );
 
-//DEV ONLY for creation
+//DEV ONLY for creation & update
 server.post( '/api/questionnaires', IQuestionnaire.createQuestionnaire);
+server.put( '/api/questionnaires/:entryID', IQuestionnaire.updateQuestionnaire);
 //DEV ONLY
 
 server.post('/api/login', apiLogin);
@@ -322,7 +323,8 @@ server.get( '/settings/listsManager', IPage.listsManager);
 server.get( '/settings/lists', IPage.lists);
 server.get( '/settings/lists/:listName', IPage.list);
 server.get( '/questionnaires', IPage.questionnaires);
-server.get( '/questionnaires/create', IPage.createQuestionnaire);
+server.get( '/questionnaire/create', IPage.createQuestionnaire);
+server.get( '/questionnaire/edit/:questionnaireName', IPage.createQuestionnaire);
 server.get( '/questionnaire/:questionnaireName', IPage.questionnaireOverview);
 
 
