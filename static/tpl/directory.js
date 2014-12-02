@@ -11,7 +11,7 @@ var dataFormat = {
     activeTrueData: "true",
     activeFalseData: "false"
 },
-// isAdmin = false,
+listPagerElt,
 _dataObj,
 _dataLists,
 _lang;
@@ -36,24 +36,6 @@ var promiseXHR = function(method, url, statusOK, data) {
     return promise;
 };
 
-//Display/hide some information according to the user status
-function checkUser(e) {
-	console.log("checkUser", arguments);
-    /*
-    if (isAdmin) {
-        var editButtons = document.querySelectorAll(".editButton"),
-            addEntry = document.querySelector("#addEntry");
-        if (editButtons && editButtons.length > 0) {
-            [].map.call(editButtons, function(node) {
-                node.className = node.className.replace("hidden", "");
-            });
-        }
-        if (addEntry) {
-            addEntry.className = addEntry.className.replace("hidden", "");
-        }
-    }
-    */
-}
 
 //Toggle display/hide a node
 function toggleHiddenNode(node, searchPattern) {
@@ -143,9 +125,10 @@ function onHaveData(data){
         item.job = _dataLists.job.items[item.job] ? _dataLists.job.items[item.job][_lang] : item.job;
         item.role = _dataLists.role.items[item.role] ? _dataLists.role.items[item.role][_lang] : item.role;
     }
-    document.querySelector("#tsanteList template").model = {
-        list: _dataObj.list
-    }
+    // document.querySelector("#tsanteList template").model = {
+    //    list: _dataObj.list
+    // }
+    listPagerElt.render( dataObj.list );
 }
 
 function closeModal() {
@@ -256,11 +239,10 @@ function init() {
     //TODO: get lang from cookie
     _lang = "en";
 
-    var listPagerElt = document.querySelector("tsante-list");
+    listPagerElt = document.querySelector("tsante-list");
     if(listPagerElt){
-    	listPagerElt.addEventListener("tsante-draw", checkUser, false);
     	listPagerElt.addEventListener("tsante-response", onHaveData, false);
     }
 }
 
-window.addEventListener("DOMContentLoaded", init, false);
+window.addEventListener("polymer-ready", init, false);
