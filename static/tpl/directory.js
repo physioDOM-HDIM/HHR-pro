@@ -12,7 +12,28 @@ var dataFormat = {
     activeFalseData: "false"
 },
 // isAdmin = false,
-_dataObj;
+_dataObj,
+_dataLists;
+
+var promiseXHR = function(method, url, statusOK, data) {
+    var promise = new RSVP.Promise(function(resolve, reject) {
+        var client = new XMLHttpRequest();
+        statusOK = statusOK ? statusOK : 200;
+        client.open(method, url);
+        client.onreadystatechange = function handler() {
+            if (this.readyState === this.DONE) {
+                if (this.status === statusOK) {
+                    resolve(this.response);
+                } else {
+                    reject(this);
+                }
+            }
+        };
+        client.send(data ? data : null);
+    });
+
+    return promise;
+};
 
 //Display/hide some information according to the user status
 function checkUser(e) {
@@ -115,13 +136,110 @@ function onHaveData(data){
 	_dataObj = data.detail;
 }
 
+function closeModal() {
+    console.log("closeModal", arguments);
+    document.querySelector("#statusModal").hide();
+
+    var elt = document.querySelector("#statusModal"),
+        subElt, child;
+    subElt = elt.querySelector(".modalTitleContainer");
+    subElt.innerHTML = "";
+    subElt.classList.add("hidden");
+    subElt = elt.querySelector(".modalContentContainer");
+    subElt.innerHTML = "";
+    subElt.classList.add("hidden");
+    subElt = elt.querySelector(".modalButtonContainer");
+    for (var i = subElt.childNodes.length - 1; i >= 0; i--) {
+        child = subElt.childNodes[i];
+        subElt.removeChild(child);
+    }
+    subElt.classList.add("hidden");
+}
+
+function showModal(modalObj) {
+    console.log("showModal", arguments);
+    closeModal();
+    var elt = document.querySelector("#statusModal"),
+        subElt;
+    if (modalObj.title) {
+        subElt = elt.querySelector(".modalTitleContainer");
+        subElt.innerHTML = document.querySelector("#" + modalObj.title).innerHTML;
+        subElt.classList.remove("hidden");
+    }
+    if (modalObj.content) {
+        subElt = elt.querySelector(".modalContentContainer");
+        subElt.innerHTML = document.querySelector("#" + modalObj.content).innerHTML;
+        subElt.classList.remove("hidden");
+    }
+
+    if (modalObj.buttons) {
+        var btn, obj, color;
+        subElt = elt.querySelector(".modalButtonContainer");
+        for (var i = 0; i < modalObj.buttons.length; i++) {
+            obj = modalObj.buttons[i];
+            btn = document.createElement("button");
+            btn.innerHTML = document.querySelector("#" + obj.id).innerHTML;
+            btn.onclick = obj.action;
+            switch (obj.id) {
+                case "trad_ok":
+                    {
+                        color = "green";
+                    }
+                    break;
+                case "trad_yes":
+                    {
+                        color = "green";
+                    }
+                    break;
+                case "trad_no":
+                    {
+                        color = "blue";
+                    }
+                    break;
+            }
+            btn.classList.add(color);
+            subElt.appendChild(btn);
+        }
+        subElt.classList.remove("hidden");
+    }
+
+    document.querySelector("#statusModal").show();
+}
+
 function init() {
 	console.log("init");
-    //TODO internationalization
 
-	//TODO get the info about access user and
-	//don't forget to call checkUser()
-	// isAdmin = true;
+    var promises = {
+        job: promiseXHR("GET", "/api/lists/job/array", 200),
+        role: promiseXHR("GET", "/api/lists/role/array", 200)
+    };
+    var errorCB = function(error){
+        console.log("Init error", error);
+        var modalObj = {
+            title: "trad_error",
+            content: "trad_error_occured",
+            buttons: [{
+                id: "trad_ok",
+                action: function() {
+                    closeModal();
+                }
+            }]
+        };
+        showModal(modalObj);
+    }
+
+    RSVP.hash(promises).then(function(results) {
+        try{
+            _dataLists = {};
+            _dataLists.job = JSON.parse(results.job);
+            _dataLists.role = JSON.parse(results.role);
+        }
+        catch(err){
+            errorCB(err);
+        }
+    }).catch(function(error) {
+        errorCB(error);
+    });
 
     var listPagerElt = document.querySelector("tsante-list");
     if(listPagerElt){
