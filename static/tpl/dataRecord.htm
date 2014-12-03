@@ -34,7 +34,12 @@
 			<div class="col">
 				<label class="collabel" for="provider">{{ "Provider"|i18n }} : </label>
 				<div class="colcontent">
-					<input type="text" name="source" id="provider">
+					<select name="source" id="provider">
+					<option value=""></option>
+							{% for item in professionals %}
+							<option value="{{item._id.toString()}}" >{{item.name.given}} {{item.name.family}}</option>
+							{% endfor %}
+						</select>
 				</div>
 			</div>
 		</div>

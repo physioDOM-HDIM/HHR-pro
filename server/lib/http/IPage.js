@@ -712,17 +712,36 @@ function IPage() {
 			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
 		};
 
-		html = swig.renderFile(DOCUMENTROOT+'/static/tpl/dataRecord.htm', null, function (err, output) {
-			if (err) {
-				console.log("error", err);
-				console.log("output", output);
+		physioDOM.Beneficiaries()
+			.then( function(beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+			})
+			.then( function( beneficiary ) {
+				data.beneficiary = beneficiary;
+				return beneficiary._id ? beneficiary.getProfessionals() : null;
+			}).then(function(professionals){
+				if( professionals ){
+					data.professionals = professionals;
+				}
+
+				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/dataRecord.htm', data, function(err, output) {
+					if (err) {
+						console.log("error", err);
+						console.log("output", output);
+						res.write(err);
+						res.end();
+						next();
+					} else {
+						sendPage(output, res, next);
+					}
+				});
+			})
+			.catch(function(err) {
+				logger.error(err);
 				res.write(err);
 				res.end();
 				next();
-			} else {
-				sendPage(output, res, next);
-			}
-		});
+			});
 
 	};
 	
