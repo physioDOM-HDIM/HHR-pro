@@ -499,6 +499,48 @@ function Beneficiary( ) {
 			logger.trace("getIPMessages");
 		});
 	};
+
+	/**
+	 * on resolve return the list of dataRecords of the current beneficiary
+	 * 
+	 * dataRecords are sorted by default by date
+	 * 
+	 * @param pg
+	 * @param offset
+	 * @param sort
+	 * @param sortDir
+	 * @param filter
+	 * @returns {promise}
+	 */
+	this.getDataRecords = function(pg, offset, sort, sortDir, filter) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("getDataRecords");
+			physioDOM.DataRecords( that._id )
+				.then( function( datarecords ) {
+					resolve(datarecords.getList(pg, offset, sort, sortDir, filter));
+				});
+		});
+	};
+	
+	this.getDataRecordByID = function( dataRecordID ) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("getDataRecordByID", dataRecordID);
+			physioDOM.DataRecords( that._id )
+				.then( function (datarecords ) {
+					return datarecords.getByID( new ObjectID(dataRecordID) );
+				})
+				.then( function ( datarecord ) {
+					console.log( "get the datarecord ");
+					resolve(datarecord.getItems());
+				})
+				.catch( function(err) {
+					logger.error("error ", err);
+					reject(err);
+				});
+		});
+	};
 }
 
 module.exports = Beneficiary;
