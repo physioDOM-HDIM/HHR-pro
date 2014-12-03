@@ -334,6 +334,7 @@ server.get( '/questionnaires/create', IPage.createQuestionnaire);
 server.get( '/questionnaire/:questionnaireName', IPage.questionnaireOverview);
 
 server.get( '/data-record/', IPage.dataRecord);
+server.get( '/data-record/edit/:dataRecordID', IPage.dataRecordUpdate);
 
 
 server.get(/\/[^api|components\/]?$/, function(req, res, next) {
