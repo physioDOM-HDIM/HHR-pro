@@ -1,0 +1,13 @@
+- ChromeDriver
+	version : 2.12 (64 bits)
+	download : https://sites.google.com/a/chromium.org/chromedriver/downloads
+
+- Selenium server
+	version : 2.44.0
+	download : http://www.seleniumhq.org/download/
+
+
+
+::DEV::
+java -jar selenium-server-standalone-2.44.0.jar -p 4444 -Dwebdriver.chrome.driver=ChromeDriver_64bit_2.12 &
+node ../../../node_modules/intern/runner.js config=../config/intern.js
