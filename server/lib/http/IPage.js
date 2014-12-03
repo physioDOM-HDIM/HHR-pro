@@ -362,7 +362,7 @@ function IPage() {
 	 */
 	this.beneficiaryOverview = function(req, res, next) {
 		logger.trace("beneficiaryOverview");
-		var html, beneficiary;
+		var html;
 		init(req);
 		var data = {
 			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
