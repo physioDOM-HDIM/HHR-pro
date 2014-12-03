@@ -56,13 +56,8 @@ var ILists = {
      */
     getListArray: function(req, res, next) {
         logger.trace("getListArray");
-        physioDOM.Lists.getList(req.params.listName)
+        physioDOM.Lists.getListArray(req.params.listName)
             .then(function(list) {
-                var i, obj = {};
-                for(i=0; i<list.items.length; i++){
-                    obj[list.items[i].ref] = list.items[i].label;
-                }
-                list.items = obj;
                 res.send(list);
                 next();
             })

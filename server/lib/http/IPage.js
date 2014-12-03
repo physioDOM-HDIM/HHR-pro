@@ -75,6 +75,20 @@ function IPage() {
 				return result;
 			});
 	}
+
+	function promiseListArray(listName) {
+		return physioDOM.Lists.getListArray(listName, lang)
+			.then(function(list) {
+				var result = {};
+				result[listName+"Array"] = list;
+				return result;
+			})
+			.catch(function() {
+				var result = {};
+				result[listName+"Array"] = {};
+				return result;
+			});
+	}
 	
 	/**
 	 * Main Layout
@@ -252,9 +266,19 @@ function IPage() {
 			"perimeter"
 		].map( promiseList);
 
+		var promisesArray = [
+			"job"
+		].map( promiseListArray);
+
 		RSVP.all(promises)
 			.then( function(lists) {
 				lists.forEach( function(list ) {
+					data[Object.keys(list)]=list[Object.keys(list)];
+				});
+
+				return RSVP.all(promisesArray);
+			}).then (function(listsArray) {
+				listsArray.forEach( function(list ) {
 					data[Object.keys(list)]=list[Object.keys(list)];
 				});
 				return physioDOM.Beneficiaries();
@@ -276,7 +300,7 @@ function IPage() {
 							}
 						});
 					}
-					
+
 					//Format date to follow the locale
 					data.beneficiary.birthdate = convertDate(data.beneficiary.birthdate);
 					if(data.beneficiary.entry){
@@ -285,7 +309,7 @@ function IPage() {
 						data.beneficiary.entry.endDate    = data.beneficiary.entry.endDate;
 					}
 				}
-				
+
 				return beneficiary._id ? beneficiary.getProfessionals() : null;
 			}).then(function(professionals){
 				if( professionals ){
@@ -376,7 +400,19 @@ function IPage() {
 			res.send(302);
 			return next();
 		}
-		req.session.save()
+
+		var promisesArray = [
+			"role"
+		].map( promiseListArray);
+
+		RSVP.all(promisesArray)
+			.then( function(lists) {
+				lists.forEach( function(list ) {
+					data[Object.keys(list)]=list[Object.keys(list)];
+				});
+
+				return req.session.save();
+			})
 			.then( function(session) {
 				return physioDOM.Beneficiaries();
 			})
@@ -390,7 +426,7 @@ function IPage() {
 				if( professionals ){
 					data.beneficiary.professionals = professionals;
 				}
-				
+
 				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/beneficiaryOverview.htm', data, function (err, output) {
 					if (err) {
 						console.log("error", err);
@@ -412,7 +448,7 @@ function IPage() {
 	};
 
 	// -------------- Lists pages ---------------------
-	
+
 	/**
 	 * Lists manager
 	 *

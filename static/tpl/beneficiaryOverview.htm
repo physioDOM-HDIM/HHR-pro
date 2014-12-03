@@ -182,7 +182,7 @@
 		{% for prof in beneficiary.professionals %}
 		<tr {% if prof.referent %}class="referent"{% endif %}>
 			<td>{{prof.name.family}} {{prof.name.given}}</td>
-			<td>{{prof.name.role}}</td>
+			<td>{% if roleArray.items[prof.role] %} {{roleArray.items[prof.role]}} {% else %} {{prof.role}} {% endif %}</td>
 			<td>
 				{% for telecom in prof.telecom %}
 					{% if telecom.system !== "email" %}
