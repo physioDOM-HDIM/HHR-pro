@@ -292,6 +292,10 @@ server.del( '/api/beneficiaries/:entryID', IBeneficiary.deleteBeneficiary );
 server.get( '/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryProfessionals );
 server.post('/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryAddProfessional );
 server.del( '/api/beneficiaries/:entryID/professionals/:profID', IBeneficiary.beneficiaryDelProfessional );
+server.get( '/api/beneficiaries/:entryID/datarecords', IBeneficiary.dataRecords  );
+server.get( '/api/beneficiaries/:entryID/datarecords/:dataRecordID', IBeneficiary.dataRecord  );
+
+server.get( '/api/beneficiary', IBeneficiary.getBeneficiary  );
 
 server.get( '/api/sessions/', getSessions);
 
@@ -315,9 +319,10 @@ server.get( '/logout', logout);
 
 server.get( '/beneficiaries', IPage.beneficiaries);
 server.get( '/beneficiary/create', IPage.beneficiaryCreate);
-server.get( '/beneficiary/edit/:beneficiaryID', IPage.beneficiaryCreate);
-server.get( '/beneficiary/update', IPage.beneficiaryCreate);
-server.get( '/beneficiary/:beneficiaryID', IPage.beneficiaryOverview);
+server.get( '/beneficiary/edit/:beneficiaryID', IPage.beneficiaryCreate );
+server.get( '/beneficiary/update', IPage.beneficiaryCreate );
+server.get( '/beneficiary/:beneficiaryID', IPage.beneficiaryOverview );
+
 server.get( '/directory', IPage.directoryList);
 server.get( '/directory/create', IPage.directoryUpdate);
 server.get( '/directory/:professionalID', IPage.directoryUpdate);

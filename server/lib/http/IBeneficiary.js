@@ -73,7 +73,7 @@ var IBeneficiary = {
 		logger.trace("getBeneficiary");
 		physioDOM.Beneficiaries()
 			.then( function(beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID);
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiaryID );
 			})
 			.then( function(beneficiary) {
 				res.send( beneficiary );
@@ -210,6 +210,57 @@ var IBeneficiary = {
 			})
 			.then( function(professionals) {
 				res.send( professionals );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	/**
+	 * return the list of dataRecords of the selected beneficiary
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	dataRecords: function(req,res, next) {
+		logger.trace("datarecords");
+		var pg = parseInt(req.params.pg,10) || 1;
+		var offset = parseInt(req.params.offset,10) || 20;
+		var sort = req.params.sort || null;
+		var sortDir = parseInt(req.params.dir,10) || 1;
+		var filter = req.params.filter || null;
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID);
+			})
+			.then(function (beneficiary) {
+				return beneficiary.getDataRecords(pg, offset, sort, sortDir, filter);
+			})
+			.then( function (datarecords) {
+				res.send( datarecords );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+	
+	dataRecord: function(req,res,next) {
+		logger.trace("datarecord", req.params.dataRecordID );
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID);
+			})
+			.then(function (beneficiary) {
+				return beneficiary.getDataRecordByID(req.params.dataRecordID);
+			})
+			.then( function (datarecord) {
+				res.send( datarecord );
 				next();
 			})
 			.catch( function(err) {
