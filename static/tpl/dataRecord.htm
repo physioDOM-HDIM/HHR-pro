@@ -5,7 +5,7 @@
 {% block head %}
 {% parent %}
 
-<script src="/bower_components/form2js/src/form2js.js"></script>
+<script src="/bower_components/zdk-calendar/form2js.js"></script>
 <script src="/tpl/dataRecord.js"></script>
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
 <link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
@@ -13,19 +13,19 @@
 
 {% block content %}
 <zdk-panel heading="{{'Filter'|i18n}} / {{'Sort'|i18n}}" collapsable="true" collapsed="false">
-<form class="filter" name="filter" autocomplete="off" onsubmit="validFilter(); return false;">
 	<div>
+	<form class="filter" name="filter" autocomplete="off" onsubmit="validFilter(); return false;">
 		<div class="row">
 			<div class="col">
 				<label class="collabel" for="startDate">{{ "Since"|i18n }} : </label>
 				<div class="colcontent">
-					<zdk-input-date name="startDate" style="z-index:100"></zdk-input-date>
+					<zdk-input-date class="startDate" name="startDate" style="z-index:100"></zdk-input-date>
 				</div>
 			</div>
 			<div class="col">
 				<label class="collabel" for="endDate">{{ "To"|i18n }} : </label>
 				<div class="colcontent">
-					<zdk-input-date name="endDate" style="z-index:100"></zdk-input-date>
+					<zdk-input-date class="endDate" name="endDate" style="z-index:100"></zdk-input-date>
 				</div>
 			</div>
 		</div>
@@ -34,7 +34,7 @@
 			<div class="col">
 				<label class="collabel" for="provider">{{ "Provider"|i18n }} : </label>
 				<div class="colcontent">
-					<input type="text" name="provider" id="provider">
+					<input type="text" name="source" id="provider">
 				</div>
 			</div>
 		</div>
@@ -43,14 +43,16 @@
 			<button type="button" class="red" onclick="resetFilter()">{{ "Reset"|i18n }}</button>
 			<button class="green">{{ "Filter"|i18n }}</button>
 		</div>
+		</form>
 		<div style="height:10px">&nbsp;</div>
 		<hr/>
+		<form class="order" name="order" autocomplete="off" onsubmit="validFilter(); return false;">
 		<div class="row">
 			<div class="col">
 				<label>{{ "Sort"|i18n }}:</label>
 				<select name="sort">
 					<option value="source">{{ "Provider"|i18n }}</option>
-					<option value="perimeter">{{ "Date"|i18n }}</option>
+					<option value="datetime">{{ "Date"|i18n }}</option>
 					<option value="home">{{ "Type"|i18n }}</option>
 				</select>
 			</div>
@@ -65,11 +67,12 @@
 		<div class="row control">
 			<span class="spacer"></span>
 
-			<button type="button" class="red" onclick="resetSort()">{{ "Reset"|i18n }}</button>
+			<button type="button" class="red" onclick="resetOrder()">{{ "Reset"|i18n }}</button>
 			<button class="green">{{ "Sort"|i18n }}</button>
 		</div>
+		</form>
 	</div>
-</form>
+
 </zdk-panel>
 
 <tsante-list url="/api/data-record" pg="1" auto="true" unresolved id="tsanteList">
