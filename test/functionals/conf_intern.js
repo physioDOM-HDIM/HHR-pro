@@ -40,7 +40,7 @@ define({
 	},
 
 	// Functional test suite(s) to run in each browser once non-functional tests are completed
-	functionalSuites: [ 'login/login.js' ],
+	functionalSuites: [ 'login/login.js', 'beneficiaries/list.js' ],
 
 	reporters: ['console'],
 

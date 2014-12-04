@@ -5,7 +5,7 @@ define([
 ], function (registerSuite, assert, require) {
 
     registerSuite({
-        name: "login",
+        name: "LOGIN",
 
         "badLogin": function () {
             return this.remote
