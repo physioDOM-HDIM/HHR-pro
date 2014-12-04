@@ -22,7 +22,7 @@
 <script type="template" id="tplProfessionnalContainer">
     <div class="row {%raw%}{{#item.referent}}referent{{/item.referent}}{%endraw%}">
         <div class="col bold">{%raw%}{{item.name.family}} {{item.name.given}}{%endraw%}</div>
-        <div class="col">{%raw%}{{item.job}}{%endraw%}</div>
+        <div class="col">{%raw%}{{display_job}}{%endraw%}</div>
         <div class="col">
             {%raw%}{{#item.telecom}}
                 {{display_phone}}
@@ -358,7 +358,7 @@
         <div class="proItemContainer">
             <div class="row {% if professional.referent %} referent {% endif %}">
                 <div class="col bold">{{professional.name.family}} {{professional.name.given}}</div>
-                <div class="col">{{professional.job}}</div>
+                <div class="col">{% if jobArray.items[professional.job] %} {{jobArray.items[professional.job]}} {% else %} {{ professional.job}} {% endif %}</div>
                 <div class="col">
                     {% set first = true %}
                     {% for telecom in professional.telecom %}
@@ -396,45 +396,21 @@
 <zdk-panel  heading="Diagnosis" collapsable="true" collapsed="false">
     <form name="diagnosis" autocomplete="off" onsubmit="return false;">
         <p class="head">{{ "General status"|i18n }}</p>
-        <!-- TODO
-        {% for item in generalDiagnosis.items %}
-            <div class="row">
-                <label>{{item.label}}</label>
-                <input type="radio" name="diagnosis.general" value="{{item.value}}" {% if beneficiary.diagnosis.general === item.value %}checked{% endif %}/>
-            </div>
-        {% endfor %} -->
         <div class="row">
+        {% for item in generalStatus.items %}
             <div class="col">
-                <input type="radio" name="diagnosis.general" value="normal" {% if beneficiary.diagnosis.general=="normal" %}checked{% endif %}/> {{ "Normal"|i18n }}
+                <input type="radio" name="diagnosis.general" value="{{item.value}}" {% if beneficiary.diagnosis.general === item.value %}checked{% endif %}/> <label>{{item.label}}</label>
             </div>
-            <div class="col">
-                <input type="radio" name="diagnosis.general" value="pre-frality" {% if beneficiary.diagnosis.general=="pre-frality" %}checked{% endif %}/> {{ "Pre-frality"|i18n }} 
-            </div>
-            <div class="col">
-                <input type="radio" name="diagnosis.general" value="dependant"{% if beneficiary.diagnosis.general=="dependant" %}checked{% endif %} /> {{ "Dependant"|i18n }}
-            </div>
+        {% endfor %}
         </div>
 
-
         <p class="head">{{ "Nutritional status"|i18n }}</p>
-        <!-- TODO
-        {% for item in nutritionalDiagnosis.items %}
-            <div class="row">
-                <label>{{item.label}}</label>
-                <input type="radio" name="diagnosis.nutritional" value="{{item.value}}" {% if beneficiary.diagnosis.nutritional === item.value %}checked{% endif %}/>
-            </div>
-        {% endfor %} -->
-
         <div class="row">
+        {% for item in nutritionalStatus.items %}
             <div class="col">
-                <input type="radio" name="diagnosis.nutritional" value="normal" {% if beneficiary.diagnosis.nutritional=="normal" %}checked{% endif %}/> {{ "Normal"|i18n }}
+                <input type="radio" name="diagnosis.nutritional" value="{{item.value}}" {% if beneficiary.diagnosis.nutritional === item.value %}checked{% endif %}/> <label>{{item.label}}</label>
             </div>
-            <div class="col">
-                <input type="radio" name="diagnosis.nutritional" value="undernutrition" {% if beneficiary.diagnosis.nutritional=="undernutrition" %}checked{% endif %} /> {{ "Undernutrition"|i18n }}
-            </div>
-            <div class="col">
-                <input type="radio" name="diagnosis.nutritional" value="severeundernutrition" {% if beneficiary.diagnosis.nutritional=="severeundernutrition" %}checked{% endif %}/> {{ "Severe undernutrition"|i18n }}
-            </div>
+        {% endfor %}
         </div>
 
         <p class="head">{{ "Chronic pathologies"|i18n }}</p>
@@ -456,14 +432,6 @@
                     </div>
                 {%endfor%}
                 </div>
-                <!-- TODO
-                <select name="diagnosis.chronic.associated" multiple="multiple" required>
-                    
-                    {% for item in associatedChronicDiagnosis.items %}
-                        <option value="{{item.value}}">{{item.label}}</option>
-                    {% endfor %}
-                </select>
-                -->
             </div>
         </div>
         <button id="diagnosisSubmitBtn" class="hidden"></button>
@@ -481,7 +449,7 @@
     <div class="modalContainer">
         <div class="modalTitleContainer">{{ "Add professionals"|i18n }}</div>
         <div class="modalContentContainer">
-            <tsante-list url="/api/directory" auto="false" unresolved id="tsanteListProfessional">
+            <tsante-list url="/api/directory" auto="false" autoRender="false" unresolved id="tsanteListProfessional">
                 <div class="row">
                     <p>{{ "Choose your referent and check professionals you want to add"|i18n }}</p>
                 </div>
@@ -491,7 +459,7 @@
                             <div><input type="checkbox" name="selected" checked?="{% raw %}{{item._tmpData.selected}}{% endraw %}" onchange="updateProfessionalSelection(this, {% raw %}'{{i}}'{% endraw %})"/></div>
                             <div style="margin-right:10px"><input type="radio" name="referent" checked?="{% raw %}{{item._tmpData.referent}}{% endraw %}" onchange="updateProfessionalReferent(this, {% raw %}'{{i}}'{% endraw %})"/></div>
                             <div class="col bold" >{% raw %}{{item.name.family}} {{item.name.given}}{% endraw %}</div>
-                            <div class="col">{% raw %}{{item.job}}{% endraw %}</div>
+                            <div class="col">{% raw %}{{list.dataLists.job.items[item.job][list.lang] || item.job}}{% endraw %}</div>
                         </div>
                     </div>
                 </template>

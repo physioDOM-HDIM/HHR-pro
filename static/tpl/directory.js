@@ -11,27 +11,31 @@ var dataFormat = {
     activeTrueData: "true",
     activeFalseData: "false"
 },
-// isAdmin = false,
-_dataObj;
+listPagerElt,
+_dataObj,
+_dataLists,
+_lang;
 
-//Display/hide some information according to the user status
-function checkUser(e) {
-	console.log("checkUser", arguments);
-    /*
-    if (isAdmin) {
-        var editButtons = document.querySelectorAll(".editButton"),
-            addEntry = document.querySelector("#addEntry");
-        if (editButtons && editButtons.length > 0) {
-            [].map.call(editButtons, function(node) {
-                node.className = node.className.replace("hidden", "");
-            });
-        }
-        if (addEntry) {
-            addEntry.className = addEntry.className.replace("hidden", "");
-        }
-    }
-    */
-}
+var promiseXHR = function(method, url, statusOK, data) {
+    var promise = new RSVP.Promise(function(resolve, reject) {
+        var client = new XMLHttpRequest();
+        statusOK = statusOK ? statusOK : 200;
+        client.open(method, url);
+        client.onreadystatechange = function handler() {
+            if (this.readyState === this.DONE) {
+                if (this.status === statusOK) {
+                    resolve(this.response);
+                } else {
+                    reject(this);
+                }
+            }
+        };
+        client.send(data ? data : null);
+    });
+
+    return promise;
+};
+
 
 //Toggle display/hide a node
 function toggleHiddenNode(node, searchPattern) {
@@ -113,21 +117,135 @@ function updateDirectory(idx){
 
 function onHaveData(data){
 	_dataObj = data.detail;
+    
+    var item;
+    for(var i=0; i<_dataObj.list.items.length; i++){
+        item = _dataObj.list.items[i];
+        if( item.job ) {
+            item.job = _dataLists.job.items[item.job] ? _dataLists.job.items[item.job][_lang] : item.job;
+        }
+        if( item.role ) {
+            item.role = _dataLists.role.items[item.role] ? _dataLists.role.items[item.role][_lang] : item.role;
+        }
+    }
+    listPagerElt.render( _dataObj.list );
+}
+
+function closeModal() {
+    console.log("closeModal", arguments);
+    document.querySelector("#statusModal").hide();
+
+    var elt = document.querySelector("#statusModal"),
+        subElt, child;
+    subElt = elt.querySelector(".modalTitleContainer");
+    subElt.innerHTML = "";
+    subElt.classList.add("hidden");
+    subElt = elt.querySelector(".modalContentContainer");
+    subElt.innerHTML = "";
+    subElt.classList.add("hidden");
+    subElt = elt.querySelector(".modalButtonContainer");
+    for (var i = subElt.childNodes.length - 1; i >= 0; i--) {
+        child = subElt.childNodes[i];
+        subElt.removeChild(child);
+    }
+    subElt.classList.add("hidden");
+}
+
+function showModal(modalObj) {
+    console.log("showModal", arguments);
+    closeModal();
+    var elt = document.querySelector("#statusModal"),
+        subElt;
+    if (modalObj.title) {
+        subElt = elt.querySelector(".modalTitleContainer");
+        subElt.innerHTML = document.querySelector("#" + modalObj.title).innerHTML;
+        subElt.classList.remove("hidden");
+    }
+    if (modalObj.content) {
+        subElt = elt.querySelector(".modalContentContainer");
+        subElt.innerHTML = document.querySelector("#" + modalObj.content).innerHTML;
+        subElt.classList.remove("hidden");
+    }
+
+    if (modalObj.buttons) {
+        var btn, obj, color;
+        subElt = elt.querySelector(".modalButtonContainer");
+        for (var i = 0; i < modalObj.buttons.length; i++) {
+            obj = modalObj.buttons[i];
+            btn = document.createElement("button");
+            btn.innerHTML = document.querySelector("#" + obj.id).innerHTML;
+            btn.onclick = obj.action;
+            switch (obj.id) {
+                case "trad_ok":
+                    {
+                        color = "green";
+                    }
+                    break;
+                case "trad_yes":
+                    {
+                        color = "green";
+                    }
+                    break;
+                case "trad_no":
+                    {
+                        color = "blue";
+                    }
+                    break;
+            }
+            btn.classList.add(color);
+            subElt.appendChild(btn);
+        }
+        subElt.classList.remove("hidden");
+    }
+
+    document.querySelector("#statusModal").show();
 }
 
 function init() {
 	console.log("init");
-    //TODO internationalization
 
-	//TODO get the info about access user and
-	//don't forget to call checkUser()
-	// isAdmin = true;
-
-    var listPagerElt = document.querySelector("tsante-list");
-    if(listPagerElt){
-    	listPagerElt.addEventListener("tsante-draw", checkUser, false);
-    	listPagerElt.addEventListener("tsante-response", onHaveData, false);
+    var promises = {
+        job: promiseXHR("GET", "/api/lists/job/array", 200),
+        role: promiseXHR("GET", "/api/lists/role/array", 200)
+    };
+    var errorCB = function(error){
+        console.log("Init error", error);
+        var modalObj = {
+            title: "trad_error",
+            content: "trad_error_occured",
+            buttons: [{
+                id: "trad_ok",
+                action: function() {
+                    closeModal();
+                }
+            }]
+        };
+        showModal(modalObj);
     }
+
+    RSVP.hash(promises).then(function(results) {
+        try{
+            _dataLists = {};
+            _dataLists.job = JSON.parse(results.job);
+            _dataLists.role = JSON.parse(results.role);
+
+            //TODO: get lang from cookie
+            _lang = "en";
+
+            listPagerElt = document.querySelector("tsante-list");
+            if(listPagerElt){
+                listPagerElt.addEventListener("tsante-response", onHaveData, false);
+            }
+            listPagerElt.go();
+        }
+        catch(err){
+            errorCB(err);
+        }
+    }).catch(function(error) {
+        errorCB(error);
+    });
+
+    
 }
 
-window.addEventListener("DOMContentLoaded", init, false);
+window.addEventListener("polymer-ready", init, false);
