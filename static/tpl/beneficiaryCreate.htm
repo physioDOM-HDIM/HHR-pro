@@ -396,45 +396,21 @@
 <zdk-panel  heading="Diagnosis" collapsable="true" collapsed="false">
     <form name="diagnosis" autocomplete="off" onsubmit="return false;">
         <p class="head">{{ "General status"|i18n }}</p>
-        <!-- TODO
-        {% for item in generalDiagnosis.items %}
-            <div class="row">
-                <label>{{item.label}}</label>
-                <input type="radio" name="diagnosis.general" value="{{item.value}}" {% if beneficiary.diagnosis.general === item.value %}checked{% endif %}/>
-            </div>
-        {% endfor %} -->
         <div class="row">
+        {% for item in generalStatus.items %}
             <div class="col">
-                <input type="radio" name="diagnosis.general" value="normal" {% if beneficiary.diagnosis.general=="normal" %}checked{% endif %}/> {{ "Normal"|i18n }}
+                <input type="radio" name="diagnosis.general" value="{{item.value}}" {% if beneficiary.diagnosis.general === item.value %}checked{% endif %}/> <label>{{item.label}}</label>
             </div>
-            <div class="col">
-                <input type="radio" name="diagnosis.general" value="pre-frality" {% if beneficiary.diagnosis.general=="pre-frality" %}checked{% endif %}/> {{ "Pre-frality"|i18n }} 
-            </div>
-            <div class="col">
-                <input type="radio" name="diagnosis.general" value="dependant"{% if beneficiary.diagnosis.general=="dependant" %}checked{% endif %} /> {{ "Dependant"|i18n }}
-            </div>
+        {% endfor %}
         </div>
 
-
         <p class="head">{{ "Nutritional status"|i18n }}</p>
-        <!-- TODO
-        {% for item in nutritionalDiagnosis.items %}
-            <div class="row">
-                <label>{{item.label}}</label>
-                <input type="radio" name="diagnosis.nutritional" value="{{item.value}}" {% if beneficiary.diagnosis.nutritional === item.value %}checked{% endif %}/>
-            </div>
-        {% endfor %} -->
-
         <div class="row">
+        {% for item in nutritionalStatus.items %}
             <div class="col">
-                <input type="radio" name="diagnosis.nutritional" value="normal" {% if beneficiary.diagnosis.nutritional=="normal" %}checked{% endif %}/> {{ "Normal"|i18n }}
+                <input type="radio" name="diagnosis.nutritional" value="{{item.value}}" {% if beneficiary.diagnosis.nutritional === item.value %}checked{% endif %}/> <label>{{item.label}}</label>
             </div>
-            <div class="col">
-                <input type="radio" name="diagnosis.nutritional" value="undernutrition" {% if beneficiary.diagnosis.nutritional=="undernutrition" %}checked{% endif %} /> {{ "Undernutrition"|i18n }}
-            </div>
-            <div class="col">
-                <input type="radio" name="diagnosis.nutritional" value="severeundernutrition" {% if beneficiary.diagnosis.nutritional=="severeundernutrition" %}checked{% endif %}/> {{ "Severe undernutrition"|i18n }}
-            </div>
+        {% endfor %}
         </div>
 
         <p class="head">{{ "Chronic pathologies"|i18n }}</p>
@@ -456,14 +432,6 @@
                     </div>
                 {%endfor%}
                 </div>
-                <!-- TODO
-                <select name="diagnosis.chronic.associated" multiple="multiple" required>
-                    
-                    {% for item in associatedChronicDiagnosis.items %}
-                        <option value="{{item.value}}">{{item.label}}</option>
-                    {% endfor %}
-                </select>
-                -->
             </div>
         </div>
         <button id="diagnosisSubmitBtn" class="hidden"></button>
