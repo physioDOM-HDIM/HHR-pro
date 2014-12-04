@@ -402,7 +402,16 @@ function IPage() {
 		}
 
 		var promisesArray = [
-			"role"
+			"role",
+			"system",
+			"use",
+			"wayOfLife",
+			"maritalStatus",
+			"disability",
+			"communication",
+			"profession",
+			"perimeter",
+			"job"
 		].map( promiseListArray);
 
 		RSVP.all(promisesArray)
@@ -410,7 +419,6 @@ function IPage() {
 				lists.forEach( function(list ) {
 					data[Object.keys(list)]=list[Object.keys(list)];
 				});
-
 				return req.session.save();
 			})
 			.then( function(session) {
@@ -426,7 +434,8 @@ function IPage() {
 				if( professionals ){
 					data.beneficiary.professionals = professionals;
 				}
-
+				console.log("data",JSON.stringify(data,null,4));
+				
 				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/beneficiaryOverview.htm', data, function (err, output) {
 					if (err) {
 						console.log("error", err);
