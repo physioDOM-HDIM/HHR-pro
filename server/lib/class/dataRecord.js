@@ -63,7 +63,7 @@ function DataRecord() {
 		pg = pg || 1;
 		offset = offset || 20;
 
-		var search = { };
+		var search = { dataRecordID: this._id };
 
 		var cursor = physioDOM.db.collection("dataRecordItems").find(search);
 		var cursorSort = {};
