@@ -44,11 +44,17 @@ Functional tests are in the folder :
 ```
 cd physiodom/test/functionals
 java -jar bin/selenium-server-standalone-2.44.0.jar -p 4444 -Dwebdriver.chrome.driver=bin/ChromeDriver_64bit_2.12
-node ../../node_modules/intern/runner.js config=conf_intern.js
+node ../../node_modules/intern/runner.js config=conf_intern.js leaveRemoteOpen
 ```
 - Launching selenium server on port 4444 (cf. in conf_intern.js, the webdriver object) using the chrome webdriver located in bin/
-- Launching the intern runner by node with the config file path in the config attribute
+- Launching the intern runner by node with the config file path in the config attribute. The leaveRemoteOpen attribute is used if you want to keep opened the browser after tests finish
 
 #### 5. New functional test
 
 The path file of your new functional test must be inserted in the **functionalSuite** array of the `conf_intern.js` file.
+
+https://github.com/theintern/intern/wiki/Writing-Tests-with-Intern
+
+The `remote` object is a LeadFoot Command object, here are methods you can use : https://theintern.github.io/leadfoot/Command.html
+
+Full Chai API Documentation: http://chaijs.com/api/
