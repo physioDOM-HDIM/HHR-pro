@@ -263,7 +263,9 @@ function IPage() {
 			"disability",
 			"communication",
 			"profession",
-			"perimeter"
+			"perimeter",
+			"nutritionalStatus",
+			"generalStatus"
 		].map( promiseList);
 
 		var promisesArray = [
