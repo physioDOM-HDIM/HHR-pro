@@ -155,5 +155,10 @@
 	"descending": "descending",
 	"Valid": "Valid",
 	"From Home": "From Home",
-	"Consultation": "Consultation"
+	"Consultation": "Consultation",
+	"<strong>2015-06-17</strong> From Home": "<strong>2015-06-17</strong> From Home",
+	"Physiological parameters": "Physiological parameters",
+	"Symptoms assessments": "Symptoms assessments",
+	"Min threshold": "Min threshold",
+	"Max threshold": "Max threshold"
 }

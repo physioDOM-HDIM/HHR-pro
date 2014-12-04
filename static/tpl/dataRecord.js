@@ -72,3 +72,20 @@ function validFilter() {
 	var params = getParams();
 	paginate(true, params);
 }
+function init() {
+	var list = document.querySelector('tsante-list');
+
+	list.addEventListener('tsante-response', function(datas) {
+		var i = 0, 
+			len = datas.detail.list.items.length;
+
+		for(i; i<len; i++) {
+			datas.detail.list.items[i].date = moment.utc(datas.detail.list.items[i].datetime).format("YYYY-MM-DD | HH:mm");
+		}
+
+		list.render(datas.detail);
+
+	});
+}
+
+window.addEventListener("polymer-ready", init, false);

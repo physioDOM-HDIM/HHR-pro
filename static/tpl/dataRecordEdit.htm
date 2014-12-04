@@ -1,6 +1,6 @@
 {% extends './page.htm' %}
 
-{% block title %}{{ "Filter / sort"|i18n }}{% endblock %}
+{% block title %}2015-06-17 {{ "From Home"|i18n }}{% endblock %}
 
 {% block head %}
 {% parent %}
@@ -10,5 +10,50 @@
 {% endblock %}
 
 {% block content %}
+
+{% macro line() %}
+<div class="row">
+    <div class="col bold">{{ item.text }}</div>
+    <div class="col">{{ item.value }}</div>
+    <div class="col">
+    	<label>{{ 'Min threshold' | i18n }}:</label>
+    	<input type="hidden" name="_id" value="{{item._id}}"/>
+    </div>
+    <div class="col"><input type="text" name="min"/></div>
+    <div class="col">
+    	<label>{{ 'Max threshold' | i18n }}:</label>
+    	<input type="hidden" name="_id" value="{{item._id}}"/>
+    </div>
+    <div class="col"><input type="text" name="max"/></div>
+    <div>
+    	<a href="#">X</a>
+    	<button class="blue small">Edit</button>
+    </div>
+</div>
+{% endmacro %}
+
+<zdk-panel heading="{{'Physiological parameters' |i18n}}" collapsable="false" collapsed="false">
+	{% for item in dataRecordItems.items %}
+	{% if item.category === 'General' %}
+	{{ line() }}
+    {% endif %}
+    {% endfor %}    
+</zdk-panel>
+
+<zdk-panel heading="{{'Symptoms assessments' |i18n}}" collapsable="false" collapsed="false">
+	{% for item in dataRecordItems.items %}
+	{% if item.category === 'Symptoms' %}
+    {{ line() }}
+    {% endif %}
+    {% endfor %}    
+</zdk-panel>
+
+<zdk-panel heading="{{'Questionnaires' |i18n}}" collapsable="false" collapsed="false">
+	{% for item in dataRecordItems.items %}
+	{% if item.category === 'HDIM' %}
+    {{ line() }}
+    {% endif %}
+    {% endfor %}    
+</zdk-panel>
 
 {% endblock %}

@@ -761,13 +761,11 @@ function IPage() {
 			})
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
-			// 	return beneficiary.getDataRecordByID(req.params.dataRecordID)
-			// })
-			// .then(function(dataRecord) {
-			// 	if(dataRecord) {
-			// 		data.dataRecord = dataRecord;
-			// 	}
-				
+				return beneficiary.getDataRecordByID(req.params.dataRecordID);
+			})
+			.then(function(dataRecordItems) {
+				data.dataRecordItems = dataRecordItems;
+				logger.trace(data.dataRecordItems);
 				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/dataRecordEdit.htm', data, function(err, output) {
 					if (err) {
 						console.log("error", err);
@@ -779,6 +777,7 @@ function IPage() {
 						sendPage(output, res, next);
 					}
 				});
+
 			})
 			.catch(function(err) {
 				logger.error(err);
@@ -786,7 +785,6 @@ function IPage() {
 				res.end();
 				next();
 			});
-
 	};
 
 	/**
