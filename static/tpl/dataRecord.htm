@@ -80,7 +80,7 @@
 
 </zdk-panel>
 
-<tsante-list url="/api/data-record" pg="1" auto="true" unresolved id="tsanteList">
+<tsante-list url="/api/beneficiaries/{{beneficiary._id.toString()}}/datarecords" pg="1" auto="true" unresolved id="tsanteList">
 <template is="auto-binding" repeat="{% raw %}{{item in list.items}}{% endraw %}">
 	<div class="item">
 		<div class="row">
@@ -98,7 +98,7 @@
 					<div class="col">{% raw %}{{item.source.name.family}} {{item.source.name.given}}{% endraw %}</div>
 				</div>
 			</div>
-			<div><a href="data-record/edit/{%raw%}{{item.dataRecordID}}{% endraw %}"><button class="blue small" style="margin:5px">view</button></a></div>
+			<div><a href="datarecord/edit/{%raw%}{{item.dataRecordID}}{% endraw %}"><button class="blue small" style="margin:5px">view</button></a></div>
 		</div>
 	</div>
 </template>

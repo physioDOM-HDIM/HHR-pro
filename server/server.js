@@ -307,8 +307,6 @@ server.post('/api/lists/:listName', ILists.addItem );
 server.put( '/api/lists/:listName/:itemRef', ILists.translateItem );
 server.post('/api/lists/:listName/:itemRef', ILists.activateItem );
 
-server.get( '/api/data-record', IDataRecord.getList);
-
 //DEV ONLY for creation
 server.post( '/api/questionnaires', IQuestionnaire.createQuestionnaire);
 //DEV ONLY
@@ -333,8 +331,8 @@ server.get( '/questionnaires', IPage.questionnaires);
 server.get( '/questionnaires/create', IPage.createQuestionnaire);
 server.get( '/questionnaire/:questionnaireName', IPage.questionnaireOverview);
 
-server.get( '/data-record/', IPage.dataRecord);
-server.get( '/data-record/edit/:dataRecordID', IPage.dataRecordUpdate);
+server.get( '/datarecord/', IPage.dataRecord);
+server.get( '/datarecord/edit/:dataRecordID', IPage.dataRecordUpdate);
 
 
 server.get(/\/[^api|components\/]?$/, function(req, res, next) {

@@ -756,11 +756,17 @@ function IPage() {
 		};
 
 		physioDOM.Beneficiaries()
-			.then( function(beneficiaries) {
+			.then(function(beneficiaries) {
 				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
 			})
-			.then( function( beneficiary ) {
+			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
+			// 	return beneficiary.getDataRecordByID(req.params.dataRecordID)
+			// })
+			// .then(function(dataRecord) {
+			// 	if(dataRecord) {
+			// 		data.dataRecord = dataRecord;
+			// 	}
 				
 				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/dataRecordEdit.htm', data, function(err, output) {
 					if (err) {
