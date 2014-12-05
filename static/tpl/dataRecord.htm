@@ -80,7 +80,7 @@
 
 </zdk-panel>
 
-<tsante-list url="/api/beneficiaries/{{beneficiary._id.toString()}}/datarecords" pg="1" auto="true" autoRender="false" unresolved id="tsanteList">
+<tsante-list url="/api/beneficiary/datarecords" pg="1" auto="true" autoRender="false" unresolved id="tsanteList">
 <template is="auto-binding" repeat="{% raw %}{{item in list.items}}{% endraw %}">
 	<div class="item">
 		<div class="row">
