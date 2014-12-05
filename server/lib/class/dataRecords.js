@@ -6,7 +6,8 @@
 /* global physioDOM */
 "use strict";
 
-var promise = require("rsvp").Promise,
+var RSVP = require("rsvp"),
+	promise = require("rsvp").Promise,
 	dbPromise = require("./database.js"),
 	Logger = require("logger"),
 	ObjectID = require("mongodb").ObjectID,
@@ -31,7 +32,41 @@ function DataRecords( beneficiaryID ) {
 			cursorSort.datetime = 1;
 		}
 		cursor = cursor.sort( cursorSort );
-		return dbPromise.getList(cursor, pg, offset);
+		
+		return dbPromise.getList(cursor, pg, offset)
+			.then( function( list ) {
+				var promises = list.items.map( function( item ) {
+					return physioDOM.Directory()
+						.then( function( directory ) {
+							if( item.source ) {
+								return directory.getEntryByID( item.source );
+							} else {
+								return null;
+							}
+						})
+						.then( function( professional ) {
+							if( professional ) {
+								item.source = professional;
+							}
+							return item;
+						})
+						.catch( function(err) {
+							console.log("err", err);
+							return item;
+						});
+				});
+				
+				return RSVP.all( promises )
+					.then( function( datarecords ) {
+						list.items = datarecords;
+						console.log( "list of records" );
+						return list;
+					})
+					.catch( function(err) {
+						console.log(err);
+						return list;
+					});
+			});
 	};
 
 	/**
