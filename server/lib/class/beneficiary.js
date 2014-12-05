@@ -518,22 +518,28 @@ function Beneficiary( ) {
 			logger.trace("getDataRecords");
 			physioDOM.DataRecords( that._id )
 				.then( function( datarecords ) {
-					resolve(datarecords.getList(pg, offset, sort, sortDir, filter));
+					resolve( datarecords.getList(pg, offset, sort, sortDir, filter) );
 				});
 		});
 	};
 	
 	this.getDataRecordByID = function( dataRecordID ) {
-		var that = this;
+		var datarecord, that = this;
+		
 		return new promise( function(resolve, reject) {
 			logger.trace("getDataRecordByID", dataRecordID);
 			physioDOM.DataRecords( that._id )
 				.then( function (datarecords ) {
 					return datarecords.getByID( new ObjectID(dataRecordID) );
 				})
-				.then( function ( datarecord ) {
-					console.log( "get the datarecord ");
-					resolve(datarecord.getItems());
+				.then( function ( obj ) {
+					datarecord = obj;
+					return datarecord.getItems();
+				})
+				.then( function(items) {
+					var obj = JSON.parse( JSON.stringify( datarecord ));
+					obj.items = items;
+					resolve(obj);
 				})
 				.catch( function(err) {
 					logger.error("error ", err);
