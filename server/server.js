@@ -292,10 +292,12 @@ server.del( '/api/beneficiaries/:entryID', IBeneficiary.deleteBeneficiary );
 server.get( '/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryProfessionals );
 server.post('/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryAddProfessional );
 server.del( '/api/beneficiaries/:entryID/professionals/:profID', IBeneficiary.beneficiaryDelProfessional );
-server.get( '/api/beneficiaries/:entryID/datarecords', IBeneficiary.dataRecords  );
-server.get( '/api/beneficiaries/:entryID/datarecords/:dataRecordID', IBeneficiary.dataRecord  );
 
 server.get( '/api/beneficiary', IBeneficiary.getBeneficiary  );
+server.get( '/api/beneficiary/professionals', IBeneficiary.beneficiaryProfessionals );
+server.get( '/api/beneficiary/datarecords', IBeneficiary.dataRecords );
+server.get( '/api/beneficiary/datarecords/:dataRecordID', IBeneficiary.dataRecord );
+
 
 server.get( '/api/sessions/', getSessions);
 
