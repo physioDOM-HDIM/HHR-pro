@@ -765,7 +765,7 @@ function IPage() {
 			})
 			.then(function(dataRecordItems) {
 				data.dataRecordItems = dataRecordItems;
-				logger.trace(data.dataRecordItems);
+
 				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/dataRecordEdit.htm', data, function(err, output) {
 					if (err) {
 						console.log("error", err);

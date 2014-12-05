@@ -370,6 +370,23 @@ div[drawer] ul.menu {
 	text-align: left;
 }
 
+.float-right {
+	float: right;
+}
+
+.spacing-around, input.spacing-around {
+	margin: 0 10px;
+}
+
+i.icon {
+	background-size: cover;
+	width: 30px;
+	height: 30px;
+}
+
+.icon-delete {
+	background: url('../img/icons/delete.svg') no-repeat;
+}
 
 /* Polymer */
 zdk-input-date {
