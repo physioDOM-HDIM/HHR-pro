@@ -388,6 +388,11 @@ i.icon {
 	background: url('../img/icons/delete.svg') no-repeat;
 }
 
+.spacing-nobutton {
+	width: 55px;
+	height: 19px;
+}
+
 /* Polymer */
 zdk-input-date {
     z-index:50;
