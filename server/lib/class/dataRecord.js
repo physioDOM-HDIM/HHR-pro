@@ -37,13 +37,26 @@ function DataRecord() {
 				if(!doc) {
 					reject( {code:404, error:"not found"});
 				} else {
-					
 					for (var prop in doc) {
 						if (doc.hasOwnProperty(prop)) {
 							that[prop] = doc[prop];
 						}
 					}
-					resolve(that);
+
+					physioDOM.Directory()
+						.then( function( directory ) {
+							if( that.source ) {
+								return directory.getEntryByID( that.source );
+							} else {
+								return null;
+							}
+						})
+						.then( function( professional ) {
+							if( professional ) {
+								that.source = professional;
+							}
+							resolve(that);
+						});
 				}
 			});
 		});
@@ -64,7 +77,7 @@ function DataRecord() {
 		offset = offset || 20;
 
 		var search = { dataRecordID: this._id };
-
+		console.log( "search :" ,search);
 		var cursor = physioDOM.db.collection("dataRecordItems").find(search);
 		var cursorSort = {};
 		if(sort) {
