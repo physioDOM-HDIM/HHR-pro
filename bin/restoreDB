@@ -6,7 +6,7 @@
 
 "use strict";
 
-var testCommon = require("../test/testCommon"),
+var testCommon = require("../test/backend/testCommon"),
 	fs = require("fs"),
 	path = require("path"),
 	targz = require("tar.gz");

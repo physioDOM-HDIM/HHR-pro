@@ -21,9 +21,9 @@ var mocha = new Mocha({
 	ignoreLeaks: true
 });
 
-mocha.addFile(join(__dirname,'testDirectory.js'));
-mocha.addFile(join(__dirname,'testBeneficiaries.js'));
-mocha.addFile(join(__dirname,'testLists.js'));
+mocha.addFile(join(__dirname,'backend/testDirectory.js'));
+mocha.addFile(join(__dirname,'backend/testBeneficiaries.js'));
+mocha.addFile(join(__dirname,'backend/testLists.js'));
 
 mocha.run(function onEnding() {
 	console.log("testing done");

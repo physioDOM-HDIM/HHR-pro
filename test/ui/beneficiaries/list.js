@@ -14,7 +14,7 @@ define([
                 .then(function (text){
                     assert.strictEqual(text, "Amendola Tony",
                         "At least a beneficiary must be present");
-                })
+                });
         },
 
         //WORKS WITH CHROME BUT NOT WITH FIREFOX DUE TO SHADOW SELECTOR
@@ -39,7 +39,7 @@ define([
                 .then(function (text){
                     assert.strictEqual(text, "Baccarin Morena",
                         "The filter must be applied to the list");
-                })
+                });
         },
 
         "resetFilter": function () {
@@ -52,7 +52,7 @@ define([
                 .then(function (text){
                     assert.strictEqual(text, "Amendola Tony",
                         "The reset filter must retrieve the original list");
-                })
+                });
         }
     });
 });
