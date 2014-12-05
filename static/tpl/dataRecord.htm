@@ -1,6 +1,6 @@
 {% extends './page.htm' %}
 
-{% block title %}{{ "Filter / sort"|i18n }}{% endblock %}
+{% block title %}Data Recording{% endblock %}
 
 {% block head %}
 {% parent %}
@@ -12,6 +12,13 @@
 {% endblock %}
 
 {% block content %}
+
+<div class="row title">
+<label class="title">
+	{{ "Select a Record"|i18n }}
+</label>
+</div>
+
 <zdk-panel heading="{{'Filter'|i18n}} / {{'Sort'|i18n}}" collapsable="true" collapsed="false">
 	<div>
 	<form class="filter" name="filter" autocomplete="off" onsubmit="validFilter(); return false;">

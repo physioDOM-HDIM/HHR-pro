@@ -160,5 +160,6 @@
 	"Physiological parameters": "Physiological parameters",
 	"Symptoms assessments": "Symptoms assessments",
 	"Min threshold": "Min threshold",
-	"Max threshold": "Max threshold"
+	"Max threshold": "Max threshold",
+	"Select a Record": "Select a Record"
 }

@@ -1,15 +1,29 @@
 {% extends './page.htm' %}
 
-{% block title %}2015-06-17 {{ "From Home"|i18n }}{% endblock %}
+{% block title %}Data Recording{% endblock %}
 
 {% block head %}
 {% parent %}
-
+<script src="/bower_components/mustache/mustache.js"></script>
+<script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
 <script src="/bower_components/zdk-calendar/form2js.js"></script>
 <script src="/tpl/dataRecordEdit.js"></script>
 {% endblock %}
 
 {% block content %}
+
+<div class="row title">
+<label class="title">
+	<span id="datetime">
+		{% raw %}{{#dateFormat}}{% endraw %}{{dataRecordItems.datetime}}{% raw %}{{/dateFormat}}{% endraw %}
+	</span>
+	{% if dataRecordItems.home %}
+	  {{ "From Home"|i18n }}
+	{% else %}
+	  {{ "Consultation"|i18n }}
+	{% endif %}
+</label>
+</div>
 
 {% macro line() %}
 <div id="ID{{item._id.toString()}}">
@@ -116,7 +130,7 @@
 
 
 <zdk-panel heading="{{'Physiological parameters' |i18n}}" collapsable="false" collapsed="false">
-	{% for item in dataRecordItems.items %}
+	{% for item in dataRecordItems.items.items %}
 	{% if item.category === 'General' %}
 	{{ line() }}
     {% endif %}
@@ -126,7 +140,7 @@
 </zdk-panel>
 
 <zdk-panel heading="{{'Symptoms assessments' |i18n}}" collapsable="false" collapsed="false">
-	{% for item in dataRecordItems.items %}
+	{% for item in dataRecordItems.items.items %}
 	{% if item.category === 'Symptoms' %}
     {{ line() }}
     {% endif %}
@@ -136,7 +150,7 @@
 </zdk-panel>
 
 <zdk-panel heading="{{'Questionnaires' |i18n}}" collapsable="false" collapsed="false">
-	{% for item in dataRecordItems.items %}
+	{% for item in dataRecordItems.items.items %}
 	{% if item.category === 'HDIM' %}
     {{ line() }}
     {% endif %}

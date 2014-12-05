@@ -393,6 +393,9 @@ i.icon {
 	height: 19px;
 }
 
+div.row.title { height:40px; background:rgb(80, 80, 80); color:white; padding:0px 10px; margin-bottom:20px; }
+label.title { font-size:1.3em; width:initial !important }
+
 /* Polymer */
 zdk-input-date {
     z-index:50;

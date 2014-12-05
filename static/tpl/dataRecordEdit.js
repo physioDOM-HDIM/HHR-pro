@@ -1,3 +1,17 @@
+window.addEventListener("DOMContentLoaded", function() {
+    var elt = document.querySelector("#datetime").innerText,
+        modelData = {
+            dateFormat: function() {
+                return function(val, render) {
+                    console.log(render(val))
+                    return moment.utc(render(val)).format("YYYY-MM-DD | HH:mm") + ' ';
+                }
+            }
+        };
+
+     document.querySelector("#datetime").innerText = Mustache.render(elt, modelData);
+}, false);
+
 var promiseXHR = function(method, url, statusOK, data) {
     var promise = new RSVP.Promise(function(resolve, reject) {
         var client = new XMLHttpRequest();
@@ -18,11 +32,6 @@ var promiseXHR = function(method, url, statusOK, data) {
     return promise;
 };
 
-function updateMinMax(obj) {
-    console.log("updateDataRecordItems", obj);
-    //TODO When data model for min max threshold is written
-}
-
 function hasClass(element, cls) {
     return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
 }
@@ -32,7 +41,7 @@ function toggleEditMode(id) {
         updateMode = line.querySelector('.updateMode'),
         readMode = line.querySelector('.readMode');
 
-    if(hasClass(updateMode, 'hidden')) {
+    if (hasClass(updateMode, 'hidden')) {
         updateMode.className = "updateMode";
         readMode.className = "readMode hidden";
     } else {
@@ -46,7 +55,7 @@ function toggleEditMode(id) {
         updateMode = line.querySelector('.updateMode'),
         readMode = line.querySelector('.readMode');
 
-    if(hasClass(updateMode, 'hidden')) {
+    if (hasClass(updateMode, 'hidden')) {
         updateMode.className = "updateMode";
         readMode.className = "readMode hidden";
     } else {
@@ -60,7 +69,7 @@ function toggleAddMode(category) {
         addModeOn = line.querySelector('.addModeOn'),
         addModeOff = line.querySelector('.addModeOff');
 
-    if(hasClass(addModeOn, 'hidden')) {
+    if (hasClass(addModeOn, 'hidden')) {
         addModeOn.className = "addModeOn";
         addModeOff.className = "addModeOff hidden";
     } else {
@@ -78,6 +87,11 @@ function addMode(category) {
     toggleAddMode(category);
 }
 
+
+function updateMinMax(obj) {
+    console.log("updateDataRecordItems", obj);
+    //TODO When data model for min max threshold is written
+}
 
 function updateItem(id) {
     //TODO Update Logic for item
