@@ -32,7 +32,7 @@ define([
                 .findById("lastname")
                     .click()
                     .type("ba")
-                    .pressKeys("") //enter key
+                    .pressKeys("\u000D") //return key
                     .end()
                 .findByCssSelector("#tsanteList .item .row span")
                 .getVisibleText()

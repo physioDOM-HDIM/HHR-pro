@@ -23,9 +23,9 @@ define({
 	// OnDemand. Options that will be permutated are browserName, version, platform, and platformVersion; any other
 	// capabilities options specified for an environment will be copied as-is
 	environments: [
-		{ browserName: 'chrome'}, /* chrome must be in /usr/bin/google-chrome */
-		{ browserName: 'firefox', firefox_binary: '/usr/lib/firefox'}
-
+		{ browserName: 'chrome' , platform: ['OS X 10.10', 'Linux', 'Windows 8']},
+		{ browserName: 'firefox', platform: ['OS X 10.10', 'Linux', 'Windows 8']},
+		{ browserName: 'safari' , platform: 'OS X 10.10'}
 	],
 
 	// Maximum number of simultaneous integration tests that should be executed on the remote WebDriver service
@@ -40,7 +40,10 @@ define({
 	},
 
 	// Functional test suite(s) to run in each browser once non-functional tests are completed
-	functionalSuites: [ 'login/login.js', 'beneficiaries/list.js' ],
+	functionalSuites: [ 
+		'login/login.js', 
+		'beneficiaries/list.js' 
+	],
 
 	reporters: ['console'],
 
