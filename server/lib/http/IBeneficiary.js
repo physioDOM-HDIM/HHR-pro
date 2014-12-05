@@ -6,7 +6,8 @@
 /* jslint node:true */
 "use strict";
 
-var Logger = require("logger");
+var Logger = require("logger"),
+	ObjectID = require("mongodb").ObjectID;
 var logger = new Logger("IBeneficiary");
 
 /**
@@ -73,7 +74,10 @@ var IBeneficiary = {
 		logger.trace("getBeneficiary");
 		physioDOM.Beneficiaries()
 			.then( function(beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiaryID );
+				if( req.params.entryID ) {
+					req.session.beneficiary = new ObjectID(req.params.entryID);
+				}
+				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
 			})
 			.then( function(beneficiary) {
 				res.send( beneficiary );
@@ -125,7 +129,7 @@ var IBeneficiary = {
 		physioDOM.Beneficiaries()
 			.then( function( _beneficiaries) {
 				beneficiaries = _beneficiaries;
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID);
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID );
 			})
 			.then( function(beneficiary) {
 				if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
@@ -151,7 +155,7 @@ var IBeneficiary = {
 		
 		physioDOM.Beneficiaries()
 			.then( function(beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID);
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
 			})
 			.then( function(beneficiary) {
 				return beneficiary.getProfessionals( pg, offset );
@@ -235,12 +239,13 @@ var IBeneficiary = {
 
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID);
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
 			})
 			.then(function (beneficiary) {
 				return beneficiary.getDataRecords(pg, offset, sort, sortDir, filter);
 			})
 			.then( function (datarecords) {
+				console.log("datarecords", datarecords);
 				res.send( datarecords );
 				next();
 			})
@@ -254,7 +259,7 @@ var IBeneficiary = {
 		logger.trace("datarecord", req.params.dataRecordID );
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID);
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
 			})
 			.then(function (beneficiary) {
 				return beneficiary.getDataRecordByID(req.params.dataRecordID);
