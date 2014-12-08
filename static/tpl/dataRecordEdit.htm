@@ -1,168 +1,133 @@
 {% extends './page.htm' %}
-
 {% block title %}Data Recording{% endblock %}
-
 {% block head %}
 {% parent %}
 <script src="/bower_components/mustache/mustache.js"></script>
+<script src="/bower_components/rsvp/rsvp.min.js"></script>
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
 <script src="/bower_components/zdk-calendar/form2js.js"></script>
 <script src="/tpl/dataRecordEdit.js"></script>
 {% endblock %}
-
 {% block content %}
 
-<div class="row title">
-<label class="title">
-	<span id="datetime">
-		{% raw %}{{#dateFormat}}{% endraw %}{{dataRecordItems.datetime}}{% raw %}{{/dateFormat}}{% endraw %}
-	</span>
-	{% if dataRecordItems.home %}
-	  {{ "From Home"|i18n }}
-	{% else %}
-	  {{ "Consultation"|i18n }}
-	{% endif %}
-</label>
-</div>
+<script type="template" id="newItem">
+	<div class="row">
+        <div class="col bold"><select><option></option></select></div>
+        <div class="col"><input type="text" value=""/></div>
+        <div class="col">
+            {{ 'Min threshold' | i18n }}
+            <input type="text" name="min" class="spacing-around" disabled/>
+        </div>
+        <div class="col">
+            {{ 'Max threshold' | i18n }}
+            <input type="text" name="max" class="spacing-around" disabled/>
+        </div>
+        <div>
+            <button class="blue small" onclick="removeLine(this)">Annuler</button>
+        </div>
+    </div>
+</script>
 
+<div class="row title">
+    <label class="title">
+        <span id="datetime">
+        {% raw %}{{#dateFormat}}{% endraw %}{{dataRecordItems.datetime}}{% raw %}{{/dateFormat}}{% endraw %}
+        </span>
+        {% if dataRecordItems.home %}
+        {{ "From Home"|i18n }}
+        {% else %}
+        {{ "Consultation"|i18n }}
+        {% endif %}
+    </label>
+</div>
 {% macro line() %}
 <div id="ID{{item._id.toString()}}">
-
-	<div class="readMode">
-		<div class="row">
-		    <div class="col bold">{{ item.text }}</div>
-		    <div class="col">{{ item.value }}</div>
-		    <div class="col">
-		    	{{ 'Min threshold' | i18n }} 
-		    	<input type="hidden" name="_id" value="{{item._id}}"/>
-		    	<input type="text" name="min" class="spacing-around"/>
-		    </div>
-		    <div class="col">
-		    	{{ 'Max threshold' | i18n }} 
-		    	<input type="hidden" name="_id" value="{{item._id}}"/>
-		    	<input type="text" name="max" class="spacing-around"/>
-		    </div>
-		    <div>
-		    	<div class="spacing-nobutton"></div>
-		    </div>
-		    <div>
-		    	<button class="blue small" onclick="updateMode('{{item._id.toString()}}')">Edit</button>
-		    </div>
-		    <div>
-		    	<button class="red small" onclick="deleteItem('{{item._id.toString()}}')">Delete</button>
-		    </div>
-		</div>
+    <div class="readMode">
+        <div class="row">
+            <div class="col bold">{{ item.text }}</div>
+            <div class="col">{{ item.value }}</div>
+            <div class="col">
+                {{ 'Min threshold' | i18n }}
+                <input type="hidden" name="_id" value="{{item._id}}"/>
+                <input type="text" name="min" class="spacing-around"/>
+            </div>
+            <div class="col">
+                {{ 'Max threshold' | i18n }}
+                <input type="hidden" name="_id" value="{{item._id}}"/>
+                <input type="text" name="max" class="spacing-around"/>
+            </div>
+            <div>
+                <button class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">Edit</button>
+            </div>
+            <div>
+                <button class="red small" onclick="deleteItem('{{item._id.toString()}}')">Delete</button>
+            </div>
+        </div>
     </div>
-
     <div class="updateMode hidden">
-	    <div class="row">
+        <div class="row">
+            <div class="col bold">{{ item.text }}</div>
+            <div class="col"><input type="text" value="{{ item.value }}"/></div>
+            <div class="col">
+                {{ 'Min threshold' | i18n }}
+                <input type="hidden" name="_id" value="{{item._id}}"/>
+                <input type="text" name="min" class="spacing-around" disabled/>
+            </div>
+            <div class="col">
+                {{ 'Max threshold' | i18n }}
+                <input type="hidden" name="_id" value="{{item._id}}"/>
+                <input type="text" name="max" class="spacing-around" disabled/>
+            </div>
+            <div>
+                <button class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">Back</button>
+            </div>
+            <div>
+                <button class="red small" onclick="deleteItem('{{item._id.toString()}}')">Delete</button>
+            </div>
+        </div>
 
-	    	<div class="col bold">{{ item.text }}</div>
-		    <div class="col"><input type="text" value="{{ item.value }}"/></div>
-		    <div class="col">
-		    	{{ 'Min threshold' | i18n }} 
-		    	<input type="hidden" name="_id" value="{{item._id}}"/>
-		    	<input type="text" name="min" class="spacing-around" disabled/>
-		    </div>
-		    <div class="col">
-		    	{{ 'Max threshold' | i18n }} 
-		    	<input type="hidden" name="_id" value="{{item._id}}"/>
-		    	<input type="text" name="max" class="spacing-around" disabled/>
-		    </div>
-		    <div>
-		    	<button class="blue small" onclick="updateMode('{{item._id.toString()}}')">Back</button>
-		    </div>
-		    <div>
-		    	<button class="green small" onclick="updateItem('{{item._id.toString()}}')">Save</button>
-		    </div>
-		    <div>
-		    	<button class="red small" onclick="deleteItem('{{item._id.toString()}}')">Delete</button>
-		    </div>
-
-	    </div>
-
-	    
     </div>
 </div>
 {% endmacro %}
-
 {% macro addItem(category) %}
-	<div id="add{{category}}">
-		<div class="addModeOn hidden">
-			<hr>
-			<div class="row">
+<div id="add{{category}}">
+    <hr>
+    <div id="newItems-{{category}}">
 
-		    	<div class="col bold"><select><option></option></select></div>
-			    <div class="col"><input type="text" value=""/></div>
-			    <div class="col">
-			    	{{ 'Min threshold' | i18n }}
-			    	<input type="text" name="min" class="spacing-around" disabled/>
-			    </div>
-			    <div class="col">
-			    	{{ 'Max threshold' | i18n }}
-			    	<input type="text" name="max" class="spacing-around" disabled/>
-			    </div>
-			    <div>
-		    		<button class="blue small" onclick="addMode('{{category}}')">Back</button>
-		    	</div>
-			    <div>
-					<button class="green small" onclick="addItem('{{category}}')">Add</button>
-				</div>
-				<div>
-		    		<div class="spacing-nobutton"></div>
-		    	</div>
-
-		    </div>
-
-		</div>
-    
-
-		<div class="addModeOff">
-			<div class="row control">
-				<span class="spacer"></span>
-				<button class="green small" onclick="addMode('{{category}}')">Add Item</button>
-			</div>
-		</div>
-
-	</div>
-
-{% endmacro %}
-
-
-<zdk-panel heading="{{'Physiological parameters' |i18n}}" collapsable="false" collapsed="false">
-	{% for item in dataRecordItems.items.items %}
-	{% if item.category === 'General' %}
-	{{ line() }}
-    {% endif %}
-    {% endfor %}   
-
-    {{ addItem('General') }} 
-</zdk-panel>
-
-<zdk-panel heading="{{'Symptoms assessments' |i18n}}" collapsable="false" collapsed="false">
-	{% for item in dataRecordItems.items.items %}
-	{% if item.category === 'Symptoms' %}
-    {{ line() }}
-    {% endif %}
-    {% endfor %}
-
-    {{ addItem('Symptoms') }} 
-</zdk-panel>
-
-<zdk-panel heading="{{'Questionnaires' |i18n}}" collapsable="false" collapsed="false">
-	{% for item in dataRecordItems.items.items %}
-	{% if item.category === 'HDIM' %}
-    {{ line() }}
-    {% endif %}
-    {% endfor %}  
-
-    {{ addItem('HDIM') }}   
-</zdk-panel>
-
-<div class="row control" style="height:60px; align-content: center">
-	<span class="spacer"></span>
-	<button class="blue big">back</button>
-	<button class="green">save</button>
+    </div>
+    <div class="row control">
+        <span class="spacer"></span>
+        <button class="green small" onclick="addLine('{{category}}')">Add Item</button>
+    </div>
 </div>
-
+{% endmacro %}
+<zdk-panel heading="{{'Physiological parameters' |i18n}}" collapsable="false" collapsed="false">
+{% for item in dataRecordItems.items.items %}
+{% if item.category === 'General' %}
+{{ line() }}
+{% endif %}
+{% endfor %}
+{{ addItem('General') }}
+</zdk-panel>
+<zdk-panel heading="{{'Symptoms assessments' |i18n}}" collapsable="false" collapsed="false">
+{% for item in dataRecordItems.items.items %}
+{% if item.category === 'Symptoms' %}
+{{ line() }}
+{% endif %}
+{% endfor %}
+{{ addItem('Symptoms') }}
+</zdk-panel>
+<zdk-panel heading="{{'Questionnaires' |i18n}}" collapsable="false" collapsed="false">
+{% for item in dataRecordItems.items.items %}
+{% if item.category === 'HDIM' %}
+{{ line() }}
+{% endif %}
+{% endfor %}
+{{ addItem('HDIM') }}
+</zdk-panel>
+<div class="row control" style="height:60px; align-content: center">
+    <span class="spacer"></span>
+    <a href="/datarecord"><button class="blue big">back</button></a>
+    <button class="green" onclick="save()">save</button>
+</div>
 {% endblock %}
