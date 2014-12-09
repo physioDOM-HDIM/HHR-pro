@@ -10,12 +10,53 @@
 {% endblock %}
 {% block content %}
 
+<div class="hidden" id="thresholdListValue">
+    {% for key, val in thresholdList %}
+        <div id="{{key}}">
+            <span id="min"> {{val.min}}</span>
+            <span id="max"> {{val.max}}</span>
+        </div>
+    {% endfor %}
+    <div id="no-choice">
+        <span id="min">-</span>
+        <span id="max">-</span>
+    </div>
+</div>
+
 {% macro selectThreshold(defaultVal) %}
     <select onchange="updateThreshold(this)" name="threshold">
+        <option></option>
     {% for key, val in thresholdList %}
-        <option class="min-{{val.min}} max-{{val.max}}" value="{{key}}" {% if defaultVal && defaultVal === key %}selected{% endif %}>{{key}}</option>
+        <option id="{{key}}" value="{{key}}" {% if defaultVal && defaultVal === key %}selected{% endif %}>{{key}}</option>
     {% endfor %}
     </select>
+{% endmacro %}
+
+{% macro valueThreshold(type, param) %}
+    {% for key, val in thresholdList %}
+
+        {% if param === key %}
+            {% if type === 'min' %}
+                <div class="min-treshold spacing-around">{{val.min}}</div>
+            {% endif %}
+
+            {% if type === 'max' %}
+                <div class="max-treshold spacing-around">{{val.max}}</div>
+            {% endif %}
+        {% endif %}
+
+    {% endfor %}
+
+    {% if param === undefined %}
+        {% if type === 'min' %}
+            <div class="min-treshold spacing-around">-</div>
+        {% endif %}
+
+        {% if type === 'max' %}
+            <div class="max-treshold spacing-around">-</div>
+        {% endif %}
+    {% endif %}
+
 {% endmacro %}
 
 {% macro line() %}
@@ -26,13 +67,11 @@
             <div class="col">{{ item.value }}</div>
             <div class="col">
                 {{ 'Min threshold' | i18n }}
-                <input type="hidden" name="_id" value="{{item._id}}"/>
-                <input type="text" name="min" class="spacing-around"/>
+                {{ valueThreshold('min', item.text) }}
             </div>
             <div class="col">
                 {{ 'Max threshold' | i18n }}
-                <input type="hidden" name="_id" value="{{item._id}}"/>
-                <input type="text" name="max" class="spacing-around"/>
+                {{ valueThreshold('max', item.text) }}
             </div>
             <!-- {f% if admin %} -->
             <div>
@@ -50,13 +89,11 @@
             <div class="col"><input type="text" value="{{ item.value }}"/></div>
             <div class="col">
                 {{ 'Min threshold' | i18n }}
-                <input type="hidden" name="_id" value="{{item._id}}"/>
-                <input type="text" name="min" class="spacing-around" disabled/>
+                {{ valueThreshold('min', item.text) }}
             </div>
             <div class="col">
                 {{ 'Max threshold' | i18n }}
-                <input type="hidden" name="_id" value="{{item._id}}"/>
-                <input type="text" name="max" class="spacing-around" disabled/>
+                {{ valueThreshold('max', item.text) }}
             </div>
             <div>
                 <button class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">Back</button>
@@ -85,25 +122,19 @@
 {% endmacro %}
 
 <script type="template" id="newItem">
-	<div class="row">
-        <div class="col bold">{{ selectThreshold() }}</div>
-        <div class="col"><input type="text" value=""/></div>
-        <div class="col">
-            {{ 'Min threshold' | i18n }}
-            <input type="text" name="min" class="spacing-around" disabled/>
-        </div>
-        <div class="col">
-            {{ 'Max threshold' | i18n }}
-            <input type="text" name="max" class="spacing-around" disabled/>
-        </div>
-        <div>
-            <button class="blue small" onclick="removeLine(this)">Annuler</button>
-        </div>
+    <div class="col bold">{{ selectThreshold() }}</div>
+    <div class="col"><input type="text" value=""/></div>
+    <div class="col">
+        {{ 'Min threshold' | i18n }}
+        {{ valueThreshold('min') }}
     </div>
-</script>
-
-<script type="template" id="selectThreshold">
-    {{ selectThreshold() }}
+    <div class="col">
+        {{ 'Max threshold' | i18n }}
+        {{ valueThreshold('max') }}
+    </div>
+    <div>
+        <button class="blue small" onclick="removeLine(this)">Annuler</button>
+    </div>
 </script>
 
 <div class="row title">

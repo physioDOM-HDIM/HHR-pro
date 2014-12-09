@@ -44,9 +44,13 @@ function toggleEditMode(id) {
 
 function addLine(category) {
     var tpl = document.querySelector('#newItem').innerHTML,
-        container = document.querySelector('#newItems-'+category);
+        container = document.querySelector('#newItems-'+category),
+        newLine = document.createElement('div');
 
-    container.innerHTML += tpl;
+    newLine.className = 'row'
+    newLine.innerHTML = tpl;
+
+    container.appendChild(newLine);
 }
 
 function removeLine(element) {
@@ -58,8 +62,22 @@ function removeLine(element) {
 
 /* Thresholds params */
 
-var updateThreshold = function(e) {
-    console.log('threshold', e);
+var updateThreshold = function(element) {
+
+    if(element.value !== undefined && element.value !== '') {
+        var value = element.value;
+    } else {
+        var value = 'no-choice';
+    }
+
+    var choice = document.querySelector('#thresholdListValue').querySelector('#'+value),
+        min = choice.querySelector('#min').innerText,
+        max = choice.querySelector('#max').innerText,
+        minContainer = element.parentNode.parentNode.querySelector('.min-treshold'),
+        maxContainer = element.parentNode.parentNode.querySelector('.max-treshold');
+
+    minContainer.innerText = min;
+    maxContainer.innerText = max;
 }
 
 /* Form Valid (TODO) */
