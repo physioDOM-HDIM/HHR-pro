@@ -1,5 +1,28 @@
 "use strict";
 
+var thresholdList = null;
+
+var promiseXHR = function(method, url, statusOK, data) {
+    var promise = new RSVP.Promise(function(resolve, reject) {
+        var client = new XMLHttpRequest();
+        statusOK = statusOK ? statusOK : 200;
+        client.open(method, url);
+        client.onreadystatechange = function handler() {
+            if (this.readyState === this.DONE) {
+                if (this.status === statusOK) {
+                    resolve(this.response);
+                } else {
+                    reject(this);
+                }
+            }
+        };
+        client.send(data ? data : null);
+    });
+
+    return promise;
+};
+
+
 /* UI Actions */
 function hasClass(element, cls) {
     return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
@@ -33,27 +56,17 @@ function removeLine(element) {
     container.removeChild(line);
 }
 
+/* Thresholds params */
+
+var getThresholdList = function() {
+    promiseXHR('GET', '/api/beneficiary/thresholds', 200)
+        .then(function(thresholdList) {
+            console.log(thresholdList);
+        });
+}
+
 
 /* Form Valid (TODO) */
-var promiseXHR = function(method, url, statusOK, data) {
-    var promise = new RSVP.Promise(function(resolve, reject) {
-        var client = new XMLHttpRequest();
-        statusOK = statusOK ? statusOK : 200;
-        client.open(method, url);
-        client.onreadystatechange = function handler() {
-            if (this.readyState === this.DONE) {
-                if (this.status === statusOK) {
-                    resolve(this.response);
-                } else {
-                    reject(this);
-                }
-            }
-        };
-        client.send(data ? data : null);
-    });
-
-    return promise;
-};
 
 function updateMinMax(obj) {
     console.log("updateDataRecordItems", obj);
@@ -64,3 +77,7 @@ function save() {
     //TODO
     window.alert('afficher modal confirmation puis envoyer données');
 }
+
+window.addEventListener("DOMContentLoaded", function() {
+    getThresholdList();
+}, false);
