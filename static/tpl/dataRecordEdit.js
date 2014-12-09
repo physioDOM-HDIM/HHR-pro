@@ -22,6 +22,98 @@ var promiseXHR = function(method, url, statusOK, data) {
     return promise;
 };
 
+/* Modal */
+
+function closeModal() {
+    console.log("closeModal", arguments);
+    document.querySelector("#statusModal").hide();
+
+    var elt = document.querySelector("#statusModal"),
+        subElt, child;
+    subElt = elt.querySelector(".modalTitleContainer");
+    subElt.innerHTML = "";
+    subElt.classList.add("hidden");
+    subElt = elt.querySelector(".modalContentContainer");
+    subElt.innerHTML = "";
+    subElt.classList.add("hidden");
+    subElt = elt.querySelector(".modalButtonContainer");
+    for (var i = subElt.childNodes.length - 1; i >= 0; i--) {
+        child = subElt.childNodes[i];
+        subElt.removeChild(child);
+    }
+    subElt.classList.add("hidden");
+}
+
+function showModal(modalObj) {
+    console.log("showModal", arguments);
+
+    var elt = document.querySelector("#statusModal"),
+        subElt;
+    if (modalObj.title) {
+        subElt = elt.querySelector(".modalTitleContainer");
+        subElt.innerHTML = document.querySelector("#" + modalObj.title).innerHTML;
+        subElt.classList.remove("hidden");
+    }
+    if (modalObj.content) {
+        subElt = elt.querySelector(".modalContentContainer");
+        subElt.innerHTML = document.querySelector("#" + modalObj.content).innerHTML;
+        subElt.classList.remove("hidden");
+    }
+
+    if (modalObj.buttons) {
+        var btn, obj, color;
+        subElt = elt.querySelector(".modalButtonContainer");
+        for (var i = 0; i < modalObj.buttons.length; i++) {
+            obj = modalObj.buttons[i];
+            btn = document.createElement("button");
+            btn.innerHTML = document.querySelector("#" + obj.id).innerHTML;
+            btn.onclick = obj.action;
+            switch (obj.id) {
+                case "trad_ok":
+                    {
+                        color = "green";
+                    }
+                    break;
+                case "trad_yes":
+                    {
+                        color = "green";
+                    }
+                    break;
+                case "trad_no":
+                    {
+                        color = "blue";
+                    }
+                    break;
+            }
+            btn.classList.add(color);
+            subElt.appendChild(btn);
+        }
+        subElt.classList.remove("hidden");
+    }
+
+    document.querySelector("#statusModal").show();
+}
+
+function confirmDeleteItem(id) {
+    var modalObj = {
+        title: "trad_delete",
+        content: "trad_confirm_delete",
+        buttons: [{
+            id: "trad_yes",
+            action: function() {
+                removeItem(id);
+                closeModal();
+            }
+        }, {
+            id: "trad_no",
+            action: function() {
+                closeModal();
+            }
+        }]
+    };
+    showModal(modalObj);
+}
+
 
 /* UI Actions */
 function hasClass(element, cls) {
@@ -58,6 +150,13 @@ function removeLine(element) {
         container = line.parentNode;
 
     container.removeChild(line);
+}
+
+function removeItem(id) {
+    var item = document.querySelector('#ID'+id),
+        container = item.parentNode;
+
+    container.removeChild(item);
 }
 
 /* Thresholds params */

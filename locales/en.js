@@ -162,5 +162,6 @@
 	"Min threshold": "Min threshold",
 	"Max threshold": "Max threshold",
 	"Select a Record": "Select a Record",
-	"From Consultation": "From Consultation"
+	"From Consultation": "From Consultation",
+	"Are you sure you want to save those changes ?": "Are you sure you want to save those changes ?"
 }
