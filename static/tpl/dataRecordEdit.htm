@@ -56,12 +56,14 @@
                 <input type="hidden" name="_id" value="{{item._id}}"/>
                 <input type="text" name="max" class="spacing-around"/>
             </div>
+            {% if admin %}
             <div>
                 <button class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">Edit</button>
             </div>
             <div>
                 <button class="red small" onclick="deleteItem('{{item._id.toString()}}')">Delete</button>
             </div>
+            {% endif %}
         </div>
     </div>
     <div class="updateMode hidden">
@@ -82,7 +84,9 @@
                 <button class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">Back</button>
             </div>
             <div>
+                {% if admin %}
                 <button class="red small" onclick="deleteItem('{{item._id.toString()}}')">Delete</button>
+                {% endif %}
             </div>
         </div>
 
@@ -103,26 +107,26 @@
 {% endmacro %}
 <zdk-panel heading="{{'Physiological parameters' |i18n}}" collapsable="false" collapsed="false">
 {% for item in dataRecordItems.items.items %}
-{% if item.category === 'General' %}
-{{ line() }}
-{% endif %}
+    {% if item.category === 'General' %}
+        {{ line() }}
+    {% endif %}
 {% endfor %}
 {{ addItem('General') }}
 </zdk-panel>
 <zdk-panel heading="{{'Symptoms assessments' |i18n}}" collapsable="false" collapsed="false">
-{% for item in dataRecordItems.items.items %}
-{% if item.category === 'Symptoms' %}
-{{ line() }}
-{% endif %}
-{% endfor %}
+    {% for item in dataRecordItems.items.items %}
+        {% if item.category === 'Symptoms' %}
+            {{ line() }}
+        {% endif %}
+    {% endfor %}
 {{ addItem('Symptoms') }}
 </zdk-panel>
 <zdk-panel heading="{{'Questionnaires' |i18n}}" collapsable="false" collapsed="false">
-{% for item in dataRecordItems.items.items %}
-{% if item.category === 'HDIM' %}
-{{ line() }}
-{% endif %}
-{% endfor %}
+    {% for item in dataRecordItems.items.items %}
+        {% if item.category === 'HDIM' %}
+            {{ line() }}
+        {% endif %}
+    {% endfor %}
 {{ addItem('HDIM') }}
 </zdk-panel>
 <div class="row control" style="height:60px; align-content: center">
