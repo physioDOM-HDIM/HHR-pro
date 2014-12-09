@@ -10,7 +10,10 @@ var RSVP = require("rsvp"),
 	dbPromise = require("./database.js"),
 	promise = require("rsvp").Promise,
 	Logger = require("logger"),
-	ObjectID = require("mongodb").ObjectID;
+	ObjectID = require("mongodb").ObjectID,
+	dataRecordSchema = require("./../schema/dataRecordSchema"),
+	DataRecordItem = require("./dataRecordItem.js"),
+	moment = require("moment");
 
 var logger = new Logger("DataRecord");
 
@@ -19,15 +22,24 @@ var logger = new Logger("DataRecord");
  *
  * @constructor
  */
-function DataRecord() {
-	
+function DataRecord( beneficiaryID ) {
+	this.subject = beneficiaryID;
+
+	/**
+	 * get a DataRecord given by its dataRecordID for a given beneficiary
+	 * 
+	 * the beneficiaryID is given only to validate that the dataRecord belongs to the beneficiary
+	 * 
+	 * @param beneficiaryID
+	 * @param dataRecordID
+	 * @returns {promise}
+	 */
 	this.getByID = function( beneficiaryID, dataRecordID ) {
 		var that = this;
 		return new promise( function(resolve, reject) {
-			logger.trace("getByID", dataRecordID);
+			logger.trace("getByID", beneficiaryID, dataRecordID);
 			var search = { subject: beneficiaryID, _id: dataRecordID };
-
-			console.log( search );
+			
 			// ensure that the datarecord is related to the beneficiary
 			physioDOM.db.collection("dataRecords").findOne(search, function (err, doc) {
 				if (err) {
@@ -74,10 +86,10 @@ function DataRecord() {
 	 */
 	this.getItems = function( pg, offset, sort, sortDir, filter) {
 		pg = pg || 1;
-		offset = offset || 20;
+		offset = offset || 50;
 
 		var search = { dataRecordID: this._id };
-		console.log( "search :" ,search);
+		
 		var cursor = physioDOM.db.collection("dataRecordItems").find(search);
 		var cursorSort = {};
 		if(sort) {
@@ -87,6 +99,184 @@ function DataRecord() {
 		}
 		cursor = cursor.sort( cursorSort );
 		return dbPromise.getList(cursor, pg, offset);
+	};
+
+	/**
+	 * on resolve return a complete DataRecord for display
+	 * 
+	 * @returns {promise}
+	 */
+	this.getComplete = function() {
+		var that = this;
+		return new promise( function( resolve, reject) {
+			that.getItems()
+				.then( function(items) {
+					var obj = JSON.parse(JSON.stringify(that));
+					obj.items = items;
+					resolve(obj);
+				});
+		});
+	};
+
+	/**
+	 * Save the dataRecord in the database ( collection dataRecords )
+	 * 
+	 * @returns {promise}
+	 */
+	this.save = function() {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("save" );
+
+			physioDOM.db.collection("dataRecords").save( that, function(err, result) {
+				if(err) {
+					throw err;
+				}
+				if( isNaN(result)) {
+					that._id = result._id;
+				}
+				resolve(that);
+			});
+		});
+	};
+
+	/**
+	 * initialize the dataRecord with a full dataRecord Object with these items
+	 * 
+	 * @param beneficiaryID
+	 * @param dataRecordObj
+	 * @param professionalID
+	 * @returns {promise}
+	 */
+	this.setup = function( beneficiaryID, dataRecordObj, professionalID ) {
+		var that = this;
+		
+		function checkDataRecord( entry ) {
+			return new promise( function(resolve, reject) {
+				logger.trace("checkDataRecord");
+				var check = dataRecordSchema.validator.validate( entry, { "$ref":"/DataRecord"} );
+				if( check.errors.length ) {
+					return reject( { error:"bad format", detail: check.errors } );
+				} else {
+					return resolve(entry);
+				}
+			});
+		}
+
+		return new promise( function(resolve, reject) {
+			logger.trace("setup");
+			var items;
+			
+			checkDataRecord(dataRecordObj)
+				.then(function (dataRecord) {
+					for (var prop in dataRecord) {
+						if (dataRecord.hasOwnProperty(prop)) {
+							switch (prop) {
+								case "items":
+									items = dataRecord[prop];
+									break;
+								default:
+									that[prop] = dataRecord[prop];
+							}
+						}
+					}
+					// set the beneficiary id
+					that.subject = beneficiaryID;
+					that.datetime = moment().toISOString();
+					if (that.home === false) {
+						if (!that.source) {
+							that.source = professionalID;
+						} else {
+							that.source = new ObjectID(that.source);
+						}
+					} else {
+						that.source = null;
+					}
+					return that.save();
+				})
+				.then( function( dataRecord ) {
+					var count = items.length;
+					items.forEach( function( item ) {
+						var dataRecordItem = new DataRecordItem( that._id );
+						dataRecordItem.setup( item )
+							.then( function (recordItem) {
+								if (--count === 0) {
+									resolve(that);
+								}
+							});
+					});
+				})
+				.catch(reject);
+		});
+	};
+
+	/**
+	 * Remove all items of the current dataRecord
+	 * 
+	 * used only by updateItems
+	 * 
+	 * @returns {promise}
+	 */
+	this.clearItems = function() {
+		var that = this;
+	
+		return new promise( function(resolve, reject) {
+			logger.trace("setup");
+			that.items = [];
+			physioDOM.db.collection("dataRecordItems").remove( { dataRecordID: that._id }, function( err, nb) {
+				if(err) {
+					throw err;
+				}
+				resolve(that);
+			});
+		});
+	};
+
+	/**
+	 * update the items of the current dataRecord
+	 * 
+	 * in fact, it remove old all old items and create new items with the given array of items
+	 * old items are removed only if the given array of items validate the schema
+	 * 
+	 * @param items
+	 * @returns {promise}
+	 */
+	this.updateItems = function( items ) {
+		var that = this;
+		function checkDataItems( entry ) {
+			return new promise( function(resolve, reject) {
+				logger.trace("checkDataItems");
+				var check = dataRecordSchema.validator.validate( entry, { "$ref":"/DataItems"} );
+				if( check.errors.length ) {
+					return reject( { error:"bad format", detail: check.errors } );
+				} else {
+					return resolve(entry);
+				}
+			});
+		}
+		
+		return new promise( function(resolve, reject) {
+			logger.trace("setup");
+			checkDataItems(items)
+				.then( function( items ) {
+					return that.clearItems();
+				})
+				.then( function( obj ) {
+					var count = items.length;
+					items.forEach( function( item ) {
+						var dataRecordItem = new DataRecordItem( that._id );
+						delete item.dataRecordID;
+						delete item._id;
+						dataRecordItem.setup( item )
+							.then( function (recordItem) {
+								if (--count === 0) {
+									resolve(that);
+								}
+							});
+					});
+				})
+				.catch(reject);
+		});
 	};
 }
 
