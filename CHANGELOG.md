@@ -1,4 +1,12 @@
 
+__2014-12-08__
+
+  - merge the lists "physiologicalGeneral" and "physiologicalHDIM" in "parameters"
+  - get items of a dataRecord by page of 50 items
+  - add method to dataRecord to initialize and updateItems
+  - for api request if no session exists, send a 403 error
+  - update zdk-calendar, that update fix the reset of the filter on data records page
+  - beneficiary update thresholds limits
 
 __2014-11-19__
 
