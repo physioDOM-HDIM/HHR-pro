@@ -573,6 +573,45 @@ function Beneficiary( ) {
 				});
 		});
 	};
+
+	/**
+	 * update the threshold limits of the current beneficiary with
+	 * the given "updatedThresholds" object
+	 *
+	 * @param updatedThresholds
+	 * @returns {promise}
+	 */
+	this.setThresholds = function( updatedThresholds ) {
+		var that = this;
+		
+		return new promise( function(resolve, reject) {
+			logger.trace("setThreshold", that._id);
+			
+			that.getThreshold()
+				.then( function( thresholdResult ) {
+					for (var prop in updatedThresholds) {
+						if (thresholdResult.hasOwnProperty(prop)) {
+							console.log("test ", Object.keys(updatedThresholds[prop]));
+							if (JSON.stringify(Object.keys(updatedThresholds[prop])) === JSON.stringify(['min', 'max'])) {
+								that.threshold[prop] = updatedThresholds[prop];
+							} else {
+								logger.warning("bad threshold object for '" + prop + "'");
+							}
+						}
+					}
+					return that.save();
+				})
+				.then( function() {
+					return that.getThreshold();
+				})
+				.then( function( thresholdResult) {
+					resolve(thresholdResult);
+				})
+				.catch( function(err) {
+					reject(err);
+				});
+		});
+	};
 }
 
 module.exports = Beneficiary;
