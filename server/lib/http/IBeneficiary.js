@@ -7,7 +7,8 @@
 "use strict";
 
 var Logger = require("logger"),
-	ObjectID = require("mongodb").ObjectID;
+	ObjectID = require("mongodb").ObjectID,
+	DataRecords = require("../class/dataRecords");
 var logger = new Logger("IBeneficiary");
 
 /**
@@ -76,6 +77,7 @@ var IBeneficiary = {
 			.then( function(beneficiaries) {
 				if( req.params.entryID ) {
 					req.session.beneficiary = new ObjectID(req.params.entryID);
+					req.session.save();
 				}
 				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
 			})
@@ -245,7 +247,6 @@ var IBeneficiary = {
 				return beneficiary.getDataRecords(pg, offset, sort, sortDir, filter);
 			})
 			.then( function (datarecords) {
-				console.log("datarecords", datarecords);
 				res.send( datarecords );
 				next();
 			})
@@ -262,7 +263,7 @@ var IBeneficiary = {
 				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
 			})
 			.then(function (beneficiary) {
-				return beneficiary.getDataRecordByID(req.params.dataRecordID);
+				return beneficiary.getCompleteDataRecordByID(req.params.dataRecordID);
 			})
 			.then( function (datarecord) {
 				res.send( datarecord );
@@ -285,8 +286,22 @@ var IBeneficiary = {
 	 */
 	newDataRecord: function(req,res, next) {
 		logger.trace("newDataRecord");
-		res.send(501,"to be implemented");
-		next();
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then(function (beneficiary) {
+				var dataRecord = JSON.parse( req.body );
+				return beneficiary.createDataRecord( dataRecord, req.session.person.id );
+			})
+			.then( function( dataRecord) {
+				res.send( dataRecord );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
 	},
 
 	/**
@@ -300,10 +315,40 @@ var IBeneficiary = {
 	 */
 	updateDataRecord: function(req, res, next) {
 		logger.trace("updateDataRecord");
-		res.send(501,"to be implemented");
-		next();
+		var beneficiary;
+		
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then(function (beneficiaryObj) {
+				beneficiary = beneficiaryObj;
+				return beneficiary.getDataRecordByID(req.params.dataRecordID);
+			})
+			.then( function(dataRecord) {
+				var items = JSON.parse(req.body);
+				return dataRecord.updateItems(items);
+			})
+			.then( function( dataRecord ) {
+				return dataRecord.getComplete();
+			})
+			.then( function( completeDataRecord ) {
+				res.send( completeDataRecord );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
 	},
 
+	/**
+	 * Get the list of threshold limits for the current beneficiary
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
 	getThreshold: function( req, res, next ) {
 		logger.trace("getThreshold");
 		physioDOM.Beneficiaries()
@@ -322,11 +367,39 @@ var IBeneficiary = {
 				next(false);
 			});
 	},
-	
+
+	/**
+	 * Modify the threshold limits for one or many parameters
+	 * The api will send back the full list of threshold limits after modification
+	 * 
+	 * The modified list is send in the body of a post request
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
 	setThreshold: function( req, res, next ) {
 		logger.trace("setThreshold");
-		res.send(501,"to be implemented");
-		next();
+		var beneficiary,updateItems;
+		
+		
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then( function(selectedBeneficiary) {
+				beneficiary = selectedBeneficiary;
+				updateItems = JSON.parse(req.body);
+				return beneficiary.setThresholds( updateItems );
+			})
+			.then( function (thresholds) {
+				res.send( thresholds );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
 	}
 };
 
