@@ -29,7 +29,7 @@ function DataRecords( beneficiaryID ) {
 		if(sort) {
 			cursorSort[sort] = [-1,1].indexOf(sortDir)!==-1?sortDir:1;
 		} else {
-			cursorSort.datetime = 1;
+			cursorSort.datetime = -1;
 		}
 		cursor = cursor.sort( cursorSort );
 		
