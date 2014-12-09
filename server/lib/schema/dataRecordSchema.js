@@ -16,27 +16,34 @@ var dataRecordSchema = {
 		"datetime": { type:"string", format:"date-time"},
 		"home": { type:"boolean", default:"false" },
 		"source": { type:"string", description:"practitioner ID"},
-		"subject": { type:"string", description:"beneficiary ID" }
+		"subject": { type:"string", description:"beneficiary ID" },
+		"items": { "$ref": "/DataItems" }
 	}
 };
 
-
+var dataItemsSchema = {
+	id:"/DataItems",
+	type:"array",
+	item: {"$ref": "/DataItem"}
+};
 
 var dataRecordItemSchema = {
 	id:"/DataItem",
 	type:"object",
 	properties: {
+		"_id": { type:"string", description: "the identifier of the item in database"},
 		category: { type:"string", enum:[ "General", "HDIM", "Symptoms", "Questionnaire"] },
 		text: { type:"string", description:"reference label of the parameter"},
-		value: { type:"number"},
-		ref: { type: "object", description:"the questionnaire answers identifier"},
+		value: { type:"number", description:"value of the item ( score for a questionnaire )" },
+		ref: { type: "string", description:"the questionnaire answers identifier"},
 		automatic: { type:"boolean", default:false },
-		dataRecordID: { type:"object", description:"the identifier of the data record" }
+		dataRecordID: { type:"string", description:"the identifier of the data record" }
 	}
 };
 
 var Validator = require('jsonschema').Validator;
 var validator = new Validator();
 validator.addSchema(dataRecordSchema,"/dataRecord");
+validator.addSchema(dataItemsSchema,"/dataItems");
 validator.addSchema(dataRecordItemSchema,"/dataRecordItem");
 module.exports.validator = validator;
