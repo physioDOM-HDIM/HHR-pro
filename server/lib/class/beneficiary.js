@@ -11,7 +11,8 @@ var RSVP = require("rsvp"),
 	promise = require("rsvp").Promise,
 	Logger = require("logger"),
 	ObjectID = require("mongodb").ObjectID,
-	beneficiarySchema = require("./../schema/beneficiarySchema");
+	beneficiarySchema = require("./../schema/beneficiarySchema"),
+	dbPromise = require("./database");
 
 var logger = new Logger("Beneficiary");
 
@@ -544,6 +545,31 @@ function Beneficiary( ) {
 				.catch( function(err) {
 					logger.error("error ", err);
 					reject(err);
+				});
+		});
+	};
+	
+	this.getThreshold = function() {
+		var thresholdResult = {};
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("getThreshold", that._id);
+			dbPromise.findOne(physioDOM.db, "lists", {name: "parameters"}, {"items.ref": 1, "items.threshold": 1, "items.active":1})
+				.then(function (thresholds) {
+					thresholds.items.forEach(function (threshold) {
+						if( threshold.active ) {
+							thresholdResult[threshold.ref] = threshold.threshold;
+						}
+					});
+					return thresholdResult;
+				})
+				.then(function (thresholdResult) {
+					for (var prop in that.threshold) {
+						if (thresholdResult.hasOwnProperty(prop)) {
+							thresholdResult[prop] = that.threshold[prop];
+						}
+					}
+					resolve(thresholdResult);
 				});
 		});
 	};

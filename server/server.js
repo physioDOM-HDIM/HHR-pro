@@ -297,7 +297,10 @@ server.get( '/api/beneficiary', IBeneficiary.getBeneficiary  );
 server.get( '/api/beneficiary/professionals', IBeneficiary.beneficiaryProfessionals );
 server.get( '/api/beneficiary/datarecords', IBeneficiary.dataRecords );
 server.get( '/api/beneficiary/datarecords/:dataRecordID', IBeneficiary.dataRecord );
-
+server.post('/api/beneficiary/datarecords', IBeneficiary.newDataRecord );
+server.put( '/api/beneficiary/datarecords/:dataRecordID', IBeneficiary.updateDataRecord );
+server.get( '/api/beneficiary/thresholds', IBeneficiary.getThreshold);
+server.post('/api/beneficiary/thresholds', IBeneficiary.setThreshold);
 
 server.get( '/api/sessions/', getSessions);
 
@@ -334,7 +337,7 @@ server.get( '/questionnaires/create', IPage.createQuestionnaire);
 server.get( '/questionnaire/:questionnaireName', IPage.questionnaireOverview);
 
 server.get( '/datarecord/', IPage.dataRecord);
-server.get( '/datarecord/edit/:dataRecordID', IPage.dataRecordUpdate);
+server.get( '/datarecord/:dataRecordID', IPage.dataRecordDetail);
 
 
 server.get(/\/[^api|components\/]?$/, function(req, res, next) {

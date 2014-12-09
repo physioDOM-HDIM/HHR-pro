@@ -272,6 +272,61 @@ var IBeneficiary = {
 				res.send(err.code || 400, err);
 				next(false);
 			});
+	},
+
+	/**
+	 * Create a new data record
+	 * 
+	 * The data record could have some value, the data record is read from the body of the POST request
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	newDataRecord: function(req,res, next) {
+		logger.trace("newDataRecord");
+		res.send(501,"to be implemented");
+		next();
+	},
+
+	/**
+	 * Update a data record
+	 * 
+	 * The whole data record with all his value is read from the body of the request.
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	updateDataRecord: function(req, res, next) {
+		logger.trace("updateDataRecord");
+		res.send(501,"to be implemented");
+		next();
+	},
+
+	getThreshold: function( req, res, next ) {
+		logger.trace("getThreshold");
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then(function (beneficiary) {
+				return beneficiary.getThreshold();
+			})
+			.then( function (thresholds) {
+				res.send( thresholds );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+	
+	setThreshold: function( req, res, next ) {
+		logger.trace("setThreshold");
+		res.send(501,"to be implemented");
+		next();
 	}
 };
 
