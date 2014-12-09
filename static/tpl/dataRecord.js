@@ -62,14 +62,17 @@ function validFilter() {
 }
 
 function init() {
-    var list = document.querySelector('tsante-list');
-    list.addEventListener('tsante-response', function(datas) {
+    // need to set the locale for moment ( read from cookie lang or default get the language from navigator )
+    var listPager = document.querySelector('tsante-list');
+    listPager.addEventListener('tsante-response', function(data) {
+        var list = data.detail.list;
         var i = 0,
-            len = datas.detail.list.items.length;
+            len = list.items.length;
         for (i; i < len; i++) {
-            datas.detail.list.items[i].date = moment.utc(datas.detail.list.items[i].datetime).format("YYYY-MM-DD | HH:mm");
+            // the date is displayed in local time
+            list.items[i].date = moment(list.items[i].datetime).format("L LT") + " ("+moment(list.items[i].datetime).from(moment())+")" ;
         }
-        list.render(datas.detail);
+        this.render(list);
     });
 }
 window.addEventListener("polymer-ready", init, false);

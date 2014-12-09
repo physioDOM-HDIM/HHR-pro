@@ -31,12 +31,12 @@
 <div class="row title">
     <label class="title">
         <span id="datetime">
-        {% raw %}{{#dateFormat}}{% endraw %}{{dataRecordItems.datetime}}{% raw %}{{/dateFormat}}{% endraw %}
+            {{dataRecordItems.datetime}}
         </span>
         {% if dataRecordItems.home %}
-        {{ "From Home"|i18n }}
+            {{ "From Home"|i18n }}
         {% else %}
-        {{ "Consultation"|i18n }}
+            {{ "From Consultation"|i18n }} {{dataRecordItems.source.name.family}} {{dataRecordItems.source.name.given}}
         {% endif %}
     </label>
 </div>

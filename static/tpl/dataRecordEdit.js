@@ -1,19 +1,5 @@
 "use strict";
 
-window.addEventListener("DOMContentLoaded", function() {
-    var elt = document.querySelector("#datetime").innerText,
-        modelData = {
-            dateFormat: function() {
-                return function(val, render) {
-                    return moment.utc(render(val)).format("YYYY-MM-DD | HH:mm") + ' ';
-                };
-            }
-        };
-
-     document.querySelector("#datetime").innerText = Mustache.render(elt, modelData);
-}, false);
-
-
 /* UI Actions */
 function hasClass(element, cls) {
     return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
