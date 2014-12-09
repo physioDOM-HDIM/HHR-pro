@@ -11,24 +11,61 @@ var RSVP = require("rsvp"),
 	dbPromise = require("./database.js"),
 	Logger = require("logger"),
 	ObjectID = require("mongodb").ObjectID,
+	moment = require("moment"),
 	DataRecord = require("./dataRecord");
 
 var logger = new Logger("DataRecords");
 
+
 function DataRecords( beneficiaryID ) {
 	this.beneficiaryID = beneficiaryID;
-	
+
+	/**
+	 * Get a list object of dataRecords
+	 * 
+	 * @param pg
+	 * @param offset
+	 * @param sort
+	 * @param sortDir
+	 * @param filter
+	 * @returns {*|Promise}
+	 */
 	this.getList = function(pg, offset, sort, sortDir, filter) {
 		pg = pg || 1;
 		offset = offset || 20;
 		
 		var search = { subject: this.beneficiaryID };
+		if( filter ) {
+			try {
+				var filter = JSON.parse(filter);
+				if (filter.startDate) {
+					search.datetime = {"$gte": filter.startDate};
+				}
+				if (filter.endDate) {
+					var endDate =  moment(filter.endDate, "YYYY-MM-DD").add(1,'day').toISOString();
+					if( search.datetime ) {
+						search["$and"] = [ { datetime:search.datetime }, { datetime:{"$lte": endDate}}];
+						delete search.datetime;
+					} else {
+						search.datetime = {"$lte": filter.endDate};
+					}
+				}
+				if( filter.source ) {
+					search.source = new ObjectID(filter.source);
+				}
+			} catch(err) {
+				logger.warning("bad filter format");
+			}
+		}
+		logger.debug("search", search);
 		
 		var cursor = physioDOM.db.collection("dataRecords").find(search);
 		var cursorSort = {};
 		if(sort) {
 			cursorSort[sort] = [-1,1].indexOf(sortDir)!==-1?sortDir:1;
-		} else {
+		}
+		// data records are always sorted by descending datetime unless otherwise
+		if (sort !== "datetime") {
 			cursorSort.datetime = -1;
 		}
 		cursor = cursor.sort( cursorSort );
@@ -59,7 +96,6 @@ function DataRecords( beneficiaryID ) {
 				return RSVP.all( promises )
 					.then( function( datarecords ) {
 						list.items = datarecords;
-						console.log( "list of records" );
 						return list;
 					})
 					.catch( function(err) {
