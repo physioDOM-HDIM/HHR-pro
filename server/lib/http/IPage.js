@@ -746,7 +746,7 @@ function IPage() {
 	};
 	
 
-	this.dataRecordUpdate = function(req, res, next) {
+	this.dataRecordDetail = function(req, res, next) {
 		logger.trace("DataRecordingEdit");
 		var html;
 
@@ -764,8 +764,12 @@ function IPage() {
 				return beneficiary.getDataRecordByID(req.params.dataRecordID);
 			})
 			.then(function(dataRecordItems) {
+				// jsut for test, otherwise read locale from session
+				moment.locale("en_gb");
 				data.dataRecordItems = dataRecordItems;
-
+				data.dataRecordItems.datetime = moment(data.dataRecordItems.datetime).format("L LT");
+				console.log("dataRecordItems :", data.dataRecordItems);
+				
 				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/dataRecordEdit.htm', data, function(err, output) {
 					if (err) {
 						console.log("error", err);
