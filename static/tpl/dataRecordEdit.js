@@ -1,6 +1,6 @@
 "use strict";
 
-var thresholdList = null;
+var dataAPI = {};
 
 var promiseXHR = function(method, url, statusOK, data) {
     var promise = new RSVP.Promise(function(resolve, reject) {
@@ -58,13 +58,9 @@ function removeLine(element) {
 
 /* Thresholds params */
 
-var getThresholdList = function() {
-    promiseXHR('GET', '/api/beneficiary/thresholds', 200)
-        .then(function(thresholdList) {
-            console.log(thresholdList);
-        });
+var updateThreshold = function(e) {
+    console.log('threshold', e);
 }
-
 
 /* Form Valid (TODO) */
 
@@ -79,5 +75,5 @@ function save() {
 }
 
 window.addEventListener("DOMContentLoaded", function() {
-    getThresholdList();
+
 }, false);

@@ -10,36 +10,14 @@
 {% endblock %}
 {% block content %}
 
-<script type="template" id="newItem">
-	<div class="row">
-        <div class="col bold"><select><option></option></select></div>
-        <div class="col"><input type="text" value=""/></div>
-        <div class="col">
-            {{ 'Min threshold' | i18n }}
-            <input type="text" name="min" class="spacing-around" disabled/>
-        </div>
-        <div class="col">
-            {{ 'Max threshold' | i18n }}
-            <input type="text" name="max" class="spacing-around" disabled/>
-        </div>
-        <div>
-            <button class="blue small" onclick="removeLine(this)">Annuler</button>
-        </div>
-    </div>
-</script>
+{% macro selectThreshold(defaultVal) %}
+    <select onchange="updateThreshold(this)" name="threshold">
+    {% for key, val in thresholdList %}
+        <option class="min-{{val.min}} max-{{val.max}}" value="{{key}}" {% if defaultVal && defaultVal === key %}selected{% endif %}>{{key}}</option>
+    {% endfor %}
+    </select>
+{% endmacro %}
 
-<div class="row title">
-    <label class="title">
-        <span id="datetime">
-            {{dataRecordItems.datetime}}
-        </span>
-        {% if dataRecordItems.home %}
-            {{ "From Home"|i18n }}
-        {% else %}
-            {{ "From Consultation"|i18n }} {{dataRecordItems.source.name.family}} {{dataRecordItems.source.name.given}}
-        {% endif %}
-    </label>
-</div>
 {% macro line() %}
 <div id="ID{{item._id.toString()}}">
     <div class="readMode">
@@ -56,19 +34,19 @@
                 <input type="hidden" name="_id" value="{{item._id}}"/>
                 <input type="text" name="max" class="spacing-around"/>
             </div>
-            {% if admin %}
+            <!-- {f% if admin %} -->
             <div>
                 <button class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">Edit</button>
             </div>
             <div>
                 <button class="red small" onclick="deleteItem('{{item._id.toString()}}')">Delete</button>
             </div>
-            {% endif %}
+            <!-- {f% endif %} -->
         </div>
     </div>
     <div class="updateMode hidden">
         <div class="row">
-            <div class="col bold">{{ item.text }}</div>
+            <div class="col bold">{{ selectThreshold(item.text) }}</div>
             <div class="col"><input type="text" value="{{ item.value }}"/></div>
             <div class="col">
                 {{ 'Min threshold' | i18n }}
@@ -105,6 +83,44 @@
     </div>
 </div>
 {% endmacro %}
+
+<script type="template" id="newItem">
+	<div class="row">
+        <div class="col bold">{{ selectThreshold() }}</div>
+        <div class="col"><input type="text" value=""/></div>
+        <div class="col">
+            {{ 'Min threshold' | i18n }}
+            <input type="text" name="min" class="spacing-around" disabled/>
+        </div>
+        <div class="col">
+            {{ 'Max threshold' | i18n }}
+            <input type="text" name="max" class="spacing-around" disabled/>
+        </div>
+        <div>
+            <button class="blue small" onclick="removeLine(this)">Annuler</button>
+        </div>
+    </div>
+</script>
+
+<script type="template" id="selectThreshold">
+    {{ selectThreshold() }}
+</script>
+
+<div class="row title">
+    <label class="title">
+        <span id="datetime">
+            {{dataRecordItems.datetime}}
+        </span>
+        {% if dataRecordItems.home %}
+            {{ "From Home"|i18n }}
+        {% else %}
+            {{ "From Consultation"|i18n }} {{dataRecordItems.source.name.family}} {{dataRecordItems.source.name.given}}
+        {% endif %}
+    </label>
+</div>
+
+
+
 <zdk-panel heading="{{'Physiological parameters' |i18n}}" collapsable="false" collapsed="false">
 {% for item in dataRecordItems.items.items %}
     {% if item.category === 'General' %}

@@ -744,7 +744,7 @@ function IPage() {
 			});
 
 	};
-	
+
 
 	this.dataRecordDetail = function(req, res, next) {
 		logger.trace("DataRecordingEdit");
@@ -761,15 +761,16 @@ function IPage() {
 			})
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
-				return beneficiary.getDataRecordByID(req.params.dataRecordID);
+				return RSVP.all([beneficiary.getThreshold(), beneficiary.getDataRecordByID(req.params.dataRecordID)])
 			})
-			.then(function(dataRecordItems) {
+			.then(function(data) {
 				// jsut for test, otherwise read locale from session
 				moment.locale("en_gb");
-				data.dataRecordItems = dataRecordItems;
+				data.thresholdList = data[0];
+				data.dataRecordItems = data[1];
 				data.dataRecordItems.datetime = moment(data.dataRecordItems.datetime).format("L LT");
 				console.log("dataRecordItems :", data.dataRecordItems);
-				
+
 				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/dataRecordEdit.htm', data, function(err, output) {
 					if (err) {
 						console.log("error", err);
