@@ -71,6 +71,12 @@ function showLang() {
                             }
                         });
                         break;
+                    case "category":
+                        if( item.category === "General" ) {
+                            obj.general = true;
+                        } else {
+                            obj.general = false;
+                        }
                     default:
                         obj[prop] = item[prop];
                 }
@@ -175,11 +181,6 @@ function update() {
             }
         }
     });
-    /* for debug 
-     var modal = document.querySelector("zdk-modal#debug");
-     modal.querySelector(".content").innerHTML = "<pre>"+JSON.stringify(list,null,4)+"</pre>" + "<pre>"+JSON.stringify(newItems,null,4)+"</pre>";
-     modal.show();
-     */
 }
 
 function addRoles() {
@@ -282,6 +283,13 @@ function save() {
     });
     
     newItems = [];
+
+    /* // for debug 
+    var modal = document.querySelector("zdk-modal#debug");
+    modal.querySelector(".content").innerHTML = "<pre>"+JSON.stringify(list,null,4)+"</pre>" + "<pre>"+JSON.stringify(newItems,null,4)+"</pre>";
+    modal.show();
+    return;
+    */
     
     var modalObj;
     promiseXHR("PUT", "/api/lists/" + list.name, 200, JSON.stringify(list)).then(function(response) {
@@ -313,20 +321,6 @@ function save() {
         console.log("updateItem - error: ", error);
     });
 }
-
-/*
-function deleteItem(node) {
-    console.log("deleteItem", arguments);
-    var form;
-    while (!node.classList.contains("itemContainer")) {
-        node = node.parentNode;
-    }
-    form = node.parentNode;
-    form.removeChild(node);
-
-    refreshDefaultValue(form.getAttribute("name"));
-}
-*/
 
 function deleteItem(obj) {
     while( !obj.classList.contains("item")) {
@@ -397,8 +391,9 @@ function addItem(node) {
         
         obj = {
             idx: indx, 
-            new:true, 
-            ref:"", 
+            new:true,
+            ref:"",
+            "general":true,
             label:"",
             "unity": "",
             "autoInput": false,
