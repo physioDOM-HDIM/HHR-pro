@@ -1,6 +1,6 @@
 {% extends './page.htm' %}
 
-{% block title %}Data Recording{% endblock %}
+{% block title %}Data Records{% endblock %}
 
 {% block head %}
 {% parent %}
@@ -105,7 +105,7 @@
 					<div class="col">{% raw %}{{item.source.name.family}} {{item.source.name.given}}{% endraw %}</div>
 				</div>
 			</div>
-			<div><a href="datarecord/edit/{%raw%}{{item._id}}{% endraw %}"><button class="blue small" style="margin:5px">view</button></a></div>
+			<div><a href="datarecord/{%raw%}{{item._id}}{% endraw %}"><button class="blue small" style="margin:5px">view</button></a></div>
 		</div>
 	</div>
 </template>
