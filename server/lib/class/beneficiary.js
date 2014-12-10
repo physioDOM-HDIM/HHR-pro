@@ -15,6 +15,10 @@ var RSVP = require("rsvp"),
 
 var logger = new Logger("Beneficiary");
 
+function capitalize(str) {
+	return str.replace( /(^|\s)([a-z])/g , function(m,p1,p2){ return p1+p2.toUpperCase(); } );
+}
+
 /**
  * Manage a beneficiary record
  * 
@@ -214,7 +218,15 @@ function Beneficiary( ) {
 				.then(function (entry) {
 					for (var key in newEntry) {
 						if (newEntry.hasOwnProperty(key)) {
-							that[key] = newEntry[key];
+							switch(key) {
+								case "name":
+									that.name = newEntry.name;
+									that.name.family = capitalize(that.name.family);
+									that.name.given = capitalize(that.name.given);
+									break;
+								default:
+									that[key] = newEntry[key];
+							}
 						}
 					}
 					return that.save();
@@ -246,7 +258,15 @@ function Beneficiary( ) {
 					logger.debug("schema is valid");
 					for (var key in updatedEntry) {
 						if (key !== "_id" && updatedEntry.hasOwnProperty(key)) {
-							that[key] = updatedEntry[key];
+							switch(key) {
+								case "name":
+									that.name = updatedEntry.name;
+									that.name.family = capitalize(that.name.family);
+									that.name.given = capitalize(that.name.given);
+									break;
+								default:
+									that[key] = updatedEntry[key];
+							}
 						}
 					}
 					return that.save();
