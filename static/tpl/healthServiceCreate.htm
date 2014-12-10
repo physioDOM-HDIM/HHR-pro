@@ -1,0 +1,55 @@
+{% extends './page.htm' %}
+
+{% block title %}{{ 'Healthcare: Basic health services - Add mode' | i18n }}{% endblock %}
+
+{% block head %}
+{% parent %}
+
+{% endblock %}
+
+{% block content %}
+<form id="form-add-service" autocomplete="off" onsubmit="checkServiceForm(); return false;">
+	<input type="hidden" name="_id" value="{{beneficiary._id.toString()}}">
+	<div class="row">
+		<div class="col">
+			<label for="input-type">{{'Type of service' | i18n}}</label>
+			<select id="input-type" name="type">
+
+			</select>
+		</div>
+		<div class="col">
+			<label for="input-prescriber">{{'Prescriber' | i18n}}</label>
+			<select id="input-prescriber" name="prescriber">
+
+			</select>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col"></div>
+		<div class="col">
+			<label for="input-provider">{{'Provider' | i18n}}</label>
+			<select id="input-provider" name="provider">
+
+			</select>
+		</div>
+	</div>
+	<div class="row">
+		<label>{{'Detail of the service' | i18n}}</label>
+		<textarea></textarea>
+	</div>
+	<div class="row">
+		<label for="input-start">{{'Start date' | i18n}}</label>
+		<input type="text" id="input-start" name="type">
+		<label for="input-end">{{'End date' | i18n}}</label>
+		<input type="text" id="input-end" name="type">
+	</div>
+
+	<div class="row">
+		<label for="input-frequency">{{'Frequency' | i18n}}</label>
+		<input type="radio" id="input-frequency" name="frequency"> {{'Monthly' | i18n}}
+		<input type="radio" id="input-frequency" name="frequency"> {{'Weekly' | i18n}}
+		<input type="radio" id="input-frequency" name="frequency"> {{'Daily' | i18n}}
+		<input type="radio" id="input-frequency" name="frequency"> {{'Punctual' | i18n}}
+	</div>
+</form>
+{% endblock %}

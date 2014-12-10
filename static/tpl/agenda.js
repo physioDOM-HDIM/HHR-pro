@@ -1,32 +1,46 @@
-(function init() {
-	//document.querySelector("#beneficiary").style.display = "block";
-	
-	scheduler.clearAll();
-	scheduler.config.multi_day = true;
-	scheduler.config.dblclick_create = false;
-	scheduler.config.details_on_dblclick = false;
-	scheduler.config.readonly = true;
-	
-	scheduler.config.xml_date="%Y-%m-%d %H:%i";
-	//scheduler.config.first_hour = 6;
-	scheduler.config.scroll_hour = 8;
-	//scheduler.config.last_hour = 21;
-	scheduler.config.hour_size_px = 44;
-	scheduler.init('scheduler_here',null,"week");
-	scheduler.load("/data/events.json","json");
-})();
+'use strict';
 
-function show_minical() {
-	if (scheduler.isCalendarVisible())
-		scheduler.destroyCalendar();
-	else
-		scheduler.renderCalendar({
-			position:"dhx_minical_icon",
-			date:scheduler._date,
-			navigation:true,
-			handler:function(date,calendar){
-				scheduler.setCurrentView(date);
-				scheduler.destroyCalendar()
+var promiseXHR = function(method, url, statusOK, data) {
+	var promise = new RSVP.Promise(function(resolve, reject) {
+		var client = new XMLHttpRequest();
+		statusOK = statusOK ? statusOK : 200;
+		client.open(method, url);
+		client.onreadystatechange = function handler() {
+			if (this.readyState === this.DONE) {
+				if (this.status === statusOK) {
+					resolve(this.response);
+				}
+				else {
+					reject(this);
+				}
 			}
-		});
-}
+		};
+		client.send(data ? data : null);
+	});
+
+	return promise;
+};
+
+document.addEventListener('polymer-ready', function() {
+
+	// Handle clicks on event items
+	document.getElementById('agenda').addEventListener('zdk-event-click', function(e) {
+		// Load event data
+		promiseXHR("GET", "/api/", 200)
+			.then(function(response) {
+
+				var e = response;
+				
+				var dialogEventTemplate = document.getElementById('dialog-event-template').innerHTML;
+				Mustache.parse(dialogEventTemplate);
+				var rendered = Mustache.render(dialogEventTemplate, {e: e});
+				document.getElementById('dialog-event').innerHTML = rendered;
+
+				var eventDialog = document.getElementById('dialog-event');
+				eventDialog.show();
+			},
+			function(error) {
+				
+			});
+	});
+});
