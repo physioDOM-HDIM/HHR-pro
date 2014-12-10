@@ -47,17 +47,27 @@
 
 	<script id="dialog-event-template" type="x-tmpl-mustache">
 		<div class="modalContainer">
-			<div class="modalTitleContainer">{{e.label}}</div>
+			<div class="modalTitleContainer">{{service.ref}}</div>
 			<div class="modalContentContainer">
-				<div class="row">{{'Provider' | i18n}}</div>
-				<div class="row">{{'From' | i18n}} {{e.start}} {{'To' | i18n}} {{e.end}}</div>
+				<div class="row">Provider: {{service.provider}}</div>
+				<div class="row">From {{service.startDate}} to {{service.endDate}}</div>
 				<div class="row">
-					{{e.description}}
+					<span class="frequency">{{service.frequency}}</span>
+					{{#service.isDaily}}
+						{{when.time}}
+					{{/service.isDaily}}
+					{{^service.isDaily}}
+					<ul>
+						{{#service.when}}
+						<li>{{day}} at {{time}}</li>
+						{{/service.when}}
+					</ul>
+					{{/service.isDaily}}
+					<span class="duration">Length: {{service.duration}}</span>
 				</div>
 				<div class="row">
-					{{e.description}}
+					{{service.detail}}
 				</div>
-
 			</div>
 			<div class="modalButtonContainer"></div>
 		</div>
