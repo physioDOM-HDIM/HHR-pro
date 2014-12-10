@@ -183,7 +183,7 @@
 <div class="row control" style="height:60px; align-content: center">
     <span class="spacer"></span>
     <a href="/datarecord"><button class="blue big">back</button></a>
-    <button class="green" onclick="save()">save</button>
+    <button class="green" onclick="save('{{dataRecordItems._id.toString()}}')">save</button>
 </div>
 
 
@@ -204,6 +204,7 @@
     <div id="trad_confirm_save">{{ "Are you sure you want to save those changes ?"|i18n }}</div>
     <div id="trad_confirm_delete">{{ "Are you sure you want to delete this item ?"|i18n }}</div>
     <div id="trad_error_occured">{{ "An error occured"|i18n }}</div>
+    <div id="trad_success_update">{{ "Item successfully updated"|i18n }}</div>
     <div id="trad_yes">{{ "Yes"|i18n }}</div>
     <div id="trad_no">{{ "No"|i18n }}</div>
     <div id="trad_ok">{{ "Ok"|i18n }}</div>

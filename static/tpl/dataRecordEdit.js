@@ -129,6 +129,20 @@ function errorOccured() {
     showModal(modalObj);
 }
 
+function saveSuccess() {
+    var modalObj = {
+        title: "trad_save",
+        content: "trad_success_update",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                closeModal();
+            }
+        }]
+    };
+    showModal(modalObj);
+}
+
 
 /* UI Actions */
 function hasClass(element, cls) {
@@ -211,7 +225,7 @@ function updateMinMax(obj) {
     //TODO When data model for min max threshold is written
 }
 
-function save() {
+function save(dataRecordID) {
     var obj = form2js(document.forms.dataRecord);
 
     if(JSON.stringify(obj) !== "{}") {
@@ -236,6 +250,12 @@ function save() {
         }
 
         console.log("res", data);
+        promiseXHR("PUT", "/api/beneficiary/datarecords/"+dataRecordID, 200, JSON.stringify(data)).then(function(response) {
+            saveSuccess();
+        }, function(error) {
+            errorOccured();
+            console.log("saveForm - error: ", error);
+        });
 
     } else {
         errorOccured();
