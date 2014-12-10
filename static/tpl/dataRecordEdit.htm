@@ -20,7 +20,11 @@
 #}
 
 {% macro selectThreshold(defaultVal) %}
-    <select onchange="updateThreshold(this)" name="items[{{item._id.toString()}}].text">
+    {% if view === 'create'%}
+    <select onchange="updateThreshold(this)" name="items[{% raw %}{{ idx }}{% endraw %}].text">
+    {% else%}
+    <select onchange="updateThreshold(this)" name="items[{{ item._id.toString() }}].text">
+    {% endif%}
         <option></option>
     {% for key, val in thresholdList %}
         <option id="{{key}}" value="{{key}}" {% if defaultVal && defaultVal === key %}selected{% endif %}>{{key}}</option>
@@ -114,7 +118,6 @@
 
 {% macro addItem(category) %}
 <div id="add{{category}}">
-    <hr>
     <div id="newItems-{{category}}">
 
     </div>
@@ -128,7 +131,7 @@
 
 <script type="template" id="newItem">
     <div class="col bold">{{ selectThreshold() }}</div>
-    <div class="col"><input type="text" name="items[].value"/></div>
+    <div class="col"><input type="text" name="items[{% raw %}{{idx}}{% endraw %}].value"/></div>
     <div class="col">
         {{ 'Min threshold' | i18n }}
         {{ valueThreshold('min') }}
@@ -137,7 +140,7 @@
         {{ 'Max threshold' | i18n }}
         {{ valueThreshold('max') }}
     </div>
-    <input name="items[].category" id="new-item-category" type="hidden" value="{{item.category}}">
+    <input name="items[{% raw %}{{idx}}{% endraw %}].category" id="new-item-category" type="hidden" value="{{item.category}}">
     <div>
         <button type="button" class="blue small" onclick="removeLine(this)">Annuler</button>
     </div>

@@ -1,7 +1,9 @@
 "use strict";
 
-var infos = {};
+var infos = {},
+    idx = 0;
 infos.datasInit = null;
+
 
 var promiseXHR = function(method, url, statusOK, data) {
     var promise = new RSVP.Promise(function(resolve, reject) {
@@ -192,8 +194,13 @@ function addLine(category) {
         container = document.querySelector('#newItems-'+category),
         newLine = document.createElement('div');
 
+    //add index to line for form2js formating
+    var modelData = { idx: ++idx},
+        html = Mustache.render(tpl, modelData);
+
     newLine.className = 'row'
-    newLine.innerHTML = tpl;
+    newLine.innerHTML = html;
+
     newLine.querySelector('#new-item-category').value = category;
 
     container.appendChild(newLine);
