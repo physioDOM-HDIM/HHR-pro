@@ -183,35 +183,33 @@ function _onHaveProfessionalsData(data) {
     console.log("onHaveProfessionalsData", data);
     _dataAllProfessionnalObj = data.detail.list;
     //Check already selected professionals
-    if (_dataObjTmp && _dataObjTmp.professionals && _dataObjTmp.professionals.length > 0 && _dataAllProfessionnalObj && _dataAllProfessionnalObj.items) {
-        var proTab = _dataObjTmp.professionals;
-        _dataAllProfessionnalObj.items.map(function(item) {
-            var selected = false,
-                referent = false,
-                proItem,
-                i = 0;
-
-            while (!selected && i < proTab.length) {
-                proItem = proTab[i];
-                if (item._id === proItem._id) {
-                    selected = true;
-                    if (proItem.referent) {
-                        referent = true;
-                    }
+    var proTab = _dataObjTmp.professionals;
+    _dataAllProfessionnalObj.items.map(function(item) {
+        var selected = false,
+            referent = false,
+            proItem,
+            i = 0;
+    
+        while (!selected && i < proTab.length) {
+            proItem = proTab[i];
+            if (item._id === proItem._id) {
+                selected = true;
+                if (proItem.referent) {
+                    referent = true;
                 }
-                i++;
             }
-            item._tmpData = {};
-            item._tmpData.selected = selected;
-            item._tmpData.referent = referent;
-        });
-
-        //Added job array to display friendly user string for job instead of the reference
-        var obj = _dataAllProfessionnalObj;
-        obj.dataLists = _dataLists;
-        obj.lang = _langCookie;
-        tsanteListProfessionalElt.render(obj);
-    }
+            i++;
+        }
+        item._tmpData = {};
+        item._tmpData.selected = selected;
+        item._tmpData.referent = referent;
+    });
+    
+    //Added job array to display friendly user string for job instead of the reference
+    var obj = _dataAllProfessionnalObj;
+    obj.dataLists = _dataLists;
+    obj.lang = _langCookie;
+    tsanteListProfessionalElt.render(obj);
 }
 
 function _checkDateFormat(strDate) {
