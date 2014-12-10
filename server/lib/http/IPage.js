@@ -761,7 +761,7 @@ function IPage() {
 			})
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
-				return RSVP.all([beneficiary.getThreshold(), beneficiary.getDataRecordByID(req.params.dataRecordID)])
+				return RSVP.all([beneficiary.getThreshold(), beneficiary.getCompleteDataRecordByID(req.params.dataRecordID)]);
 			})
 			.then(function(data) {
 				// jsut for test, otherwise read locale from session
