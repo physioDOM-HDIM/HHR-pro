@@ -1,7 +1,9 @@
 "use strict";
 
 var infos = {},
-    idx = 0;
+    idx = 0,
+    createdDataRecordID = null;
+
 infos.datasInit = null;
 
 
@@ -256,13 +258,16 @@ function update(dataRecordID) {
             data[i].value = parseFloat(data[i].value);
             data[i].automatic = (data[i].automatic === "true");
 
-            origin[i].value = parseFloat(origin[i].value);
-            origin[i].automatic = (origin[i].automatic === "true");
+            if(origin) {
+                origin[i].value = parseFloat(origin[i].value);
+                origin[i].automatic = (origin[i].automatic === "true");
 
-            //check if change has been done, if so set automatic field to false
-            if(origin[i].value !== data[i].value || origin[i].text !== data[i].text) {
-                data[i].automatic = false;
+                //check if change has been done, if so set automatic field to false
+                if(origin[i].value !== data[i].value || origin[i].text !== data[i].text) {
+                    data[i].automatic = false;
+                }
             }
+
         }
 
         console.log("res", data);
@@ -279,30 +284,38 @@ function update(dataRecordID) {
 }
 
 function create() {
-    var obj = form2js(document.forms.dataRecord);
 
-    if(JSON.stringify(obj) !== "{}") {
-
-        var i=0,
-        len = obj.items.length;
-
-        for(i; i<len; i++) {
-            //Bool and float convertion
-            obj.items[i].value = parseFloat(obj.items[i].value);
-            obj.items[i].automatic = false;
-        }
-
-        console.log("res", obj);
-        promiseXHR("POST", "/api/beneficiary/datarecord", 200, JSON.stringify(obj)).then(function(response) {
-            createSuccess();
-        }, function(error) {
-            errorOccured();
-            console.log("saveForm - error: ", error);
-        });
-
+    if(createdDataRecordID !== null) {
+        update(createdDataRecordID);
     } else {
-        errorOccured();
+        var obj = form2js(document.forms.dataRecord);
+
+        if(JSON.stringify(obj) !== "{}") {
+
+            var i=0,
+            len = obj.items.length;
+
+            for(i; i<len; i++) {
+                //Bool and float convertion
+                obj.items[i].value = parseFloat(obj.items[i].value);
+                obj.items[i].automatic = false;
+            }
+
+            console.log("res", obj);
+            promiseXHR("POST", "/api/beneficiary/datarecord", 200, JSON.stringify(obj)).then(function(response) {
+                createSuccess();
+                var record = JSON.parse(response);
+                createdDataRecordID = record._id;
+            }, function(error) {
+                errorOccured();
+                console.log("saveForm - error: ", error);
+            });
+
+        } else {
+            errorOccured();
+        }
     }
+
 }
 
 window.addEventListener("DOMContentLoaded", function() {
