@@ -125,6 +125,16 @@ function toggleEditMode(id) {
         updateMode = line.querySelector('.updateMode'),
         readMode = line.querySelector('.readMode');
 
+    //reset values of form input/select
+    var thresholdField = updateMode.querySelector('select'),
+        valueField = updateMode.querySelector('input'),
+        thresholdSaved = readMode.querySelector('.item-text'),
+        valueSaved = readMode.querySelector('.item-value');
+
+    thresholdField.value = thresholdSaved.innerText;
+    valueField.value = valueSaved.innerText;
+    updateThreshold(thresholdField);
+
     if (hasClass(updateMode, 'hidden')) {
         updateMode.className = 'updateMode';
         readMode.className = 'readMode hidden';

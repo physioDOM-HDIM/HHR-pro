@@ -63,8 +63,8 @@
 <div id="ID{{item._id.toString()}}">
     <div class="readMode">
         <div class="row">
-            <div class="col bold">{{ item.text }}</div>
-            <div class="col">{{ item.value }}</div>
+            <div class="col bold item-text">{{ item.text }}</div>
+            <div class="col item-value">{{ item.value }}</div>
             <div class="col">
                 {{ 'Min threshold' | i18n }}
                 {{ valueThreshold('min', item.text) }}
@@ -85,8 +85,8 @@
     </div>
     <div class="updateMode hidden">
         <div class="row">
-            <div class="col bold">{{ selectThreshold(item.text) }}</div>
-            <div class="col"><input type="text" value="{{ item.value }}"/></div>
+            <div class="col bold item-text">{{ selectThreshold(item.text) }}</div>
+            <div class="col item-value"><input type="text" value="{{ item.value }}"/></div>
             <div class="col">
                 {{ 'Min threshold' | i18n }}
                 {{ valueThreshold('min', item.text) }}
