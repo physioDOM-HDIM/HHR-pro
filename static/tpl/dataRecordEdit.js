@@ -1,6 +1,7 @@
 "use strict";
 
-var dataAPI = {};
+var infos = {};
+infos.datasInit = null;
 
 var promiseXHR = function(method, url, statusOK, data) {
     var promise = new RSVP.Promise(function(resolve, reject) {
@@ -114,6 +115,20 @@ function confirmDeleteItem(id) {
     showModal(modalObj);
 }
 
+function errorOccured() {
+    var modalObj = {
+        title: "trad_error",
+        content: "trad_error_occured",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                closeModal();
+            }
+        }]
+    };
+    showModal(modalObj);
+}
+
 
 /* UI Actions */
 function hasClass(element, cls) {
@@ -197,11 +212,36 @@ function updateMinMax(obj) {
 }
 
 function save() {
-    console.log("save");
     var obj = form2js(document.forms.dataRecord);
-    console.log("res", obj);
+
+    if(JSON.stringify(obj) !== "{}") {
+
+        var i=0,
+        data = obj.items,
+        len = data.length,
+        origin = infos.datasInit.items;
+
+        for(i; i<len; i++) {
+            //Bool and float convertion
+            data[i].value = parseFloat(data[i].value);
+            data[i].automatic = (data[i].automatic === "true");
+
+            origin[i].value = parseFloat(origin[i].value);
+            origin[i].automatic = (origin[i].automatic === "true");
+
+            //check if change has been done, if so set automatic field to false
+            if(origin[i].value !== data[i].value || origin[i].text !== data[i].text) {
+                data[i].automatic = false;
+            }
+        }
+
+        console.log("res", data);
+
+    } else {
+        errorOccured();
+    }
 }
 
 window.addEventListener("DOMContentLoaded", function() {
-
+    infos.datasInit = form2js(document.forms.dataRecord);
 }, false);
