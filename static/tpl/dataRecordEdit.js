@@ -194,6 +194,7 @@ function addLine(category) {
 
     newLine.className = 'row'
     newLine.innerHTML = tpl;
+    newLine.querySelector('#new-item-category').value = category;
 
     container.appendChild(newLine);
 }
@@ -281,7 +282,7 @@ function create() {
         for(i; i<len; i++) {
             //Bool and float convertion
             obj.items[i].value = parseFloat(obj.items[i].value);
-            obj.items[i].automatic = (obj.items[i].automatic === "true");
+            obj.items[i].automatic = false;
         }
 
         console.log("res", obj);

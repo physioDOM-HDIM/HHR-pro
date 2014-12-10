@@ -137,8 +137,7 @@
         {{ 'Max threshold' | i18n }}
         {{ valueThreshold('max') }}
     </div>
-    <input name="items[].category" type="hidden" value="{{item.category}}">
-    <input name="items[].automatic" type="hidden" value="{{item.automatic}}">
+    <input name="items[].category" id="new-item-category" type="hidden" value="{{item.category}}">
     <div>
         <button type="button" class="blue small" onclick="removeLine(this)">Annuler</button>
     </div>
