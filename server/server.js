@@ -348,6 +348,7 @@ server.get( '/questionnaires/create', IPage.createQuestionnaire);
 server.get( '/questionnaire/:questionnaireName', IPage.questionnaireOverview);
 
 server.get( '/datarecord/', IPage.dataRecord);
+server.get( '/datarecord/create', IPage.dataRecordCreate);
 server.get( '/datarecord/:dataRecordID', IPage.dataRecordDetail);
 
 

@@ -166,5 +166,6 @@
 	"HDIM": "HDIM",
 	"From Consultation": "From Consultation",
 	"Are you sure you want to save those changes ?": "Are you sure you want to save those changes ?",
-	"Ok": "Ok"
+	"Ok": "Ok",
+	"Update": "Update"
 }

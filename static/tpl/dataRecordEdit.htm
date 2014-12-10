@@ -8,20 +8,16 @@
 <script src="/bower_components/zdk-calendar/form2js.js"></script>
 <script src="/tpl/dataRecordEdit.js"></script>
 {% endblock %}
+
 {% block content %}
 
-<div class="hidden" id="thresholdListValue">
-    {% for key, val in thresholdList %}
-        <div id="{{key}}">
-            <span id="min"> {{val.min}}</span>
-            <span id="max"> {{val.max}}</span>
-        </div>
-    {% endfor %}
-    <div id="no-choice">
-        <span id="min">-</span>
-        <span id="max">-</span>
-    </div>
-</div>
+{#
+    Macro for :
+    -select threshold
+    -value threshold
+    -line repeating (for existing items)
+    -line adding (for new items)
+#}
 
 {% macro selectThreshold(defaultVal) %}
     <select onchange="updateThreshold(this)" name="items[{{item._id.toString()}}].text">
@@ -31,6 +27,7 @@
     {% endfor %}
     </select>
 {% endmacro %}
+
 
 {% macro valueThreshold(type, param) %}
     {% for key, val in thresholdList %}
@@ -59,6 +56,7 @@
 
 {% endmacro %}
 
+
 {% macro line() %}
 <div id="ID{{item._id.toString()}}">
     <div class="readMode">
@@ -73,14 +71,16 @@
                 {{ 'Max threshold' | i18n }}
                 {{ valueThreshold('max', item.text) }}
             </div>
-            <!-- {f% if admin %} -->
+
+            {% if admin %}
             <div>
                 <button type="button" class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">Edit</button>
             </div>
             <div>
                 <button type="button" class="red small" onclick="confirmDeleteItem('{{item._id.toString()}}')">Delete</button>
             </div>
-            <!-- {f% endif %} -->
+            {% endif %}
+
         </div>
     </div>
     <div class="updateMode hidden">
@@ -110,6 +110,8 @@
     </div>
 </div>
 {% endmacro %}
+
+
 {% macro addItem(category) %}
 <div id="add{{category}}">
     <hr>
@@ -123,9 +125,10 @@
 </div>
 {% endmacro %}
 
+
 <script type="template" id="newItem">
     <div class="col bold">{{ selectThreshold() }}</div>
-    <div class="col"><input type="text" value=""/></div>
+    <div class="col"><input type="text" name="items[].value"/></div>
     <div class="col">
         {{ 'Min threshold' | i18n }}
         {{ valueThreshold('min') }}
@@ -134,10 +137,18 @@
         {{ 'Max threshold' | i18n }}
         {{ valueThreshold('max') }}
     </div>
+    <input name="items[].category" type="hidden" value="{{item.category}}">
+    <input name="items[].automatic" type="hidden" value="{{item.automatic}}">
     <div>
         <button type="button" class="blue small" onclick="removeLine(this)">Annuler</button>
     </div>
 </script>
+
+
+{#
+    The Page
+    -create and update actions
+#}
 
 <div class="row title">
     <label class="title">
@@ -152,42 +163,76 @@
     </label>
 </div>
 
-
 <form name="dataRecord" id="dataRecord">
-<zdk-panel heading="{{'Physiological parameters' |i18n}}" collapsable="false" collapsed="false">
-{% for item in dataRecordItems.items.items %}
-    {% if item.category === 'General' %}
-        {{ line() }}
-    {% endif %}
-{% endfor %}
-<!-- {f{ addItem('General') }} -->
-</zdk-panel>
-<zdk-panel heading="{{'Symptoms assessments' |i18n}}" collapsable="false" collapsed="false">
-    {% for item in dataRecordItems.items.items %}
-        {% if item.category === 'Symptoms' %}
-            {{ line() }}
+    <zdk-panel heading="{{'Physiological parameters' |i18n}}" collapsable="false" collapsed="false">
+
+        {% if view === 'create'%}
+            {{ addItem('General') }}
+        {% else %}
+            {% for item in dataRecordItems.items.items %}
+                {% if item.category === 'General' %}
+                    {{ line() }}
+                {% endif %}
+            {% endfor %}
         {% endif %}
-    {% endfor %}
-<!-- {f{ addItem('Symptoms') }} -->
-</zdk-panel>
-<zdk-panel heading="{{'Questionnaires' |i18n}}" collapsable="false" collapsed="false">
-    {% for item in dataRecordItems.items.items %}
-        {% if item.category === 'HDIM' %}
-            {{ line() }}
+
+    </zdk-panel>
+    <zdk-panel heading="{{'Symptoms assessments' |i18n}}" collapsable="false" collapsed="false">
+
+        {% if view === 'create'%}
+            {{ addItem('Symptoms') }}
+        {% else %}
+            {% for item in dataRecordItems.items.items %}
+                {% if item.category === 'Symptoms' %}
+                    {{ line() }}
+                {% endif %}
+            {% endfor %}
         {% endif %}
-    {% endfor %}
-<!-- {f{ addItem('HDIM') }} -->
-</zdk-panel>
+
+    </zdk-panel>
+    <zdk-panel heading="{{'Questionnaires' |i18n}}" collapsable="false" collapsed="false">
+
+        {% if view === 'create'%}
+            {{ addItem('HDIM') }}
+        {% else %}
+            {% for item in dataRecordItems.items.items %}
+                {% if item.category === 'HDIM' %}
+                    {{ line() }}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+    </zdk-panel>
 </form>
 
 <div class="row control" style="height:60px; align-content: center">
     <span class="spacer"></span>
+    {% if view === 'create'%}
+    <button class="green" onclick="create()">save</button>
+    {% else %}
     <a href="/datarecord"><button class="blue big">back</button></a>
-    <button class="green" onclick="save('{{dataRecordItems._id.toString()}}')">save</button>
+    <button class="green" onclick="update('{{dataRecordItems._id.toString()}}')">save</button>
+    {% endif %}
 </div>
 
 
 
+{#
+    Hidden Elements only for js use in frontend
+#}
+
+<div class="hidden" id="thresholdListValue">
+    {% for key, val in thresholdList %}
+        <div id="{{key}}">
+            <span id="min"> {{val.min}}</span>
+            <span id="max"> {{val.max}}</span>
+        </div>
+    {% endfor %}
+    <div id="no-choice">
+        <span id="min">-</span>
+        <span id="max">-</span>
+    </div>
+</div>
 
 <zdk-modal id="statusModal" closebutton="false">
     <div class="modalContainer">
@@ -199,11 +244,14 @@
 
 <div class="hidden">
     <div id="trad_save">{{ "Save"|i18n }}</div>
+    <div id="trad_create">{{ "Create"|i18n }}</div>
     <div id="trad_delete">{{ "Delete"|i18n }}</div>
     <div id="trad_error">{{ "Error"|i18n }}</div>
+    <div id="trad_update">{{ "Update"|i18n }}</div>
     <div id="trad_confirm_save">{{ "Are you sure you want to save those changes ?"|i18n }}</div>
     <div id="trad_confirm_delete">{{ "Are you sure you want to delete this item ?"|i18n }}</div>
     <div id="trad_error_occured">{{ "An error occured"|i18n }}</div>
+    <div id="trad_success_create">{{ "Item successfully created"|i18n }}</div>
     <div id="trad_success_update">{{ "Item successfully updated"|i18n }}</div>
     <div id="trad_yes">{{ "Yes"|i18n }}</div>
     <div id="trad_no">{{ "No"|i18n }}</div>

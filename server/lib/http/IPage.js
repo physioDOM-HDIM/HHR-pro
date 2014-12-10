@@ -769,7 +769,51 @@ function IPage() {
 				data.thresholdList = data[0];
 				data.dataRecordItems = data[1];
 				data.dataRecordItems.datetime = moment(data.dataRecordItems.datetime).format("L LT");
+				data.view = 'update';
 				console.log("dataRecordItems :", data.dataRecordItems);
+
+				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/dataRecordEdit.htm', data, function(err, output) {
+					if (err) {
+						console.log("error", err);
+						console.log("output", output);
+						res.write(err);
+						res.end();
+						next();
+					} else {
+						sendPage(output, res, next);
+					}
+				});
+
+			})
+			.catch(function(err) {
+				logger.error(err);
+				res.write(err);
+				res.end();
+				next();
+			});
+	};
+
+	this.dataRecordCreate = function(req, res, next) {
+		logger.trace("DataRecordingCreate");
+		var html;
+
+		init(req);
+		var data = {
+			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
+		};
+
+		physioDOM.Beneficiaries()
+			.then(function(beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+			})
+			.then(function(beneficiary) {
+				data.beneficiary = beneficiary;
+				return beneficiary.getThreshold();
+			})
+			.then(function(thresholdList) {
+				data.thresholdList = thresholdList;
+				data.view = 'create';
+				// jsut for test, otherwise read locale from session
 
 				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/dataRecordEdit.htm', data, function(err, output) {
 					if (err) {

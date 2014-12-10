@@ -129,9 +129,23 @@ function errorOccured() {
     showModal(modalObj);
 }
 
-function saveSuccess() {
+function createSuccess() {
     var modalObj = {
-        title: "trad_save",
+        title: "trad_create",
+        content: "trad_success_create",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                closeModal();
+            }
+        }]
+    };
+    showModal(modalObj);
+}
+
+function updateSuccess() {
+    var modalObj = {
+        title: "trad_update",
         content: "trad_success_update",
         buttons: [{
             id: "trad_ok",
@@ -219,13 +233,7 @@ var updateThreshold = function(element) {
 }
 
 /* Form Valid (TODO) */
-
-function updateMinMax(obj) {
-    console.log("updateDataRecordItems", obj);
-    //TODO When data model for min max threshold is written
-}
-
-function save(dataRecordID) {
+function update(dataRecordID) {
     var obj = form2js(document.forms.dataRecord);
 
     if(JSON.stringify(obj) !== "{}") {
@@ -251,7 +259,34 @@ function save(dataRecordID) {
 
         console.log("res", data);
         promiseXHR("PUT", "/api/beneficiary/datarecords/"+dataRecordID, 200, JSON.stringify(data)).then(function(response) {
-            saveSuccess();
+            updateSuccess();
+        }, function(error) {
+            errorOccured();
+            console.log("saveForm - error: ", error);
+        });
+
+    } else {
+        errorOccured();
+    }
+}
+
+function create() {
+    var obj = form2js(document.forms.dataRecord);
+
+    if(JSON.stringify(obj) !== "{}") {
+
+        var i=0,
+        len = obj.items.length;
+
+        for(i; i<len; i++) {
+            //Bool and float convertion
+            obj.items[i].value = parseFloat(obj.items[i].value);
+            obj.items[i].automatic = (obj.items[i].automatic === "true");
+        }
+
+        console.log("res", obj);
+        promiseXHR("POST", "/api/beneficiary/datarecord", 200, JSON.stringify(obj)).then(function(response) {
+            createSuccess();
         }, function(error) {
             errorOccured();
             console.log("saveForm - error: ", error);
