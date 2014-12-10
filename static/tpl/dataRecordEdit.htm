@@ -24,7 +24,7 @@
 </div>
 
 {% macro selectThreshold(defaultVal) %}
-    <select onchange="updateThreshold(this)" name="threshold">
+    <select onchange="updateThreshold(this)" name="items[{{item._id.toString()}}].text">
         <option></option>
     {% for key, val in thresholdList %}
         <option id="{{key}}" value="{{key}}" {% if defaultVal && defaultVal === key %}selected{% endif %}>{{key}}</option>
@@ -75,10 +75,10 @@
             </div>
             <!-- {f% if admin %} -->
             <div>
-                <button class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">Edit</button>
+                <button type="button" class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">Edit</button>
             </div>
             <div>
-                <button class="red small" onclick="confirmDeleteItem('{{item._id.toString()}}')">Delete</button>
+                <button type="button" class="red small" onclick="confirmDeleteItem('{{item._id.toString()}}')">Delete</button>
             </div>
             <!-- {f% endif %} -->
         </div>
@@ -86,7 +86,7 @@
     <div class="updateMode hidden">
         <div class="row">
             <div class="col bold item-text">{{ selectThreshold(item.text) }}</div>
-            <div class="col item-value"><input type="text" value="{{ item.value }}"/></div>
+            <div class="col item-value"><input type="text" value="{{ item.value }}" name="items[{{item._id.toString()}}].value"/></div>
             <div class="col">
                 {{ 'Min threshold' | i18n }}
                 {{ valueThreshold('min', item.text) }}
@@ -95,11 +95,15 @@
                 {{ 'Max threshold' | i18n }}
                 {{ valueThreshold('max', item.text) }}
             </div>
+            <input name="items[{{item._id.toString()}}].category" type="hidden" value="{{item.category}}">
+            <input name="items[{{item._id.toString()}}]._id" type="hidden" value="{{item._id.toString()}}">
+            <input name="items[{{item._id.toString()}}].automatic" type="hidden" value="{{item.automatic}}">
+            <input name="items[{{item._id.toString()}}].dataRecordID" type="hidden" value="{{item.dataRecordID.toString()}}">
             <div>
-                <button class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">Back</button>
+                <button type="button" class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">Back</button>
             </div>
             <div>
-                <button class="red small" onclick="confirmDeleteItem('{{item._id.toString()}}')">Delete</button>
+                <button type="button" class="red small" onclick="confirmDeleteItem('{{item._id.toString()}}')">Delete</button>
             </div>
         </div>
 
@@ -114,7 +118,7 @@
     </div>
     <div class="row control">
         <span class="spacer"></span>
-        <button class="green small" onclick="addLine('{{category}}')">Add Item</button>
+        <button type="button" class="green small" onclick="addLine('{{category}}')">Add Item</button>
     </div>
 </div>
 {% endmacro %}
@@ -131,7 +135,7 @@
         {{ valueThreshold('max') }}
     </div>
     <div>
-        <button class="blue small" onclick="removeLine(this)">Annuler</button>
+        <button type="button" class="blue small" onclick="removeLine(this)">Annuler</button>
     </div>
 </script>
 
@@ -149,7 +153,7 @@
 </div>
 
 
-
+<form name="dataRecord" id="dataRecord">
 <zdk-panel heading="{{'Physiological parameters' |i18n}}" collapsable="false" collapsed="false">
 {% for item in dataRecordItems.items.items %}
     {% if item.category === 'General' %}
@@ -174,6 +178,8 @@
     {% endfor %}
 <!-- {f{ addItem('HDIM') }} -->
 </zdk-panel>
+</form>
+
 <div class="row control" style="height:60px; align-content: center">
     <span class="spacer"></span>
     <a href="/datarecord"><button class="blue big">back</button></a>

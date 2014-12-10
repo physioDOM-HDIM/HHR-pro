@@ -197,8 +197,9 @@ function updateMinMax(obj) {
 }
 
 function save() {
-    //TODO
-    window.alert('afficher modal confirmation puis envoyer données');
+    console.log("save");
+    var obj = form2js(document.forms.dataRecord);
+    console.log("res", obj);
 }
 
 window.addEventListener("DOMContentLoaded", function() {
