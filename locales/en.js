@@ -154,5 +154,7 @@
 	"Monthly": "Monthly",
 	"Weekly": "Weekly",
 	"Daily": "Daily",
-	"Punctual": "Punctual"
+	"Punctual": "Punctual",
+	"Every": "Every",
+	"Duration": "Duration"
 }

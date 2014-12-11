@@ -4,11 +4,13 @@
 
 {% block head %}
 {% parent %}
+<link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
+<link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
 
 {% endblock %}
 
 {% block content %}
-<form id="form-add-service" autocomplete="off" onsubmit="checkServiceForm(); return false;">
+<form name="form" id="form-add-service" autocomplete="off" onsubmit="checkServiceForm(); return false;">
 	<input type="hidden" name="_id" value="{{beneficiary._id.toString()}}">
 	<div class="row">
 		<div class="col">
@@ -39,17 +41,47 @@
 	</div>
 	<div class="row">
 		<label for="input-start">{{'Start date' | i18n}}</label>
-		<input type="text" id="input-start" name="type">
+		<zdk-input-date id="input-start" name="type"></zdk-input-date>
 		<label for="input-end">{{'End date' | i18n}}</label>
-		<input type="text" id="input-end" name="type">
+		<zdk-input-date id="input-end" name="type"></zdk-input-date>
 	</div>
 
 	<div class="row">
-		<label for="input-frequency">{{'Frequency' | i18n}}</label>
-		<input type="radio" id="input-frequency" name="frequency"> {{'Monthly' | i18n}}
-		<input type="radio" id="input-frequency" name="frequency"> {{'Weekly' | i18n}}
-		<input type="radio" id="input-frequency" name="frequency"> {{'Daily' | i18n}}
-		<input type="radio" id="input-frequency" name="frequency"> {{'Punctual' | i18n}}
+		<label>{{'Frequency' | i18n}}</label>
+		<input type="radio" name="frequency" value="monthly"> {{'Monthly' | i18n}}
+		<input type="radio" name="frequency" value="weekly"> {{'Weekly' | i18n}}
+		<input type="radio" name="frequency" value="daily" checked="true"> {{'Daily' | i18n}}
+		<input type="radio" name="frequency" value="punctual"> {{'Punctual' | i18n}}
+	</div>
+
+	<div class="row">
+		<div class="col">
+			<label for="input-repeat">{{'Every' | i18n}}</label>
+			<input type="text" id="input-repeat" name="repeat">&nbsp;<span id="repeat-label">day</span>
+		</div>
+		<div class="col">
+			<label for="input-duration">{{'Duration' | i18n}}</label>
+			<select id="input-duration" name="duration">
+				<option value="00:30">0:30</option> 
+				<option value="01:00" selected>1:00</option>
+				<option value="01:30">1:30</option>
+				<option value="02:00">2:00</option>
+			</select>
+		</div>
 	</div>
 </form>
+<zdk-modal id="dialog-warning-frequency">
+	<div class="modalContainer">
+		<div class="modalTitleContainer">Warning</div>
+		<div class="modalContentContainer">
+			Changing the frequency will delete all occurences already programmed
+		</div>
+		<div class="modalButtonContainer">
+			<button>Cancel</button>
+			<button>Confirm</button>
+		</div>
+	</div>
+</zdk-modal>
+<script src="/bower_components/rsvp/rsvp.min.js"></script>
+<script src="/tpl/healthServiceCreate.js"></script>
 {% endblock %}
