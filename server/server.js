@@ -314,14 +314,18 @@ server.get( '/api/sessions/', getSessions);
 
 server.get( '/api/lists', ILists.getLists );
 server.get( '/api/lists/:listName', ILists.getList );
+server.get( '/api/lists/:listName/array', ILists.getListArray );
 server.get( '/api/lists/:listName/translate', ILists.getListTranslate );
 server.put( '/api/lists/:listName', ILists.updateList );
 server.post('/api/lists/:listName', ILists.addItem );
 server.put( '/api/lists/:listName/:itemRef', ILists.translateItem );
 server.post('/api/lists/:listName/:itemRef', ILists.activateItem );
 
-//DEV ONLY for creation
-server.post( '/api/questionnaires', IQuestionnaire.createQuestionnaire);
+//DEV ONLY for creation & update
+server.get( '/api/questionnaires', IQuestionnaire.getList );
+server.get( '/api/questionnaires/:entryID', IQuestionnaire.getQuestionnaire );
+server.post('/api/questionnaires', IQuestionnaire.createQuestionnaire);
+server.put( '/api/questionnaires/:entryID', IQuestionnaire.updateQuestionnaire);
 //DEV ONLY
 
 server.post('/api/login', apiLogin);
