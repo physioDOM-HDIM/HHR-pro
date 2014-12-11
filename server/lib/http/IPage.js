@@ -780,7 +780,6 @@ function IPage() {
 					data.parameters.items[i].max = thresholdList[data.parameters.items[i].value].max;
 				}
 
-				data.thresholdList = datas[0];
 				data.dataRecordItems = datas[1];
 				data.dataRecordItems.datetime = moment(data.dataRecordItems.datetime).format("L LT");
 				data.view = 'update';
@@ -817,8 +816,13 @@ function IPage() {
 			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
 		};
 
-		physioDOM.Beneficiaries()
-			.then(function(beneficiaries) {
+		RSVP.all([physioDOM.Lists.getList("parameters", lang), physioDOM.Beneficiaries()])
+			.then(function(datas) {
+				var parameters = datas[0],
+					beneficiaries = datas[1];
+
+				data.parameters = parameters;
+
 				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
 			})
 			.then(function(beneficiary) {
@@ -826,7 +830,15 @@ function IPage() {
 				return beneficiary.getThreshold();
 			})
 			.then(function(thresholdList) {
-				data.thresholdList = thresholdList;
+
+				var i = 0,
+					len = data.parameters.items.length;
+
+				for(i; i<len; i++) {
+					data.parameters.items[i].min = thresholdList[data.parameters.items[i].value].min;
+					data.parameters.items[i].max = thresholdList[data.parameters.items[i].value].max;
+				}
+
 				data.view = 'create';
 				// jsut for test, otherwise read locale from session
 
