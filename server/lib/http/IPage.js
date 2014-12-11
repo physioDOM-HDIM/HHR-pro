@@ -754,10 +754,25 @@ function IPage() {
 		var data = {
 			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
 		};
-		RSVP.all([physioDOM.Lists.getList("parameters"), physioDOM.Beneficiaries()])
+		RSVP.all([physioDOM.Lists.getList("parameters"), physioDOM.Lists.getList("unity"), physioDOM.Beneficiaries()])
 			.then(function(datas) {
 				var parameters = datas[0],
-					beneficiaries = datas[1];
+					unity = datas[1],
+					beneficiaries = datas[2];
+
+				var i = 0,
+					leni = parameters.items.length;
+
+				for(i; i<leni; i++) {
+					var y = 0,
+						leny = unity.items.length;
+					for(y; y<leny; y++) {
+						if(parameters.items[i].unity === unity.items[y].ref) {
+							parameters.items[i].unityLabel = unity.items[y].label;
+							break;
+						}
+					}
+				}
 
 				data.parameters = parameters;
 				data.lang = lang;
@@ -808,10 +823,25 @@ function IPage() {
 			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
 		};
 
-		RSVP.all([physioDOM.Lists.getList("parameters"), physioDOM.Beneficiaries()])
+		RSVP.all([physioDOM.Lists.getList("parameters"), physioDOM.Lists.getList("unity"), physioDOM.Beneficiaries()])
 			.then(function(datas) {
 				var parameters = datas[0],
-					beneficiaries = datas[1];
+					unity = datas[1],
+					beneficiaries = datas[2];
+
+				var i = 0,
+					leni = parameters.items.length;
+
+				for(i; i<leni; i++) {
+					var y = 0,
+						leny = unity.items.length;
+					for(y; y<leny; y++) {
+						if(parameters.items[i].unity === unity.items[y].ref) {
+							parameters.items[i].unityLabel = unity.items[y].label;
+							break;
+						}
+					}
+				}
 
 				data.parameters = parameters;
 				data.lang = lang;

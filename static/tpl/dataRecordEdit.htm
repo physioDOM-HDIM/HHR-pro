@@ -21,9 +21,9 @@
 
 {% macro selectParam(defaultVal) %}
     {% if view === 'create'%}
-    <select onchange="updateThreshold(this)" name="items[{% raw %}{{ idx }}{% endraw %}].text">
+    <select onchange="updateParam(this)" name="items[{% raw %}{{ idx }}{% endraw %}].text">
     {% else%}
-    <select onchange="updateThreshold(this)" name="items[{{ item._id.toString() }}].text">
+    <select onchange="updateParam(this)" name="items[{{ item._id.toString() }}].text">
     {% endif%}
         <option></option>
     {% for val in parameters.items %}
@@ -33,7 +33,7 @@
 {% endmacro %}
 
 
-{% macro valueThreshold(type, param) %}
+{% macro getParamThreshold(type, param) %}
     {% for val in parameters.items %}
 
         {% if param === val.ref %}
@@ -68,6 +68,18 @@
     {% endfor %}
 {% endmacro %}
 
+{% macro getParamUnity(text) %}
+    {% for val in parameters.items %}
+        {% if text === val.ref %}
+            <span class="unity">{% if val.unityLabel[lang] %}{{val.unityLabel[lang]}}{% endif %}</span>
+        {% endif %}
+    {% endfor %}
+
+    {% if text === undefined %}
+        <span class="unity"></span>
+    {% endif %}
+{% endmacro %}
+
 
 {% macro line() %}
 <div id="ID{{item._id.toString()}}">
@@ -76,13 +88,14 @@
             <div class="col bold">{{ getParamLabel(item.text) }}</div>
             <div class="hidden item-text">{{ item.text }}</div>
             <div class="col item-value">{{ item.value }}</div>
+            <div class="col">{{ getParamUnity(item.text) }}</div>
             <div class="col">
                 {{ 'Min threshold' | i18n }}
-                {{ valueThreshold('min', item.text) }}
+                {{ getParamThreshold('min', item.text) }}
             </div>
             <div class="col">
                 {{ 'Max threshold' | i18n }}
-                {{ valueThreshold('max', item.text) }}
+                {{ getParamThreshold('max', item.text) }}
             </div>
 
             {% if admin %}
@@ -100,13 +113,14 @@
         <div class="row">
             <div class="col bold item-text">{{ selectParam(item.text) }}</div>
             <div class="col item-value"><input type="text" value="{{ item.value }}" name="items[{{item._id.toString()}}].value"/></div>
+            <div class="col">{{ getParamUnity(item.text) }}</div>
             <div class="col">
                 {{ 'Min threshold' | i18n }}
-                {{ valueThreshold('min', item.text) }}
+                {{ getParamThreshold('min', item.text) }}
             </div>
             <div class="col">
                 {{ 'Max threshold' | i18n }}
-                {{ valueThreshold('max', item.text) }}
+                {{ getParamThreshold('max', item.text) }}
             </div>
             <input name="items[{{item._id.toString()}}].category" type="hidden" value="{{item.category}}">
             <input name="items[{{item._id.toString()}}]._id" type="hidden" value="{{item._id.toString()}}">
@@ -141,13 +155,14 @@
 <script type="template" id="newItem">
     <div class="col bold">{{ selectParam() }}</div>
     <div class="col"><input type="text" name="items[{% raw %}{{idx}}{% endraw %}].value"/></div>
+    <div class="col">{{ getParamUnity() }}</div>
     <div class="col">
         {{ 'Min threshold' | i18n }}
-        {{ valueThreshold('min') }}
+        {{ getParamThreshold('min') }}
     </div>
     <div class="col">
         {{ 'Max threshold' | i18n }}
-        {{ valueThreshold('max') }}
+        {{ getParamThreshold('max') }}
     </div>
     <input name="items[{% raw %}{{idx}}{% endraw %}].category" id="new-item-category" type="hidden" value="{{item.category}}">
     <div>
@@ -232,16 +247,18 @@
     Hidden Elements only for js use in frontend
 #}
 
-<div class="hidden" id="thresholdListValue">
+<div class="hidden" id="paramListValue">
     {% for val in parameters.items %}
         <div id="{{val.ref}}">
             <span id="min">{{val.threshold.min}}</span>
             <span id="max">{{val.threshold.max}}</span>
+            <span id="unity">{% if val.unityLabel[lang] %}{{val.unityLabel[lang]}}{% endif %}</span>
         </div>
     {% endfor %}
     <div id="no-choice">
         <span id="min">-</span>
         <span id="max">-</span>
+        <span id="unity"></span>
     </div>
 </div>
 

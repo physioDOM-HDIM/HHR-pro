@@ -180,7 +180,7 @@ function toggleEditMode(id) {
 
     thresholdField.value = thresholdSaved.innerText;
     valueField.value = valueSaved.innerText;
-    updateThreshold(thresholdField);
+    updateParam(thresholdField);
 
     if (hasClass(updateMode, 'hidden')) {
         updateMode.className = 'updateMode';
@@ -222,9 +222,9 @@ function removeItem(id) {
     container.removeChild(item);
 }
 
-/* Thresholds params */
+/* Params */
 
-var updateThreshold = function(element) {
+var updateParam = function(element) {
 
     if(element.value !== undefined && element.value !== '') {
         var value = element.value;
@@ -232,14 +232,17 @@ var updateThreshold = function(element) {
         var value = 'no-choice';
     }
 
-    var choice = document.querySelector('#thresholdListValue').querySelector('#'+value),
+    var choice = document.querySelector('#paramListValue').querySelector('#'+value),
         min = choice.querySelector('#min').innerText,
         max = choice.querySelector('#max').innerText,
+        unity = choice.querySelector('#unity').innerText,
         minContainer = element.parentNode.parentNode.querySelector('.min-treshold'),
-        maxContainer = element.parentNode.parentNode.querySelector('.max-treshold');
+        maxContainer = element.parentNode.parentNode.querySelector('.max-treshold'),
+        unityContainer = element.parentNode.parentNode.querySelector('.unity');
 
     minContainer.innerText = min;
     maxContainer.innerText = max;
+    unityContainer.innerText = unity;
 }
 
 /* Form Valid (TODO) */
