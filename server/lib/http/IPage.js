@@ -754,22 +754,37 @@ function IPage() {
 		var data = {
 			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
 		};
+		RSVP.all([physioDOM.Lists.getList("parameters", lang), physioDOM.Beneficiaries()])
+			.then(function(datas) {
+				var parameters = datas[0],
+					beneficiaries = datas[1];
 
-		physioDOM.Beneficiaries()
-			.then(function(beneficiaries) {
+				data.parameters = parameters;
+
 				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
 			})
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
 				return RSVP.all([beneficiary.getThreshold(), beneficiary.getCompleteDataRecordByID(req.params.dataRecordID)]);
 			})
-			.then(function(data) {
+			.then(function(datas) {
 				// jsut for test, otherwise read locale from session
 				moment.locale("en_gb");
-				data.thresholdList = data[0];
-				data.dataRecordItems = data[1];
+
+				var i = 0,
+					len = data.parameters.items.length,
+					thresholdList = datas[0];
+
+				for(i; i<len; i++) {
+					data.parameters.items[i].min = thresholdList[data.parameters.items[i].value].min;
+					data.parameters.items[i].max = thresholdList[data.parameters.items[i].value].max;
+				}
+
+				data.thresholdList = datas[0];
+				data.dataRecordItems = datas[1];
 				data.dataRecordItems.datetime = moment(data.dataRecordItems.datetime).format("L LT");
 				data.view = 'update';
+
 				console.log("dataRecordItems :", data.dataRecordItems);
 
 				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/dataRecordEdit.htm', data, function(err, output) {

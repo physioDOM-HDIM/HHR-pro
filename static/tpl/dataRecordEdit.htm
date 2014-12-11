@@ -19,24 +19,24 @@
     -line adding (for new items)
 #}
 
-{% macro selectThreshold(defaultVal) %}
+{% macro selectParam(defaultVal) %}
     {% if view === 'create'%}
     <select onchange="updateThreshold(this)" name="items[{% raw %}{{ idx }}{% endraw %}].text">
     {% else%}
     <select onchange="updateThreshold(this)" name="items[{{ item._id.toString() }}].text">
     {% endif%}
         <option></option>
-    {% for key, val in thresholdList %}
-        <option id="{{key}}" value="{{key}}" {% if defaultVal && defaultVal === key %}selected{% endif %}>{{key}}</option>
+    {% for val in parameters.items %}
+        <option value="{{val.value}}" {% if defaultVal && defaultVal === val.value %}selected{% endif %}>{{val.label}}</option>
     {% endfor %}
     </select>
 {% endmacro %}
 
 
 {% macro valueThreshold(type, param) %}
-    {% for key, val in thresholdList %}
+    {% for val in parameters.items %}
 
-        {% if param === key %}
+        {% if param === val.value %}
             {% if type === 'min' %}
                 <div class="min-treshold spacing-around">{{val.min}}</div>
             {% endif %}
@@ -60,12 +60,21 @@
 
 {% endmacro %}
 
+{% macro getParamLabel(text) %}
+    {% for val in parameters.items %}
+        {% if text === val.value %}
+            {{val.label}}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+
 
 {% macro line() %}
 <div id="ID{{item._id.toString()}}">
     <div class="readMode">
         <div class="row">
-            <div class="col bold item-text">{{ item.text }}</div>
+            <div class="col bold">{{ getParamLabel(item.text) }}</div>
+            <div class="hidden item-text">{{ item.text }}</div>
             <div class="col item-value">{{ item.value }}</div>
             <div class="col">
                 {{ 'Min threshold' | i18n }}
@@ -89,7 +98,7 @@
     </div>
     <div class="updateMode hidden">
         <div class="row">
-            <div class="col bold item-text">{{ selectThreshold(item.text) }}</div>
+            <div class="col bold item-text">{{ selectParam(item.text) }}</div>
             <div class="col item-value"><input type="text" value="{{ item.value }}" name="items[{{item._id.toString()}}].value"/></div>
             <div class="col">
                 {{ 'Min threshold' | i18n }}
@@ -130,7 +139,7 @@
 
 
 <script type="template" id="newItem">
-    <div class="col bold">{{ selectThreshold() }}</div>
+    <div class="col bold">{{ selectParam() }}</div>
     <div class="col"><input type="text" name="items[{% raw %}{{idx}}{% endraw %}].value"/></div>
     <div class="col">
         {{ 'Min threshold' | i18n }}
@@ -224,10 +233,10 @@
 #}
 
 <div class="hidden" id="thresholdListValue">
-    {% for key, val in thresholdList %}
-        <div id="{{key}}">
-            <span id="min"> {{val.min}}</span>
-            <span id="max"> {{val.max}}</span>
+    {% for val in parameters.items %}
+        <div id="{{val.value}}">
+            <span id="min">{{val.min}}</span>
+            <span id="max">{{val.max}}</span>
         </div>
     {% endfor %}
     <div id="no-choice">
