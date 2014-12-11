@@ -754,33 +754,25 @@ function IPage() {
 		var data = {
 			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
 		};
-		RSVP.all([physioDOM.Lists.getList("parameters", lang), physioDOM.Beneficiaries()])
+		RSVP.all([physioDOM.Lists.getList("parameters"), physioDOM.Beneficiaries()])
 			.then(function(datas) {
 				var parameters = datas[0],
 					beneficiaries = datas[1];
 
 				data.parameters = parameters;
+				data.lang = lang;
 
 				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
 			})
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
-				return RSVP.all([beneficiary.getThreshold(), beneficiary.getCompleteDataRecordByID(req.params.dataRecordID)]);
+				return beneficiary.getCompleteDataRecordByID(req.params.dataRecordID);
 			})
-			.then(function(datas) {
+			.then(function(record) {
 				// jsut for test, otherwise read locale from session
 				moment.locale("en_gb");
 
-				var i = 0,
-					len = data.parameters.items.length,
-					thresholdList = datas[0];
-
-				for(i; i<len; i++) {
-					data.parameters.items[i].min = thresholdList[data.parameters.items[i].value].min;
-					data.parameters.items[i].max = thresholdList[data.parameters.items[i].value].max;
-				}
-
-				data.dataRecordItems = datas[1];
+				data.dataRecordItems = record;
 				data.dataRecordItems.datetime = moment(data.dataRecordItems.datetime).format("L LT");
 				data.view = 'update';
 
@@ -816,29 +808,18 @@ function IPage() {
 			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
 		};
 
-		RSVP.all([physioDOM.Lists.getList("parameters", lang), physioDOM.Beneficiaries()])
+		RSVP.all([physioDOM.Lists.getList("parameters"), physioDOM.Beneficiaries()])
 			.then(function(datas) {
 				var parameters = datas[0],
 					beneficiaries = datas[1];
 
 				data.parameters = parameters;
+				data.lang = lang;
 
 				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
 			})
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
-				return beneficiary.getThreshold();
-			})
-			.then(function(thresholdList) {
-
-				var i = 0,
-					len = data.parameters.items.length;
-
-				for(i; i<len; i++) {
-					data.parameters.items[i].min = thresholdList[data.parameters.items[i].value].min;
-					data.parameters.items[i].max = thresholdList[data.parameters.items[i].value].max;
-				}
-
 				data.view = 'create';
 				// jsut for test, otherwise read locale from session
 

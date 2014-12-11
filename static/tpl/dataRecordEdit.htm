@@ -27,7 +27,7 @@
     {% endif%}
         <option></option>
     {% for val in parameters.items %}
-        <option value="{{val.value}}" {% if defaultVal && defaultVal === val.value %}selected{% endif %}>{{val.label}}</option>
+        <option value="{{val.ref}}" {% if defaultVal && defaultVal === val.ref %}selected{% endif %}>{{val.label[lang]}}</option>
     {% endfor %}
     </select>
 {% endmacro %}
@@ -36,13 +36,13 @@
 {% macro valueThreshold(type, param) %}
     {% for val in parameters.items %}
 
-        {% if param === val.value %}
+        {% if param === val.ref %}
             {% if type === 'min' %}
-                <div class="min-treshold spacing-around">{{val.min}}</div>
+                <div class="min-treshold spacing-around">{{val.threshold.min}}</div>
             {% endif %}
 
             {% if type === 'max' %}
-                <div class="max-treshold spacing-around">{{val.max}}</div>
+                <div class="max-treshold spacing-around">{{val.threshold.max}}</div>
             {% endif %}
         {% endif %}
 
@@ -62,8 +62,8 @@
 
 {% macro getParamLabel(text) %}
     {% for val in parameters.items %}
-        {% if text === val.value %}
-            {{val.label}}
+        {% if text === val.ref %}
+            {{val.label[lang]}}
         {% endif %}
     {% endfor %}
 {% endmacro %}
@@ -234,9 +234,9 @@
 
 <div class="hidden" id="thresholdListValue">
     {% for val in parameters.items %}
-        <div id="{{val.value}}">
-            <span id="min">{{val.min}}</span>
-            <span id="max">{{val.max}}</span>
+        <div id="{{val.ref}}">
+            <span id="min">{{val.threshold.min}}</span>
+            <span id="max">{{val.threshold.max}}</span>
         </div>
     {% endfor %}
     <div id="no-choice">
