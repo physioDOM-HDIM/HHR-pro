@@ -75,6 +75,20 @@ function IPage() {
 				return result;
 			});
 	}
+
+	function promiseListArray(listName) {
+		return physioDOM.Lists.getListArray(listName, lang)
+			.then(function(list) {
+				var result = {};
+				result[listName+"Array"] = list;
+				return result;
+			})
+			.catch(function() {
+				var result = {};
+				result[listName+"Array"] = {};
+				return result;
+			});
+	}
 	
 	/**
 	 * Main Layout
@@ -249,12 +263,24 @@ function IPage() {
 			"disability",
 			"communication",
 			"profession",
-			"perimeter"
+			"perimeter",
+			"nutritionalStatus",
+			"generalStatus"
 		].map( promiseList);
+
+		var promisesArray = [
+			"job"
+		].map( promiseListArray);
 
 		RSVP.all(promises)
 			.then( function(lists) {
 				lists.forEach( function(list ) {
+					data[Object.keys(list)]=list[Object.keys(list)];
+				});
+
+				return RSVP.all(promisesArray);
+			}).then (function(listsArray) {
+				listsArray.forEach( function(list ) {
 					data[Object.keys(list)]=list[Object.keys(list)];
 				});
 				return physioDOM.Beneficiaries();
@@ -276,7 +302,7 @@ function IPage() {
 							}
 						});
 					}
-					
+
 					//Format date to follow the locale
 					data.beneficiary.birthdate = convertDate(data.beneficiary.birthdate);
 					if(data.beneficiary.entry){
@@ -285,7 +311,7 @@ function IPage() {
 						data.beneficiary.entry.endDate    = data.beneficiary.entry.endDate;
 					}
 				}
-				
+
 				return beneficiary._id ? beneficiary.getProfessionals() : null;
 			}).then(function(professionals){
 				if( professionals ){
@@ -376,7 +402,27 @@ function IPage() {
 			res.send(302);
 			return next();
 		}
-		req.session.save()
+
+		var promisesArray = [
+			"role",
+			"system",
+			"use",
+			"wayOfLife",
+			"maritalStatus",
+			"disability",
+			"communication",
+			"profession",
+			"perimeter",
+			"job"
+		].map( promiseListArray);
+
+		RSVP.all(promisesArray)
+			.then( function(lists) {
+				lists.forEach( function(list ) {
+					data[Object.keys(list)]=list[Object.keys(list)];
+				});
+				return req.session.save();
+			})
 			.then( function(session) {
 				return physioDOM.Beneficiaries();
 			})
@@ -390,6 +436,7 @@ function IPage() {
 				if( professionals ){
 					data.beneficiary.professionals = professionals;
 				}
+				console.log("data",JSON.stringify(data,null,4));
 				
 				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/beneficiaryOverview.htm', data, function (err, output) {
 					if (err) {
@@ -412,7 +459,7 @@ function IPage() {
 	};
 
 	// -------------- Lists pages ---------------------
-	
+
 	/**
 	 * Lists manager
 	 *
@@ -603,6 +650,7 @@ function IPage() {
 			})
 			.then( function(questionnaires) {
 				data.questionnaires = questionnaires;
+				data.lang = lang;
 				//logger.debug("DATA", data);
 				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/questionnaireSelection.htm', data, function (err, output) {
 					if (err) {
@@ -640,18 +688,31 @@ function IPage() {
 			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
 		};
 
-		html = swig.renderFile(DOCUMENTROOT+'/static/tpl/questionnaireCreation.htm', null, function (err, output) {
-			if (err) {
-				console.log("error", err);
-				console.log("output", output);
-				res.write(err);
-				res.end();
-				next();
-			} else {
-				sendPage(output, res, next);
-			}
-		});
+		physioDOM.Questionnaires()
+			.then(function(questionnaires){
+				if(req.params.questionnaireName){
+					return questionnaires.getQuestionnaireByName(req.params.questionnaireName);
+				}
+				return null;
+			})
+			.then( function(questionnaire) {
+				if (questionnaire) {
+					data.questionnaire = questionnaire;
+				}
+				data.lang = lang;
 
+				html = swig.renderFile(DOCUMENTROOT + '/static/tpl/questionnaireCreation.htm', data, function (err, output) {
+					if (err) {
+						console.log("error", err);
+						console.log("output", output);
+						res.write(err);
+						res.end();
+						next();
+					} else {
+						sendPage(output, res, next);
+					}
+				});
+			});
 	};
 
 	/**
@@ -671,10 +732,11 @@ function IPage() {
 
 		physioDOM.Questionnaires()
 			.then(function(questionnaires){
-				return questionnaires.getQuestionnaire(req.params.questionnaireName);
+				return questionnaires.getQuestionnaireByName(req.params.questionnaireName);
 			})
 			.then( function(questionnaire) {
 				data.questionnaire = questionnaire;
+				data.lang = lang;
 				//logger.debug("DATA", data);
 				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/questionnaireOverview.htm', data, function (err, output) {
 					if (err) {

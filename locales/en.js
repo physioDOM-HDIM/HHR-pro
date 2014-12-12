@@ -143,6 +143,7 @@
 	"New item": "New item",
 	"Label": "Label",
 	"Questionnaires": "Questionnaires",
+	"Create/Update a questionnaire": "Create/Update a questionnaire"
 	"Filter / sort": "Filter / sort",
 	"tuto": "tuto",
 	"Since": "Since",

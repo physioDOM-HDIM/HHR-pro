@@ -77,6 +77,44 @@ function Lists( ) {
 				} );
 		});
 	};
+
+	/**
+	 * Get a list given by its name `listName`
+	 * 
+	 * if lang parameter is given, the promise return the transalated list, else
+	 * the promise return the full list object
+	 *
+	 * return the associative array with ref property as key
+	 *
+	 * @param listName {string}
+	 * @param lang {string}
+	 * @returns {promise}
+	 */
+	this.getListArray = function( listName, lang) {
+		logger.trace("getListArray", listName, lang);
+		var that = this;
+		return new promise( function(resolve, reject) {
+			that.getList(listName, lang)
+				.then( function(list) {
+					logger.debug("list "+listName, list);
+					var i, key, obj = {};
+	                for(i=0; i<list.items.length; i++){
+	                    key = list.items[i].ref;
+	                    //If list returned already translated with lang param
+	                    if(typeof key === "undefined"){
+	                    	key = list.items[i].value;
+	                    }
+	                    obj[key] = list.items[i].label;
+	                }
+	                list.items = obj;
+					resolve(list);
+				})
+				.catch( function(err) {
+					logger.warning("list "+listName, err);
+					reject(err);
+				} );
+		});
+	};
 }
 
 module.exports = Lists;

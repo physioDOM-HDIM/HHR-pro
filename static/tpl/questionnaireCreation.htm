@@ -1,6 +1,6 @@
 {% extends './page.htm' %}
 
-{% block title %}{{ "Create a questionnaire"|i18n }}{% endblock %}
+{% block title %}{{ "Create/Update a questionnaire"|i18n }}{% endblock %}
 
 {% block head %}
 {% parent %}
@@ -11,147 +11,83 @@
 
 {% block content %}
 <script type="text/template" id="tplHeaderQuestion">
-    <div class="row">
-    	<label>Question Header</label>
-    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].header" />
-    </div>
-    <div class="row">
-    	<label>SubScore</label>
-    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].subscore" placeholder="Use this format : sum==3?1:(sum==2)?0.5:0"/>
-    </div>
-    <br/>
-    <div class="row">
-    	<label>Question text</label>
-    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].questions[{%raw%}{{subQIdx}}{%endraw%}].text" />
-    </div>
-    <div class="row">
-    	<div class="col">
-	    	<label>Choice Text {%raw%}{{qIdx}}{%endraw%}-{%raw%}{{subQIdx}}{%endraw%}-{%raw%}{{cIdx}}{%endraw%} </label>
-	    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].questions[{%raw%}{{subQIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].text" />
-	    </div>
+	<div class="row">
+		<div class="col">
+			<label class="bold">Header ref: </label>
+			<input type="text" name="{%raw%}{{name}}.headerRef{%endraw%}" />
+		</div>
 	    <div class="col">
-	    	<label>Choice Value</label>
-	    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].questions[{%raw%}{{subQIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].value" />
-	    </div>
-	    <div class="col">
-	    	<label>Choice System</label>
-	    	<select name="questions[{%raw%}{{qIdx}}{%endraw%}].questions[{%raw%}{{subQIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].system">
-	    		<option value="integer">integer</option>
-	    		<option value="boolean">boolean</option>
-	    		<option value="decimal">decimal</option>
-	    		<option value="string">string</option>
-	    	</select>
-	    </div>
-    </div>
-    <div class="row control">
+			<label class="bold">{%raw%}Trad: ({{lang}}) {%endraw%}</label>
+			<input type="text" name="{%raw%}{{name}}.headerLabel.{{lang}}{%endraw%}" />
+		</div>
+	</div>
+	<div class="row">
+		<label class="bold">Subscore: </label>
+		<input type="text" name="{%raw%}{{name}}.subscore{%endraw%}" />
+	</div>
+	<div class="row control btnContainer">
 		<span class="spacer"></span>
-		<button id="btnAddHeaderChoice{%raw%}{{qIdx}}{%endraw%}" type="button" class="small blue" onclick="addHeaderChoice({%raw%}{{qIdx}}{%endraw%})">Add choice</button>
-		<button id="btnAddHeaderQuestion{%raw%}{{qIdx}}{%endraw%}" type="button" class="small blue" onclick="addHeaderNewQuestion({%raw%}{{qIdx}}{%endraw%})">Add question</button>
+		<button type="button" class="small red deleteHeaderQuestion">delete header question</button>
 	</div>
 	<hr>
-</script>
-<script type="text/template" id="tplHeaderNewQuestion">
-    <br/>
-    <div class="row">
-    	<label>Question text</label>
-    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].questions[{%raw%}{{subQIdx}}{%endraw%}].text" />
-    </div>
-    <div class="row">
-    	<div class="col">
-	    	<label>Choice Text {%raw%}{{qIdx}}{%endraw%}-{%raw%}{{subQIdx}}{%endraw%}-{%raw%}{{cIdx}}{%endraw%}</label>
-	    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].questions[{%raw%}{{subQIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].text" />
-	    </div>
-	    <div class="col">
-	    	<label>Choice Value</label>
-	    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].questions[{%raw%}{{subQIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].value" />
-	    </div>
-	    <div class="col">
-	    	<label>Choice System</label>
-	    	<select name="questions[{%raw%}{{qIdx}}{%endraw%}].questions[{%raw%}{{subQIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].system">
-	    		<option value="integer">integer</option>
-	    		<option value="boolean">boolean</option>
-	    		<option value="decimal">decimal</option>
-	    		<option value="string">string</option>
-	    	</select>
-	    </div>
-    </div>
-</script>
-<script type="text/template" id="tplSimpleQuestion">
-    <div class="row">
-    	<label>Question text</label>
-    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].text" />
-    </div>
-    <div class="row">
-    	<div class="col">
-	    	<label>Choice Text {%raw%}{{qIdx}}{%endraw%}-{%raw%}{{cIdx}}{%endraw%}</label>
-	    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].text" />
-	    </div>
-	    <div class="col">
-	    	<label>Choice Value</label>
-	    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].value" />
-	    </div>
-	    <div class="col">
-	    	<label>Choice System</label>
-	    	<select name="questions[{%raw%}{{qIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].system">
-	    		<option value="integer">integer</option>
-	    		<option value="boolean">boolean</option>
-	    		<option value="decimal">decimal</option>
-	    		<option value="string">string</option>
-	    	</select>
-	    </div>
-    </div>
-    <div class="row control">
+	<div class="row control btnContainer">
 		<span class="spacer"></span>
-		<button id="btnAddChoice{%raw%}{{qIdx}}{%endraw%}" type="button" class="small blue" onclick="addChoice({%raw%}{{qIdx}}{%endraw%})">Add choice</button>
+		<button type="button" class="small blue addHeaderQuestion" data-obj="{%raw%}{{name}}.questions;{{lang}}{%endraw%}">add header question</button>
+		<button type="button" class="small blue addQuestion" data-obj="{%raw%}{{name}}.questions;{{lang}}{%endraw%}">add question</button>
 	</div>
-	<hr>
 </script>
-<script type="text/template" id="tplHeaderChoice">
-    <div class="row">
-    	<div class="col">
-	    	<label>Choice Text {%raw%}{{qIdx}}{%endraw%}-{%raw%}{{subQIdx}}{%endraw%}-{%raw%}{{cIdx}}{%endraw%}</label>
-	    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].questions[{%raw%}{{subQIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].text" />
-	    </div>
-	    <div class="col">
-	    	<label>Choice Value</label>
-	    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].questions[{%raw%}{{subQIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].value" />
-	    </div>
-	    <div class="col">
-	    	<label>Choice System</label>
-	    	<select name="questions[{%raw%}{{qIdx}}{%endraw%}].questions[{%raw%}{{subQIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].system">
-	    		<option value="integer">integer</option>
-	    		<option value="boolean">boolean</option>
-	    		<option value="decimal">decimal</option>
-	    		<option value="string">string</option>
-	    	</select>
-	    </div>
-    </div>
+
+<script type="text/template" id="tplQuestion">
+	<div class="row">
+		<div class="col">
+			<label class="bold">Question ref: </label>
+			<input type="text" name="{%raw%}{{name}}.ref{%endraw%}" />
+		</div>
+		<div class="col">
+			<label class="bold">{%raw%}Trad: ({{lang}}){%endraw%}</label>
+			<input type="text" name="{%raw%}{{name}}.label.{{lang}}{%endraw%}" />
+		</div>
+		<div class="col btnContainer">
+			<button type="button" class="small red deleteQuestion">delete question</button>
+		</div>
+	</div>
+	<br/>
+	<div class="row control btnContainer">
+		<span class="spacer"></span>
+		<button type="button" class="small blue addChoice" data-obj="{%raw%}{{name}}.choice;{{lang}}{%endraw%}">add choice</button>
+	</div>
+	<br/>
 </script>
+
 <script type="text/template" id="tplChoice">
-    <div class="row">
-    	<div class="col">
-	    	<label>Choice Text {%raw%}{{qIdx}}{%endraw%}-{%raw%}{{cIdx}}{%endraw%}</label>
-	    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].text" />
-	    </div>
-	    <div class="col">
-	    	<label>Choice Value</label>
-	    	<input type="text" name="questions[{%raw%}{{qIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].value" />
-	    </div>
-	    <div class="col">
-	    	<label>Choice System</label>
-	    	<select name="questions[{%raw%}{{qIdx}}{%endraw%}].choice[{%raw%}{{cIdx}}{%endraw%}].system">
-	    		<option value="integer">integer</option>
-	    		<option value="boolean">boolean</option>
-	    		<option value="decimal">decimal</option>
-	    		<option value="string">string</option>
-	    	</select>
-	    </div>
-    </div>
+	<div class="col">
+		<label>Choice ref</label>
+		<input type="text" name="{%raw%}{{name}}.ref{%endraw%}" />
+	</div>
+	<div class="col">
+		<label>{%raw%}Trad: ({{lang}}){%endraw%}</label>
+		<input type="text" name="{%raw%}{{name}}.label.{{lang}}{%endraw%}" />
+	</div>
+	<div class="col">
+		<label>Choice Value</label>
+		<input type="text" name="{%raw%}{{name}}.value{%endraw%}" />
+	</div>
+	<div class="col">
+		<label>Choice System</label>
+		<select name="{%raw%}{{name}}.system{%endraw%}">
+    		<option value="integer">integer</option>
+    		<option value="boolean">boolean</option>
+    		<option value="decimal">decimal</option>
+    		<option value="string">string</option>
+    	</select>
+	</div>
+	<div class="col btnContainer">
+		<button type="button" class="small red deleteChoice">delete</button>
+	</div>
 </script>
+
 <script type="text/javascript">
-	var _subQIdx = 0,
-		_qIdx = 0,
-		_cIdx = 0;
+
 	var promiseXHR = function(method, url, statusOK, data) {
 	    var promise = new RSVP.Promise(function(resolve, reject) {
 	        var client = new XMLHttpRequest();
@@ -172,86 +108,310 @@
 	    return promise;
 	};
 
-	function addHeaderQuestion(){
-		var elt = document.querySelector("#tplHeaderQuestion").innerHTML;
-	    var modelData = { qIdx: ++_qIdx, subQIdx: ++_subQIdx, cIdx: ++_cIdx};
-	    var html = Mustache.render(elt, modelData);
-	    var div = document.createElement("div");
-	    div.innerHTML = html;
-	    var button = document.querySelector("#addSimple");
-	    button.parentNode.parentNode.insertBefore( div , button.parentNode );
-	};
+	function _deleteHeaderQuestion(node){
+		console.log("_deleteHeaderQuestion");
+		while (!node.classList.contains("nestedQuestionnaire") && !node.classList.contains("itemContainer")){
+    		node = node.parentNode;
+    	}
+    	node.parentNode.removeChild(node);
+	}
 
-	function addHeaderNewQuestion(questionIdx){
-		var elt = document.querySelector("#tplHeaderNewQuestion").innerHTML;
-	    var modelData = { qIdx: questionIdx, subQIdx: ++_subQIdx, cIdx: ++_cIdx};
-	    var html = Mustache.render(elt, modelData);
-	    var div = document.createElement("div");
-	    div.innerHTML = html;
-	    var btn = document.querySelector("#btnAddHeaderQuestion"+questionIdx);
-	    btn.parentNode.parentNode.insertBefore( div, btn.parentNode );
-	};
+	function _deleteQuestion(node){
+		console.log("_deleteQuestion");
+		while (!node.classList.contains("nestedQuestionnaire") && !node.classList.contains("itemContainer")){
+    		node = node.parentNode;
+    	}
+    	node.parentNode.removeChild(node);
+	}
 
-	function addSimpleQuestion(){
-		var elt = document.querySelector("#tplSimpleQuestion").innerHTML;
-	    var modelData = { qIdx: ++_qIdx, cIdx: ++_cIdx};
-	    var html = Mustache.render(elt, modelData);
-	    var div = document.createElement("div");
-	    div.innerHTML = html;
-	    var button = document.querySelector("#addSimple");
-	    button.parentNode.parentNode.insertBefore( div , button.parentNode );
-	};
+	function _deleteChoice(node){
+		console.log("_deleteChoice");
+		while (!node.classList.contains("answers")){
+    		node = node.parentNode;
+    	}
+    	node.parentNode.removeChild(node);
+	}
 
-	function addHeaderChoice(questionIdx){
-		var elt = document.querySelector("#tplHeaderChoice").innerHTML;
-	    var modelData = { qIdx: questionIdx, subQIdx: _subQIdx, cIdx: ++_cIdx};
-	    var html = Mustache.render(elt, modelData);
-	    var div = document.createElement("div");
-	    div.innerHTML = html;
-	    var btn = document.querySelector("#btnAddHeaderChoice"+questionIdx);
-	    btn.parentNode.parentNode.insertBefore( div, btn.parentNode );
-	};
+	function _addHeaderQuestion(node){
+		console.log("_addHeaderQuestion", node.getAttribute("data-obj"));
+		var obj, elt, modelData, html, div, cl;
 
-	function addChoice(questionIdx){
-		var elt = document.querySelector("#tplChoice").innerHTML;
-	    var modelData = { qIdx: questionIdx, cIdx: ++_cIdx};
-	    var html = Mustache.render(elt, modelData);
-	    var div = document.createElement("div");
+		obj = node.getAttribute("data-obj").split(";");
+		elt = document.querySelector("#tplHeaderQuestion").innerHTML;
+	    modelData = { name: obj[0]+"["+(""+Math.random()).split(".")[1]+"]", lang: obj[1]};
+	    html = Mustache.render(elt, modelData);
+	    div = document.createElement("div");
 	    div.innerHTML = html;
-	    var btn = document.querySelector("#btnAddChoice"+questionIdx);
-	    btn.parentNode.parentNode.insertBefore( div, btn.parentNode );
-	};
+
+	    while (!node.classList.contains("btnContainer")){
+    		node = node.parentNode;
+    	}
+    	cl = node.parentNode.classList;
+    	div.className = cl.contains("itemContainer") || cl.contains("nestedQuestionnaire") ? "nestedQuestionnaire" : "itemContainer";
+    	node.parentNode.insertBefore(div, node);
+	}
+
+	function _addQuestion(node){
+		console.log("_addQuestion", node.getAttribute("data-obj"));
+
+		var obj, elt, modelData, html, div, cl;
+
+		obj = node.getAttribute("data-obj").split(";");
+		elt = document.querySelector("#tplQuestion").innerHTML;
+	    modelData = { name: obj[0]+"["+(""+Math.random()).split(".")[1]+"]", lang: obj[1]};
+	    html = Mustache.render(elt, modelData);
+	    div = document.createElement("div");
+	    div.innerHTML = html;
+
+	    while (!node.classList.contains("btnContainer")){
+    		node = node.parentNode;
+    	}
+    	cl = node.parentNode.classList;
+    	div.className = cl.contains("itemContainer") || cl.contains("nestedQuestionnaire") ? "nestedQuestionnaire" : "itemContainer";
+    	node.parentNode.insertBefore(div, node);
+	}
+
+	function _addChoice(node){
+		console.log("_addChoice", node.getAttribute("data-obj"));
+		var obj, elt, modelData, html, div;
+
+		obj = node.getAttribute("data-obj").split(";");
+		elt = document.querySelector("#tplChoice").innerHTML;
+	    modelData = { name: obj[0]+"["+(""+Math.random()).split(".")[1]+"]", lang: obj[1]};
+	    html = Mustache.render(elt, modelData);
+	    div = document.createElement("div");
+	    div.className = "row answers";
+	    div.innerHTML = html;
+
+	    while (!node.classList.contains("btnContainer")){
+    		node = node.parentNode;
+    	}
+    	node.parentNode.insertBefore(div, node);
+	}
 
 	function saveForm(){
 		console.log("saveForm");
 		var obj = form2js(document.forms.newQ);
 		console.log("res", obj);
 
-		promiseXHR("POST", "/api/questionnaires", 200, JSON.stringify(obj)).then(function(response) {
-            alert("SUCCESS");
-        }, function(error) {
-            alert("FAILED");
-            console.log("saveForm - error: ", error);
-        });
+		if(obj._id){
+			//Update
+			promiseXHR("PUT", "/api/questionnaires/" + obj._id, 200, JSON.stringify(obj)).then(function(response) {
+	            alert("SUCCESS");
+	        }, function(error) {
+	            alert("FAILED");
+	            console.log("saveForm - error: ", error);
+	        });
+		}
+		else{
+			//Creation
+			promiseXHR("POST", "/api/questionnaires", 200, JSON.stringify(obj)).then(function(response) {
+	            alert("SUCCESS");
+	            //set questionnaire id
+	            var obj = JSON.parse(response);
+	            if(obj._id){
+	            	document.querySelector("#questionnaireID").value = obj._id;
+	            }
+	        }, function(error) {
+	            alert("FAILED");
+	            console.log("saveForm - error: ", error);
+	        });
+		}
 	};
+
+function init() {
+	console.log("init");
+
+    //Event click management
+    document.forms.newQ.addEventListener("click", function(evt){
+    	var node = evt.target,
+    		cl = node.classList;
+
+    	if(node.tagName.toLowerCase() !== "button"){
+    		return;
+    	}
+
+    	if(cl.contains("deleteHeaderQuestion")){
+    		_deleteHeaderQuestion(node);
+    	}
+    	else if(cl.contains("addHeaderQuestion")){
+    		_addHeaderQuestion(node);
+    	}
+    	else if(cl.contains("addQuestion")){
+    		_addQuestion(node);
+    	}
+		else if(cl.contains("deleteQuestion")){
+    		_deleteQuestion(node);
+    	}
+    	else if(cl.contains("deleteChoice")){
+    		_deleteChoice(node);
+    	}
+    	else if(cl.contains("addChoice")){
+    		_addChoice(node);
+    	}
+
+    }, true);
+}
+
+window.addEventListener("DOMContentLoaded", init, false);
 </script>
+<style>
+	.answers{
+		margin-left: 30px;
+	}
+	.space{
+		width: 20%;
+		margin: 30px auto;
+		border-color: black;
+	}
+	.nestedQuestionnaire{
+		margin-left: 20px;
+	}
+	div.col.btnContainer{
+		flex: 0.15;
+		-ms-flex: 0.15;
+		-moz-flex: 0.15;
+		-webkit-flex: 0.15;
+	}
+	form{
+		position: relative;
+	}
+	.nestedQuestionnaire{
+		background: rgb(190, 190, 190);
+	}
+	.itemContainer{
+		background: rgb(228, 228, 228);
+	}
+</style>
+
+{% macro tpl(q, idx) %}
+	{% set name = "questions" %}
+	{% for key, val in idx %}
+		{% set name += "["+val+"]" %}
+		{% if !loop.last %}
+			{% set name += ".questions" %}
+		{% endif %}
+	{% endfor %}
+
+	{% if q.headerRef %}
+		<div class="row">
+			<div class="col">
+				<label class="bold">Header ref: </label>
+				<input type="text" name="{{name}}.headerRef" value="{{q.headerRef}}" />
+			</div>
+			<div class="col">
+				<label class="bold">Trad: ({{lang}}) </label>
+				<input type="text" name="{{name}}.headerLabel.{{lang}}" value="{{q.headerLabel[lang]}}" />
+			</div>
+		</div>
+		<div class="row">
+			<label class="bold">Subscore: </label>
+			<input type="text" name="{{name}}.subscore" value="{{q.subscore}}" />
+		</div>
+		<div class="row control btnContainer">
+			<span class="spacer"></span>
+			<button type="button" class="small red deleteHeaderQuestion">delete header question</button>
+		</div>
+		<hr>
+		{% for subQ in q.questions %}
+			{% set idx = idx|push(loop.index) %}
+			<div class="nestedQuestionnaire">
+				{{tpl(subQ, idx)}}
+			</div>
+			{% set idx = idx|pop() %}
+
+			{% if loop.last %}
+				<div class="row control btnContainer">
+					<span class="spacer"></span>
+					<button type="button" class="small blue addHeaderQuestion" data-obj="{{name}}.questions;{{lang}}">add header question</button>
+					<button type="button" class="small blue addQuestion" data-obj="{{name}}.questions;{{lang}}">add question</button>
+				</div>
+			{% endif %}
+		{% endfor %}
+	{% else %}
+		<div class="row">
+			<div class="col">
+				<label class="bold">Question ref: </label>
+				<input type="text" name="{{name}}.ref" value="{{q.ref}}" />
+			</div>
+			<div class="col">
+				<label class="bold">Trad: ({{lang}})</label>
+				<input type="text" name="{{name}}.label.{{lang}}" value="{{q.label[lang]}}" />
+			</div>
+			<div class="col btnContainer">
+				<button type="button" class="small red deleteQuestion">delete question</button>
+			</div>
+		</div>
+		<br/>
+	{% endif %}
+	{% for c in q.choice %}
+		<div class="row answers">
+			<div class="col">
+				<label>Choice ref</label>
+				<input type="text" name="{{name}}.choice[{{loop.index}}].ref" value="{{c.ref}}" />
+			</div>
+			<div class="col">
+				<label>Trad: ({{lang}})</label>
+				<input type="text" name="{{name}}.choice[{{loop.index}}].label.{{lang}}" value="{{c.label[lang]}}" />
+			</div>
+			<div class="col">
+				<label>Choice Value</label>
+				<input type="text" name="{{name}}.choice[{{loop.index}}].value" value="{{c.value}}" />
+			</div>
+			<div class="col">
+				<label>Choice System</label>
+				<select name="{{name}}.choice[{{loop.index}}].system">
+		    		<option value="integer" {% if c.system === "integer" %}selected{% endif %}>integer</option>
+		    		<option value="boolean" {% if c.system === "boolean" %}selected{% endif %}>boolean</option>
+		    		<option value="decimal" {% if c.system === "decimal" %}selected{% endif %}>decimal</option>
+		    		<option value="string" {% if c.system === "string" %}selected{% endif %}>string</option>
+		    	</select>
+			</div>
+			<div class="col btnContainer">
+				<button type="button" class="small red deleteChoice">delete</button>
+			</div>
+		</div>
+		{% if loop.last %}
+			<div class="row control btnContainer">
+				<span class="spacer"></span>
+				<button type="button" class="small blue addChoice" data-obj="{{name}}.choice;{{lang}}">add choice</button>
+			</div>
+			<br/>
+		{% endif %}
+	{% endfor %}
+{% endmacro %}
+
 <div class="mainContainer">
 	<form name="newQ" autocomplete="off" onsubmit="saveForm(); return false;">
+		<input id="questionnaireID" type="hidden" name="_id" value="{{questionnaire._id.toString()}}"/>
 		<div class="row">
 			<div class="col">
 				<label>Questionnaire name</label>
-				<input type="text" name="name" />
+				<input type="text" name="name" value="{{questionnaire.name}}"/>
 			</div>
 			<div class="col">
-				<label>Questionnaire text</label>
-				<input type="text" name="text" />
+				<label>Questionnaire ref</label>
+				<input type="text" name="ref" value="{{questionnaire.ref}}"/>
+			</div>
+			<div class="col">
+				<label>Trad: ({{lang}})</label>
+				<input type="text" name="label.{{lang}}" {% if questionnaire.label[lang] %}value="{{questionnaire.label[lang]}}"{% endif %}/>
 			</div>
 		</div>
 		<hr>
-		<div class="row control">
+		{% for q in questionnaire.questions %}
+			<div class="itemContainer">
+				{% set number = "" %}
+				{{tpl(q, [loop.index])}}
+			</div>
+			{% if !loop.last %}
+				<hr class="space">
+			{% endif %}
+		{% endfor %}
+		<div class="row control btnContainer">
 			<span class="spacer"></span>
-			<button id="addHeader" type="button" class="blue" onclick="addHeaderQuestion()">New Header Question</button>
-			<button id="addSimple" type="button" class="blue" onclick="addSimpleQuestion()">New Simple Question</button>
+			<button id="addHeader" type="button" class="blue addHeaderQuestion" data-obj="questions;{{lang}}">New Header Question</button>
+			<button id="addSimple" type="button" class="blue addQuestion" data-obj="questions;{{lang}}">New Simple Question</button>
 		</div>
 		<div class="row control">
 			<span class="spacer"></span>

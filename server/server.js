@@ -348,7 +348,8 @@ server.get( '/settings/listsManager', IPage.listsManager);
 server.get( '/settings/lists', IPage.lists);
 server.get( '/settings/lists/:listName', IPage.list);
 server.get( '/questionnaires', IPage.questionnaires);
-server.get( '/questionnaires/create', IPage.createQuestionnaire);
+server.get( '/questionnaire/create', IPage.createQuestionnaire);
+server.get( '/questionnaire/edit/:questionnaireName', IPage.createQuestionnaire);
 server.get( '/questionnaire/:questionnaireName', IPage.questionnaireOverview);
 
 server.get( '/datarecord/', IPage.dataRecord);
