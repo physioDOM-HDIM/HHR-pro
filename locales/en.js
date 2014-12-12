@@ -143,7 +143,7 @@
 	"New item": "New item",
 	"Label": "Label",
 	"Questionnaires": "Questionnaires",
-	"Create/Update a questionnaire": "Create/Update a questionnaire"
+	"Create/Update a questionnaire": "Create/Update a questionnaire",
 	"Filter / sort": "Filter / sort",
 	"tuto": "tuto",
 	"Since": "Since",
@@ -157,7 +157,6 @@
 	"Valid": "Valid",
 	"From Home": "From Home",
 	"Consultation": "Consultation",
-	"<strong>2015-06-17</strong> From Home": "<strong>2015-06-17</strong> From Home",
 	"Physiological parameters": "Physiological parameters",
 	"Symptoms assessments": "Symptoms assessments",
 	"Min threshold": "Min threshold",
