@@ -754,29 +754,9 @@ function IPage() {
 		var data = {
 			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
 		};
-		RSVP.all([physioDOM.Lists.getList("parameters"), physioDOM.Lists.getList("unity"), physioDOM.Beneficiaries()])
-			.then(function(datas) {
-				var parameters = datas[0],
-					unity = datas[1],
-					beneficiaries = datas[2];
 
-				var i = 0,
-					leni = parameters.items.length;
-
-				for(i; i<leni; i++) {
-					var y = 0,
-						leny = unity.items.length;
-					for(y; y<leny; y++) {
-						if(parameters.items[i].unity === unity.items[y].ref) {
-							parameters.items[i].unityLabel = unity.items[y].label;
-							break;
-						}
-					}
-				}
-
-				data.parameters = parameters;
-				data.lang = lang;
-
+		physioDOM.Beneficiaries()
+			.then(function(beneficiaries) {
 				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
 			})
 			.then(function(beneficiary) {
@@ -790,6 +770,7 @@ function IPage() {
 				data.dataRecordItems = record;
 				data.dataRecordItems.datetime = moment(data.dataRecordItems.datetime).format("L LT");
 				data.view = 'update';
+				data.lang = lang;
 
 				console.log("dataRecordItems :", data.dataRecordItems);
 
@@ -823,34 +804,14 @@ function IPage() {
 			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
 		};
 
-		RSVP.all([physioDOM.Lists.getList("parameters"), physioDOM.Lists.getList("unity"), physioDOM.Beneficiaries()])
-			.then(function(datas) {
-				var parameters = datas[0],
-					unity = datas[1],
-					beneficiaries = datas[2];
-
-				var i = 0,
-					leni = parameters.items.length;
-
-				for(i; i<leni; i++) {
-					var y = 0,
-						leny = unity.items.length;
-					for(y; y<leny; y++) {
-						if(parameters.items[i].unity === unity.items[y].ref) {
-							parameters.items[i].unityLabel = unity.items[y].label;
-							break;
-						}
-					}
-				}
-
-				data.parameters = parameters;
-				data.lang = lang;
-
+		physioDOM.Beneficiaries()
+			.then(function(beneficiaries) {
 				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
 			})
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
 				data.view = 'create';
+				data.lang = lang;
 				// jsut for test, otherwise read locale from session
 
 				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/dataRecordEdit.htm', data, function(err, output) {

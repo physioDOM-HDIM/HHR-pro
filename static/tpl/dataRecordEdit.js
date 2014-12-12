@@ -2,7 +2,8 @@
 
 var infos = {},
     idx = 0,
-    createdDataRecordID = null;
+    createdDataRecordID = null,
+    lists = {};
 
 infos.datasInit = null;
 
@@ -26,6 +27,267 @@ var promiseXHR = function(method, url, statusOK, data) {
 
     return promise;
 };
+
+function findInObject(obj, item, value) {
+    var i = 0,
+        len = obj.length,
+        result = null;
+
+    for(i; i<len; i++) {
+        if(obj[i][item] === value) {
+            result = obj[i];
+            break;
+        }
+    }
+
+    return result;
+}
+
+function hasClass(element, cls) {
+    return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
+}
+
+/* UI Actions */
+
+function addLine(category) {
+    var tpl = document.querySelector('#newItem').innerHTML,
+        container = document.querySelector('#newItems-'+category),
+        newLine = document.createElement('div');
+
+    //add index to line for form2js formating
+    var modelData = { idx: ++idx},
+        html = Mustache.render(tpl, modelData);
+
+    newLine.className = 'row'
+    newLine.innerHTML = html;
+
+    newLine.querySelector('#new-item-category').value = category;
+
+    container.appendChild(newLine);
+}
+
+function removeLine(element) {
+    var line = element.parentNode.parentNode,
+        container = line.parentNode;
+
+    container.removeChild(line);
+}
+
+function removeItem(id) {
+    var item = document.querySelector('#ID'+id),
+        container = item.parentNode;
+
+    container.removeChild(item);
+}
+
+/* Form Valid */
+function update(dataRecordID) {
+    var obj = form2js(document.forms.dataRecord);
+
+    if(JSON.stringify(obj) !== "{}") {
+
+        var i=0,
+        data = obj.items,
+        len = data.length,
+        origin = infos.datasInit.items;
+
+        for(i; i<len; i++) {
+            //Bool and float convertion
+            data[i].value = parseFloat(data[i].value);
+            data[i].automatic = (data[i].automatic === "true");
+
+            if(origin) {
+                origin[i].value = parseFloat(origin[i].value);
+                origin[i].automatic = (origin[i].automatic === "true");
+
+                //check if change has been done, if so set automatic field to false
+                if(origin[i].value !== data[i].value || origin[i].text !== data[i].text) {
+                    data[i].automatic = false;
+                }
+            }
+
+        }
+
+        console.log("res", data);
+        promiseXHR("PUT", "/api/beneficiary/datarecords/"+dataRecordID, 200, JSON.stringify(data)).then(function(response) {
+            updateSuccess();
+        }, function(error) {
+            errorOccured();
+            console.log("saveForm - error: ", error);
+        });
+
+    } else {
+        errorOccured();
+    }
+}
+
+function create() {
+
+    if(createdDataRecordID !== null) {
+        update(createdDataRecordID);
+    } else {
+        var obj = form2js(document.forms.dataRecord);
+
+        if(JSON.stringify(obj) !== "{}") {
+
+            var i=0,
+            len = obj.items.length;
+
+            for(i; i<len; i++) {
+                //Bool and float convertion
+                obj.items[i].value = parseFloat(obj.items[i].value);
+                obj.items[i].automatic = false;
+            }
+
+            console.log("res", obj);
+            promiseXHR("POST", "/api/beneficiary/datarecord", 200, JSON.stringify(obj)).then(function(response) {
+                createSuccess();
+                var record = JSON.parse(response);
+                createdDataRecordID = record._id;
+            }, function(error) {
+                errorOccured();
+                console.log("saveForm - error: ", error);
+            });
+
+        } else {
+            errorOccured();
+        }
+    }
+
+}
+
+window.addEventListener("DOMContentLoaded", function() {
+    infos.datasInit = form2js(document.forms.dataRecord);
+    infos.lang = document.querySelector('#lang').innerText;
+    getLists();
+}, false);
+
+
+function getLists() {
+
+    var promises = {
+            parameters: promiseXHR("GET", "/api/lists/parameters", 200),
+            symptom: promiseXHR("GET", "/api/lists/symptom", 200),
+            questionnaire: promiseXHR("GET", "/api/lists/questionnaire", 200),
+            unity: promiseXHR("GET", "/api/lists/unity", 200)
+        };
+
+    RSVP.hash(promises).then(function(results) {
+
+        lists.parameters = JSON.parse(results.parameters);
+        lists.symptom = JSON.parse(results.symptom);
+        lists.questionnaire = JSON.parse(results.questionnaire);
+
+        var unityList = JSON.parse(results.unity);
+
+        var i = 0,
+            leni = lists.parameters.items.length;
+
+        for(i; i<leni; i++) {
+            var y = 0,
+                leny = unityList.items.length;
+
+            for(y; y<leny; y++) {
+                if(lists.parameters.items[i].unity === unityList.items[y].ref) {
+                    lists.parameters.items[i].unityLabel = unityList.items[y].label[infos.lang];
+                    break;
+                }
+            }
+        }
+
+        setLang();
+        initParams();
+
+    });
+
+}
+
+function setLang() {
+
+    var i = 0,
+        len = lists.parameters.items.length;
+
+    for(i; i<len; i++) {
+        lists.parameters.items[i].labelLang = lists.parameters.items[i].label[infos.lang];
+    }
+
+}
+
+function initParams() {
+    var lines = document.querySelectorAll('.line'),
+        i = 0,
+        len = lines.length;
+
+    var selectParamTpl = document.querySelector('#selectParam').innerHTML;
+
+    for(i; i<len; i++) {
+        console.log(lines[i]);
+
+        var type = lines[i].querySelector('.type').innerText,
+            item = findInObject(lists.parameters.items, 'ref', type),
+            modelDataSelect = {
+                lists: lists,
+                selection: function () {
+                    return function(val, render) {
+                        if(item.ref === render(val)) {
+                            return 'selected';
+                        }
+                    }
+                }
+            },
+            modelDataLine = {item: item};
+
+        var selectHTML = Mustache.render(selectParamTpl, modelDataSelect),
+            lineHTML = Mustache.render(lines[i].innerHTML, modelDataLine);
+
+
+        lines[i].innerHTML = lineHTML;
+        lines[i].querySelector('.item-text').innerHTML = selectHTML;
+    }
+}
+
+var updateParam = function(element) {
+    var minContainer = element.parentNode.parentNode.querySelector('.min-treshold'),
+        maxContainer = element.parentNode.parentNode.querySelector('.max-treshold'),
+        unityContainer = element.parentNode.parentNode.querySelector('.unity');
+
+    if(element.value !== undefined && element.value !== '') {
+
+        var param = findInObject(lists.parameters.items, 'ref', element.value);
+
+        minContainer.innerText = param.threshold.min? param.threshold.min: '-';
+        maxContainer.innerText = param.threshold.max? param.threshold.max: '-';
+        unityContainer.innerText = param.unityLabel? param.unityLabel: '';
+
+    } else {
+        minContainer.innerText = '-';
+        maxContainer.innerText = '-';
+        unityContainer.innerText = '';
+    }
+}
+
+function toggleEditMode(id) {
+    var line = document.querySelector('#ID' + id),
+        updateMode = line.querySelector('.updateMode'),
+        readMode = line.querySelector('.readMode');
+
+    if (hasClass(updateMode, 'hidden')) {
+        updateMode.className = 'updateMode';
+        readMode.className = 'readMode hidden';
+    } else {
+        updateMode.className = 'updateMode hidden';
+        readMode.className = 'readMode';
+    }
+}
+
+
+
+
+
+
+
+
+
 
 /* Modal */
 
@@ -160,167 +422,3 @@ function updateSuccess() {
     };
     showModal(modalObj);
 }
-
-
-/* UI Actions */
-function hasClass(element, cls) {
-    return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
-}
-
-function toggleEditMode(id) {
-    var line = document.querySelector('#ID' + id),
-        updateMode = line.querySelector('.updateMode'),
-        readMode = line.querySelector('.readMode');
-
-    //reset values of form input/select
-    var thresholdField = updateMode.querySelector('select'),
-        valueField = updateMode.querySelector('input'),
-        thresholdSaved = readMode.querySelector('.item-text'),
-        valueSaved = readMode.querySelector('.item-value');
-
-    thresholdField.value = thresholdSaved.innerText;
-    valueField.value = valueSaved.innerText;
-    updateParam(thresholdField);
-
-    if (hasClass(updateMode, 'hidden')) {
-        updateMode.className = 'updateMode';
-        readMode.className = 'readMode hidden';
-    } else {
-        updateMode.className = 'updateMode hidden';
-        readMode.className = 'readMode';
-    }
-}
-
-function addLine(category) {
-    var tpl = document.querySelector('#newItem').innerHTML,
-        container = document.querySelector('#newItems-'+category),
-        newLine = document.createElement('div');
-
-    //add index to line for form2js formating
-    var modelData = { idx: ++idx},
-        html = Mustache.render(tpl, modelData);
-
-    newLine.className = 'row'
-    newLine.innerHTML = html;
-
-    newLine.querySelector('#new-item-category').value = category;
-
-    container.appendChild(newLine);
-}
-
-function removeLine(element) {
-    var line = element.parentNode.parentNode,
-        container = line.parentNode;
-
-    container.removeChild(line);
-}
-
-function removeItem(id) {
-    var item = document.querySelector('#ID'+id),
-        container = item.parentNode;
-
-    container.removeChild(item);
-}
-
-/* Params */
-
-var updateParam = function(element) {
-
-    if(element.value !== undefined && element.value !== '') {
-        var value = element.value;
-    } else {
-        var value = 'no-choice';
-    }
-
-    var choice = document.querySelector('#paramListValue').querySelector('#'+value),
-        min = choice.querySelector('#min').innerText,
-        max = choice.querySelector('#max').innerText,
-        unity = choice.querySelector('#unity').innerText,
-        minContainer = element.parentNode.parentNode.querySelector('.min-treshold'),
-        maxContainer = element.parentNode.parentNode.querySelector('.max-treshold'),
-        unityContainer = element.parentNode.parentNode.querySelector('.unity');
-
-    minContainer.innerText = min;
-    maxContainer.innerText = max;
-    unityContainer.innerText = unity;
-}
-
-/* Form Valid (TODO) */
-function update(dataRecordID) {
-    var obj = form2js(document.forms.dataRecord);
-
-    if(JSON.stringify(obj) !== "{}") {
-
-        var i=0,
-        data = obj.items,
-        len = data.length,
-        origin = infos.datasInit.items;
-
-        for(i; i<len; i++) {
-            //Bool and float convertion
-            data[i].value = parseFloat(data[i].value);
-            data[i].automatic = (data[i].automatic === "true");
-
-            if(origin) {
-                origin[i].value = parseFloat(origin[i].value);
-                origin[i].automatic = (origin[i].automatic === "true");
-
-                //check if change has been done, if so set automatic field to false
-                if(origin[i].value !== data[i].value || origin[i].text !== data[i].text) {
-                    data[i].automatic = false;
-                }
-            }
-
-        }
-
-        console.log("res", data);
-        promiseXHR("PUT", "/api/beneficiary/datarecords/"+dataRecordID, 200, JSON.stringify(data)).then(function(response) {
-            updateSuccess();
-        }, function(error) {
-            errorOccured();
-            console.log("saveForm - error: ", error);
-        });
-
-    } else {
-        errorOccured();
-    }
-}
-
-function create() {
-
-    if(createdDataRecordID !== null) {
-        update(createdDataRecordID);
-    } else {
-        var obj = form2js(document.forms.dataRecord);
-
-        if(JSON.stringify(obj) !== "{}") {
-
-            var i=0,
-            len = obj.items.length;
-
-            for(i; i<len; i++) {
-                //Bool and float convertion
-                obj.items[i].value = parseFloat(obj.items[i].value);
-                obj.items[i].automatic = false;
-            }
-
-            console.log("res", obj);
-            promiseXHR("POST", "/api/beneficiary/datarecord", 200, JSON.stringify(obj)).then(function(response) {
-                createSuccess();
-                var record = JSON.parse(response);
-                createdDataRecordID = record._id;
-            }, function(error) {
-                errorOccured();
-                console.log("saveForm - error: ", error);
-            });
-
-        } else {
-            errorOccured();
-        }
-    }
-
-}
-
-window.addEventListener("DOMContentLoaded", function() {
-    infos.datasInit = form2js(document.forms.dataRecord);
-}, false);
