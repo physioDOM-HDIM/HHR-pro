@@ -91,7 +91,7 @@
             {{/item}}
             {% endraw %}
 
-            <input name="items[{{item._id.toString()}}].category" type="hidden" value="{{item.category}}">
+            <input name="items[{{item._id.toString()}}].category" class="item-category" type="hidden" value="{{item.category}}">
             <input name="items[{{item._id.toString()}}]._id" type="hidden" value="{{item._id.toString()}}">
             <input name="items[{{item._id.toString()}}].automatic" type="hidden" value="{{item.automatic}}">
             <input name="items[{{item._id.toString()}}].dataRecordID" type="hidden" value="{{item.dataRecordID.toString()}}">
@@ -164,11 +164,18 @@
     <zdk-panel heading="{{'Physiological parameters' |i18n}}" collapsable="false" collapsed="false">
 
         {% if view === 'create'%}
-            {{ addItem('physiologicalGeneral') }}
+            {{ addItem('General') }}
         {% else %}
+            <h2 class="bold">Général</h1>
             {% for item in dataRecordItems.items.items %}
-                {% if item.category === 'physiologicalGeneral' %}
-                    {{ line('physiologicalGeneral') }}
+                {% if item.category === 'General' %}
+                    {{ line('General') }}
+                {% endif %}
+            {% endfor %}
+            <h2 class="bold">HDIM</h1>
+            {% for item in dataRecordItems.items.items %}
+                {% if item.category === 'HDIM' %}
+                    {{ line('HDIM') }}
                 {% endif %}
             {% endfor %}
         {% endif %}

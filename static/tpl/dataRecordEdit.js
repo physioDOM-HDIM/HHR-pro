@@ -53,7 +53,10 @@ function getCategoryParam(category) {
     var list = null;
 
     switch(category) {
-    case 'physiologicalGeneral':
+    case 'General':
+        list = lists.parameters.items;
+        break;
+    case 'HDIM':
         list = lists.parameters.items;
         break;
     case 'symptom':
@@ -86,8 +89,6 @@ function addLine(category) {
 
     var html = Mustache.render(newLine.innerHTML, modelData);
     newLine.innerHTML = html;
-
-    newLine.querySelector('#new-item-category').value = category;
 
     container.appendChild(newLine);
 }
@@ -259,7 +260,8 @@ function initParams() {
     for(i; i<len; i++) {
 
         var _id = lines[i].id.substring(2),
-            category = lines[i].querySelector('.category').innerText;
+            category = lines[i].querySelector('.category').innerText,
+            categoryContainer = lines[i].querySelector('.item-category');
 
 
         var type = lines[i].querySelector('.type').innerText,
@@ -283,6 +285,14 @@ function initParams() {
 
         lines[i].innerHTML = lineHTML;
         lines[i].querySelector('.item-text').innerHTML = selectHTML;
+
+        if(categoryContainer) {
+            if(item.category) {
+                categoryContainer.value = item.category;
+            } else {
+                categoryContainer.value = category;
+            }
+        }
     }
 }
 
@@ -291,7 +301,8 @@ var updateParam = function(element, directValue) {
         select = container.querySelector('select'),
         minContainer = container.querySelector('.min-treshold'),
         maxContainer = container.querySelector('.max-treshold'),
-        unityContainer = container.querySelector('.unity');
+        unityContainer = container.querySelector('.unity'),
+        categoryContainer = container.querySelector('.item-category');
 
     if(!directValue) {
         if(element.value !== undefined && element.value !== '') {
@@ -302,10 +313,30 @@ var updateParam = function(element, directValue) {
         select.value = elt;
     }
 
+    //get chosen param
     var category = container.parentNode.parentNode.querySelector('.category').innerText;
+    var param = findInObject(getCategoryParam(category), 'ref', elt);
+
+    //for create
+    var newItemCategory = container.querySelector('#new-item-category');
+    if(newItemCategory) {
+        if(param.category) {
+            newItemCategory.value = param.category;
+        } else {
+            newItemCategory.value = category;
+        }
+    }
+    //for update
+    if(categoryContainer) {
+        if(param.category) {
+            categoryContainer.value = param.category;
+        } else {
+            categoryContainer.value = category;
+        }
+    }
+
 
     if(elt && category !== 'symptom' && category !== 'questionnaire') {
-        var param = findInObject(lists.parameters.items, 'ref', elt);
 
         minContainer.innerText = param.threshold.min? param.threshold.min: '-';
         maxContainer.innerText = param.threshold.max? param.threshold.max: '-';
