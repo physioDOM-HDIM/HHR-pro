@@ -29,17 +29,18 @@
     {% endif%}
         <option></option>
     {% raw %}
-        {{#lists.parameters.items}}
+        {{#lists}}
             <option value="{{ref}}" {% endraw %}{% if view !== 'create'%}{% raw %}{{#selection}}{{ref}}{{/selection}}{% endraw %}{% endif%}{% raw %} id="option-{{ref}}">{{labelLang}}</option>
-        {{/lists.parameters.items}}
+        {{/lists}}
     {% endraw %}
 
     </select>
 </script>
 
-{% macro line() %}
+{% macro line(cat) %}
 <div id="ID{{item._id.toString()}}" class="line">
     <div class="type hidden">{{ item.text }}</div>
+    <div class="category hidden">{{cat}}</div>
     <div class="readMode">
         <div class="row">
 
@@ -110,6 +111,7 @@
 
 {% macro addItem(category) %}
 <div id="add{{category}}">
+    <div class="category hidden">{{category}}</div>
     <div id="newItems-{{category}}">
 
     </div>
@@ -162,11 +164,11 @@
     <zdk-panel heading="{{'Physiological parameters' |i18n}}" collapsable="false" collapsed="false">
 
         {% if view === 'create'%}
-            {{ addItem('General') }}
+            {{ addItem('physiologicalGeneral') }}
         {% else %}
             {% for item in dataRecordItems.items.items %}
-                {% if item.category === 'General' %}
-                    {{ line() }}
+                {% if item.category === 'physiologicalGeneral' %}
+                    {{ line('physiologicalGeneral') }}
                 {% endif %}
             {% endfor %}
         {% endif %}
@@ -175,11 +177,11 @@
     <zdk-panel heading="{{'Symptoms assessments' |i18n}}" collapsable="false" collapsed="false">
 
         {% if view === 'create'%}
-            {{ addItem('Symptoms') }}
+            {{ addItem('symptom') }}
         {% else %}
             {% for item in dataRecordItems.items.items %}
-                {% if item.category === 'Symptoms' %}
-                    {{ line() }}
+                {% if item.category === 'symptom' %}
+                    {{ line('symptom') }}
                 {% endif %}
             {% endfor %}
         {% endif %}
@@ -188,11 +190,11 @@
     <zdk-panel heading="{{'Questionnaires' |i18n}}" collapsable="false" collapsed="false">
 
         {% if view === 'create'%}
-            {{ addItem('HDIM') }}
+            {{ addItem('questionnaire') }}
         {% else %}
             {% for item in dataRecordItems.items.items %}
-                {% if item.category === 'HDIM' %}
-                    {{ line() }}
+                {% if item.category === 'questionnaire' %}
+                    {{ line('questionnaire') }}
                 {% endif %}
             {% endfor %}
         {% endif %}

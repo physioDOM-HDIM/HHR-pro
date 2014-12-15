@@ -49,6 +49,24 @@ function hasClass(element, cls) {
 
 /* UI Actions */
 
+function getCategoryParam(category) {
+    var list = null;
+
+    switch(category) {
+    case 'physiologicalGeneral':
+        list = lists.parameters.items;
+        break;
+    case 'symptom':
+        list = lists.symptom.items;
+        break;
+    case 'questionnaire':
+        list = lists.questionnaire.items;
+        break;
+    }
+
+    return list;
+}
+
 function addLine(category) {
     var tpl = document.querySelector('#newItem'),
         container = document.querySelector('#newItems-'+category),
@@ -58,7 +76,7 @@ function addLine(category) {
     //add index to line for form2js formating
     var modelData = {
             idx: ++idx,
-            lists: lists
+            lists: getCategoryParam(category)
         };
 
     newLine.className = 'row';
@@ -202,7 +220,7 @@ function getLists() {
                 }
             }
         }
-
+        console.log(lists);
         setLang();
         initParams();
 
@@ -213,10 +231,20 @@ function getLists() {
 function setLang() {
 
     var i = 0,
-        len = lists.parameters.items.length;
+        leni = lists.parameters.items.length,
+        y = 0,
+        leny = lists.symptom.items.length,
+        z = 0,
+        lenz = lists.questionnaire.items.length;
 
-    for(i; i<len; i++) {
+    for(i; i<leni; i++) {
         lists.parameters.items[i].labelLang = lists.parameters.items[i].label[infos.lang];
+    }
+    for(y; y<leny; y++) {
+        lists.symptom.items[y].labelLang = lists.symptom.items[y].label[infos.lang];
+    }
+    for(z; z<lenz; z++) {
+        lists.questionnaire.items[z].labelLang = lists.questionnaire.items[z].label[infos.lang];
     }
 
 }
@@ -230,12 +258,14 @@ function initParams() {
 
     for(i; i<len; i++) {
 
-        var _id = lines[i].id.substring(2);
+        var _id = lines[i].id.substring(2),
+            category = lines[i].querySelector('.category').innerText;
+
 
         var type = lines[i].querySelector('.type').innerText,
-            item = findInObject(lists.parameters.items, 'ref', type),
+            item = findInObject(getCategoryParam(category), 'ref', type),
             modelDataSelect = {
-                lists: lists,
+                lists: getCategoryParam(category),
                 selection: function () {
                     return function(val, render) {
                         if(item.ref === render(val)) {
@@ -272,7 +302,9 @@ var updateParam = function(element, directValue) {
         select.value = elt;
     }
 
-    if(elt) {
+    var category = container.parentNode.parentNode.querySelector('.category').innerText;
+
+    if(elt && category !== 'symptom' && category !== 'questionnaire') {
         var param = findInObject(lists.parameters.items, 'ref', elt);
 
         minContainer.innerText = param.threshold.min? param.threshold.min: '-';
