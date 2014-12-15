@@ -96,7 +96,7 @@ function update(dataRecordID) {
             data[i].value = parseFloat(data[i].value);
             data[i].automatic = (data[i].automatic === "true");
 
-            if(origin) {
+            if(origin[i]) {
                 origin[i].value = parseFloat(origin[i].value);
                 origin[i].automatic = (origin[i].automatic === "true");
 
@@ -221,7 +221,8 @@ function initParams() {
     var selectParamTpl = document.querySelector('#selectParam').innerHTML;
 
     for(i; i<len; i++) {
-        console.log(lines[i]);
+
+        var _id = lines[i].id.substring(2);
 
         var type = lines[i].querySelector('.type').innerText,
             item = findInObject(lists.parameters.items, 'ref', type),
@@ -233,7 +234,8 @@ function initParams() {
                             return 'selected';
                         }
                     }
-                }
+                },
+                id: _id
             },
             modelDataLine = {item: item};
 
@@ -246,14 +248,23 @@ function initParams() {
     }
 }
 
-var updateParam = function(element) {
-    var minContainer = element.parentNode.parentNode.querySelector('.min-treshold'),
-        maxContainer = element.parentNode.parentNode.querySelector('.max-treshold'),
-        unityContainer = element.parentNode.parentNode.querySelector('.unity');
+var updateParam = function(element, directValue) {
+    var container = element.parentNode.parentNode,
+        select = container.querySelector('select'),
+        minContainer = container.querySelector('.min-treshold'),
+        maxContainer = container.querySelector('.max-treshold'),
+        unityContainer = container.querySelector('.unity');
 
-    if(element.value !== undefined && element.value !== '') {
+    if((element.value !== undefined && element.value !== '') || !directValue) {
 
-        var param = findInObject(lists.parameters.items, 'ref', element.value);
+        if(!directValue) {
+            var elt = element.value;
+        } else {
+            var elt = directValue;
+            select.value = elt;
+        }
+
+        var param = findInObject(lists.parameters.items, 'ref', elt);
 
         minContainer.innerText = param.threshold.min? param.threshold.min: '-';
         maxContainer.innerText = param.threshold.max? param.threshold.max: '-';
@@ -269,7 +280,11 @@ var updateParam = function(element) {
 function toggleEditMode(id) {
     var line = document.querySelector('#ID' + id),
         updateMode = line.querySelector('.updateMode'),
-        readMode = line.querySelector('.readMode');
+        readMode = line.querySelector('.readMode'),
+        paramSelect = updateMode.querySelector('select'),
+        paramValue = line.querySelector('.type').innerText;
+
+    updateParam(paramSelect, paramValue);
 
     if (hasClass(updateMode, 'hidden')) {
         updateMode.className = 'updateMode';
@@ -279,12 +294,6 @@ function toggleEditMode(id) {
         readMode.className = 'readMode';
     }
 }
-
-
-
-
-
-
 
 
 
