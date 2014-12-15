@@ -50,15 +50,23 @@ function hasClass(element, cls) {
 /* UI Actions */
 
 function addLine(category) {
-    var tpl = document.querySelector('#newItem').innerHTML,
+    var tpl = document.querySelector('#newItem'),
         container = document.querySelector('#newItems-'+category),
-        newLine = document.createElement('div');
+        newLine = document.createElement('div'),
+        selectParamTpl = document.querySelector('#selectParam').innerHTML;
 
     //add index to line for form2js formating
-    var modelData = { idx: ++idx},
-        html = Mustache.render(tpl, modelData);
+    var modelData = {
+            idx: ++idx,
+            lists: lists
+        };
 
-    newLine.className = 'row'
+    newLine.className = 'row';
+    newLine.innerHTML = tpl.innerHTML;
+
+    newLine.querySelector('.item-text').innerHTML = selectParamTpl;
+
+    var html = Mustache.render(newLine.innerHTML, modelData);
     newLine.innerHTML = html;
 
     newLine.querySelector('#new-item-category').value = category;
@@ -96,7 +104,7 @@ function update(dataRecordID) {
             data[i].value = parseFloat(data[i].value);
             data[i].automatic = (data[i].automatic === "true");
 
-            if(origin[i]) {
+            if(origin && origin[i]) {
                 origin[i].value = parseFloat(origin[i].value);
                 origin[i].automatic = (origin[i].automatic === "true");
 
@@ -255,21 +263,21 @@ var updateParam = function(element, directValue) {
         maxContainer = container.querySelector('.max-treshold'),
         unityContainer = container.querySelector('.unity');
 
-    if((element.value !== undefined && element.value !== '') || !directValue) {
-
-        if(!directValue) {
+    if(!directValue) {
+        if(element.value !== undefined && element.value !== '') {
             var elt = element.value;
-        } else {
-            var elt = directValue;
-            select.value = elt;
         }
+    } else {
+        var elt = directValue;
+        select.value = elt;
+    }
 
+    if(elt) {
         var param = findInObject(lists.parameters.items, 'ref', elt);
 
         minContainer.innerText = param.threshold.min? param.threshold.min: '-';
         maxContainer.innerText = param.threshold.max? param.threshold.max: '-';
         unityContainer.innerText = param.unityLabel? param.unityLabel: '';
-
     } else {
         minContainer.innerText = '-';
         maxContainer.innerText = '-';

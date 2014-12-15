@@ -30,21 +30,12 @@
         <option></option>
     {% raw %}
         {{#lists.parameters.items}}
-            <option value="{{ref}}" {{#selection}}{{ref}}{{/selection}} id="option-{{ref}}">{{labelLang}}</option>
+            <option value="{{ref}}" {% endraw %}{% if view !== 'create'%}{% raw %}{{#selection}}{{ref}}{{/selection}}{% endraw %}{% endif%}{% raw %} id="option-{{ref}}">{{labelLang}}</option>
         {{/lists.parameters.items}}
     {% endraw %}
 
     </select>
 </script>
-
-{% macro getParamLabel(text) %}
-    {% for val in parameters.items %}
-        {% if text === val.ref %}
-            {{val.label[lang]}}
-        {% endif %}
-    {% endfor %}
-{% endmacro %}
-
 
 {% macro line() %}
 <div id="ID{{item._id.toString()}}" class="line">
@@ -131,7 +122,7 @@
 
 
 <script type="template" id="newItem">
-    <div class="col bold"></div>
+    <div class="col item-text"></div>
     <div class="col"><input type="text" name="items[{% raw %}{{idx}}{% endraw %}].value"/></div>
     <div class="col"><span class="unity"></span></div>
     <div class="col">
