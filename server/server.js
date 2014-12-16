@@ -328,6 +328,7 @@ server.get( '/questionnaire/create', IPage.createQuestionnaire);
 server.get( '/questionnaire/edit/:questionnaireName', IPage.createQuestionnaire);
 server.get( '/questionnaire/:questionnaireName', IPage.questionnaireOverview);
 
+server.get( '/prescription/general', IPage.prescriptionDataGeneral);
 
 server.get(/\/[^api|components\/]?$/, function(req, res, next) {
 	logger.trace("index");

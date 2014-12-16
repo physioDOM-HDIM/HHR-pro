@@ -8,3 +8,6 @@ static/test/
 *.log
 install/install.json
 static/bower_components
+nginx.conf
+install.json~
+physiodom.telecomsante.com~

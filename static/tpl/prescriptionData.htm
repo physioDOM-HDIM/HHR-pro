@@ -1,0 +1,25 @@
+{% extends './page.htm' %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+{% parent %}
+<script src="/bower_components/mustache/mustache.js"></script>
+<script src="/bower_components/rsvp/rsvp.min.js"></script>
+<script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
+<script src="/bower_components/zdk-calendar/form2js.js"></script>
+<script src="/tpl/prescriptionData.js"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="row title">
+    <label class="title">
+        {{title}}
+    </label>
+</div>
+
+<div class="row">
+
+</div>
+
+
+{% endblock %}
