@@ -7,6 +7,8 @@
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
 <script src="/bower_components/zdk-calendar/form2js.js"></script>
 <script src="/tpl/prescriptionData.js"></script>
+
+<link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
 {% endblock %}
 
 {% block content %}
@@ -17,9 +19,79 @@
     </label>
 </div>
 
-<div class="row">
+<div class="data-item">
+
+	<div class="row">
+		<div class="col bold">
+			APS
+		</div>
+		<div class="col">
+			<label>Min</label><span>0</span>
+		</div>
+		<div class="col">
+			<label>Max</label><span>60</span>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col"></div>
+		<div class="col">
+			<label>Start date</label><span>1960-10-14</span>
+		</div>
+		<div class="col"></div>
+	</div>
+	<div class="row">
+		<div class="col"></div>
+		<div class="col">
+			<label>Weekly</label>
+			<ul class="data-list">
+				<li>Monday</li>
+				<li>Wednesday</li>
+			</ul>
+		</div>
+		<div class="col"></div>
+	</div>
+
+	<div class="row control">
+		<span class="spacer"></span>
+		<button type="button" onclick="openModalEdition()" class="small blue">Edit</button>
+	</div>
+
+	<hr>
 
 </div>
 
+<div class="row control">
+	<span class="spacer"></span>
+	<button type="button" class="blue">Add</button>
+</div>
+
+
+
+<zdk-modal id="editModal" closebutton="false">
+    <div class="modalContainer">
+    	<h1>{{title}}</h1>
+
+    	<div class="row">
+    		<label>type of data</label>
+    		<select>
+    			<option>1</option>
+    			<option>2</option>
+    			<option>3</option>
+    		</select>
+    	</div>
+
+    	<div class="row">
+    		<label>Min Threshold</label>12
+    		<label>Max Threshold</label>15
+    	</div>
+
+    	<div class="row">
+    		<label>Start date</label>
+    		<zdk-input-date name="" value="" style="z-index:100"></zdk-input-date>
+    	</div>
+
+    	<button type="button" onclick="closeModal()" class="red">Cancel</button>
+    </div>
+</zdk-modal>
 
 {% endblock %}
