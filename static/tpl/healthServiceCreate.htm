@@ -17,10 +17,6 @@ zdk-modal#dialog-warning-frequency::shadow #modal {
 	display: none;
 }
 
-zdk-modal#dialog-agenda::shadow #closebtn {
-	z-index: 1;
-}
-
 zdk-modal#dialog-agenda .modalContentContainer {
 	margin: 50px 10px 50px 10px;
 	border: solid 1px #ddd;
@@ -109,13 +105,13 @@ zdk-modal#dialog-agenda .modalButtonContainer.top {
 	</div>
 </zdk-modal>
 
-<zdk-modal id="dialog-agenda">
+<zdk-modal id="dialog-agenda" closebutton="false">
 	<div class="modalContainer" fit>
 		<div class="modalButtonContainer top">
 			<button id="btn-cal-add" class="green">Add</button>
 		</div>
 		<div class="modalContentContainer" fit>
-			<zdk-agenda id="agenda" lang="en-gb" hourHeight="40" hourShow="8" view="week" fit></zdk-agenda>
+			<zdk-agenda id="agenda" lang="en-gb" hourHeight="40" hourShow="8" view="week" deleteButtons="true" fit></zdk-agenda>
 		</div>
 		<div class="modalButtonContainer bottom">
 			<button id="btn-cal-cancel" class="red">Cancel</button>

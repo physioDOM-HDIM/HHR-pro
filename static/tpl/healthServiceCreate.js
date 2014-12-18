@@ -311,4 +311,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 document.addEventListener('polymer-ready', function() {
 	agenda = document.getElementById('agenda');
+
+	agenda.addEventListener('zdk-event-close', function(e) {
+		console.log(e.detail.event);
+		agenda.events.splice(e.detail.event.num, 1);
+
+		console.log(agenda.events);
+	});
 });
