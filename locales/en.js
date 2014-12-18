@@ -156,5 +156,9 @@
 	"Daily": "Daily",
 	"Punctual": "Punctual",
 	"Every": "Every",
-	"Duration": "Duration"
+	"Duration": "Duration",
+	"Start at": "Start at",
+	"Date": "Date",
+	"of the month": "of the month",
+	"at": "at"
 }
