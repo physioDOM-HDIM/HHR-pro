@@ -77,7 +77,7 @@
 
 <zdk-modal id="editModal" closebutton="false">
     <div class="modalContainer">
-    	<h1>{{title}}</h1>
+    	<h2>{{title}}</h2>
 
     	<div class="row">
     		<label>type of data</label>
@@ -89,8 +89,13 @@
     	</div>
 
     	<div class="row">
-    		<label>Min Threshold</label>12
-    		<label>Max Threshold</label>15
+    		<div class="col">
+    			<label>Min Threshold</label>12
+    		</div>
+
+    		<div class="col">
+    			<label>Max Threshold</label>15
+    		</div>
     	</div>
 
     	<div class="row">
@@ -98,8 +103,73 @@
     		<zdk-input-date name="" value="" style="z-index:100"></zdk-input-date>
     	</div>
 
-    	<button type="button" onclick="closeModal()" class="red">Cancel</button>
+    	<div class="row">
+    		<label>Frequency</label>
+    	</div>
+
+    	<div class="row frequency-choice">
+    		<input type="radio" name="frequency" onchange="showOptions('monthly')" value="monthly"><label>Monthly</label>
+    		<input type="radio" name="frequency" onchange="showOptions('weekly')" value="weekly"><label>Weekly</label>
+    		<input type="radio" name="frequency" onchange="showOptions('daily')" value="daily"><label>Daily</label>
+    	</div>
+
+    	<div class="frequency-options"></div>
+
+    	<hr>
+
+
+    	<div class="row control">
+			<span class="spacer"></span>
+			<button type="button" onclick="closeModal()" class="red">Cancel</button>
+			<button type="button" onclick="removeData()" class="red">Delete</button>
+			<button type="button" onclick="saveData()" class="green">Save</button>
+		</div>
+
     </div>
 </zdk-modal>
+
+
+<script type="template" id="tpl-option-weekly">
+
+	<div class="row">
+		Every <input type="number" name="repeat" class="option-repeat"> Week
+	</div>
+	<div class="row">
+		<input type="checkbox" name="monday"/>Mon
+		<input type="checkbox" name="tuesday"/>Tue
+		<input type="checkbox" name="Wednesday"/>Wed
+		<input type="checkbox" name="Thursday"/>Thu
+		<input type="checkbox" name="Friday"/>Fri
+		<input type="checkbox" name="Saturday"/>Sat
+		<input type="checkbox" name="Sunday"/>Sun
+	</div>
+
+</script>
+
+<script type="template" id="tpl-option-monthly">
+
+	<div class="row">
+		Every <input type="number" name="repeat" class="option-repeat"> Month
+	</div>
+	<div class="row">
+		The <select name="week">
+			<option value="1">first</option>
+			<option value="2">second</option>
+			<option value="3">third</option>
+			<option value="4">fourth</option>
+			<option value="5">fifth</option>
+		</select>
+	</div>
+	<div class="row">
+		<input type="checkbox" name="monday"/>Mon
+		<input type="checkbox" name="tuesday"/>Tue
+		<input type="checkbox" name="Wednesday"/>Wed
+		<input type="checkbox" name="Thursday"/>Thu
+		<input type="checkbox" name="Friday"/>Fri
+		<input type="checkbox" name="Saturday"/>Sat
+		<input type="checkbox" name="Sunday"/>Sun
+	</div>
+
+</script>
 
 {% endblock %}

@@ -9,3 +9,16 @@ div.col05 {
 	-ms-flex:0.5;
 	flex:0.5;
 }
+
+.modalContainer .row {
+	min-height: 35px;
+}
+
+.modalContainer .option-repeat {
+	width: 70px;
+	margin: 0 20px;
+}
+
+.frequency-choice, .frequency-options {
+	margin-left: 150px;
+}

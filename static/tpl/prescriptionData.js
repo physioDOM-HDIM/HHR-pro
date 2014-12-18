@@ -43,6 +43,21 @@ var openModalEdition = function() {
     showModal();
 }
 
+var showOptions = function(frequency) {
+
+    var optionsContainer = document.querySelector('.frequency-options'),
+        weeklyTpl = document.querySelector('#tpl-option-weekly'),
+        monthlyTpl = document.querySelector('#tpl-option-monthly');
+
+    if(frequency === 'weekly') {
+        optionsContainer.innerHTML = weeklyTpl.innerHTML;
+    } else if(frequency === 'monthly') {
+        optionsContainer.innerHTML = monthlyTpl.innerHTML;
+    } else {
+        optionsContainer.innerHTML = '';
+    }
+
+};
 
 var initParams = function() {
     var dataList = document.querySelectorAll('.data-item'),
