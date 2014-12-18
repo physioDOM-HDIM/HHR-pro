@@ -59,31 +59,59 @@ var showOptions = function(frequency) {
 
 };
 
-var initParams = function() {
-    var dataList = document.querySelectorAll('.data-item'),
+var init = function() {
+    var dataprogTpl = document.querySelector('#tpl-dataprog'),
+        dataprogContainer = document.querySelector('.dataprog-list'),
         i = 0,
-        len = dataList.length;
+        len = lists.dataprog.length;
 
     for(i; i<len; i++) {
-        var dataItem = dataList[i],
-            dataRef = dataItem.querySelector('.data-ref').innerText,
-            item = findInObject(lists.parameters.items, 'ref', dataRef),
+
+        var dataItem = lists.dataprog[i],
+            item = findInObject(lists.parameters.items, 'ref', dataItem.ref),
             dataModel = {
-                item: item
+                item: item,
+                data: dataItem
             };
 
-            console.log(item);
+        var dataContainer = document.createElement("div");
+        dataContainer.classList.add('data-item');
+        dataContainer.innerHTML = Mustache.render(dataprogTpl.innerHTML, dataModel);
 
-        dataItem.innerHTML = Mustache.render(dataItem.innerHTML, dataModel);
+        dataprogContainer.appendChild(dataContainer);
     }
 };
 
 var getList = function() {
     var promises = {
+            //dataprog: /api/beneficiary/dataprog,
             parameterList: promiseXHR("GET", "/api/lists/"+infos.category, 200)
         };
 
     RSVP.hash(promises).then(function(results) {
+
+        //Mock
+        lists.dataprog = [{
+            "category": "General",
+            "ref": "TEMP",
+            "frequency": "weekly",
+            "repeat": 1,
+            "startDate": "2014-12-20",
+            "endDate": "2014-12-20",
+            "when": [{
+                "days": [1,3]
+            }]
+        },{
+            "category": "General",
+            "ref": "APS",
+            "frequency": "weekly",
+            "repeat": 1,
+            "startDate": "2014-12-20",
+            "endDate": "2014-12-20",
+            "when": [{
+                "days": [1,3]
+            }]
+        }]
 
         lists.parameters = JSON.parse(results.parameterList);
 
@@ -94,7 +122,7 @@ var getList = function() {
             lists.parameters.items[i].labelLang = lists.parameters.items[i].label[infos.lang];
         }
 
-        initParams();
+        init();
 
     });
 };

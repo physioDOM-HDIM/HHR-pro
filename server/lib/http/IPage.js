@@ -772,20 +772,6 @@ function IPage() {
 				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
 			})
 			.then(function(beneficiary) {
-
-				///api/beneficiary/dataprog -> mock:
-				data.dataprog = [{
-					"category": "General",
-			        "ref": "TEMP",
-			        "frequency": "weekly",
-			        "repeat": 1,
-			        "startDate": "2014-12-20",
-			        "endDate": "2014-12-20",
-			        "when": [{
-			        	"days": [1,3]
-			        }]
-				}];
-
 				data.beneficiary = beneficiary;
 				data.lang = lang;
 				data.title = 'General Data';

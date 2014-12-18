@@ -14,49 +14,6 @@
 
 {% block content %}
 
-{% macro prescriptionList(data) %}
-<div class="data-item">
-	<div class="hidden data-ref">{{ data.ref }}</div>
-	{% raw %}
-	{{#item}}
-	<div class="row">
-		<div class="col col05 bold data-text">{{labelLang}}</div>
-		<div class="col">
-			<label>Min Threshold</label><span class="data-min">{{#threshold}}{{min}}{{/threshold}}</span>
-		</div>
-		<div class="col">
-			<label>Max Threshold</label><span class="data-max">{{#threshold}}{{max}}{{/threshold}}</span>
-		</div>
-	</div>
-	{{/item}}
-	{% endraw %}
-	<div class="row">
-		<div class="col col05"></div>
-		<div class="col">
-			<label>Start date</label><span>{{ data.startDate }}</span>
-		</div>
-		<div class="col"></div>
-	</div>
-	<div class="row">
-		<div class="col col05"></div>
-		<div class="col">
-			<label>{{ data.frequency }}</label>
-			<ul class="data-list">
-				<li>Monday</li>
-				<li>Wednesday</li>
-			</ul>
-		</div>
-		<div class="col"></div>
-	</div>
-
-	<div class="row control">
-		<span class="spacer"></span>
-		<button type="button" onclick="openModalEdition()" class="small blue">Edit</button>
-	</div>
-
-	<hr>
-</div>
-{% endmacro %}
 
 <div class="hidden" id="lang">{{ lang }}</div>
 <div class="hidden param-category">{{ category }}</div>
@@ -66,9 +23,9 @@
     </label>
 </div>
 
-{% for data in dataprog %}
-	{{ prescriptionList(data) }}
-{% endfor %}
+<div class="dataprog-list">
+
+</div>
 
 <div class="row control">
 	<span class="spacer"></span>
@@ -128,6 +85,48 @@
     </div>
 </zdk-modal>
 
+
+<script type="template" id="tpl-dataprog">
+	{% raw %}
+	<div class="hidden data-ref">{{ data.ref }}</div>
+	{{#item}}
+	<div class="row">
+		<div class="col col05 bold data-text">{{labelLang}}</div>
+		<div class="col">
+			<label>Min Threshold</label><span class="data-min">{{#threshold}}{{min}}{{/threshold}}</span>
+		</div>
+		<div class="col">
+			<label>Max Threshold</label><span class="data-max">{{#threshold}}{{max}}{{/threshold}}</span>
+		</div>
+	</div>
+	{{/item}}
+	<div class="row">
+		<div class="col col05"></div>
+		<div class="col">
+			<label>Start date</label><span>{{ data.startDate }}</span>
+		</div>
+		<div class="col"></div>
+	</div>
+	<div class="row">
+		<div class="col col05"></div>
+		<div class="col">
+			<label>{{ data.frequency }}</label>
+			<ul class="data-list">
+				<li>Monday</li>
+				<li>Wednesday</li>
+			</ul>
+		</div>
+		<div class="col"></div>
+	</div>
+
+	<div class="row control">
+		<span class="spacer"></span>
+		<button type="button" onclick="openModalEdition()" class="small blue">Edit</button>
+	</div>
+
+	<hr>
+	{% endraw %}
+</script>
 
 <script type="template" id="tpl-option-weekly">
 
