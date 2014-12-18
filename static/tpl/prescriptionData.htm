@@ -33,63 +33,12 @@
 </div>
 
 <zdk-modal id="editModal" closebutton="false">
-    <div class="modalContainer">
-    	<h2>{{title}}</h2>
 
-    	<div class="row">
-    		<label>type of data</label>
-    		<select>
-    			<option>1</option>
-    			<option>2</option>
-    			<option>3</option>
-    		</select>
-    	</div>
-
-    	<div class="row">
-    		<div class="col">
-    			<label>Min Threshold</label>12
-    		</div>
-
-    		<div class="col">
-    			<label>Max Threshold</label>15
-    		</div>
-    	</div>
-
-    	<div class="row">
-    		<label>Start date</label>
-    		<zdk-input-date name="" value="" style="z-index:100"></zdk-input-date>
-    	</div>
-
-    	<div class="row">
-    		<label>Frequency</label>
-    	</div>
-
-    	<div class="row frequency-choice">
-    		<input type="radio" name="frequency" onchange="showOptions('monthly')" value="monthly"><label>Monthly</label>
-    		<input type="radio" name="frequency" onchange="showOptions('weekly')" value="weekly"><label>Weekly</label>
-    		<input type="radio" name="frequency" onchange="showOptions('daily')" value="daily"><label>Daily</label>
-    	</div>
-
-    	<div class="frequency-options"></div>
-
-    	<hr>
-
-
-    	<div class="row control">
-			<span class="spacer"></span>
-			<button type="button" onclick="closeModal()" class="red">Cancel</button>
-			<button type="button" onclick="removeData()" class="red">Delete</button>
-			<button type="button" onclick="saveData()" class="green">Save</button>
-		</div>
-
-    </div>
 </zdk-modal>
-
 
 <script type="template" id="tpl-dataprog">
 	{% raw %}
-	<div class="hidden data-ref">{{ data.ref }}</div>
-	{{#item}}
+	{{#param}}
 	<div class="row">
 		<div class="col col05 bold data-text">{{labelLang}}</div>
 		<div class="col">
@@ -99,7 +48,7 @@
 			<label>Max Threshold</label><span class="data-max">{{#threshold}}{{max}}{{/threshold}}</span>
 		</div>
 	</div>
-	{{/item}}
+	{{/param}}
 	<div class="row">
 		<div class="col col05"></div>
 		<div class="col">
@@ -121,10 +70,67 @@
 
 	<div class="row control">
 		<span class="spacer"></span>
-		<button type="button" onclick="openModalEdition()" class="small blue">Edit</button>
+		<button type="button" onclick="openModalEdition('{{data.ref}}')" class="small blue">Edit</button>
 	</div>
 
 	<hr>
+	{% endraw %}
+</script>
+
+<script type="template" id="tpl-form">
+	<h2>{{title}}</h2>
+	{% raw %}
+	<div class="row">
+		<label>Type of data</label>
+
+		<select name="param-ref" onchange="updateParam(this)">
+			{{#paramList}}
+			<option value="{{ref}}">{{labelLang}}</option>
+			{{/paramList}}
+		</select>
+
+	</div>
+
+	{{#param}}
+	<div class="row">
+		<div class="col">
+			<label>Min Threshold</label>
+			<span class="min-threshold">{{#threshold}}{{min}}{{/threshold}}</span>
+		</div>
+
+		<div class="col">
+			<label>Max Threshold</label>
+			<span class="max-threshold">{{#threshold}}{{max}}{{/threshold}}</span>
+		</div>
+	</div>
+	{{/param}}
+
+	<div class="row">
+		<label>Start date</label>
+		<zdk-input-date name="" value="" style="z-index:100"></zdk-input-date>
+	</div>
+
+	<div class="row">
+		<label>Frequency</label>
+	</div>
+
+	<div class="row frequency-choice">
+		<input type="radio" name="frequency" onchange="showOptions('monthly')" value="monthly"><label>Monthly</label>
+		<input type="radio" name="frequency" onchange="showOptions('weekly')" value="weekly"><label>Weekly</label>
+		<input type="radio" name="frequency" onchange="showOptions('daily')" value="daily"><label>Daily</label>
+	</div>
+
+	<div class="frequency-options"></div>
+
+	<hr>
+
+
+	<div class="row control">
+		<span class="spacer"></span>
+		<button type="button" onclick="closeModal()" class="red">Cancel</button>
+		<button type="button" onclick="removeData()" class="red">Delete</button>
+		<button type="button" onclick="saveData()" class="green">Save</button>
+	</div>
 	{% endraw %}
 </script>
 

@@ -39,8 +39,8 @@ function findInObject(obj, item, value) {
 }
 
 
-var openModalEdition = function() {
-    showModal();
+var openModalEdition = function(ref) {
+    showModal(ref);
 }
 
 var showOptions = function(frequency) {
@@ -68,9 +68,9 @@ var init = function() {
     for(i; i<len; i++) {
 
         var dataItem = lists.dataprog[i],
-            item = findInObject(lists.parameters.items, 'ref', dataItem.ref),
+            param = findInObject(lists.parameters.items, 'ref', dataItem.ref),
             dataModel = {
-                item: item,
+                param: param,
                 data: dataItem
             };
 
@@ -135,10 +135,41 @@ window.addEventListener("DOMContentLoaded", function() {
 
 /* Modal */
 function closeModal() {
+    var modal = document.querySelector("#editModal");
+
+    modal.innerHTML = '';
+
     document.querySelector("#editModal").hide();
 }
 
 
-function showModal() {
-    document.querySelector("#editModal").show();
+function showModal(ref) {
+
+    var formTpl = document.querySelector('#tpl-form'),
+        modal = document.querySelector("#editModal"),
+        formDiv = document.createElement('div'),
+        dataItem = findInObject(lists.dataprog, 'ref', ref),
+        param = findInObject(lists.parameters.items, 'ref', ref),
+        dataModel = {
+            paramList: lists.parameters.items,
+            param: param,
+            data: dataItem
+        };
+
+    formDiv.classList.add('modalContainer');
+    formDiv.innerHTML = Mustache.render(formTpl.innerHTML, dataModel);
+
+    modal.appendChild(formDiv);
+    modal.show();
+}
+
+function updateParam(elt) {
+    var container = elt.parentNode.parentNode,
+        ref = elt.value,
+        minContainer = container.querySelector('.min-threshold'),
+        maxContainer = container.querySelector('.max-threshold'),
+        param = findInObject(lists.parameters.items, 'ref', ref);
+
+    minContainer.innerText = param.threshold.min;
+    maxContainer.innerText = param.threshold.max;
 }
