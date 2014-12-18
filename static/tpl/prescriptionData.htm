@@ -17,16 +17,19 @@
 {% macro prescriptionList(data) %}
 <div class="data-item">
 	<div class="hidden data-ref">{{ data.ref }}</div>
-
+	{% raw %}
+	{{#item}}
 	<div class="row">
-		<div class="col col05 bold data-text"></div>
+		<div class="col col05 bold data-text">{{labelLang}}</div>
 		<div class="col">
-			<label>Min Threshold</label><span class="data-min">0</span>
+			<label>Min Threshold</label><span class="data-min">{{#threshold}}{{min}}{{/threshold}}</span>
 		</div>
 		<div class="col">
-			<label>Max Threshold</label><span class="data-max">60</span>
+			<label>Max Threshold</label><span class="data-max">{{#threshold}}{{max}}{{/threshold}}</span>
 		</div>
 	</div>
+	{{/item}}
+	{% endraw %}
 	<div class="row">
 		<div class="col col05"></div>
 		<div class="col">
@@ -55,7 +58,8 @@
 </div>
 {% endmacro %}
 
-
+<div class="hidden" id="lang">{{ lang }}</div>
+<div class="hidden param-category">{{ category }}</div>
 <div class="row title">
     <label class="title">
         {{title}}
