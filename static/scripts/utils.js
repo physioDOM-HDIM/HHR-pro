@@ -43,7 +43,7 @@ Utils.prototype.findInObject = function(obj, item, value) {
     }
 
     return result;
-}
+};
 
 /**
  * getting Day name from Day Number

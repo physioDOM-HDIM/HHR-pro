@@ -92,7 +92,7 @@ var init = function() {
                 getDay: function () {
                     return function(val, render) {
                         return utils.getDayName(parseInt(render(val)));
-                    }
+                    };
                 }
             };
 
@@ -113,7 +113,7 @@ var updateParam = function(elt) {
 
     minContainer.innerText = param.threshold.min;
     maxContainer.innerText = param.threshold.max;
-}
+};
 
 var showOptions = function(frequency, dataModel) {
 
@@ -141,9 +141,15 @@ function showForm(ref) {
         modal = document.querySelector("#editModal"),
         formContainer = document.querySelector("#dataprog-form"),
         formDiv = document.createElement('div'),
-        dataItem = utils.findInObject(lists.dataprog, 'ref', ref),
-        param = utils.findInObject(lists.parameters.items, 'ref', ref),
-        dataModel = {
+        dataItem = {},
+        param = {};
+
+    if(ref) {
+        dataItem = utils.findInObject(lists.dataprog, 'ref', ref);
+        param = utils.findInObject(lists.parameters.items, 'ref', ref);
+    }
+
+    var dataModel = {
             paramList: lists.parameters.items,
             param: param,
             data: dataItem,
@@ -233,6 +239,6 @@ var removeData = function(ref) {
 
     new Modal('confirmDeleteItem', function() {
         console.log('call to unknown service to remove only 1 param with ref in arg', ref);
-    })
+    });
 
 };
