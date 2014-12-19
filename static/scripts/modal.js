@@ -1,6 +1,6 @@
 "use strict";
 
-function Modal (type) {
+function Modal (type, callback) {
 
     var content = {},
         self = this;
@@ -21,6 +21,23 @@ function Modal (type) {
         content: "trad_success_create",
         buttons: [{
             id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.confirmDeleteItem = {
+        title: "trad_delete",
+        content: "trad_confirm_delete",
+        buttons: [{
+            id: "trad_yes",
+            action: function() {
+                callback();
+                self.closeModal();
+            }
+        }, {
+            id: "trad_no",
             action: function() {
                 self.closeModal();
             }

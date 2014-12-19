@@ -1,8 +1,15 @@
 "use strict";
 
+window.addEventListener("DOMContentLoaded", function() {
+    infos.category = document.querySelector('.param-category').innerText;
+    infos.lang = document.querySelector('#lang').innerText;
+    getList();
+}, false);
+
 var infos = {},
     lists = {};
 
+//common
 var promiseXHR = function(method, url, statusOK, data) {
     var promise = new RSVP.Promise(function(resolve, reject) {
         var client = new XMLHttpRequest();
@@ -42,54 +49,7 @@ function findInObject(obj, item, value) {
     return result;
 }
 
-
-var openModalEdition = function(ref) {
-    showForm(ref);
-}
-
-var showOptions = function(frequency, dataModel) {
-
-    var optionsContainer = document.querySelector('.frequency-options'),
-        weeklyTpl = document.querySelector('#tpl-option-weekly'),
-        monthlyTpl = document.querySelector('#tpl-option-monthly');
-
-    if(frequency === 'weekly') {
-        optionsContainer.innerHTML = Mustache.render(weeklyTpl.innerHTML, dataModel);
-    } else if(frequency === 'monthly') {
-        optionsContainer.innerHTML = Mustache.render(monthlyTpl.innerHTML, dataModel);
-    } else {
-        optionsContainer.innerHTML = '';
-    }
-
-};
-
-var init = function() {
-    var dataprogTpl = document.querySelector('#tpl-dataprog'),
-        dataprogContainer = document.querySelector('.dataprog-list'),
-        i = 0,
-        len = lists.dataprog.length;
-
-    for(i; i<len; i++) {
-
-        var dataItem = lists.dataprog[i],
-            param = findInObject(lists.parameters.items, 'ref', dataItem.ref),
-            dataModel = {
-                param: param,
-                data: dataItem,
-                getDay: function () {
-                    return function(val, render) {
-                        return getDayName(parseInt(render(val)));
-                    }
-                }
-            };
-
-        var dataContainer = document.createElement("div");
-        dataContainer.classList.add('data-item');
-        dataContainer.innerHTML = Mustache.render(dataprogTpl.innerHTML, dataModel);
-
-        dataprogContainer.appendChild(dataContainer);
-    }
-};
+//Getting dataprog
 
 var getList = function() {
     var promises = {
@@ -99,7 +59,7 @@ var getList = function() {
 
     RSVP.hash(promises).then(function(results) {
 
-        //Mock
+        //TODO Mock to delete when integrating with backend
         lists.dataprog = [{
             "category": "General",
             "ref": "TEMP",
@@ -146,22 +106,64 @@ var getList = function() {
     });
 };
 
-window.addEventListener("DOMContentLoaded", function() {
-    infos.category = document.querySelector('.param-category').innerText;
-    infos.lang = document.querySelector('#lang').innerText;
-    getList();
-}, false);
+//Data Binding / Templating
 
-/* Modal */
-function closeForm() {
-    var modal = document.querySelector("#editModal"),
-        formContainer = document.querySelector("#dataprog-form");
+var init = function() {
+    var dataprogTpl = document.querySelector('#tpl-dataprog'),
+        dataprogContainer = document.querySelector('.dataprog-list'),
+        i = 0,
+        len = lists.dataprog.length;
 
-    formContainer.innerHTML = '';
+    for(i; i<len; i++) {
 
-    modal.hide();
+        var dataItem = lists.dataprog[i],
+            param = findInObject(lists.parameters.items, 'ref', dataItem.ref),
+            dataModel = {
+                param: param,
+                data: dataItem,
+                getDay: function () {
+                    return function(val, render) {
+                        return getDayName(parseInt(render(val)));
+                    }
+                }
+            };
+
+        var dataContainer = document.createElement("div");
+        dataContainer.classList.add('data-item');
+        dataContainer.innerHTML = Mustache.render(dataprogTpl.innerHTML, dataModel);
+
+        dataprogContainer.appendChild(dataContainer);
+    }
+};
+
+var updateParam = function(elt) {
+    var container = elt.parentNode.parentNode,
+        ref = elt.value,
+        minContainer = container.querySelector('.min-threshold'),
+        maxContainer = container.querySelector('.max-threshold'),
+        param = findInObject(lists.parameters.items, 'ref', ref);
+
+    minContainer.innerText = param.threshold.min;
+    maxContainer.innerText = param.threshold.max;
 }
 
+var showOptions = function(frequency, dataModel) {
+
+    var optionsContainer = document.querySelector('.frequency-options'),
+        weeklyTpl = document.querySelector('#tpl-option-weekly'),
+        monthlyTpl = document.querySelector('#tpl-option-monthly');
+
+    if(frequency === 'weekly') {
+        optionsContainer.innerHTML = Mustache.render(weeklyTpl.innerHTML, dataModel);
+    } else if(frequency === 'monthly') {
+        optionsContainer.innerHTML = Mustache.render(monthlyTpl.innerHTML, dataModel);
+    } else {
+        optionsContainer.innerHTML = '';
+    }
+
+};
+
+/* Modal Form */
 
 function showForm(ref) {
 
@@ -210,32 +212,37 @@ function showForm(ref) {
     modal.show();
 }
 
-function updateParam(elt) {
-    var container = elt.parentNode.parentNode,
-        ref = elt.value,
-        minContainer = container.querySelector('.min-threshold'),
-        maxContainer = container.querySelector('.max-threshold'),
-        param = findInObject(lists.parameters.items, 'ref', ref);
+function closeForm() {
+    var modal = document.querySelector("#editModal"),
+        formContainer = document.querySelector("#dataprog-form");
 
-    minContainer.innerText = param.threshold.min;
-    maxContainer.innerText = param.threshold.max;
+    formContainer.innerHTML = '';
+
+    modal.hide();
 }
-
-
 
 /* Action on form */
 
 var saveData = function() {
 
-    var data = form2js(document.forms.dataprog);
-    data.category = infos.category;
-    data.repeat = parseFloat(data.repeat);
+    var data = form2js(document.forms.dataprog),
+        param = findInObject(lists.parameters.items, 'ref', data.ref);
 
-    var i = 0,
-        len = data.when.days.length;
+    if(param) {
+        data.category = param.category;
+    }
 
-    for(i; i<len; i++) {
-        data.when.days[i] = parseInt(data.when.days[i]);
+    if(data.repeat) {
+        data.repeat = parseFloat(data.repeat);
+    }
+
+    if(data.when) {
+        var i = 0,
+            len = data.when.days.length;
+
+        for(i; i<len; i++) {
+            data.when.days[i] = parseInt(data.when.days[i]);
+        }
     }
 
     console.log(data);
@@ -248,3 +255,12 @@ var saveData = function() {
     });
 };
 
+
+var removeData = function(ref) {
+    //TODO call to unknown service to remove only 1 param with ref in arg
+
+    new Modal('confirmDeleteItem', function() {
+        console.log('call to unknown service to remove only 1 param with ref in arg', ref);
+    })
+
+};

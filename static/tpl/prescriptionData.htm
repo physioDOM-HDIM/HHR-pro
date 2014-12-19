@@ -77,7 +77,7 @@
 
 	<div class="row control">
 		<span class="spacer"></span>
-		<button type="button" onclick="openModalEdition('{{data.ref}}')" class="small blue">Edit</button>
+		<button type="button" onclick="showForm('{{data.ref}}')" class="small blue">Edit</button>
 	</div>
 
 	<hr>
@@ -138,7 +138,7 @@
 	<div class="row control">
 		<span class="spacer"></span>
 		<button type="button" onclick="closeForm()" class="red">Cancel</button>
-		<button type="button" onclick="removeData()" class="red">Delete</button>
+		<button type="button" onclick="removeData('{{data.ref}}')" class="red">Delete</button>
 		<button type="button" onclick="saveData()" class="green">Save</button>
 	</div>
 	{% endraw %}
