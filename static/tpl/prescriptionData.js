@@ -1,60 +1,26 @@
 "use strict";
 
+var utils = new Utils(),
+    infos = {},
+    lists = {};
+
 window.addEventListener("DOMContentLoaded", function() {
+
     infos.category = document.querySelector('.param-category').innerText;
     infos.lang = document.querySelector('#lang').innerText;
     getList();
+
 }, false);
 
-var infos = {},
-    lists = {};
 
-//common
-var promiseXHR = function(method, url, statusOK, data) {
-    var promise = new RSVP.Promise(function(resolve, reject) {
-        var client = new XMLHttpRequest();
-        statusOK = statusOK ? statusOK : 200;
-        client.open(method, url);
-        client.onreadystatechange = function handler() {
-            if (this.readyState === this.DONE) {
-                if (this.status === statusOK) {
-                    resolve(this.response);
-                } else {
-                    reject(this);
-                }
-            }
-        };
-        client.send(data ? data : null);
-    });
-
-    return promise;
-};
-
-function getDayName(day) {
-  return ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][day];
-}
-
-function findInObject(obj, item, value) {
-    var i = 0,
-        len = obj.length,
-        result = null;
-
-    for(i; i<len; i++) {
-        if(obj[i][item] === value) {
-            result = obj[i];
-            break;
-        }
-    }
-
-    return result;
-}
-
-//Getting dataprog
+/**
+ * Getting dataprog
+ */
 
 var getList = function() {
     var promises = {
             //dataprog: /api/beneficiary/dataprog,
-            parameterList: promiseXHR("GET", "/api/lists/"+infos.category, 200)
+            parameterList: utils.promiseXHR("GET", "/api/lists/"+infos.category, 200)
         };
 
     RSVP.hash(promises).then(function(results) {
@@ -106,7 +72,9 @@ var getList = function() {
     });
 };
 
-//Data Binding / Templating
+/**
+ * Data Binding / Templating
+ */
 
 var init = function() {
     var dataprogTpl = document.querySelector('#tpl-dataprog'),
@@ -117,13 +85,13 @@ var init = function() {
     for(i; i<len; i++) {
 
         var dataItem = lists.dataprog[i],
-            param = findInObject(lists.parameters.items, 'ref', dataItem.ref),
+            param = utils.findInObject(lists.parameters.items, 'ref', dataItem.ref),
             dataModel = {
                 param: param,
                 data: dataItem,
                 getDay: function () {
                     return function(val, render) {
-                        return getDayName(parseInt(render(val)));
+                        return utils.getDayName(parseInt(render(val)));
                     }
                 }
             };
@@ -141,7 +109,7 @@ var updateParam = function(elt) {
         ref = elt.value,
         minContainer = container.querySelector('.min-threshold'),
         maxContainer = container.querySelector('.max-threshold'),
-        param = findInObject(lists.parameters.items, 'ref', ref);
+        param = utils.findInObject(lists.parameters.items, 'ref', ref);
 
     minContainer.innerText = param.threshold.min;
     maxContainer.innerText = param.threshold.max;
@@ -163,7 +131,9 @@ var showOptions = function(frequency, dataModel) {
 
 };
 
-/* Modal Form */
+/**
+ * Modal Form
+ */
 
 function showForm(ref) {
 
@@ -171,8 +141,8 @@ function showForm(ref) {
         modal = document.querySelector("#editModal"),
         formContainer = document.querySelector("#dataprog-form"),
         formDiv = document.createElement('div'),
-        dataItem = findInObject(lists.dataprog, 'ref', ref),
-        param = findInObject(lists.parameters.items, 'ref', ref),
+        dataItem = utils.findInObject(lists.dataprog, 'ref', ref),
+        param = utils.findInObject(lists.parameters.items, 'ref', ref),
         dataModel = {
             paramList: lists.parameters.items,
             param: param,
@@ -221,12 +191,14 @@ function closeForm() {
     modal.hide();
 }
 
-/* Action on form */
+/**
+ * Action on form
+ */
 
 var saveData = function() {
 
     var data = form2js(document.forms.dataprog),
-        param = findInObject(lists.parameters.items, 'ref', data.ref);
+        param = utils.findInObject(lists.parameters.items, 'ref', data.ref);
 
     if(param) {
         data.category = param.category;
@@ -247,7 +219,7 @@ var saveData = function() {
 
     console.log(data);
 
-    promiseXHR("POST", "/api/beneficiary/dataprog/"+data.ref, 200, JSON.stringify(data)).then(function() {
+    utils.promiseXHR("POST", "/api/beneficiary/dataprog/"+data.ref, 200, JSON.stringify(data)).then(function() {
         new Modal('createSuccess');
     }, function(error) {
         new Modal('errorOccured');
