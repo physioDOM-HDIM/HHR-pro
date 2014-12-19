@@ -154,11 +154,12 @@ window.addEventListener("DOMContentLoaded", function() {
 
 /* Modal */
 function closeModal() {
-    var modal = document.querySelector("#editModal");
+    var modal = document.querySelector("#editModal"),
+        formContainer = document.querySelector("#dataprog-form");
 
-    modal.innerHTML = '';
+    formContainer.innerHTML = '';
 
-    document.querySelector("#editModal").hide();
+    modal.hide();
 }
 
 
@@ -166,6 +167,7 @@ function showModal(ref) {
 
     var formTpl = document.querySelector('#tpl-form'),
         modal = document.querySelector("#editModal"),
+        formContainer = document.querySelector("#dataprog-form"),
         formDiv = document.createElement('div'),
         dataItem = findInObject(lists.dataprog, 'ref', ref),
         param = findInObject(lists.parameters.items, 'ref', ref),
@@ -178,21 +180,21 @@ function showModal(ref) {
                     if(ref === render(val)) {
                         return 'selected';
                     }
-                }
+                };
             },
             getFrequencyDefault: function () {
                 return function(val, render) {
                     if(dataItem.frequency === render(val)) {
                         return 'checked';
                     }
-                }
+                };
             },
             getDaysDefault: function() {
                 return function(val, render) {
                     if (dataItem.when[0].days.indexOf(parseInt(render(val))) > -1) {
                         return 'checked';
                     }
-                }
+                };
             }
         };
 
@@ -200,7 +202,7 @@ function showModal(ref) {
     formDiv.classList.add('modalContainer');
     formDiv.innerHTML = Mustache.render(formTpl.innerHTML, dataModel);
 
-    modal.appendChild(formDiv);
+    formContainer.appendChild(formDiv);
 
     //show default frequency option template
     showOptions(dataItem.frequency, dataModel);
@@ -218,3 +220,24 @@ function updateParam(elt) {
     minContainer.innerText = param.threshold.min;
     maxContainer.innerText = param.threshold.max;
 }
+
+
+
+/* Action on form */
+
+var saveData = function() {
+
+    var data = form2js(document.forms.dataprog);
+    data.category = infos.category;
+    data.repeat = parseFloat(data.repeat);
+
+    var i = 0,
+        len = data.when.days.length;
+
+    for(i; i<len; i++) {
+        data.when.days[i] = parseInt(data.when.days[i]);
+    }
+
+    console.log(data);
+    ///api/beneficiary/dataprog/:ref
+};
