@@ -799,6 +799,88 @@ function IPage() {
 			});
 	};
 
+	this.prescriptionDataHDIM = function(req, res, next) {
+		logger.trace("PrescriptionDataGeneral");
+		var html;
+
+		init(req);
+		var data = {
+			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
+		};
+
+		physioDOM.Beneficiaries()
+			.then(function(beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+			})
+			.then(function(beneficiary) {
+				data.beneficiary = beneficiary;
+				data.lang = lang;
+				data.title = 'HDIM Data';
+				data.category = 'physiologicalHDIM';
+				// jsut for test, otherwise read locale from session
+
+				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/prescriptionData.htm', data, function(err, output) {
+					if (err) {
+						console.log("error", err);
+						console.log("output", output);
+						res.write(err);
+						res.end();
+						next();
+					} else {
+						sendPage(output, res, next);
+					}
+				});
+
+			})
+			.catch(function(err) {
+				logger.error(err);
+				res.write(err);
+				res.end();
+				next();
+			});
+	};
+
+	this.prescriptionDataSymptom = function(req, res, next) {
+		logger.trace("PrescriptionDataGeneral");
+		var html;
+
+		init(req);
+		var data = {
+			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
+		};
+
+		physioDOM.Beneficiaries()
+			.then(function(beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+			})
+			.then(function(beneficiary) {
+				data.beneficiary = beneficiary;
+				data.lang = lang;
+				data.title = 'Symptom Data';
+				data.category = 'symptom';
+				// jsut for test, otherwise read locale from session
+
+				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/prescriptionData.htm', data, function(err, output) {
+					if (err) {
+						console.log("error", err);
+						console.log("output", output);
+						res.write(err);
+						res.end();
+						next();
+					} else {
+						sendPage(output, res, next);
+					}
+				});
+
+			})
+			.catch(function(err) {
+				logger.error(err);
+				res.write(err);
+				res.end();
+				next();
+			});
+	};
+
 	/**
 	 * Send the page to the browser
 	 *
