@@ -143,5 +143,8 @@
 	"New item": "New item",
 	"Label": "Label",
 	"Questionnaires": "Questionnaires",
-	"Create/Update a questionnaire": "Create/Update a questionnaire"
+	"Create/Update a questionnaire": "Create/Update a questionnaire",
+	"Update": "Update",
+	"Are you sure you want to save those changes ?": "Are you sure you want to save those changes ?",
+	"Ok": "Ok"
 }

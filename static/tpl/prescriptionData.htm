@@ -7,6 +7,7 @@
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
 <script src="/bower_components/zdk-calendar/form2js.js"></script>
 <script src="/tpl/prescriptionData.js"></script>
+<script src="/scripts/modal.js"></script>
 
 <link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
 <link rel="stylesheet" href="/styles/prescriptionData.css">
@@ -136,7 +137,7 @@
 
 	<div class="row control">
 		<span class="spacer"></span>
-		<button type="button" onclick="closeModal()" class="red">Cancel</button>
+		<button type="button" onclick="closeForm()" class="red">Cancel</button>
 		<button type="button" onclick="removeData()" class="red">Delete</button>
 		<button type="button" onclick="saveData()" class="green">Save</button>
 	</div>
@@ -188,4 +189,7 @@
 </script>
 {% endraw %}
 
+
+{% include "./modal.htm" %}
 {% endblock %}
+

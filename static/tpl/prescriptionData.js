@@ -44,7 +44,7 @@ function findInObject(obj, item, value) {
 
 
 var openModalEdition = function(ref) {
-    showModal(ref);
+    showForm(ref);
 }
 
 var showOptions = function(frequency, dataModel) {
@@ -153,7 +153,7 @@ window.addEventListener("DOMContentLoaded", function() {
 }, false);
 
 /* Modal */
-function closeModal() {
+function closeForm() {
     var modal = document.querySelector("#editModal"),
         formContainer = document.querySelector("#dataprog-form");
 
@@ -163,7 +163,7 @@ function closeModal() {
 }
 
 
-function showModal(ref) {
+function showForm(ref) {
 
     var formTpl = document.querySelector('#tpl-form'),
         modal = document.querySelector("#editModal"),
@@ -239,5 +239,12 @@ var saveData = function() {
     }
 
     console.log(data);
-    ///api/beneficiary/dataprog/:ref
+
+    promiseXHR("POST", "/api/beneficiary/dataprog/"+data.ref, 200, JSON.stringify(data)).then(function() {
+        new Modal('createSuccess');
+    }, function(error) {
+        new Modal('errorOccured');
+        console.log("saveData - error: ", error);
+    });
 };
+
