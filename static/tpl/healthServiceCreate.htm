@@ -182,15 +182,19 @@ zdk-modal#dialog-agenda .modalButtonContainer.top {
 </script>
 
 <script id="days-month-template" type="x-tmpl-mustache">
+	<ul>
 	{% raw %}{{#days}}{% endraw %}
-		<span class="day">{% raw %}{{.}}{% endraw %} {{'of the month' | i18n}}</span>
+		<li class="day">{% raw %}{{.}}{% endraw %} {{'of the month' | i18n}}</li>
 	{% raw %}{{/days}}{% endraw %}
+	</ul>
 </script>
 
 <script id="days-week-template" type="x-tmpl-mustache">
+	<ul>
 	{% raw %}{{#days}}{% endraw %}
-		<span class="day">{% raw %}{{day}}{% endraw %} {{'at' | i18n}} {% raw %} {{time}}{% endraw %}</span>
+		<li class="day">{% raw %}{{day}}{% endraw %} {{'at' | i18n}} {% raw %} {{time}}{% endraw %}</li>
 	{% raw %}{{/days}}{% endraw %}
+	</ul>
 </script>
 
 <script src="/bower_components/momentjs/min/moment.min.js"></script>
