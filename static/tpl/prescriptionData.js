@@ -23,6 +23,10 @@ var promiseXHR = function(method, url, statusOK, data) {
     return promise;
 };
 
+function getDayName(day) {
+  return ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][day];
+}
+
 function findInObject(obj, item, value) {
     var i = 0,
         len = obj.length,
@@ -43,16 +47,16 @@ var openModalEdition = function(ref) {
     showModal(ref);
 }
 
-var showOptions = function(frequency) {
+var showOptions = function(frequency, dataModel) {
 
     var optionsContainer = document.querySelector('.frequency-options'),
         weeklyTpl = document.querySelector('#tpl-option-weekly'),
         monthlyTpl = document.querySelector('#tpl-option-monthly');
 
     if(frequency === 'weekly') {
-        optionsContainer.innerHTML = weeklyTpl.innerHTML;
+        optionsContainer.innerHTML = Mustache.render(weeklyTpl.innerHTML, dataModel);
     } else if(frequency === 'monthly') {
-        optionsContainer.innerHTML = monthlyTpl.innerHTML;
+        optionsContainer.innerHTML = Mustache.render(monthlyTpl.innerHTML, dataModel);
     } else {
         optionsContainer.innerHTML = '';
     }
@@ -71,7 +75,12 @@ var init = function() {
             param = findInObject(lists.parameters.items, 'ref', dataItem.ref),
             dataModel = {
                 param: param,
-                data: dataItem
+                data: dataItem,
+                getDay: function () {
+                    return function(val, render) {
+                        return getDayName(parseInt(render(val)));
+                    }
+                }
             };
 
         var dataContainer = document.createElement("div");
@@ -95,7 +104,17 @@ var getList = function() {
             "category": "General",
             "ref": "TEMP",
             "frequency": "weekly",
-            "repeat": 1,
+            "repeat": 5,
+            "startDate": "2014-12-20",
+            "endDate": "2014-12-20",
+            "when": [{
+                "days": [5,2,3,1]
+            }]
+        },{
+            "category": "General",
+            "ref": "APS",
+            "frequency": "weekly",
+            "repeat": 2,
             "startDate": "2014-12-20",
             "endDate": "2014-12-20",
             "when": [{
@@ -103,15 +122,15 @@ var getList = function() {
             }]
         },{
             "category": "General",
-            "ref": "APS",
-            "frequency": "weekly",
-            "repeat": 1,
+            "ref": "APD",
+            "frequency": "monthly",
+            "repeat": 9,
             "startDate": "2014-12-20",
             "endDate": "2014-12-20",
             "when": [{
                 "days": [1,3]
             }]
-        }]
+        }];
 
         lists.parameters = JSON.parse(results.parameterList);
 
@@ -153,13 +172,39 @@ function showModal(ref) {
         dataModel = {
             paramList: lists.parameters.items,
             param: param,
-            data: dataItem
+            data: dataItem,
+            selection: function () {
+                return function(val, render) {
+                    if(ref === render(val)) {
+                        return 'selected';
+                    }
+                }
+            },
+            getFrequencyDefault: function () {
+                return function(val, render) {
+                    if(dataItem.frequency === render(val)) {
+                        return 'checked';
+                    }
+                }
+            },
+            getDaysDefault: function() {
+                return function(val, render) {
+                    if (dataItem.when[0].days.indexOf(parseInt(render(val))) > -1) {
+                        return 'checked';
+                    }
+                }
+            }
         };
+
 
     formDiv.classList.add('modalContainer');
     formDiv.innerHTML = Mustache.render(formTpl.innerHTML, dataModel);
 
     modal.appendChild(formDiv);
+
+    //show default frequency option template
+    showOptions(dataItem.frequency, dataModel);
+
     modal.show();
 }
 

@@ -61,8 +61,13 @@
 		<div class="col">
 			<label>{{ data.frequency }}</label>
 			<ul class="data-list">
-				<li>Monday</li>
-				<li>Wednesday</li>
+			{{#data}}
+				{{#when}}
+					{{#days}}
+						<li>{{#getDay}}{{.}}{{/getDay}}</li>
+					{{/days}}
+				{{/when}}
+			{{/data}}
 			</ul>
 		</div>
 		<div class="col"></div>
@@ -85,7 +90,7 @@
 
 		<select name="param-ref" onchange="updateParam(this)">
 			{{#paramList}}
-			<option value="{{ref}}">{{labelLang}}</option>
+			<option value="{{ref}}" {{#selection}}{{ref}}{{/selection}}>{{labelLang}}</option>
 			{{/paramList}}
 		</select>
 
@@ -107,7 +112,7 @@
 
 	<div class="row">
 		<label>Start date</label>
-		<zdk-input-date name="" value="" style="z-index:100"></zdk-input-date>
+		<zdk-input-date name="" value="{{startDate}}" style="z-index:100"></zdk-input-date>
 	</div>
 
 	<div class="row">
@@ -115,9 +120,12 @@
 	</div>
 
 	<div class="row frequency-choice">
-		<input type="radio" name="frequency" onchange="showOptions('monthly')" value="monthly"><label>Monthly</label>
-		<input type="radio" name="frequency" onchange="showOptions('weekly')" value="weekly"><label>Weekly</label>
-		<input type="radio" name="frequency" onchange="showOptions('daily')" value="daily"><label>Daily</label>
+		<input type="radio" name="frequency" onchange="showOptions('monthly')" value="monthly" 
+		{{#getFrequencyDefault}}monthly{{/getFrequencyDefault}}><label>Monthly</label>
+		<input type="radio" name="frequency" onchange="showOptions('weekly')" value="weekly"
+		{{#getFrequencyDefault}}weekly{{/getFrequencyDefault}}><label>Weekly</label>
+		<input type="radio" name="frequency" onchange="showOptions('daily')" value="daily"
+		{{#getFrequencyDefault}}daily{{/getFrequencyDefault}}><label>Daily</label>
 	</div>
 
 	<div class="frequency-options"></div>
@@ -134,19 +142,20 @@
 	{% endraw %}
 </script>
 
+{% raw %}
 <script type="template" id="tpl-option-weekly">
 
 	<div class="row">
-		Every <input type="number" name="repeat" class="option-repeat"> Week
+		Every <input type="number" name="repeat" class="option-repeat" value="{{data.repeat}}"> Week
 	</div>
 	<div class="row">
-		<input type="checkbox" name="monday"/>Mon
-		<input type="checkbox" name="tuesday"/>Tue
-		<input type="checkbox" name="Wednesday"/>Wed
-		<input type="checkbox" name="Thursday"/>Thu
-		<input type="checkbox" name="Friday"/>Fri
-		<input type="checkbox" name="Saturday"/>Sat
-		<input type="checkbox" name="Sunday"/>Sun
+		<input type="checkbox" name="monday" {{#getDaysDefault}}1{{/getDaysDefault}}/>Mon
+		<input type="checkbox" name="tuesday" {{#getDaysDefault}}2{{/getDaysDefault}}/>Tue
+		<input type="checkbox" name="Wednesday" {{#getDaysDefault}}3{{/getDaysDefault}}/>Wed
+		<input type="checkbox" name="Thursday" {{#getDaysDefault}}4{{/getDaysDefault}}/>Thu
+		<input type="checkbox" name="Friday" {{#getDaysDefault}}5{{/getDaysDefault}}/>Fri
+		<input type="checkbox" name="Saturday" {{#getDaysDefault}}6{{/getDaysDefault}}/>Sat
+		<input type="checkbox" name="Sunday" {{#getDaysDefault}}0{{/getDaysDefault}}/>Sun
 	</div>
 
 </script>
@@ -154,7 +163,7 @@
 <script type="template" id="tpl-option-monthly">
 
 	<div class="row">
-		Every <input type="number" name="repeat" class="option-repeat"> Month
+		Every <input type="number" name="repeat" class="option-repeat" value="{{data.repeat}}"> Month
 	</div>
 	<div class="row">
 		The <select name="week">
@@ -166,15 +175,16 @@
 		</select>
 	</div>
 	<div class="row">
-		<input type="checkbox" name="monday"/>Mon
-		<input type="checkbox" name="tuesday"/>Tue
-		<input type="checkbox" name="Wednesday"/>Wed
-		<input type="checkbox" name="Thursday"/>Thu
-		<input type="checkbox" name="Friday"/>Fri
-		<input type="checkbox" name="Saturday"/>Sat
-		<input type="checkbox" name="Sunday"/>Sun
+		<input type="checkbox" name="monday" {{#getDaysDefault}}1{{/getDaysDefault}}/>Mon
+		<input type="checkbox" name="tuesday" {{#getDaysDefault}}2{{/getDaysDefault}}/>Tue
+		<input type="checkbox" name="Wednesday" {{#getDaysDefault}}3{{/getDaysDefault}}/>Wed
+		<input type="checkbox" name="Thursday" {{#getDaysDefault}}4{{/getDaysDefault}}/>Thu
+		<input type="checkbox" name="Friday" {{#getDaysDefault}}5{{/getDaysDefault}}/>Fri
+		<input type="checkbox" name="Saturday" {{#getDaysDefault}}6{{/getDaysDefault}}/>Sat
+		<input type="checkbox" name="Sunday" {{#getDaysDefault}}0{{/getDaysDefault}}/>Sun
 	</div>
 
 </script>
+{% endraw %}
 
 {% endblock %}
