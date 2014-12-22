@@ -22,3 +22,15 @@ div.col05 {
 .frequency-choice, .frequency-options {
 	margin-left: 150px;
 }
+
+/* Questionnaires */
+ul.dates-list {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+}
+
+ul.dates-list li {
+	display: inline-block;
+	margin: 0 10px;
+}

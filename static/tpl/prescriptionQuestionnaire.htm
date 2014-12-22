@@ -1,0 +1,76 @@
+{% extends './page.htm' %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+{% parent %}
+<script src="/bower_components/mustache/mustache.js"></script>
+<script src="/bower_components/rsvp/rsvp.min.js"></script>
+<script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
+<script src="/bower_components/zdk-calendar/form2js.js"></script>
+<script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
+<script src="/tpl/prescriptionQuestionnaire.js"></script>
+
+<link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
+<link rel="stylesheet" href="/styles/prescriptionData.css">
+{% endblock %}
+
+{% block content %}
+
+
+<div class="hidden" id="lang">{{ lang }}</div>
+<div class="row title">
+    <label class="title">
+        {{title}}
+    </label>
+</div>
+
+<div class="questionnaire-prog-list">
+</div>
+
+<script type="template" id="tpl-questionnaire-prog">
+	{% raw %}
+	{{#data}}
+	<div class="row">
+		<div class="col col05 bold data-text">{{labelLang}}</div>
+		<div class="col">
+			<label>Frequency</label>
+			<input type="text" value="{{frequency}}" name="frequency"/>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col col05"></div>
+		<div class="col">
+			<label>Comment</label>
+			<input type="text" value="{{comment}}" name="comment">
+		</div>
+	</div>
+	<div class="row">
+		<div class="col col05"></div>
+		<div class="col">
+			<label>Dates</label>
+			<ul class="dates-list">
+			{{#dates}}
+				<li>{{.}}</li>
+			{{/dates}}
+			</ul>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col col05"></div>
+		<div class="col">
+			<label></label>
+			<zdk-input-date name="newDate" value="" style="z-index:100"></zdk-input-date>
+			<button type="button" class="small blue">Add</button>
+		</div>
+	</div>
+
+	<hr>
+	{{/data}}
+	{% endraw %}
+</script>
+
+
+{% include "./modal.htm" %}
+{% endblock %}
+
