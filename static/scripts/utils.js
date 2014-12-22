@@ -51,3 +51,11 @@ Utils.prototype.findInObject = function(obj, item, value) {
 Utils.prototype.getDayName = function(day) {
   return ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][day];
 };
+
+/**
+ * Parsing string to check if its a date
+ */
+Utils.prototype.parseDate = function(str) {
+	var match = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  	return (match !== null);
+};

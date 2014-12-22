@@ -339,7 +339,7 @@ ul.admin {
 }
 
 div[drawer] {
-	display:-ms-flexbox; 
+	display:-ms-flexbox;
 	display:-webkit-flex;
 	display: flex;
 	-webkit-flex-direction: column;
@@ -360,3 +360,28 @@ div[drawer] ul.menu {
 
 div.row.title { height:40px; background:rgb(80, 80, 80); color:white; padding:0px 10px; margin-bottom:20px; }
 label.title { font-size:1.3em; width:initial !important }
+
+
+.btn {
+	background: transparent;
+	min-width: initial;
+	height: auto;
+	cursor: pointer;
+	display: inline-block;
+	text-align: center;
+	outline:none;
+}
+
+.btn-delete {
+	color: #e74c3c;
+}
+
+.btn-delete:hover {
+	color: #c0392b;
+}
+
+.icon {
+	display: inline-block;
+	font-size: 1.6em;
+	vertical-align: middle;
+}

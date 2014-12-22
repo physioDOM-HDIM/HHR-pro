@@ -2,7 +2,9 @@
 
 var utils = new Utils(),
     infos = {},
-    lists = {};
+    lists = {},
+    idx = 0,
+    dateIdx = 0;
 
 window.addEventListener("DOMContentLoaded", function() {
 
@@ -34,6 +36,26 @@ var getList = function() {
             "frequency": "anytime !",
             "comment": "This is fun to do !",
             "dates": ["2014-07-28", "2015-02-07"]
+        }, {
+            "_id": "547d88c28a2872333a2a1c83",
+            "name": "MMSE",
+            "ref": "Mini-Mental State Examination",
+            "label": {
+                "en": "Mini-Mental State Examination"
+            },
+            "frequency": "every monday !",
+            "comment": "Be very serious on this one !",
+            "dates": ["2014-07-20"]
+        },{
+            "_id": "547d94008a2872333a2a1c88",
+            "name": "SF36",
+            "ref": "Short Form Health Survey",
+            "label": {
+                "en": "Short Form Health Survey"
+            },
+            "frequency": "I don't know, whenever you want to do it",
+            "comment": "If you want to do it anyway...",
+            "dates": ["2014-02-10", "2015-01-01"]
         }];
         //ENDMOCK
 
@@ -58,7 +80,17 @@ var init = function() {
 
         var dataItem = lists.questionnaireProg[i],
             dataModel = {
-                data: dataItem
+                idx: idx,
+                data: dataItem,
+                setAddedDate: function() {
+                    return function(val, render) {
+                        var dateAddedTpl = document.querySelector('#dateAddedTpl');
+                        var dateIndex = dateIdx;
+                        dateIdx++;
+
+                        return Mustache.render(dateAddedTpl.innerHTML, {dateValue: render(val), idx: idx, dateIdx: dateIndex});
+                    };
+                }
             };
 
         var questionnaireContainer = document.createElement("div");
@@ -66,7 +98,27 @@ var init = function() {
         questionnaireContainer.innerHTML = Mustache.render(questionnaireProgTpl.innerHTML, dataModel);
 
         questionnaireProgContainer.appendChild(questionnaireContainer);
+        idx++;
     }
+};
+
+var addDate = function(elt, idx) {
+    var dateValue = elt.parentNode.querySelector('#date').value,
+        dateContainer = elt.parentNode.parentNode.parentNode.querySelector('.dates-list'),
+        dateAddedTpl = document.querySelector('#dateAddedTpl');
+
+    if(dateValue && utils.parseDate(dateValue)) {
+        dateContainer.innerHTML += Mustache.render(dateAddedTpl.innerHTML, {dateValue: dateValue, idx: idx, dateIdx: dateIdx});
+        elt.parentNode.querySelector('#date').value = "";
+        dateIdx++;
+    }
+};
+
+var removeDate = function(elt) {
+    var li = elt.parentNode,
+        dateContainer = li.parentNode;
+
+    dateContainer.removeChild(li);
 };
 
 /**
@@ -74,5 +126,7 @@ var init = function() {
  */
 
 var saveData = function() {
-    //No API yet
+    //Call to API (No API defined yet)
+    var data = form2js(document.forms.questionnaire);
+    console.log(data.questionnaire);
 };
