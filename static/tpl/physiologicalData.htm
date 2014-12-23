@@ -4,7 +4,9 @@
 
 {% block head %}
 {% parent %}
-
+<script src="/bower_components/rsvp/rsvp.min.js"></script>
+<script src="/bower_components/mustache/mustache.js"></script>
+<script src="/scripts/utils.js"></script>
 <script src="/bower_components/zdk-calendar/form2js.js"></script>
 <script src="/tpl/physiologicalData.js"></script>
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
@@ -13,10 +15,45 @@
 
 {% block content %}
 
+<div id="lang" class="hidden">{{lang}}</div>
+
 <div class="row title">
 <label class="title">
 	{{ "Quick Look: Physiological Data"|i18n }}
 </label>
 </div>
+
+<zdk-panel heading="{{'Measures'|i18n}}" id="param-physiological-container" collapsable="true" collapsed="false">
+	<div class="row">
+		<div class="col"></div>
+		<div class="col">Minimum threshold</div>
+		<div class="col">Maximum threshold</div>
+		<div class="col">Last Report on</div>
+	</div>
+</zdk-panel>
+<zdk-panel heading="{{'Symptoms'|i18n}}" id="param-symptom-container" collapsable="true" collapsed="false"></zdk-panel>
+<zdk-panel heading="{{'Questionnaires scores'|i18n}}" id="param-questionnaire-container" collapsable="true" collapsed="false"></zdk-panel>
+
+{% raw %}
+
+<script type="template" id="param-line-tpl">
+	{{#param}}
+
+		<div class="col">
+			<input type="checkbox" />
+			<input type="checkbox" />
+			{{labelLang}}
+		</div>
+		<div class="col">
+			{{#threshold}}{{min}}{{/threshold}}
+		</div>
+		<div class="col">
+			{{#threshold}}{{max}}{{/threshold}}
+		</div>
+		<div class="col"></div>
+
+	{{/param}}
+</script>
+{% endraw %}
 
 {% endblock %}

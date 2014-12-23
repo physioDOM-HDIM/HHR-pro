@@ -168,5 +168,8 @@
 	"Are you sure you want to save those changes ?": "Are you sure you want to save those changes ?",
 	"Ok": "Ok",
 	"Update": "Update",
-	"Quick Look: Physiological Data": "Quick Look: Physiological Data"
+	"Quick Look: Physiological Data": "Quick Look: Physiological Data",
+	"Measures": "Measures",
+	"Symptoms": "Symptoms",
+	"Questionnaires scores": "Questionnaires scores"
 }
