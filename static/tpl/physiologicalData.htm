@@ -1,0 +1,22 @@
+{% extends './page.htm' %}
+
+{% block title %}Physiological Data{% endblock %}
+
+{% block head %}
+{% parent %}
+
+<script src="/bower_components/zdk-calendar/form2js.js"></script>
+<script src="/tpl/physiologicalData.js"></script>
+<script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
+<link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
+{% endblock %}
+
+{% block content %}
+
+<div class="row title">
+<label class="title">
+	{{ "Quick Look: Physiological Data"|i18n }}
+</label>
+</div>
+
+{% endblock %}

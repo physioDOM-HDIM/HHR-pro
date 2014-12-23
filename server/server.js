@@ -356,6 +356,8 @@ server.get( '/datarecord/', IPage.dataRecord);
 server.get( '/datarecord/create', IPage.dataRecordCreate);
 server.get( '/datarecord/:dataRecordID', IPage.dataRecordDetail);
 
+server.get( '/physiological-data', IPage.physiologicalData);
+
 
 server.get(/\/[^api|components\/]?$/, function(req, res, next) {
 	logger.trace("index");

@@ -167,5 +167,6 @@
 	"From Consultation": "From Consultation",
 	"Are you sure you want to save those changes ?": "Are you sure you want to save those changes ?",
 	"Ok": "Ok",
-	"Update": "Update"
+	"Update": "Update",
+	"Quick Look: Physiological Data": "Quick Look: Physiological Data"
 }
