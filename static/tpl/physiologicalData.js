@@ -31,12 +31,13 @@ var getDataRecords = function() {
 	var dateFrom = document.querySelector('.date-from').value,
 		dateTo = document.querySelector('.date-to').value,
 		lineBlueList = document.querySelectorAll('.line-blue'),
-		lineYellowList = document.querySelectorAll('.line-yellow');
-
-	var i = 0,
+		lineYellowList = document.querySelectorAll('.line-yellow'),
+		i = 0,
 		len = lineBlueList.length,
 		BlueChoice = null,
-		YellowChoice = null;
+		YellowChoice = null,
+		dateOption = '',
+		promises = {};
 
 	//getting ref for selected params
 	for(i; i<len; i++) {
@@ -48,20 +49,18 @@ var getDataRecords = function() {
 		}
 	}
 
-	if(!Utils.parseDate(dateFrom)) {
-		dateFrom = 'toto';
+	//adding date option if there are any
+	if(Utils.parseDate(dateFrom) && Utils.parseDate(dateTo)) {
+		dateOption = '?start='+dateFrom+'&stop='+dateTo;
 	}
 
-	if(!Utils.parseDate(dateTo)) {
-		dateTo = 'tata';
+	if(BlueChoice) {
+		promises.blue = Utils.promiseXHR("GET", "/api/beneficiary/datarecords/"+BlueChoice+dateOption, 200);
 	}
 
-	var dateOption = '?start='+dateFrom+'&stop='+dateTo;
-
-	var promises = {
-        blue: Utils.promiseXHR("GET", "/api/beneficiary/datarecords/"+BlueChoice+dateOption, 200),
-        yellow: Utils.promiseXHR("GET", "/api/beneficiary/datarecords/"+YellowChoice+dateOption, 200),
-    };
+	if(YellowChoice) {
+        promises.yellow = Utils.promiseXHR("GET", "/api/beneficiary/datarecords/"+YellowChoice+dateOption, 200);
+    }
 
     //TODO when API is defined/done: update graph with received datas
     RSVP.hash(promises).then(function(dataRecords) {
