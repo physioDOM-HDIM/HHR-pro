@@ -8,8 +8,12 @@
 <script src="/bower_components/mustache/mustache.js"></script>
 <script src="/scripts/utils.js"></script>
 <script src="/bower_components/zdk-calendar/form2js.js"></script>
-<script src="/tpl/physiologicalData.js"></script>
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
+<script type="text/javascript" src="/assets/js/jquery-2.1.0.min.js"></script>
+<script src="/assets/highcharts/highcharts.js"></script>
+<script src="/assets/highcharts/modules/exporting.js"></script>
+
+
 <link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
 {% endblock %}
 
@@ -21,6 +25,17 @@
 <label class="title">
 	{{ "Quick Look: Physiological Data"|i18n }}
 </label>
+</div>
+
+<div id="container" style="height: auto; width: 100%;"></div>
+<div class="row spaced">
+	<span class="spacing-around">From</span>
+	<zdk-input-date class="date-from" name="date-from" style="z-index:100" onchange="getDataRecords()"></zdk-input-date>
+
+	<span class="spacer"></span>
+
+	<span class="spacing-around">To</span>
+	<zdk-input-date class="date-to" name="date-to" style="z-index:100" onchange="getDataRecords()"></zdk-input-date>
 </div>
 
 <zdk-panel heading="{{'Measures'|i18n}}" id="param-physiological-container" collapsable="true" collapsed="false">
@@ -40,8 +55,8 @@
 	{{#param}}
 
 		<div class="col">
-			<input type="checkbox" />
-			<input type="checkbox" />
+			<input type="checkbox" class="line-blue" value="{{ref}}" onchange="resetLine('blue', this); getDataRecords();"/>
+			<input type="checkbox" class="line-yellow" value="{{ref}}" onchange="resetLine('yellow', this); getDataRecords()"/>
 			{{labelLang}}
 		</div>
 		<div class="col">
@@ -55,5 +70,6 @@
 	{{/param}}
 </script>
 {% endraw %}
+<script src="/tpl/physiologicalData.js"></script>
 
 {% endblock %}

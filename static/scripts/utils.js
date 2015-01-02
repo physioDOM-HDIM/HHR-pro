@@ -56,6 +56,10 @@ Utils.prototype.getDayName = function(day) {
  * Parsing string to check if its a date
  */
 Utils.prototype.parseDate = function(str) {
+    if(!str) {
+        return false;
+    }
+
 	var match = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
   	return (match !== null);
 };

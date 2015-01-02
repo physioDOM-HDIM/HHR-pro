@@ -374,6 +374,10 @@ div[drawer] ul.menu {
 	float: right;
 }
 
+.row.spaced {
+	margin: 10px 0;
+}
+
 .spacing-around, input.spacing-around {
 	margin: 0 10px;
 }
