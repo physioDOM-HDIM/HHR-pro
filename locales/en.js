@@ -164,7 +164,7 @@
 	"Duration": "Duration",
 	"Start at": "Start at",
 	"of the month": "of the month",
-	"at": "at"
+	"at": "at",
 	"Date": "Date",
 	"Direction": "Direction",
 	"ascending": "ascending",
