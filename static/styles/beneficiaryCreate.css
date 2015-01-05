@@ -88,11 +88,6 @@ div.diagnosis div.col {
     }
 }
 
-zdk-input-date {
-    z-index:50;
-    position: static;
-}
-
 div.row.referent {
     background: LightYellow ;
 }

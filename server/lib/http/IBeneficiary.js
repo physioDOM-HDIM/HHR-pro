@@ -6,7 +6,9 @@
 /* jslint node:true */
 "use strict";
 
-var Logger = require("logger");
+var Logger = require("logger"),
+	ObjectID = require("mongodb").ObjectID,
+	DataRecords = require("../class/dataRecords");
 var logger = new Logger("IBeneficiary");
 
 /**
@@ -73,7 +75,11 @@ var IBeneficiary = {
 		logger.trace("getBeneficiary");
 		physioDOM.Beneficiaries()
 			.then( function(beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID);
+				if( req.params.entryID ) {
+					req.session.beneficiary = new ObjectID(req.params.entryID);
+					req.session.save();
+				}
+				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
 			})
 			.then( function(beneficiary) {
 				res.send( beneficiary );
@@ -125,7 +131,7 @@ var IBeneficiary = {
 		physioDOM.Beneficiaries()
 			.then( function( _beneficiaries) {
 				beneficiaries = _beneficiaries;
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID);
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID );
 			})
 			.then( function(beneficiary) {
 				if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
@@ -151,7 +157,7 @@ var IBeneficiary = {
 		
 		physioDOM.Beneficiaries()
 			.then( function(beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID);
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
 			})
 			.then( function(beneficiary) {
 				return beneficiary.getProfessionals( pg, offset );
@@ -210,6 +216,184 @@ var IBeneficiary = {
 			})
 			.then( function(professionals) {
 				res.send( professionals );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	/**
+	 * return the list of dataRecords of the selected beneficiary
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	dataRecords: function(req,res, next) {
+		logger.trace("datarecords");
+		var pg = parseInt(req.params.pg,10) || 1;
+		var offset = parseInt(req.params.offset,10) || 20;
+		var sort = req.params.sort || null;
+		var sortDir = parseInt(req.params.dir,10) || 1;
+		var filter = req.params.filter || null;
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then(function (beneficiary) {
+				return beneficiary.getDataRecords(pg, offset, sort, sortDir, filter);
+			})
+			.then( function (datarecords) {
+				res.send( datarecords );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+	
+	dataRecord: function(req,res,next) {
+		logger.trace("datarecord", req.params.dataRecordID );
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then(function (beneficiary) {
+				return beneficiary.getCompleteDataRecordByID(req.params.dataRecordID);
+			})
+			.then( function (datarecord) {
+				res.send( datarecord );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	/**
+	 * Create a new data record
+	 * 
+	 * The data record could have some value, the data record is read from the body of the POST request
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	newDataRecord: function(req,res, next) {
+		logger.trace("newDataRecord");
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then(function (beneficiary) {
+				var dataRecord = JSON.parse( req.body );
+				return beneficiary.createDataRecord( dataRecord, req.session.person.id );
+			})
+			.then( function( dataRecord) {
+				res.send( dataRecord );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	/**
+	 * Update a data record
+	 * 
+	 * The whole data record with all his value is read from the body of the request.
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	updateDataRecord: function(req, res, next) {
+		logger.trace("updateDataRecord");
+		var beneficiary;
+		
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then(function (beneficiaryObj) {
+				beneficiary = beneficiaryObj;
+				return beneficiary.getDataRecordByID(req.params.dataRecordID);
+			})
+			.then( function(dataRecord) {
+				var items = JSON.parse(req.body);
+				return dataRecord.updateItems(items);
+			})
+			.then( function( dataRecord ) {
+				return dataRecord.getComplete();
+			})
+			.then( function( completeDataRecord ) {
+				res.send( completeDataRecord );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	/**
+	 * Get the list of threshold limits for the current beneficiary
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	getThreshold: function( req, res, next ) {
+		logger.trace("getThreshold");
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then(function (beneficiary) {
+				return beneficiary.getThreshold();
+			})
+			.then( function (thresholds) {
+				res.send( thresholds );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	/**
+	 * Modify the threshold limits for one or many parameters
+	 * The api will send back the full list of threshold limits after modification
+	 * 
+	 * The modified list is send in the body of a post request
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	setThreshold: function( req, res, next ) {
+		logger.trace("setThreshold");
+		var beneficiary,updateItems;
+		
+		
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then( function(selectedBeneficiary) {
+				beneficiary = selectedBeneficiary;
+				updateItems = JSON.parse(req.body);
+				return beneficiary.setThresholds( updateItems );
+			})
+			.then( function (thresholds) {
+				res.send( thresholds );
 				next();
 			})
 			.catch( function(err) {

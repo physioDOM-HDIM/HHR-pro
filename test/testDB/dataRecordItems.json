@@ -1,0 +1,1 @@
+{ "_id" : { "$oid" : "547f3ec60d7ed2b5ad7bb672" }, "category" : "General", "text" : "TEMP", "value" : 37.2, "automatic" : false, "dataRecordID" : { "$oid" : "547f31210d7ed2b5ad7bb671" } }

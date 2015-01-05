@@ -11,7 +11,9 @@ var RSVP = require("rsvp"),
 	promise = require("rsvp").Promise,
 	Logger = require("logger"),
 	ObjectID = require("mongodb").ObjectID,
-	beneficiarySchema = require("./../schema/beneficiarySchema");
+	beneficiarySchema = require("./../schema/beneficiarySchema"),
+	DataRecord = require("./dataRecord"),
+	dbPromise = require("./database");
 
 var logger = new Logger("Beneficiary");
 
@@ -51,7 +53,7 @@ function Beneficiary( ) {
 					throw err;
 				}
 				if(!doc) {
-					reject( {code:404, error:"not found"});
+					reject( {code:404, error:"beneficiary not found"});
 				} else {
 					for (var prop in doc) {
 						if (doc.hasOwnProperty(prop)) {
@@ -517,6 +519,157 @@ function Beneficiary( ) {
 	this.getIPMessages = function() {
 		return new promise( function(resolve, reject) {
 			logger.trace("getIPMessages");
+		});
+	};
+
+	/**
+	 * on resolve return the list of dataRecords of the current beneficiary
+	 * 
+	 * dataRecords are sorted by default by date
+	 * 
+	 * @param pg
+	 * @param offset
+	 * @param sort
+	 * @param sortDir
+	 * @param filter
+	 * @returns {promise}
+	 */
+	this.getDataRecords = function(pg, offset, sort, sortDir, filter) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("getDataRecords");
+			physioDOM.DataRecords( that._id )
+				.then( function( datarecords ) {
+					resolve( datarecords.getList(pg, offset, sort, sortDir, filter) );
+				});
+		});
+	};
+
+	/**
+	 * on resolve return a complete DataRecord for display
+	 * 
+	 * @param dataRecordID
+	 * @returns {promise}
+	 */
+	this.getCompleteDataRecordByID = function( dataRecordID ) {
+		var datarecord, that = this;
+		
+		return new promise( function(resolve, reject) {
+			logger.trace("getCompleteDataRecordByID", dataRecordID);
+			physioDOM.DataRecords( that._id )
+				.then( function (datarecords ) {
+					return datarecords.getByID( new ObjectID(dataRecordID) );
+				})
+				.then( function( datarecord ) {
+					resolve( datarecord.getComplete());
+				})
+				.catch( function(err) {
+					logger.error("error ", err);
+					reject(err);
+				});
+		});
+	};
+
+	this.getDataRecordByID = function( dataRecordID ) {
+		var datarecord, that = this;
+
+		return new promise( function(resolve, reject) {
+			logger.trace("getDataRecordByID", dataRecordID);
+			physioDOM.DataRecords( that._id )
+				.then( function (datarecords ) {
+					return datarecords.getByID( new ObjectID(dataRecordID) );
+				})
+				.then( resolve )
+				.catch( function(err) {
+					logger.error("error ", err);
+					reject(err);
+				});
+		});
+	};
+
+	/**
+	 * Create a dataRecord for the current beneficiary from the given dataRecordObj
+	 * 
+	 * on resolve return the full dataRecord Object
+	 * 
+	 * @param dataRecordObj
+	 * @returns {promise}
+	 */
+	this.createDataRecord = function( dataRecordObj, professionalID ) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("createDataRecord");
+			var dataRecord = new DataRecord();
+			dataRecord.setup(that._id, dataRecordObj, professionalID)
+				.then(function (dataRecord) {
+					return that.getCompleteDataRecordByID(dataRecord._id);
+				})
+				.then(resolve)
+				.catch(reject);
+		});
+	};
+	
+	this.getThreshold = function() {
+		var thresholdResult = {};
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("getThreshold", that._id);
+			dbPromise.findOne(physioDOM.db, "lists", {name: "parameters"}, {"items.ref": 1, "items.threshold": 1, "items.active":1})
+				.then(function (thresholds) {
+					thresholds.items.forEach(function (threshold) {
+						if( threshold.active ) {
+							thresholdResult[threshold.ref] = threshold.threshold;
+						}
+					});
+					return thresholdResult;
+				})
+				.then(function (thresholdResult) {
+					for (var prop in that.threshold) {
+						if (thresholdResult.hasOwnProperty(prop)) {
+							thresholdResult[prop] = that.threshold[prop];
+						}
+					}
+					resolve(thresholdResult);
+				});
+		});
+	};
+
+	/**
+	 * update the threshold limits of the current beneficiary with
+	 * the given "updatedThresholds" object
+	 *
+	 * @param updatedThresholds
+	 * @returns {promise}
+	 */
+	this.setThresholds = function( updatedThresholds ) {
+		var that = this;
+		
+		return new promise( function(resolve, reject) {
+			logger.trace("setThreshold", that._id);
+			
+			that.getThreshold()
+				.then( function( thresholdResult ) {
+					for (var prop in updatedThresholds) {
+						if (thresholdResult.hasOwnProperty(prop)) {
+							console.log("test ", Object.keys(updatedThresholds[prop]));
+							if (JSON.stringify(Object.keys(updatedThresholds[prop])) === JSON.stringify(['min', 'max'])) {
+								that.threshold[prop] = updatedThresholds[prop];
+							} else {
+								logger.warning("bad threshold object for '" + prop + "'");
+							}
+						}
+					}
+					return that.save();
+				})
+				.then( function() {
+					return that.getThreshold();
+				})
+				.then( function( thresholdResult) {
+					resolve(thresholdResult);
+				})
+				.catch( function(err) {
+					reject(err);
+				});
 		});
 	};
 }

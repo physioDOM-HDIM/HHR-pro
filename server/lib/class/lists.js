@@ -68,7 +68,7 @@ function Lists( ) {
 					}
 				})
 				.then( function(list) {
-					 logger.debug("list "+listName, list);
+					 //logger.debug("list "+listName, list);
 					resolve(list);
 				})
 				.catch( function(err) {
