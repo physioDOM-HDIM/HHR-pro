@@ -913,6 +913,7 @@ function IPage() {
 			})
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
+				logger.trace(data.beneficiary);
 				data.lang = lang;
 
 				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/physiologicalData.htm', data, function(err, output) {

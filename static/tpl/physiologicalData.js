@@ -216,17 +216,22 @@ var renderLine = function(list, containerName) {
 
 //TODO: graph with real data
 var renderChart = function() {
+
+	var user = JSON.parse(document.querySelector('#user').innerText);
+
+	console.log(user);
+
 	var chart = new Highcharts.Chart({
 		chart    : {
 			renderTo: document.querySelector('#container'),
 			type    : 'spline'
 		},
 		title    : {
-			text: 'physiological data',
+			text: 'Physiological Data',
 			x   : -20 //center
 		},
 		subtitle : {
-			text: 'Claire Caledonie',
+			text: user.name.given + ' ' + user.name.family,
 			x   : -20
 		},
 		xAxis    : {
