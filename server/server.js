@@ -174,6 +174,18 @@ server.pre(restify.pre.userAgentConnection());
 
 server.use(function checkAcl(req, res, next) {
 	logger.trace("checkAcl",req.url);
+
+	if( req.url === "/" || req.url.match(/^(\/api|\/logout|\/directory|\/settings|\/questionnaires)/) ) {
+		return next();
+	} else {
+
+		if (!req.session.beneficiary && req.url !== "/beneficiaries" ) {
+			logger.debug("no beneficiary selected");
+			res.header('Location', '/beneficiaries');
+			res.send(302);
+			return next();
+		}
+	}
 	
 	return next();
 	/*
