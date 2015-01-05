@@ -757,7 +757,65 @@ function IPage() {
 				next();
 			});
 	};
-	
+
+
+	// -------------- Basic health services pages ---------------------
+
+	/**
+	 * Basic health services Overview
+	 *
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	this.basicHealthServices = function(req, res, next) {
+		logger.trace('basicHealthServices');
+
+		init(req);
+		var data = {
+			admin: ['coordinator', 'administrator'].indexOf(req.session.role) !== -1 ? true : false
+		};
+
+		swig.renderFile(DOCUMENTROOT+'/static/tpl/healthServices.htm', data, function(err, output) {
+			if (err) {
+				console.log("error", err);
+				console.log("output", output);
+				res.write(err);
+				res.end();
+				next();
+			} else {
+				sendPage(output, res, next);
+			}
+		});
+	};
+
+	/**
+	 * Basic health services creation page
+	 *
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	this.basicHealthServiceCreate = function(req, res, next) {
+		logger.trace('basicHealthServiceCreate');
+
+		init(req);
+		var data = {
+			admin: ['coordinator', 'administrator'].indexOf(req.session.role) !== -1 ? true : false
+		};
+
+		swig.renderFile(DOCUMENTROOT + '/static/tpl/healthServiceCreate.htm', data, function (err, output) {
+			if (err) {
+				console.log("error", err);
+				console.log("output", output);
+				res.write(err);
+				res.end();
+				next();
+			} else {
+				sendPage(output, res, next);
+			}
+		});
+	};
 	
 	
 	/**

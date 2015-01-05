@@ -143,5 +143,22 @@
 	"New item": "New item",
 	"Label": "Label",
 	"Questionnaires": "Questionnaires",
-	"Create/Update a questionnaire": "Create/Update a questionnaire"
+	"Create/Update a questionnaire": "Create/Update a questionnaire",
+	"Healthcare: Basic health services": "Healthcare: Basic health services",
+	"Healthcare: Basic health services - Add mode": "Healthcare: Basic health services - Add mode",
+	"Type of service": "Type of service",
+	"Prescriber": "Prescriber",
+	"Provider": "Provider",
+	"Detail of the service": "Detail of the service",
+	"Frequency": "Frequency",
+	"Monthly": "Monthly",
+	"Weekly": "Weekly",
+	"Daily": "Daily",
+	"Punctual": "Punctual",
+	"Every": "Every",
+	"Duration": "Duration",
+	"Start at": "Start at",
+	"Date": "Date",
+	"of the month": "of the month",
+	"at": "at"
 }
