@@ -43,6 +43,9 @@
 			console.info("not in iframe");
 			window.location = "/?url="+window.location;
 		} else {
+			if( window.location.pathname === "/beneficiaries") {
+				parent.highlight("/beneficiaries");
+			}
 			parent.closeDrawer();
 		}
 	</script>
