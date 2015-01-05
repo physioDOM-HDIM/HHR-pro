@@ -27,6 +27,17 @@ function Modal (type, callback) {
         }]
     };
 
+    content.updateSuccess = {
+        title: "trad_update",
+        content: "trad_success_update",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
     content.confirmDeleteItem = {
         title: "trad_delete",
         content: "trad_confirm_delete",

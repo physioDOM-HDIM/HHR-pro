@@ -649,10 +649,16 @@ function Beneficiary( ) {
 			
 			that.getThreshold()
 				.then( function( thresholdResult ) {
+					if(that.threshold === undefined) {
+						that.threshold = {};
+					}
+
 					for (var prop in updatedThresholds) {
 						if (thresholdResult.hasOwnProperty(prop)) {
 							console.log("test ", Object.keys(updatedThresholds[prop]));
 							if (JSON.stringify(Object.keys(updatedThresholds[prop])) === JSON.stringify(['min', 'max'])) {
+								logger.trace('toto', that.threshold);
+
 								that.threshold[prop] = updatedThresholds[prop];
 							} else {
 								logger.warning("bad threshold object for '" + prop + "'");

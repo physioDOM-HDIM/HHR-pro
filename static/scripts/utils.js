@@ -63,3 +63,23 @@ Utils.prototype.parseDate = function(str) {
 	var match = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
   	return (match !== null);
 };
+
+/**
+ * Check if an element as a className passed as arg defined
+ */
+
+Utils.prototype.hasClass = function(element, cls) {
+    return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
+};
+
+/**
+ * Toggle an element
+ */
+
+Utils.prototype.showHideElt = function(elt, className) {
+    if(this.hasClass(elt, 'hidden')) {
+        elt.className = className;
+    } else {
+        elt.className = className + ' hidden';
+    }
+};

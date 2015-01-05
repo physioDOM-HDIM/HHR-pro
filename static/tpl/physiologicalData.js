@@ -12,20 +12,8 @@ window.addEventListener("DOMContentLoaded", function() {
 }, false);
 
 /**
- * UI
+ * Actions
  */
-
-var resetLine = function(lineColor, elt) {
-	var lineList = document.querySelectorAll('.line-'+lineColor),
-		i = 0,
-		len = lineList.length;
-
-	for(i; i<len; i++) {
-		if(elt.value !== lineList[i].value) {
-			lineList[i].checked = false;
-		}
-	}
-};
 
 var getDataRecords = function() {
 	var dateFrom = document.querySelector('.date-from').value,
@@ -72,6 +60,86 @@ var getDataRecords = function() {
 
 };
 
+var updateThreshold = function(elt) {
+	var line = elt.parentNode.parentNode.parentNode,
+		datas = form2js(line);
+
+		var i = 0,
+			len = datas.length;
+
+		for(var prop in datas) {
+			datas[prop].min = parseFloat(datas[prop].min);
+			datas[prop].max = parseFloat(datas[prop].max);
+		}
+
+	Utils.promiseXHR("POST", "/api/beneficiary/thresholds", 200, JSON.stringify(datas)).then(function(response) {
+       	setThresholdUI(line);
+    	toggleMode(line);
+       	new Modal('updateSuccess');
+    }, function(error) {
+    	resetThresholdUI(line);
+    	toggleMode(line);
+    	new Modal('errorOccured');
+    });
+};
+
+var back = function(elt) {
+	var line = elt.parentNode.parentNode.parentNode;
+
+	resetThresholdUI(line);
+	toggleMode(line);
+};
+
+var edit = function(elt) {
+	var line = elt.parentNode.parentNode.parentNode;
+	toggleMode(line);
+}
+
+/**
+ * UI
+ */
+
+var setThresholdUI = function(line) {
+	line.querySelector('.read-min').innerText = line.querySelector('.input-min').value;
+	line.querySelector('.read-max').innerText = line.querySelector('.input-max').value;
+};
+
+var resetThresholdUI = function(line) {
+	line.querySelector('.input-min').value = line.querySelector('.read-min').innerText;
+	line.querySelector('.input-max').value = line.querySelector('.read-max').innerText;
+};
+
+var toggleMode = function(line) {
+	var modeRead = line.querySelectorAll('.mode-read'),
+		modeUpdate = line.querySelectorAll('.mode-update'),
+		i = 0,
+		leni = modeRead.length,
+		y = 0,
+		leny = modeUpdate.length;
+
+	for(i; i<leni; i++) {
+		Utils.showHideElt(modeRead[i], 'mode-read');
+	}
+
+	for(y; y<leny; y++) {
+		Utils.showHideElt(modeUpdate[y], 'mode-update');
+	}
+
+};
+
+var resetLine = function(lineColor, elt) {
+	var lineList = document.querySelectorAll('.line-'+lineColor),
+		i = 0,
+		len = lineList.length;
+
+	for(i; i<len; i++) {
+		if(elt.value !== lineList[i].value) {
+			lineList[i].checked = false;
+		}
+	}
+};
+
+
 /**
  * INIT
  */
@@ -80,16 +148,19 @@ var getParamList = function() {
 	var promises = {
             physiological: Utils.promiseXHR("GET", "/api/lists/parameters", 200),
             symptom: Utils.promiseXHR("GET", "/api/lists/symptom", 200),
-            questionnaire: Utils.promiseXHR("GET", "/api/lists/questionnaire", 200)
+            questionnaire: Utils.promiseXHR("GET", "/api/lists/questionnaire", 200),
+            userThreshold: Utils.promiseXHR("GET", "/api/beneficiary/thresholds", 200)
         };
 
 	RSVP.hash(promises).then(function(results) {
 		physiologicalData.list.physiological = JSON.parse(results.physiological);
 		physiologicalData.list.symptom = JSON.parse(results.symptom);
 		physiologicalData.list.questionnaire = JSON.parse(results.questionnaire);
+		physiologicalData.list.userThreshold = JSON.parse(results.userThreshold);
 
 
-		var physiologicalList = physiologicalData.list.physiological.items,
+		var userThreshold = physiologicalData.list.userThreshold,
+			physiologicalList = physiologicalData.list.physiological.items,
 			i = 0,
 	        leni = physiologicalList.length,
 	        symptomList = physiologicalData.list.symptom.items,
@@ -101,12 +172,18 @@ var getParamList = function() {
 
 	    for(i; i<leni; i++) {
 	        physiologicalList[i].labelLang = physiologicalList[i].label[infos.lang];
+	        physiologicalList[i].edition = true;
+
+	        physiologicalList[i].threshold.min = userThreshold[physiologicalList[i].ref].min;
+	        physiologicalList[i].threshold.max = userThreshold[physiologicalList[i].ref].max;
 	    }
 	    for(y; y<leny; y++) {
 	        symptomList[y].labelLang = symptomList[y].label[infos.lang];
+	        symptomList[y].edition = false;
 	    }
 	    for(z; z<lenz; z++) {
 	        questionnaireList[z].labelLang = questionnaireList[z].label[infos.lang];
+	        questionnaireList[z].edition = false;
 	    }
 
 		renderLine(physiologicalList, '#param-physiological-container');
