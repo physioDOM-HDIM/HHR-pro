@@ -65,3 +65,19 @@ function initFrame() {
 		}
 	}
 }
+
+/**
+ * Render a template in a DOM element.
+ * 
+ * @param  {string} elementId  ID of the element
+ * @param  {string} templateId ID of the Mustache template
+ * @param  {object} data       Data object
+ */
+function renderTemplate(elementId, templateId, data) {
+	if (Mustache) {
+		var templ = document.getElementById(templateId).innerHTML;
+		Mustache.parse(templ);
+		var rendered = Mustache.render(templ, data);
+		document.getElementById(elementId).innerHTML = rendered;
+	}
+}

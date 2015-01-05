@@ -356,6 +356,9 @@ server.get( '/datarecord/', IPage.dataRecord);
 server.get( '/datarecord/create', IPage.dataRecordCreate);
 server.get( '/datarecord/:dataRecordID', IPage.dataRecordDetail);
 
+// Services
+server.get( '/services/health', IPage.basicHealthServices);
+server.get( '/services/health/create', IPage.basicHealthServiceCreate);
 
 server.get(/\/[^api|components\/]?$/, function(req, res, next) {
 	logger.trace("index");

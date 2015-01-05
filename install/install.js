@@ -69,6 +69,7 @@ fs.exists(__dirname+"/install.json", function(exists) {
 			console.log();
 			console.log("create a symlink in "+ ((require('os').platform() === "darwin" ? "/usr/local":"")+"/etc/nginx/sites-enabled"));
 			console.log("then, don't forget to reload nginx ( sudo service nginx reload )");
+			fs.unlinkSync("./nginx.conf");
 		}
 	});
 });
