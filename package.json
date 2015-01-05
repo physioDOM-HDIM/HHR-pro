@@ -11,6 +11,7 @@
   ],
   "description": "A web portal for professionnal",
   "scripts": {
+    "preinstall":"npm install ./install/logger-v1.1.0.tar.gz",
     "install": "cd static; bower install; cd ..; node install/install.js",
     "start": "supervisor -w package.json,server/ -- server/server.js -p 8001 2>&1 > log/app.log",
     "test": "node ./test/index.js"
@@ -30,7 +31,7 @@
     "cookies": "~0.5.0",
     "i18n-2": "~0.4.6",
     "jsonschema": "^1.0.0",
-    "logger": "^1.1.0",
+    "logger": "1.1.0",
     "moment": "~2.8.4",
     "mongodb": "~1.4.7",
     "restify": "2.6.3",
@@ -43,7 +44,7 @@
     "grunt": "^0.4.5",
     "grunt-mocha": "^0.4.11",
     "grunt-mocha-test": "^0.12.1",
-    "intern": "^2.1.1",
+    "intern": "^2.2.2",
     "mocha": "^1.21.5",
     "request": "^2.45.0"
   },
