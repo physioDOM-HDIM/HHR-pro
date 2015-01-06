@@ -1,0 +1,203 @@
+{% extends './page.htm' %}
+
+{% block title %}{{ 'Healthcare: Basic health services - Add mode' | i18n }}{% endblock %}
+
+{% block head %}
+{% parent %}
+<link rel="import" href="/bower_components/zdk-agenda/zdk-agenda.html">
+<link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
+<link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
+
+<style shim-shadowdom>
+zdk-modal#dialog-warning-frequency::shadow #modal {
+	max-width: 400px;
+}
+
+#agenda::shadow #banner {
+	display: none;
+}
+
+zdk-modal#dialog-agenda .modalContentContainer {
+	margin: 50px 10px 50px 10px;
+	border: solid 1px #ddd;
+}
+
+zdk-modal#dialog-agenda .modalButtonContainer.bottom {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	padding: 0 10px;
+}
+
+zdk-modal#dialog-agenda .modalButtonContainer.top {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	padding: 0 10px;
+	margin: 10px 0px 20px 0px;
+}
+</style>
+
+{% endblock %}
+
+{% block content %}
+<form name="form" id="form-add-service" autocomplete="off" onsubmit="checkServiceForm(); return false;">
+	<input type="hidden" name="_id" value="{{beneficiary._id.toString()}}">
+	<div class="row">
+		<div class="col">
+			<label for="input-type">{{'Type of service' | i18n}}</label>
+			<select id="input-type" name="type">
+
+			</select>
+		</div>
+		<div class="col">
+			<label for="input-prescriber">{{'Prescriber' | i18n}}</label>
+			<select id="input-prescriber" name="prescriber">
+
+			</select>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col"></div>
+		<div class="col">
+			<label for="input-provider">{{'Provider' | i18n}}</label>
+			<select id="input-provider" name="provider">
+
+			</select>
+		</div>
+	</div>
+	<div class="row">
+		<label>{{'Detail of the service' | i18n}}</label>
+		<textarea></textarea>
+	</div>
+
+	<div class="row" id="dates-block">
+		<label for="input-start">{{'Start date' | i18n}}</label>
+		<zdk-input-date id="input-start" name="type"></zdk-input-date>
+		<label for="input-end">{{'End date' | i18n}}</label>
+		<zdk-input-date id="input-end" name="type"></zdk-input-date>
+	</div>
+
+	<div class="row">
+		<label>{{'Frequency' | i18n}}</label>
+		<input type="radio" name="frequency" value="monthly"> {{'Monthly' | i18n}}
+		<input type="radio" name="frequency" value="weekly"> {{'Weekly' | i18n}}
+		<input type="radio" name="frequency" value="daily" checked="true"> {{'Daily' | i18n}}
+		<input type="radio" name="frequency" value="punctual"> {{'Punctual' | i18n}}
+	</div>
+
+	<div id="special-inputs"></div>
+</form>
+<zdk-modal id="dialog-warning-frequency" closebutton="false">
+	<div class="modalContainer">
+		<div class="modalTitleContainer">Warning</div>
+		<div class="modalContentContainer">
+			<p>
+				<strong>Nota:</strong>&nbsp;Changing the frequency will delete all occurrences already programmed
+			</p>
+		</div>
+		<div class="modalButtonContainer">
+			<button id="btn-warning-cancel" class="red">Cancel</button>
+			<button id="btn-warning-confirm" class="blue">Confirm</button>
+		</div>
+	</div>
+</zdk-modal>
+
+<zdk-modal id="dialog-agenda" closebutton="false">
+	<div class="modalContainer" fit>
+		<div class="modalButtonContainer top">
+			<button id="btn-cal-add" class="green">Add</button>
+		</div>
+		<div class="modalContentContainer" fit>
+			<zdk-agenda id="agenda" lang="en-gb" hourHeight="40" hourShow="8" view="week" deleteButtons="true" fit></zdk-agenda>
+		</div>
+		<div class="modalButtonContainer bottom">
+			<button id="btn-cal-cancel" class="red">Cancel</button>
+			<button id="btn-cal-confirm" class="blue">Save</button>
+		</div>
+	</div>
+	
+</zdk-modal>
+
+<script id="special-inputs-template" type="x-tmpl-mustache">
+	<div class="row">
+
+		{% raw %}{{#punctual}}{% endraw %}
+		<div class="col" id="date-group">
+			<label for="input-date">{{'Date' | i18n}}</label>
+			<zdk-input-date id="input-date" name="date"></zdk-input-date>
+		</div>
+		{% raw %}{{/punctual}}{% endraw %}
+
+		{% raw %}{{^punctual}}{% endraw %}
+		<div id="repeat-group">
+			<label for="input-repeat">{{'Every' | i18n}}</label>
+			<input type="text" id="input-repeat" name="repeat">&nbsp;<span id="repeat-label">{% raw %}{{repeatLabel}}{% endraw %}</span>
+		</div>
+		{% raw %}{{/punctual}}{% endraw %}
+
+		<div>
+			<div>
+				<label for="input-duration">{{'Duration' | i18n}}</label>
+				<select id="input-duration" name="duration">
+					<option value="30">0:30</option>
+					<option value="60">1:00</option>
+					<option value="90">1:30</option>
+					<option value="120">2:00</option>
+				</select>
+			</div>
+			{% raw %}{{^weekly}}{% endraw %}
+			<div>
+				<label for="input-start-time">{{'Start at' | i18n}}</label>
+				<select id="input-start-time" name="start-time">
+					{% raw %}
+					{{#hours}}
+					<option value="{{.}}">{{.}}</option> 
+					{{/hours}}
+					{% endraw %}
+				</select>
+			</div>
+			{% raw %}{{/weekly}}{% endraw %}
+		</div>
+
+		{% raw %}{{#weekly}}{% endraw %}
+			<button id="btn-cal-week" class="calendar-button" type="button" onclick="onBtnCalWeekClick()">Calendar</button>
+		{% raw %}{{/weekly}}{% endraw %}
+
+		{% raw %}{{#monthly}}{% endraw %}
+			<button id="btn-cal-month" class="calendar-button" type="button" onclick="onBtnCalMonthClick()">Calendar</button>
+		{% raw %}{{/monthly}}{% endraw %}
+
+	</div>
+
+	{% raw %}{{#monthly}}{% endraw %}
+	<div id="days-month"></div>
+	{% raw %}{{/monthly}}{% endraw %}
+
+	{% raw %}{{#weekly}}{% endraw %}
+	<div id="days-week"></div>
+	{% raw %}{{/weekly}}{% endraw %}
+</script>
+
+<script id="days-month-template" type="x-tmpl-mustache">
+	<ul>
+	{% raw %}{{#days}}{% endraw %}
+		<li class="day">{% raw %}{{.}}{% endraw %} {{'of the month' | i18n}}</li>
+	{% raw %}{{/days}}{% endraw %}
+	</ul>
+</script>
+
+<script id="days-week-template" type="x-tmpl-mustache">
+	<ul>
+	{% raw %}{{#days}}{% endraw %}
+		<li class="day">{% raw %}{{day}}{% endraw %} {{'at' | i18n}} {% raw %} {{time}}{% endraw %}</li>
+	{% raw %}{{/days}}{% endraw %}
+	</ul>
+</script>
+
+<script src="/bower_components/momentjs/min/moment.min.js"></script>
+<script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
+<script src="/tpl/healthServiceCreate.js"></script>
+{% endblock %}

@@ -649,10 +649,9 @@ function Beneficiary( ) {
 			
 			that.getThreshold()
 				.then( function( thresholdResult ) {
-					if(that.threshold === undefined) {
-						that.threshold = {};
+					if( that.threshold === undefined ) { 
+						that.threshold = {}; 
 					}
-
 					for (var prop in updatedThresholds) {
 						if (thresholdResult.hasOwnProperty(prop)) {
 							console.log("test ", Object.keys(updatedThresholds[prop]));

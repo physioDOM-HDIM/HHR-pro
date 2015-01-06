@@ -174,6 +174,18 @@ server.pre(restify.pre.userAgentConnection());
 
 server.use(function checkAcl(req, res, next) {
 	logger.trace("checkAcl",req.url);
+
+	if( req.url === "/" || req.url.match(/^(\/api|\/logout|\/directory|\/settings|\/questionnaires)/) ) {
+		return next();
+	} else {
+
+		if (!req.session.beneficiary && req.url !== "/beneficiaries" ) {
+			logger.debug("no beneficiary selected");
+			res.header('Location', '/beneficiaries');
+			res.send(302);
+			return next();
+		}
+	}
 	
 	return next();
 	/*
@@ -358,6 +370,9 @@ server.get( '/datarecord/:dataRecordID', IPage.dataRecordDetail);
 
 server.get( '/physiological-data', IPage.physiologicalData);
 
+// Services
+server.get( '/services/health', IPage.basicHealthServices);
+server.get( '/services/health/create', IPage.basicHealthServiceCreate);
 
 server.get(/\/[^api|components\/]?$/, function(req, res, next) {
 	logger.trace("index");

@@ -180,6 +180,7 @@
 		<ul class="admin tree">
 			<li class="menuitem"><a href="/settings/lists" target="main">Lists management</a></li>
 			<li class="menuitem"><a href="/questionnaires" target="main">Questionnaires</a></li>
+			<li class="menuitem"><a href="/services/health/create" target="main">Healthcare: add a basic health service</a></li>
 		</ul>
 		{% endif %}
 	</div>
@@ -227,6 +228,18 @@
 	function closeDrawer() {
 		var drawer = document.querySelector("core-drawer-panel");
 		drawer.closeDrawer();
+	}
+	
+	function highlight(pathname) {
+		var selected = document.querySelector("li.selected");
+		if( selected ) {
+			selected.classList.remove("selected");
+		}
+		var link = document.querySelector("a[href='"+pathname+"']");
+		if( link ) {
+			link = link.parentNode;
+			link.classList.add("selected");
+		}
 	}
 </script>
 </body>
