@@ -255,7 +255,15 @@ var IBeneficiary = {
 				next(false);
 			});
 	},
-	
+
+	/**
+	 * get the detail of a dataRecord
+	 * the requested dataRecord is given in the url : '/api/beneficiary/datarecords/:dataRecordID'
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
 	dataRecord: function(req,res,next) {
 		logger.trace("datarecord", req.params.dataRecordID );
 		physioDOM.Beneficiaries()
