@@ -13,7 +13,8 @@ var RSVP = require("rsvp"),
 	ObjectID = require("mongodb").ObjectID,
 	beneficiarySchema = require("./../schema/beneficiarySchema"),
 	DataRecord = require("./dataRecord"),
-	dbPromise = require("./database");
+	dbPromise = require("./database"),
+	moment = require("moment");
 
 var logger = new Logger("Beneficiary");
 
@@ -673,6 +674,119 @@ function Beneficiary( ) {
 				.catch( function(err) {
 					reject(err);
 				});
+		});
+	};
+	
+	this.getGraphDataList = function() {
+		var that = this;
+
+		return new promise(function (resolve, reject) {
+			logger.trace("getGraphDataList", that._id);
+			var graphList = {
+				"General"      : [],
+				"HDIM"         : [],
+				"symptom"      : [],
+				"questionnaire": []
+			};
+
+			var groupRequest = {
+				key    : {text: 1, category: 1},
+				cond   : {subject: that._id},
+				reduce : "function ( curr, result ) { if( result.lastReport < curr.datetime) { result.lastReport = curr.datetime; } }",
+				initial: {lastReport: ""}
+			};
+
+			function compareItems(a, b) {
+				if (a.text < b.text) {
+					return -1;
+				}
+				if (a.text > b.text) {
+					return 1;
+				}
+				return 0;
+			}
+
+			var promises = ["parameters", "symptom", "questionnaire"].map(function (listName) {
+				return physioDOM.Lists.getListArray(listName);
+			});
+			
+			that.getThreshold()
+				.then( function(thresholds) {
+					// logger.debug("threshols", thresholds);
+					RSVP.all(promises).then(function (lists) {
+						var labels = {};
+						for( var i=0; i < lists.length; i++) {
+							for ( var prop in lists[i].items) {
+								labels[prop] = lists[i].items[prop];
+							}
+						}
+						// logger.debug("lists", labels);
+						physioDOM.db.collection("dataRecordItems").group(groupRequest.key, groupRequest.cond, groupRequest.initial, groupRequest.reduce, function (err, results) {
+							// console.log("result", results);
+							if (err) {
+								reject(err);
+							} else {
+								results.forEach( function( result ) {
+									result.name = labels[result.text].en;
+									if( thresholds[result.text]) {
+										result.threshold = thresholds[result.text];
+									}
+								});
+								graphList.General = results.filter(function (item) {
+									return item.category === "General";
+								});
+								graphList.HDIM = results.filter(function (item) {
+									return item.category === "HDIM";
+								});
+								graphList.symptom = results.filter(function (item) {
+									return item.category === "symptom";
+								});
+								graphList.questionnaire = results.filter(function (item) {
+									return item.category === "questionnaire";
+								});
+		
+								graphList.General.sort(compareItems);
+								graphList.HDIM.sort(compareItems);
+								graphList.symptom.sort(compareItems);
+								graphList.questionnaire.sort(compareItems);
+		
+								resolve(graphList);
+							}
+						});
+					});
+				});
+		});
+	};
+	
+	this.getGraphData = function(paramName, startDate, stopDate ) {
+		var graphData = { text: paramName, data: [] };
+		var that = this;
+
+		if( !stopDate ) {
+			graphData.stopDate = moment().utc();
+		}
+		if( !startDate ) {
+			graphData.startDate = moment(graphData.stopDate.toISOString());
+			graphData.startDate.subtract(30, "days");
+		}
+	
+		return new promise(function (resolve, reject) {
+			logger.trace("getGraphData", paramName, graphData.startDate, graphData.stopDate);
+			var search = { 
+				subject: that._id, 
+				text: paramName, 
+				datetime: { 
+					'$gte': graphData.startDate.toISOString(), 
+					'$lte': graphData.stopDate.toISOString()
+				}
+			};
+			physioDOM.db.collection("dataRecordItems").find( search ).sort({ datetime: 1 }).toArray( function(err, results) {
+				results.forEach( function( result ) {
+					graphData.data.push( [ moment(result.datetime).valueOf(), result.value ] );
+				});
+				resolve(graphData);
+			});
+			
 		});
 	};
 }
