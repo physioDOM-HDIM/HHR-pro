@@ -408,6 +408,61 @@ var IBeneficiary = {
 				res.send(err.code || 400, err);
 				next(false);
 			});
+	},
+
+	/**
+	 * Get the list of parameters that could be displayed on graph
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	getGraphDataList: function( req, res, next) {
+		logger.trace("getGraphDataList");
+
+		var beneficiary;
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then( function(selectedBeneficiary) {
+				beneficiary = selectedBeneficiary;
+				return beneficiary.getGraphDataList();
+			}).then( function( graphList) {
+				res.send(graphList);
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	/**
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	getGraphData: function( req, res, next ) {
+		logger.trace("getGraphData");
+
+		var beneficiary;
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then( function(selectedBeneficiary) {
+				beneficiary = selectedBeneficiary;
+				return beneficiary.getGraphData(req.params.paramName);
+			}).then( function( graphData) {
+				res.send(graphData);
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
 	}
 };
 

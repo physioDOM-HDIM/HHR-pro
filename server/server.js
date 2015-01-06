@@ -322,6 +322,9 @@ server.put( '/api/beneficiary/datarecords/:dataRecordID', IBeneficiary.updateDat
 server.post('/api/beneficiary/thresholds', IBeneficiary.setThreshold);
 server.get( '/api/beneficiary/thresholds', IBeneficiary.getThreshold);
 
+server.get( '/api/beneficiary/graph', IBeneficiary.getGraphDataList );
+server.get( '/api/beneficiary/graph/:paramName', IBeneficiary.getGraphData );
+
 server.get( '/api/sessions/', getSessions);
 
 server.get( '/api/lists', ILists.getLists );
