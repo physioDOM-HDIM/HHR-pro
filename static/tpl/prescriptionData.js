@@ -252,10 +252,12 @@ var saveData = function() {
 
 
 var removeData = function(ref) {
-    //TODO call to unknown service to remove only 1 param with ref in arg
 
-    new Modal('confirmDeleteItem', function() {
-        console.log('call to unknown service to remove only 1 param with ref in arg', ref);
+    utils.promiseXHR("DELETE", "/api/beneficiary/dataprog/"+ref, 200).then(function() {
+        new Modal('confirmDeleteItem');
+    }, function(error) {
+        new Modal('errorOccured');
+        console.log("saveData - error: ", error);
     });
 
 };
