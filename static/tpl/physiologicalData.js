@@ -61,6 +61,7 @@ var getDataRecords = function(init) {
     	console.log(error);
 
     	//MOCK
+    	//TODO at integration: ex: if only blue is selected, pass the physiologicalData.dataRecords.yellow to null and vice versa
     	physiologicalData.dataRecords.blue = {
 			ref: 'TEMP',
 			name: 'Température',
@@ -86,6 +87,7 @@ var getDataRecords = function(init) {
 			],
 			unit: 'km'
 		};
+		//ENDMOCK
 
     }).then(function() {
     	renderGraph(physiologicalData.dataRecords);
@@ -126,7 +128,7 @@ var back = function(elt) {
 var edit = function(elt) {
 	var line = elt.parentNode.parentNode.parentNode;
 	toggleMode(line);
-}
+};
 
 /**
  * UI
@@ -266,8 +268,123 @@ var initGraph = function() {
 
 var renderGraph = function(dataRecords) {
 	var user = JSON.parse(document.querySelector('#user').innerText),
-		thresholdBlue = Utils.findInObject(physiologicalData.list.physiological.items, 'ref', dataRecords.blue.ref).threshold,
-		thresholdYellow = Utils.findInObject(physiologicalData.list.physiological.items, 'ref', dataRecords.yellow.ref).threshold;
+		datas = [],
+		yAxisConf = [];
+
+	//blue graph config
+	if(dataRecords.blue !== null) {
+		var thresholdBlue = Utils.findInObject(physiologicalData.list.physiological.items, 'ref', dataRecords.blue.ref).threshold,
+			blueColor = {
+				line: '#2980b9',
+				area: '#5C97BF'
+			};
+
+		var yAxisBlue = {
+			title: {
+				text: dataRecords.blue.name,
+				style: {
+					color: blueColor.line
+				}
+			},
+			labels: {
+				format: '{value} '+ dataRecords.blue.unit,
+				style: {
+					color: blueColor.line
+				}
+			}
+		};
+
+		var lineBlue = {
+			name: dataRecords.blue.name,
+			color: blueColor.line,
+			yAxis: 0,
+			data: dataRecords.blue.data,
+			tooltip: {
+				valueSuffix: ' '+dataRecords.blue.unit
+			},
+			zIndex: 1,
+            marker: {
+                fillColor: 'white',
+                lineWidth: 2,
+                lineColor: blueColor.line
+            }
+		};
+
+		var areaBlue = {
+			name: 'Threshold '+dataRecords.blue.name,
+			type: 'arearange',
+			color: '#5C97BF',
+			yAxis: 0,
+			zIndex: 0,
+			lineWidth: 0,
+			data: [
+				[dataRecords.blue.data[0][0], thresholdBlue.min, thresholdBlue.max],
+				[dataRecords.blue.data[dataRecords.blue.data.length-1][0], thresholdBlue.min, thresholdBlue.max]
+			]
+		};
+
+		datas.push(lineBlue);
+		datas.push(areaBlue);
+		yAxisConf.push(yAxisBlue);
+	}
+
+	//yellow graph config
+	if(dataRecords.yellow !== null) {
+		var thresholdYellow = Utils.findInObject(physiologicalData.list.physiological.items, 'ref', dataRecords.yellow.ref).threshold,
+			yellowColor = {
+				line: '#f39c12',
+				area: '#EB974E'
+			};
+
+		var yAxisYellow = {
+			title: {
+				text: dataRecords.yellow.name,
+				style: {
+					color: yellowColor.line
+				}
+			},
+			labels: {
+				format: '{value} '+ dataRecords.yellow.unit,
+				style: {
+					color: yellowColor.line
+				}
+			},
+			opposite: true
+		};
+
+		var lineYellow = {
+			name: dataRecords.yellow.name,
+			color: yellowColor.line,
+			yAxis: 1,
+			data: dataRecords.yellow.data,
+			tooltip: {
+				valueSuffix: ' '+dataRecords.yellow.unit
+			},
+			zIndex: 1,
+            marker: {
+                fillColor: 'white',
+                lineWidth: 2,
+                lineColor: yellowColor.line
+            }
+		};
+
+		var areaYellow = {
+			name: 'Threshold '+dataRecords.yellow.name,
+			type: 'arearange',
+			color: yellowColor.area,
+			yAxis: 1,
+			zIndex: 0,
+			lineWidth: 0,
+			data: [
+				[dataRecords.yellow.data[0][0], thresholdYellow.min, thresholdYellow.max],
+				[dataRecords.yellow.data[dataRecords.yellow.data.length-1][0], thresholdYellow.min, thresholdYellow.max]
+			]
+		}
+
+		datas.push(lineYellow);
+		datas.push(areaYellow);
+		yAxisConf.push(yAxisYellow);
+	}
 
 	var graph = {
 		chart: {
@@ -288,39 +405,7 @@ var renderGraph = function(dataRecords) {
 				year : '%b'
 			}
 		},
-		yAxis: [
-			//Blue graph Y
-			{
-				title: {
-					text: dataRecords.blue.name,
-					style: {
-						color: '#2980b9'
-					}
-				},
-				labels: {
-					format: '{value} '+ dataRecords.blue.unit,
-					style: {
-						color: '#2980b9'
-					}
-				}
-			},
-			//Yellow graph Y
-			{
-				title: {
-					text: dataRecords.yellow.name,
-					style: {
-						color: "#f39c12"
-					}
-				},
-				labels: {
-					format: '{value} '+ dataRecords.yellow.unit,
-					style: {
-						color: '#f39c12'
-					}
-				},
-				opposite: true
-			}
-		],
+		yAxis: yAxisConf,
 		tooltip: {
 			shared: true,
 			enabled: true,
@@ -330,7 +415,7 @@ var renderGraph = function(dataRecords) {
 			enabled: false
 		},
 		legend: {
-			enabled: true
+			enabled: false
 		},
 		exporting: {
 			enabled: false
@@ -340,67 +425,7 @@ var renderGraph = function(dataRecords) {
                 fillOpacity: 0.1
             }
         },
-		series: [
-			//Blue Threshold min
-			//Yellow Threshold min
-			{
-				name: 'Threshold '+dataRecords.yellow.name,
-				type: 'arearange',
-				color: '#EB974E',
-				yAxis: 1,
-				zIndex: 0,
-				lineWidth: 0,
-				data: [
-					[dataRecords.yellow.data[0][0], thresholdYellow.min, thresholdYellow.max],
-					[dataRecords.yellow.data[dataRecords.yellow.data.length-1][0], thresholdYellow.min, thresholdYellow.max]
-				]
-			},
-			{
-				name: 'Threshold '+dataRecords.blue.name,
-				type: 'arearange',
-				color: '#5C97BF',
-				yAxis: 0,
-				zIndex: 0,
-				lineWidth: 0,
-				data: [
-					[dataRecords.blue.data[0][0], thresholdBlue.min, thresholdBlue.max],
-					[dataRecords.blue.data[dataRecords.blue.data.length-1][0], thresholdBlue.min, thresholdBlue.max]
-				]
-			},
-			//Blue graph datas
-			{
-				name: dataRecords.blue.name,
-				color: '#2980b9',
-				yAxis: 0,
-				data: dataRecords.blue.data,
-				tooltip: {
-					valueSuffix: ' '+dataRecords.blue.unit
-				},
-				zIndex: 1,
-	            marker: {
-	                fillColor: 'white',
-	                lineWidth: 2,
-	                lineColor: '#2980b9'
-	            }
-			},
-
-			//Yellow graph datas
-			{
-				name: dataRecords.yellow.name,
-				color: '#f39c12',
-				yAxis: 1,
-				data: dataRecords.yellow.data,
-				tooltip: {
-					valueSuffix: ' '+dataRecords.yellow.unit
-				},
-				zIndex: 1,
-	            marker: {
-	                fillColor: 'white',
-	                lineWidth: 2,
-	                lineColor: '#f39c12'
-	            }
-			}
-		]
+		series: datas
 	};
 
 	new Highcharts.Chart(graph);
