@@ -238,6 +238,10 @@ var saveData = function() {
         for(i; i<len; i++) {
             data.when.days[i] = parseInt(data.when.days[i]);
         }
+
+        if(data.when.week) {
+            data.when.week = parseInt(data.when.week);
+        }
     }
 
     console.log(data);
