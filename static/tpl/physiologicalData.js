@@ -2,9 +2,12 @@
 
 var Utils = new Utils(),
 	physiologicalData = {},
-	infos = {};
+	infos = {},
+	graph = {};
 
 physiologicalData.list = {};
+physiologicalData.dataRecords = {};
+
 
 window.addEventListener("DOMContentLoaded", function() {
     infos.lang = document.querySelector('#lang').innerText;
@@ -15,7 +18,7 @@ window.addEventListener("DOMContentLoaded", function() {
  * Actions
  */
 
-var getDataRecords = function() {
+var getDataRecords = function(init) {
 	var dateFrom = document.querySelector('.date-from').value,
 		dateTo = document.querySelector('.date-to').value,
 		lineBlueList = document.querySelectorAll('.line-blue'),
@@ -56,6 +59,36 @@ var getDataRecords = function() {
     	console.log(dataRecords.yellow);
     }, function(error) {
     	console.log(error);
+
+    	//MOCK
+    	physiologicalData.dataRecords.blue = {
+			ref: 'TEMP',
+			name: 'Température',
+			lastReport: '2014-12-09T14:44:42.061Z',
+			data: [
+				[1420368924, 38],
+				[1420455324, 41],
+				[1420541724, 39],
+				[1420636945, 37]
+			],
+			unit: 'C°'
+		};
+
+		physiologicalData.dataRecords.yellow = {
+			ref: 'DIST',
+			name: 'Distance per week',
+			lastReport: '2014-12-09T14:44:42.061Z',
+			data: [
+				[1420368924, 500],
+				[1420455324, 650],
+				[1420541724, 800],
+				[1420636945, 210]
+			],
+			unit: 'km'
+		};
+
+    }).then(function() {
+    	renderGraph(physiologicalData.dataRecords);
     });
 
 };
@@ -190,7 +223,7 @@ var getParamList = function() {
 		renderLine(symptomList, '#param-symptom-container');
 		renderLine(questionnaireList, '#param-questionnaire-container');
 
-		renderChart();
+		initGraph();
 	});
 
 };
@@ -214,145 +247,161 @@ var renderLine = function(list, containerName) {
 
 };
 
-//TODO: graph with real data
-var renderChart = function() {
+/**
+ * Graph Configuration
+ */
 
-	var user = JSON.parse(document.querySelector('#user').innerText);
+var initGraph = function() {
 
-	console.log(user);
+	var lineBlueList = document.querySelectorAll('.line-blue'),
+		lineYellowList = document.querySelectorAll('.line-yellow');
 
-	var chart = new Highcharts.Chart({
-		chart    : {
-			renderTo: document.querySelector('#container'),
-			type    : 'spline'
+	//default values
+	lineBlueList[0].checked = true;
+	lineYellowList[0].checked = true;
+
+	getDataRecords();
+
+};
+
+var renderGraph = function(dataRecords) {
+	var user = JSON.parse(document.querySelector('#user').innerText),
+		thresholdBlue = Utils.findInObject(physiologicalData.list.physiological.items, 'ref', dataRecords.blue.ref).threshold,
+		thresholdYellow = Utils.findInObject(physiologicalData.list.physiological.items, 'ref', dataRecords.yellow.ref).threshold;
+
+	var graph = {
+		chart: {
+			renderTo: document.querySelector('#container')
 		},
-		title    : {
+		title: {
 			text: 'Physiological Data',
-			x   : -20 //center
-		},
-		subtitle : {
-			text: user.name.given + ' ' + user.name.family,
 			x   : -20
 		},
-		xAxis    : {
-			type                : 'datetime',
-			dateTimeLabelFormats: { // don't display the dummy year
+		subtitle: {
+			text: user.name.given + ' ' + user.name.family,
+			x: -20
+		},
+		xAxis: {
+			type: 'datetime',
+			dateTimeLabelFormats: {
 				month: '%e %b',
 				year : '%b'
-			},
-			min                 : 1395442800546,
-			max                 : 1395788340481
+			}
 		},
-		yAxis    : [
+		yAxis: [
+			//Blue graph Y
 			{
-				title    : {
-					text : "Pulse",
+				title: {
+					text: dataRecords.blue.name,
 					style: {
-						color: '#4572A7'
+						color: '#2980b9'
 					}
 				},
-				min: 40,
-				max: 140,
-				labels   : {
-					format: '{value} bpm',
-					style : {
-						color: '#4572A7'
+				labels: {
+					format: '{value} '+ dataRecords.blue.unit,
+					style: {
+						color: '#2980b9'
 					}
-				},
-				plotLines: [
-					{
-						value: 0,
-						width: 1,
-						color: '#4572A7'
-					},
-					{
-						color: '#4572A7',
-						width: 2,
-						value: 50 // Need to set this probably as a var.
-					},
-					,
-					{
-						color: '#4572A7',
-						width: 2,
-						value: 130 // Need to set this probably as a var.
-					}
-				]
+				}
 			},
-			{  // 2nd graph
-				title    : {
-					text : 'Weight',
+			//Yellow graph Y
+			{
+				title: {
+					text: dataRecords.yellow.name,
 					style: {
-						color: "tomato"
+						color: "#f39c12"
 					}
 				},
-				min: 50,
-				max: 75,
-				plotLines: [
-					{
-						value: 0,
-						width: 1,
-						color: 'tomato'
-					},{
-						color: 'tomato',
-						width: 2,
-						value: 60 // Need to set this probably as a var.
-					},{
-						color: 'tomato',
-						width: 2,
-						value: 75 // Need to set this probably as a var.
-					}
-				],
-				labels   : {
-					format: '{value} kg',
-					style : {
-						color: "tomato"
+				labels: {
+					format: '{value} '+ dataRecords.yellow.unit,
+					style: {
+						color: '#f39c12'
 					}
 				},
-				opposite : true
+				opposite: true
 			}
 		],
-		tooltip  : {
-			shared    : true,
-			enabled   : true,
+		tooltip: {
+			shared: true,
+			enabled: true,
 			crosshairs: true
 		},
-		credits  : {
+		credits: {
 			enabled: false
 		},
-		legend   : {
-			enabled: false
+		legend: {
+			enabled: true
 		},
 		exporting: {
 			enabled: false
 		},
-		series   : [
+		plotOptions: {
+            series: {
+                fillOpacity: 0.1
+            }
+        },
+		series: [
+			//Blue Threshold min
+			//Yellow Threshold min
 			{
-				name   : 'Pulse',
-				color  : '#4572A7',
-				yAxis  : 0,
-				data   : [
-					[1395492480000, 60],
-					[1395578880000, 70],
-					[1395665280000, 75]
-				],
-				tooltip: {
-					valueSuffix: ' bpm'
-				}
+				name: 'Threshold '+dataRecords.yellow.name,
+				type: 'arearange',
+				color: '#EB974E',
+				yAxis: 1,
+				zIndex: 0,
+				lineWidth: 0,
+				data: [
+					[dataRecords.yellow.data[0][0], thresholdYellow.min, thresholdYellow.max],
+					[dataRecords.yellow.data[dataRecords.yellow.data.length-1][0], thresholdYellow.min, thresholdYellow.max]
+				]
 			},
 			{
-				name   : 'Weight',
-				color  : 'tomato',
-				yAxis  : 1,
-				data   : [
-					[1395492480000, 70 ],
-					[1395578880000, 68.0],
-					[1395665280000, 66.5],
-					[1395751680000, 66]
-				],
+				name: 'Threshold '+dataRecords.blue.name,
+				type: 'arearange',
+				color: '#5C97BF',
+				yAxis: 0,
+				zIndex: 0,
+				lineWidth: 0,
+				data: [
+					[dataRecords.blue.data[0][0], thresholdBlue.min, thresholdBlue.max],
+					[dataRecords.blue.data[dataRecords.blue.data.length-1][0], thresholdBlue.min, thresholdBlue.max]
+				]
+			},
+			//Blue graph datas
+			{
+				name: dataRecords.blue.name,
+				color: '#2980b9',
+				yAxis: 0,
+				data: dataRecords.blue.data,
 				tooltip: {
-					valueSuffix: ' kg'
-				}
+					valueSuffix: ' '+dataRecords.blue.unit
+				},
+				zIndex: 1,
+	            marker: {
+	                fillColor: 'white',
+	                lineWidth: 2,
+	                lineColor: '#2980b9'
+	            }
+			},
+
+			//Yellow graph datas
+			{
+				name: dataRecords.yellow.name,
+				color: '#f39c12',
+				yAxis: 1,
+				data: dataRecords.yellow.data,
+				tooltip: {
+					valueSuffix: ' '+dataRecords.yellow.unit
+				},
+				zIndex: 1,
+	            marker: {
+	                fillColor: 'white',
+	                lineWidth: 2,
+	                lineColor: '#f39c12'
+	            }
 			}
 		]
-	});
+	};
+
+	new Highcharts.Chart(graph);
 };
