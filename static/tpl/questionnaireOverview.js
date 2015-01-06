@@ -115,6 +115,7 @@ function checkForm(){
                 tmp = parseFloat(item.choice);
                 if(!isNaN(tmp)){
                     res += tmp;
+                    item.choice = tmp;
                 }
             }
         }
@@ -123,7 +124,7 @@ function checkForm(){
     };
 
     var res = compute(obj.answers);
-    obj.globalScore = parseFloat(res);
+    obj.score = parseFloat(res);
     //TODO : utiliser le parseFloat sur l'obj retourné par form2js, car se sont des strings
     //Ajouter les propriétés necessaire et envoyer l'object au server pour sauvegarde dans la base
 

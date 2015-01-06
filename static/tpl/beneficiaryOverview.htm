@@ -64,6 +64,7 @@
 	}
 	tr.referent {
 		background: LightYellow;
+		font-weight:700;
 	}
 </style>
   
@@ -90,7 +91,7 @@
 		<div class="telecom">
 			{% for telecom in beneficiary.telecom %}
 				<div class="row">
-					<label>{{telecom.system}}  {% if telecom.use %}({{telecom.use}}){% endif %} : </label><div>{{telecom.value}}</div>
+					<label>{{systemArray.items[telecom.system]}}  {% if telecom.use %}({{useArray.items[telecom.use]}}){% endif %} : </label><div>{{telecom.value}}</div>
 				</div>
 			{% endfor %}
 		</div>
@@ -182,7 +183,7 @@
 		{% for prof in beneficiary.professionals %}
 		<tr {% if prof.referent %}class="referent"{% endif %}>
 			<td>{{prof.name.family}} {{prof.name.given}}</td>
-			<td>{{prof.name.role}}</td>
+			<td>{% if roleArray.items[prof.role] %} {{roleArray.items[prof.role]}} {% else %} {{prof.role}} {% endif %}</td>
 			<td>
 				{% for telecom in prof.telecom %}
 					{% if telecom.system !== "email" %}
@@ -229,18 +230,18 @@
 		<label>{{ "Active"|i18n }} : </label><div>{% if beneficiary.active %}{{ "Yes"|i18n }}{% else %}{{ "No"|i18n }}{% endif %}</div>
 	</div>
 	<div class="row">
-		<label>{{ "Marital status"|i18n }} : </label><div>{{beneficiary.maritalStatus}}</div>
+		<label>{{ "Marital status"|i18n }} : </label><div>{{maritalStatusArray.items[beneficiary.maritalStatus]}}</div>
 	</div>
 	{% if beneficiary.lifeCond %}
 		<div class="row">
-			<label>{{ "Way of life"|i18n }} : </label><div>{{beneficiary.lifeCond.wayOfLife}}</div>
+			<label>{{ "Way of life"|i18n }} : </label><div>{{wayOfLifeArray.items[beneficiary.lifeCond.wayOfLife]}}</div>
 		</div>
 		<div class="row">
-			<label>{{ "Profession"|i18n }} : </label><div>{{beneficiary.lifeCond.profession}}</div>
+			<label>{{ "Profession"|i18n }} : </label><div>{{professionArray.items[beneficiary.lifeCond.profession]}}</div>
 		</div>
 		{% if beneficiary.lifeCond.disability %}
 			<div class="row">
-				<label>{{ "Type of disability"|i18n }} : </label><div>{{beneficiary.lifeCond.disability.type}}</div>
+				<label>{{ "Type of disability"|i18n }} : </label><div>{{disabilityArray.items[beneficiary.lifeCond.disability.type]}}</div>
 			</div>
 			<div class="row">
 				<label>{{ "Disability level"|i18n }} : </label><div>{{beneficiary.lifeCond.disability.percent}}</div>
@@ -256,7 +257,7 @@
 		</div>
 		<p>{{ "Chronic pathologies"|i18n }}</p>
 		<div class="row">
-			<label>{{ "Main diagnosis"|i18n }} : </label><div>{{beneficiary.diagnosis.chronic.main}}</div>
+			<label>{{ "Main diagnosis"|i18n }} : </label><div>{{disabilityArray.items[beneficiary.diagnosis.chronic.main]}}</div>
 		</div>
 		{% for assoDiag in beneficiary.diagnosis.chronic.associated %}
 			{% if loop.first %}
@@ -264,7 +265,7 @@
 			{% endif %}
 				<li>
 					<div class="row">
-						<div>{{assoDiag}}</div>
+						<div>{{disabilityArray.items[assoDiag]}}</div>
 					</div>
 				</li>
 			{% if loop.last %}

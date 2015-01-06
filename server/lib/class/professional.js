@@ -15,6 +15,10 @@ var promise = require("rsvp").Promise,
 
 var logger = new Logger("Professional");
 
+function capitalize(str) {
+	return str.replace( /(^|\s)([a-z])/g , function(m,p1,p2){ return p1+p2.toUpperCase(); } );
+}
+
 /**
  * A professional entry in the directory
  * 
@@ -182,7 +186,15 @@ function Professional() {
 				.then( function(entry) {
 					for( var key in newEntry ) {
 						if(newEntry.hasOwnProperty(key)) {
-							that[key] = newEntry[key];
+							switch(key) {
+								case "name":
+									that.name = newEntry.name;
+									that.name.family = capitalize(that.name.family);
+									that.name.given = capitalize(that.name.given);
+									break;
+								default:
+									that[key] = newEntry[key];
+							}
 						}
 					}
 					return that.save();
@@ -239,6 +251,13 @@ function Professional() {
 								that.active = false;
 							} else {
 								that[key] = entry[key];
+								switch(key) {
+									case "name":
+										that.name.family = capitalize(that.name.family);
+										that.name.given = capitalize(that.name.given);
+										break;
+									default:
+								}
 							}
 						}
 					}

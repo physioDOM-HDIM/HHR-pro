@@ -1,145 +1,255 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8"/>
-	<title>Constant registration</title>
+{% extends './page.htm' %}
+{% block title %}Data Recording{% endblock %}
+{% block head %}
+{% parent %}
+<script src="/bower_components/mustache/mustache.js"></script>
+<script src="/bower_components/rsvp/rsvp.min.js"></script>
+<script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
+<script src="/bower_components/zdk-calendar/form2js.js"></script>
+<script src="/tpl/dataRecordEdit.js"></script>
+{% endblock %}
 
-	<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-	<meta name="apple-mobile-web-app-capable" content="yes"/>
-	<meta name="apple-touch-fullscreen" content="yes">
-	<meta name="mobile-web-app-capable" content="yes">
+{% block content %}
 
-	<link rel="shortcut icon" sizes="196x196" href="/img/physiodom_favico.png">
-	<link rel="icon" href="/img/physiodom_favico.png">
-	<link rel="apple-touch-icon" href="/img/physiodom_favico.png">
+{#
+    Macro for :
+    -select threshold
+    -value threshold
+    -line repeating (for existing items)
+    -line adding (for new items)
+#}
 
-	<link rel="stylesheet" href="/styles/iframe.css" charset="UTF-8">
-	<link rel="stylesheet" href="/styles/theme.css" charset="UTF-8">
+<div class="hidden" id="lang">{{lang}}</div>
 
-	<link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.min.css">
-	<link rel="stylesheet" type="text/css" href="/assets/css/bootstrap-theme.min.css">
+<script type="html/text" id="selectParam">
+    {% if view === 'create'%}
+    <select onchange="updateParam(this)" name="items[{% raw %}{{ idx }}{% endraw %}].text">
+    {% else%}
+    <select onchange="updateParam(this)" name="items[{% raw %}{{id}}{% endraw %}].text">
+    {% endif%}
+        <option></option>
+    {% raw %}
+        {{#lists}}
+            <option value="{{ref}}" {% endraw %}{% if view !== 'create'%}{% raw %}{{#selection}}{{ref}}{{/selection}}{% endraw %}{% endif%}{% raw %} id="option-{{ref}}">{{labelLang}}</option>
+        {{/lists}}
+    {% endraw %}
 
-	<script type="text/javascript" src="/assets/js/jquery-2.1.0.min.js"></script>
-	<script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
+    </select>
+</script>
 
-	<link rel="stylesheet" href="/styles/table.css" charset="UTF-8">
-	<link rel="stylesheet" href="/styles/fixedTable.css" charset="UTF-8">
-	<script src="/scripts/common.js"></script>
-</head>
-<body>
+{% macro line(cat) %}
+<div id="ID{{item._id.toString()}}" class="line">
+    <div class="type hidden">{{ item.text }}</div>
+    <div class="category hidden">{{cat}}</div>
+    <div class="readMode">
+        <div class="row">
 
-<style>
-	div.row {
-		margin: auto !important;
-	}
+            {% raw %}
+            {{#item}}
+            <div class="col bold">{{ labelLang }}</div>
+            <div class="col item-value">{% endraw %}{{ item.value }}{% raw %}</div>
+            <div class="col">{{ unityLabel }}</div>
+            <div class="col">
+                {{ 'Min threshold' | i18n }}
+                <div class="min-treshold spacing-around">{{#threshold}}{{min}}{{/threshold}}</div>
+            </div>
+            <div class="col">
+                {{ 'Max threshold' | i18n }}
+                <div class="max-treshold spacing-around">{{#threshold}}{{max}}{{/threshold}}</div>
+            </div>
+            {{/item}}
+            {% endraw %}
 
-	input[type=text], input[type=number] {
-		height: 34px;
-		padding: 6px 12px;
-		font-size: 14px;
-		line-height: 1.42857143;
-		border: 1px solid #ccc;
-		border-radius: 4px;
-	}
-	
-	#dataPanel {
-		flex-grow:1
-	}
-</style>
+            {% if admin %}
+            <div>
+                <button type="button" class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">Edit</button>
+            </div>
+            <div>
+                <button type="button" class="red small" onclick="confirmDeleteItem('{{item._id.toString()}}')">Delete</button>
+            </div>
+            {% endif %}
 
-<div class="main">
-	
-<div class="panel panel-default">
-	<div class="panel-heading">
-		<h3 class="panel-title">Measure</h3>
-	</div>
-	<div class="panel-body">
-		<form class="form-horizontal" role="form" onsubmit="return false;">
-			<div class="form-group">
-				<div class="row">
-					<div class="col-xs-6">
-						<label class="col-xs-4">Date</label>
-						<input class="col-xs-8" type="text" id="recordDate">
-					</div>
-					<div class="col-xs-6">
-						<label class="col-xs-4">Daypart</label>
-						<input class="col-xs-8" type="text" id="daypart">
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-xs-6">
-						<label class="col-xs-4">Contributor</label>
-						<input class="col-xs-8" type="text" id="Contributor" value="C. Devaux" readonly>
-					</div>
-					<div class="col-xs-6">
-						<label class="col-xs-4">Unidentified contributor</label>
-						<input class="col-xs-8" type="text" id="unknown">
-					</div>
-				</div>
-			</div>
-		</form>
-	</div>
+        </div>
+    </div>
+    <div class="updateMode hidden">
+        <div class="row">
+
+            {% raw %}
+            {{#item}}
+            <div class="col item-text"></div>
+            <div class="col item-value">
+               {% endraw %}<input type="text" value="{{ item.value }}" name="items[{{item._id.toString()}}].value"/></div>{% raw %}
+            <div class="col unity">{{ unityLabel }}</div>
+            <div class="col">
+                {{ 'Min threshold' | i18n }}
+                <div class="min-treshold spacing-around">{{#threshold}}{{min}}{{/threshold}}</div>
+            </div>
+            <div class="col">
+                {{ 'Max threshold' | i18n }}
+                <div class="max-treshold spacing-around">{{#threshold}}{{max}}{{/threshold}}</div>
+            </div>
+            {{/item}}
+            {% endraw %}
+
+            <input name="items[{{item._id.toString()}}].category" class="item-category" type="hidden" value="{{item.category}}">
+            <input name="items[{{item._id.toString()}}]._id" type="hidden" value="{{item._id.toString()}}">
+            <input name="items[{{item._id.toString()}}].automatic" type="hidden" value="{{item.automatic}}">
+            <input name="items[{{item._id.toString()}}].dataRecordID" type="hidden" value="{{item.dataRecordID.toString()}}">
+
+            <div>
+                <button type="button" class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">Back</button>
+            </div>
+            <div>
+                <button type="button" class="red small" onclick="confirmDeleteItem('{{item._id.toString()}}')">Delete</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endmacro %}
+
+
+{% macro addItem(category) %}
+<div id="add{{category}}">
+    <div class="category hidden">{{category}}</div>
+    <div id="newItems-{{category}}">
+
+    </div>
+    <div class="row control">
+        <span class="spacer"></span>
+        <button type="button" class="green small" onclick="addLine('{{category}}')">Add Item</button>
+    </div>
+</div>
+{% endmacro %}
+
+
+<script type="template" id="newItem">
+    <div class="col item-text"></div>
+    <div class="col"><input type="text" name="items[{% raw %}{{idx}}{% endraw %}].value"/></div>
+    <div class="col"><span class="unity"></span></div>
+    <div class="col">
+        {{ 'Min threshold' | i18n }}
+        <div class="min-treshold spacing-around"></div>
+    </div>
+    <div class="col">
+        {{ 'Max threshold' | i18n }}
+        <div class="max-treshold spacing-around"></div>
+    </div>
+    <input name="items[{% raw %}{{idx}}{% endraw %}].category" id="new-item-category" type="hidden">
+    <div>
+        <button type="button" class="blue small" onclick="removeLine(this)">Annuler</button>
+    </div>
+</script>
+
+
+{#
+    The Page
+    -create and update actions
+#}
+
+<div class="row title">
+    <label class="title">
+        <span id="datetime">
+            {{dataRecordItems.datetime}}
+        </span>
+        {% if dataRecordItems.home %}
+            {{ "From Home"|i18n }}
+        {% else %}
+            {{ "From Consultation"|i18n }} {{dataRecordItems.source.name.family}} {{dataRecordItems.source.name.given}}
+        {% endif %}
+    </label>
 </div>
 
-<div class="panel panel-default" id="dataPanel">
-	<div class="panel-heading">
-		<h3 class="panel-title">Data</h3>
-	</div>
-	<div class="panel-body">
-		<form class="form-horizontal" role="form" onsubmit="return false;">
-			<div class="form-group">
-				<div class="fixedTable" style="-ms-flex:1;-webkit-box-flex:1;-webkit-flex-grow: 1">
-					<table id="dataRecord">
-						<colgroup>
-							<col style="width:250px">
-							<col style="width:200px">
-							<col>
-						</colgroup>
-						<thead>
-						<tr>
-							<th>Name</th>
-							<th>Value</th>
-							<th>Unit</th>
-						</tr>
-						</thead>
-						<tbody>
-						<tr>
-							<td>Pulse</td>
-							<td><input type="number" style="width:100%"></td>
-							<td>Pulse per minute</td>
-						</tr>
-						<tr>
-							<td>Weight</td>
-							<td><input type="number" style="width:100%"></td>
-							<td>Kilogramme</td>
-						</tr>
-						<tr>
-							<td>S.B.P</td>
-							<td><input type="number" style="width:100%"></td>
-							<td>mm of mercure</td>
-						</tr>
-						<tr>
-							<td>D.B.P</td>
-							<td><input type="number" style="width:100%"></td>
-							<td>mm of mercure</td>
-						</tr>
-						<tr>
-							<td>T°</td>
-							<td><input type="number" style="width:100%"></td>
-							<td>Celsius degree</td>
-						</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</form>
-	</div>
-	</div>
+<form name="dataRecord" id="dataRecord">
+    <zdk-panel heading="{{'Physiological parameters' |i18n}}" collapsable="false" collapsed="false">
 
-	<footer>
-			<a href="dataRecord.htm"><button class="btn btn-danger">Cancel</button></a>
-			<a href="dataRecord.htm"><button class="btn btn-success">Save</button></a>
-	</footer>
+        {% if view === 'create'%}
+            {{ addItem('General') }}
+        {% else %}
+            <h2 class="bold">Général</h1>
+            {% for item in dataRecordItems.items.items %}
+                {% if item.category === 'General' %}
+                    {{ line('General') }}
+                {% endif %}
+            {% endfor %}
+            <h2 class="bold">HDIM</h1>
+            {% for item in dataRecordItems.items.items %}
+                {% if item.category === 'HDIM' %}
+                    {{ line('HDIM') }}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+    </zdk-panel>
+    <zdk-panel heading="{{'Symptoms assessments' |i18n}}" collapsable="false" collapsed="false">
+
+        {% if view === 'create'%}
+            {{ addItem('symptom') }}
+        {% else %}
+            {% for item in dataRecordItems.items.items %}
+                {% if item.category === 'symptom' %}
+                    {{ line('symptom') }}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+    </zdk-panel>
+    <zdk-panel heading="{{'Questionnaires' |i18n}}" collapsable="false" collapsed="false">
+
+        {% if view === 'create'%}
+            {{ addItem('questionnaire') }}
+        {% else %}
+            {% for item in dataRecordItems.items.items %}
+                {% if item.category === 'questionnaire' %}
+                    {{ line('questionnaire') }}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+    </zdk-panel>
+</form>
+
+<div class="row control" style="height:60px; align-content: center">
+    <span class="spacer"></span>
+    {% if view === 'create'%}
+    <button class="green" onclick="create()">save</button>
+    {% else %}
+    <a href="/datarecord"><button class="blue big">back</button></a>
+    <button class="green" onclick="update('{{dataRecordItems._id.toString()}}')">save</button>
+    {% endif %}
 </div>
-</body>
-</html>
+
+
+
+{#
+    Hidden Elements only for js use in frontend
+#}
+
+<zdk-modal id="statusModal" closebutton="false">
+    <div class="modalContainer">
+        <div class="modalTitleContainer"></div>
+        <div class="modalContentContainer"></div>
+        <div class="modalButtonContainer"></div>
+    </div>
+</zdk-modal>
+
+<div class="hidden">
+    <div id="trad_save">{{ "Save"|i18n }}</div>
+    <div id="trad_create">{{ "Create"|i18n }}</div>
+    <div id="trad_delete">{{ "Delete"|i18n }}</div>
+    <div id="trad_error">{{ "Error"|i18n }}</div>
+    <div id="trad_update">{{ "Update"|i18n }}</div>
+    <div id="trad_confirm_save">{{ "Are you sure you want to save those changes ?"|i18n }}</div>
+    <div id="trad_confirm_delete">{{ "Are you sure you want to delete this item ?"|i18n }}</div>
+    <div id="trad_error_occured">{{ "An error occured"|i18n }}</div>
+    <div id="trad_success_create">{{ "Item successfully created"|i18n }}</div>
+    <div id="trad_success_update">{{ "Item successfully updated"|i18n }}</div>
+    <div id="trad_yes">{{ "Yes"|i18n }}</div>
+    <div id="trad_no">{{ "No"|i18n }}</div>
+    <div id="trad_ok">{{ "Ok"|i18n }}</div>
+</div>
+
+{% endblock %}
+
+
+

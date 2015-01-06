@@ -16,11 +16,6 @@
 	div.row { height:30px; }
 	div.row.title { height:40px; background:rgb(80, 80, 80); color:white; padding:0px 10px; margin-bottom:20px; }
 	label.title { font-size:1.3em; width:initial !important }
-	/*
-	div.main { height: 100%; padding-bottom: 0px;}
-	div.content { flex: 1; overflow: auto; padding-bottom:30px}
-	footer { background: silver; height: 50px; padding: 0px 10px; display: flex; align-items: center; box-sizing: border-box; }
-	*/
 	zdk-modal footer {
 		height: 50px;
 		display: flex;
@@ -110,6 +105,14 @@
 				<div class="col">
 					<label>{{ "Active"|i18n }}:</label>
 					<input type="checkbox" name="{% raw %}items[{{idx}}].active{% endraw %}" value="true" {%raw%}{{#active}}checked{{/active}}{%endraw%} />
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<label>{{ "General"|i18n }}</label><input type="radio" name="{% raw %}items[{{idx}}].category{% endraw %}" value="General" {%raw%}{{#general}}checked{{/general}}{%endraw%} />
+				</div>
+				<div class="col">
+					<label>{{ "HDIM"|i18n }}</label><input type="radio" name="{% raw %}items[{{idx}}].category{% endraw %}" value="HDIM" {%raw%}{{^general}}checked{{/general}}{%endraw%} />
 				</div>
 			</div>
 			<div class="row">

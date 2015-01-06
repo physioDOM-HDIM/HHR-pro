@@ -1,7 +1,7 @@
 {
   "name": "PhysioDOM-server",
   "preferGlobal": false,
-  "version": "0.0.3",
+  "version": "0.0.5",
   "author": "Telecom Sante <tech@telecomsante.com>",
   "contributors": [
     {
@@ -11,6 +11,7 @@
   ],
   "description": "A web portal for professionnal",
   "scripts": {
+    "preinstall":"npm install ./install/logger-v1.1.0.tar.gz",
     "install": "cd static; bower install; cd ..; node install/install.js",
     "start": "supervisor -w package.json,server/ -- server/server.js -p 8001 2>&1 > log/app.log",
     "test": "node ./test/index.js"
@@ -25,24 +26,25 @@
     "url": "http://git.telecomsante.com/physiodom-hdim/physiodom"
   },
   "dependencies": {
-    "MD5": "^1.2.1",
-    "commander": "2.1.0",
+    "MD5": "~1.2.1",
+    "commander": "~2.1.0",
     "cookies": "~0.5.0",
-    "i18n-2": "0.4.6",
+    "i18n-2": "~0.4.6",
     "jsonschema": "^1.0.0",
-    "logger": "git+ssh://git@git.telecomsante.com:tools/logger.git#v1.1.0",
-    "moment": "2.8.4",
+    "logger": "1.1.0",
+    "moment": "~2.8.4",
     "mongodb": "~1.4.7",
     "restify": "2.6.3",
-    "rsvp": "3.0.9",
-    "swig": "^1.4.2",
-    "tar.gz": "^0.1.1"
+    "rsvp": "~3.0.9",
+    "swig": "~1.4.2",
+    "tar.gz": "~0.1.1"
   },
   "devDependencies": {
     "chai": "^1.9.2",
     "grunt": "^0.4.5",
     "grunt-mocha": "^0.4.11",
     "grunt-mocha-test": "^0.12.1",
+    "intern": "^2.2.2",
     "mocha": "^1.21.5",
     "request": "^2.45.0"
   },

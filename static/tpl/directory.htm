@@ -4,6 +4,7 @@
 
 {% block head %}
 {% parent %}
+<script src="/bower_components/rsvp/rsvp.min.js"></script>
 <script src="tpl/directory.js"></script>
 <style>
     .item.disabled div:first-child { opacity:0.7 }
@@ -60,7 +61,7 @@
         </form>
     </zdk-panel>
 
-    <tsante-list url="/api/directory" offset="20" auto="true" unresolved id="tsanteList">
+    <tsante-list url="/api/directory" offset="20" auto="false" autoRender="false" unresolved id="tsanteList">
         <template is="auto-binding" repeat="{% raw %}{{item, i in list.items}}{% endraw %}">
             <div class="item {% raw %}{{!item.active ? 'disabled' : ''}}{% endraw %}">
                 <div class="row">
@@ -122,4 +123,16 @@
         <a href="/directory/create"><button id="addEntry" class="blue" type="button">Add entry</button></a>
     </div>
     {% endif %}
+<zdk-modal id="statusModal" closebutton="false">
+    <div class="modalContainer">
+        <div class="modalTitleContainer"></div>
+        <div class="modalContentContainer"></div>
+        <div class="modalButtonContainer"></div>
+    </div>
+</zdk-modal>
+<div class="hidden">
+    <div id="trad_error">{{ "Error"|i18n }}</div>
+    <div id="trad_error_occured">{{ "An error occured"|i18n }}</div>
+    <div id="trad_ok">{{ "OK"|i18n }}</div>
+</div>
 {% endblock %}

@@ -2,12 +2,14 @@
 
 var _dataObj = null,
     _dataObjTmp = null,
+    _dataLists = null,
     _dataAllProfessionnalObj = null,
     _idxNbTelecom = 0,
     _idxNbAddress = 0,
     _langCookie = null,
     _momentFormat = null,
-    _currentNodeCalendar = null;
+    _currentNodeCalendar = null,
+    tsanteListProfessionalElt = null;
 
 var promiseXHR = function(method, url, statusOK, data) {
     var promise = new RSVP.Promise(function(resolve, reject) {
@@ -144,6 +146,15 @@ function _addProfessional(professionalItem) {
         isFirstItem = true,
         modelData = {
             item: professionalItem,
+            display_job: function(){
+                var str = professionalItem.job;
+                if(_dataLists && _dataLists.job && _dataLists.job.items && 
+                    _dataLists.job.items[professionalItem.job] && 
+                    _dataLists.job.items[professionalItem.job][_langCookie]){
+                    str = _dataLists.job.items[professionalItem.job][_langCookie];
+                }
+                return str;
+            },
             display_phone: function() {
                 var res = "";
                 if (this.system !== "email") {
@@ -172,33 +183,33 @@ function _onHaveProfessionalsData(data) {
     console.log("onHaveProfessionalsData", data);
     _dataAllProfessionnalObj = data.detail.list;
     //Check already selected professionals
-    if (_dataObjTmp && _dataObjTmp.professionals && _dataObjTmp.professionals.length > 0 && _dataAllProfessionnalObj && _dataAllProfessionnalObj.items) {
-        var proTab = _dataObjTmp.professionals;
-        _dataAllProfessionnalObj.items.map(function(item) {
-            var selected = false,
-                referent = false,
-                proItem,
-                i = 0;
-
-            while (!selected && i < proTab.length) {
-                proItem = proTab[i];
-                if (item._id === proItem._id) {
-                    selected = true;
-                    if (proItem.referent) {
-                        referent = true;
-                    }
+    var proTab = _dataObjTmp.professionals;
+    _dataAllProfessionnalObj.items.map(function(item) {
+        var selected = false,
+            referent = false,
+            proItem,
+            i = 0;
+    
+        while (!selected && i < proTab.length) {
+            proItem = proTab[i];
+            if (item._id === proItem._id) {
+                selected = true;
+                if (proItem.referent) {
+                    referent = true;
                 }
-                i++;
             }
-            item._tmpData = {};
-            item._tmpData.selected = selected;
-            item._tmpData.referent = referent;
-        });
-
-        document.querySelector("#tsanteListProfessional template").model = {
-            list: _dataAllProfessionnalObj
-        };
-    }
+            i++;
+        }
+        item._tmpData = {};
+        item._tmpData.selected = selected;
+        item._tmpData.referent = referent;
+    });
+    
+    //Added job array to display friendly user string for job instead of the reference
+    var obj = _dataAllProfessionnalObj;
+    obj.dataLists = _dataLists;
+    obj.lang = _langCookie;
+    tsanteListProfessionalElt.render(obj);
 }
 
 function _checkDateFormat(strDate) {
@@ -219,7 +230,7 @@ function showProfessionals() {
     console.log("showProfessionals");
     //TODO: check the perimeter to filter the url for the listpager
     //var url = document.querySelector("#addProfessionalsModal #tsanteListProfessional") + "?filter={perimeter: xxx}";
-    document.querySelector("#addProfessionalsModal #tsanteListProfessional").go();
+    tsanteListProfessionalElt.go();
     //Store the obj in a clone (for cancel case on modal)
     _dataObjTmp = (_dataObj && _dataObj.professionals) ? JSON.parse(JSON.stringify(_dataObj)) : {
         professionals: []
@@ -950,11 +961,13 @@ function onHaveDateSelection(data) {
 
 function init() {
     console.log("init");
-    document.querySelector("#tsanteListProfessional").addEventListener("tsante-response", _onHaveProfessionalsData, false);
+    tsanteListProfessionalElt = document.querySelector("#tsanteListProfessional");
+    tsanteListProfessionalElt.addEventListener("tsante-response", _onHaveProfessionalsData, false);
 
-    var id = document.querySelector("form[name='beneficiary'] input[name='_id']").value;
+    var promises,
+        id = document.querySelector("form[name='beneficiary'] input[name='_id']").value;
     if (id) {
-        var promises = {
+        promises = {
             beneficiary: promiseXHR("GET", "/api/beneficiaries/" + id, 200),
             professionals: promiseXHR("GET", "/api/beneficiaries/" + id + "/professionals", 200)
         };
@@ -991,6 +1004,39 @@ function init() {
         document.querySelector("#deleteBeneficiary").classList.add("hidden");
     }
 
+    promises = {
+        job: promiseXHR("GET", "/api/lists/job/array", 200)/*,
+        role: promiseXHR("GET", "/api/lists/role/array", 200)*/
+    };
+    var errorCB = function(error){
+        console.log("Init error", error);
+        var modalObj = {
+            title: "trad_error",
+            content: "trad_error_occured",
+            buttons: [{
+                id: "trad_ok",
+                action: function() {
+                    closeModal();
+                }
+            }]
+        };
+        showModal(modalObj);
+    }
+
+    //Used to match the job reference to a friendly user display
+    RSVP.hash(promises).then(function(results) {
+        try{
+            _dataLists = {};
+            _dataLists.job = JSON.parse(results.job);
+            /*_dataLists.role = JSON.parse(results.role);*/
+        }
+        catch(err){
+            errorCB(err);
+        }
+    }).catch(function(error) {
+        errorCB(error);
+    });
+
     //Used for count index for adding new telecom/address field data
     _idxNbTelecom = document.querySelectorAll(".telecomContainer").length;
     _idxNbAddress = document.querySelectorAll(".addressContainer").length;
@@ -1009,4 +1055,4 @@ function init() {
     elt.addEventListener("select", onHaveDateSelection);
 }
 
-window.addEventListener("DOMContentLoaded", init, false);
+window.addEventListener("polymer-ready", init, false);

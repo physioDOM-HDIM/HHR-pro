@@ -51,6 +51,17 @@ module.exports = {
 					});
 				});
 		});
+	},
+	
+	findOne: function( db, collectionName, criteria, projection ) {
+		return new promise( function(resolve, reject) {
+			db.collection(collectionName).findOne(criteria, projection, function (err, doc) {
+				if(err) {
+					throw err;
+				}
+				resolve( doc );
+			});
+		});
 	}
 	
 	/*

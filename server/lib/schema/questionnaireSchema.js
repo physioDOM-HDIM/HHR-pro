@@ -6,8 +6,18 @@ var questionnaireSchema = {
 	description : "questionnaire JSON Schema",
 	type: "object",
 	properties: {
+        "_id": { type:"object" },
 		"name": { type:"string", required:true, "description":"name of the questionnaire"},
-        "text": { type:"string", description:"name of the questionnaire displaying on the TV"},
+        "ref": { type:"string", description:"reference name of the item displayed on the TV"},
+        "label": {
+            type:"object",
+            description:"name of the questionnaire displaying on the TV",
+            "anyOf":[
+                { properties : { "en": {type: "string"} } },
+                { properties : { "es": {type: "string"} } },
+                { properties : { "nl": {type: "string"} } }
+            ]
+        },
         "questions": {
             type:"array",
             item: {
@@ -26,7 +36,16 @@ var questionnaireGroupSchema = {
     type: "object",
     additionalProperties:false,
     properties: {
-        "header": { type:"string", description:"header text of the group" },
+        "headerRef": { type:"string", description:"header text of the group" },
+        "headerLabel": {
+            type:"object",
+            description:"header text of the group",
+            "anyOf":[
+                { properties : { "en": {type: "string"} } },
+                { properties : { "es": {type: "string"} } },
+                { properties : { "nl": {type: "string"} } }
+            ]
+        },
         "questions": {
             type:"array",
             item: {
@@ -47,7 +66,15 @@ var questionnaireQuestionSchema = {
     oneOf: [
         {
             properties: {
-                "text": { type:"string", required:true },
+                "ref": { type:"string", required:true },
+                "label": {
+                    type:"object",
+                    "anyOf":[
+                        { properties : { "en": {type: "string"} } },
+                        { properties : { "es": {type: "string"} } },
+                        { properties : { "nl": {type: "string"} } }
+                    ]
+                },
                 "choice": { type:"array", item: { $ref:"/Questionnaire.simplequestion" } }
             },
             additionalProperties:false
@@ -64,7 +91,15 @@ var questionnaireSimpleQuestionSchema = {
             properties: {
                 "name" : { type:"string", description:"reference name of the question by example" },
                 "system": { enum: [ "integer" ], required:true },
-                "text": { type: "string" },
+                "ref": { type: "string" },
+                "label": {
+                    type:"object",
+                    "anyOf":[
+                        { properties : { "en": {type: "string"} } },
+                        { properties : { "es": {type: "string"} } },
+                        { properties : { "nl": {type: "string"} } }
+                    ]
+                },
                 "value": { type:"integer" }
             },
             additionalProperties:false
@@ -73,7 +108,15 @@ var questionnaireSimpleQuestionSchema = {
             properties:{
                 "name" : { type:"string", description:"reference name of the question by example" },
                 "system": { enum: [ "boolean" ], required:true },
-                "text": { type: "string" },
+                "ref": { type: "string" },
+                "label": {
+                    type:"object",
+                    "anyOf":[
+                        { properties : { "en": {type: "string"} } },
+                        { properties : { "es": {type: "string"} } },
+                        { properties : { "nl": {type: "string"} } }
+                    ]
+                },
                 "value": { type:"integer" }
             },
             additionalProperties:false
@@ -82,7 +125,15 @@ var questionnaireSimpleQuestionSchema = {
             properties:{
                 "name" : { type:"string", description:"reference name of the question by example" },
                 "system": { enum: [ "decimal" ], required:true },
-                "text": { type: "string" },
+                "ref": { type: "string" },
+                "label": {
+                    type:"object",
+                    "anyOf":[
+                        { properties : { "en": {type: "string"} } },
+                        { properties : { "es": {type: "string"} } },
+                        { properties : { "nl": {type: "string"} } }
+                    ]
+                },
                 "value": { type:"number" }
             },
             additionalProperties:false
@@ -91,7 +142,15 @@ var questionnaireSimpleQuestionSchema = {
             properties:{
                 "name" : { type:"string", description:"reference name of the question by example" },
                 "system": { enum: [ "string" ], required:true },
-                "text": { type: "string" }
+                "ref": { type: "string" },
+                "label": {
+                    type:"object",
+                    "anyOf":[
+                        { properties : { "en": {type: "string"} } },
+                        { properties : { "es": {type: "string"} } },
+                        { properties : { "nl": {type: "string"} } }
+                    ]
+                }
             },
             additionalProperties:false
         }
