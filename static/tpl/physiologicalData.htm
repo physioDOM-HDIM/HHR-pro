@@ -16,7 +16,7 @@
 <script src="/bower_components/highcharts-release/highcharts-more.js"></script>
 
 <link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
-<link rel="import" href="/styles/physiologicalData.css">
+<link rel="stylesheet" href="/styles/physiologicalData.css">
 {% endblock %}
 
 {% block content %}
@@ -59,9 +59,13 @@
 	{{#param}}
 		<div class="category hidden">{{category}}</div>
 		<div class="col">
-			<input type="checkbox" class="line-blue" value="{{text}}" onchange="resetLine('blue', this); getDataRecords();"/>
-			<input type="checkbox" class="line-yellow" value="{{text}}" onchange="resetLine('yellow', this); getDataRecords()"/>
+
+			<input type="checkbox" id="param-blue-{{text}}" class="line-blue css-checkbox" value="{{text}}" onchange="resetLine('blue', this); getDataRecords();"/>
+			<label for="param-blue-{{text}}" class="css-label color-blue"></label>
+			<input type="checkbox" id="param-yellow-{{text}}" class="line-yellow css-checkbox" value="{{text}}" onchange="resetLine('yellow', this); getDataRecords()"/>
+			<label for="param-yellow-{{text}}" class="css-label color-yellow"></label>
 			{{name}}
+
 		</div>
 		{{#threshold}}
 			<div class="col">
