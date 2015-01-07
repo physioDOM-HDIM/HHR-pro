@@ -226,9 +226,15 @@ var renderLine = function(list, containerName) {
 var initGraph = function() {
 
 	var lineBlueList = document.querySelectorAll('.line-blue'),
-		lineYellowList = document.querySelectorAll('.line-yellow');
+		lineYellowList = document.querySelectorAll('.line-yellow'),
+		start = document.querySelector('.date-from'),
+		stop = document.querySelector('.date-to'),
+		today = moment().format("YYYY-MM-DD"),
+		monthAgo = moment().subtract(1, 'months').format("YYYY-MM-DD");
 
 	//default values
+	stop.value = today;
+	start.value = monthAgo;
 	lineBlueList[0].checked = true;
 	lineYellowList[0].checked = true;
 
