@@ -261,17 +261,17 @@ var renderGraph = function(dataRecords) {
 		datas = [],
 		yAxisConf = [];
 
-	console.log(dataRecords);
-
 	//blue graph config
 	if(dataRecords.blue !== null) {
+
+		var blueIndex = 0;
 
 		var thresholdBlue = Utils.findInObject(physiologicalData.list[dataRecords.blue.category], 'text', dataRecords.blue.text).threshold,
 			blueColor = {
 				line: '#2980b9',
 				area: '#5C97BF'
 			};
-console.log(thresholdBlue);
+
 		var yAxisBlue = {
 			title: {
 				text: dataRecords.blue.label,
@@ -290,7 +290,7 @@ console.log(thresholdBlue);
 		var lineBlue = {
 			name: dataRecords.blue.label,
 			color: blueColor.line,
-			yAxis: 0,
+			yAxis: blueIndex,
 			data: dataRecords.blue.data,
 			tooltip: {
 				valueSuffix: ' '+dataRecords.blue.unit
@@ -307,7 +307,7 @@ console.log(thresholdBlue);
 			name: 'Threshold '+dataRecords.blue.label,
 			type: 'arearange',
 			color: '#5C97BF',
-			yAxis: 0,
+			yAxis: blueIndex,
 			zIndex: 0,
 			lineWidth: 0,
 			data: [
@@ -323,7 +323,14 @@ console.log(thresholdBlue);
 
 	//yellow graph config
 	if(dataRecords.yellow !== null) {
-		var thresholdYellow = Utils.findInObject(physiologicalData.list[dataRecords.blue.category], 'text', dataRecords.yellow.text).threshold,
+
+		var yellowIndex = 1;
+
+		if(dataRecords.blue === null) {
+			yellowIndex = 0;
+		}
+
+		var thresholdYellow = Utils.findInObject(physiologicalData.list[dataRecords.yellow.category], 'text', dataRecords.yellow.text).threshold,
 			yellowColor = {
 				line: '#f39c12',
 				area: '#EB974E'
@@ -348,7 +355,7 @@ console.log(thresholdBlue);
 		var lineYellow = {
 			name: dataRecords.yellow.label,
 			color: yellowColor.line,
-			yAxis: 1,
+			yAxis: yellowIndex,
 			data: dataRecords.yellow.data,
 			tooltip: {
 				valueSuffix: ' '+dataRecords.yellow.unit
@@ -365,7 +372,7 @@ console.log(thresholdBlue);
 			name: 'Threshold '+dataRecords.yellow.label,
 			type: 'arearange',
 			color: yellowColor.area,
-			yAxis: 1,
+			yAxis: yellowIndex,
 			zIndex: 0,
 			lineWidth: 0,
 			data: [
