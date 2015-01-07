@@ -283,21 +283,24 @@ var renderGraph = function(dataRecords) {
             }
 		};
 
-		var areaBlue = {
-			name: 'Threshold '+dataRecords.blue.label,
-			type: 'arearange',
-			color: '#5C97BF',
-			yAxis: blueIndex,
-			zIndex: 0,
-			lineWidth: 0,
-			data: [
-				[dataRecords.blue.data[0][0], thresholdBlue.min, thresholdBlue.max],
-				[dataRecords.blue.data[dataRecords.blue.data.length-1][0], thresholdBlue.min, thresholdBlue.max]
-			]
-		};
+		if(thresholdBlue) {
+			var areaBlue = {
+				name: 'Threshold '+dataRecords.blue.label,
+				type: 'arearange',
+				color: '#5C97BF',
+				yAxis: blueIndex,
+				zIndex: 0,
+				lineWidth: 0,
+				data: [
+					[dataRecords.blue.data[0][0], thresholdBlue.min, thresholdBlue.max],
+					[dataRecords.blue.data[dataRecords.blue.data.length-1][0], thresholdBlue.min, thresholdBlue.max]
+				]
+			};
+
+			datas.push(areaBlue);
+		}
 
 		datas.push(lineBlue);
-		datas.push(areaBlue);
 		yAxisConf.push(yAxisBlue);
 	}
 
@@ -348,21 +351,23 @@ var renderGraph = function(dataRecords) {
             }
 		};
 
-		var areaYellow = {
-			name: 'Threshold '+dataRecords.yellow.label,
-			type: 'arearange',
-			color: yellowColor.area,
-			yAxis: yellowIndex,
-			zIndex: 0,
-			lineWidth: 0,
-			data: [
-				[dataRecords.yellow.data[0][0], thresholdYellow.min, thresholdYellow.max],
-				[dataRecords.yellow.data[dataRecords.yellow.data.length-1][0], thresholdYellow.min, thresholdYellow.max]
-			]
-		};
+		if(thresholdYellow) {
+			var areaYellow = {
+				name: 'Threshold '+dataRecords.yellow.label,
+				type: 'arearange',
+				color: yellowColor.area,
+				yAxis: yellowIndex,
+				zIndex: 0,
+				lineWidth: 0,
+				data: [
+					[dataRecords.yellow.data[0][0], thresholdYellow.min, thresholdYellow.max],
+					[dataRecords.yellow.data[dataRecords.yellow.data.length-1][0], thresholdYellow.min, thresholdYellow.max]
+				]
+			};
+			datas.push(areaYellow);
+		}
 
 		datas.push(lineYellow);
-		datas.push(areaYellow);
 		yAxisConf.push(yAxisYellow);
 	}
 
