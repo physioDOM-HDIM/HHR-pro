@@ -710,83 +710,115 @@ function Beneficiary( ) {
 				return physioDOM.Lists.getListArray(listName);
 			});
 			
+			var thresholds;
 			that.getThreshold()
-				.then( function(thresholds) {
-					// logger.debug("threshols", thresholds);
+				.then( function(_thresholds) {
+					thresholds = _thresholds;
+					return physioDOM.Lists.getList("unity")
+				})
+				.then(function (units) {
 					RSVP.all(promises).then(function (lists) {
 						var labels = {};
-						for( var i=0; i < lists.length; i++) {
-							for ( var prop in lists[i].items) {
+						for (var i = 0; i < lists.length; i++) {
+							for (var prop in lists[i].items) {
 								labels[prop] = lists[i].items[prop];
 							}
 						}
-						// logger.debug("lists", labels);
+
 						physioDOM.db.collection("dataRecordItems").group(groupRequest.key, groupRequest.cond, groupRequest.initial, groupRequest.reduce, function (err, results) {
-							// console.log("result", results);
 							if (err) {
 								reject(err);
 							} else {
-								results.forEach( function( result ) {
-									result.name = labels[result.text].en || result.text;
-									if( thresholds[result.text]) {
-										result.threshold = thresholds[result.text];
-									}
-								});
-								graphList.General = results.filter(function (item) {
-									return item.category === "General";
-								});
-								graphList.HDIM = results.filter(function (item) {
-									return item.category === "HDIM";
-								});
-								graphList.symptom = results.filter(function (item) {
-									return item.category === "symptom";
-								});
-								graphList.questionnaire = results.filter(function (item) {
-									return item.category === "questionnaire";
-								});
-		
-								graphList.General.sort(compareItems);
-								graphList.HDIM.sort(compareItems);
-								graphList.symptom.sort(compareItems);
-								graphList.questionnaire.sort(compareItems);
-		
-								resolve(graphList);
+								RSVP.all( results.map(function (result) {
+											result.name = labels[result.text].en || result.text;
+											if (thresholds[result.text]) {
+												result.threshold = thresholds[result.text];
+											}
+											return result;
+										})
+									)
+									.then( function(results) {
+										graphList.General = results.filter(function (item) {
+											return item.category === "General";
+										});
+										graphList.HDIM = results.filter(function (item) {
+											return item.category === "HDIM";
+										});
+										graphList.symptom = results.filter(function (item) {
+											return item.category === "symptom";
+										});
+										graphList.questionnaire = results.filter(function (item) {
+											return item.category === "questionnaire";
+										});
+
+										graphList.General.sort(compareItems);
+										graphList.HDIM.sort(compareItems);
+										graphList.symptom.sort(compareItems);
+										graphList.questionnaire.sort(compareItems);
+
+										resolve(graphList);
+									})
+									.catch( reject );
 							}
 						});
 					});
-				});
+				})
+				.catch( reject );
 		});
 	};
 	
 	this.getGraphData = function(category, paramName, startDate, stopDate, session ) {
-		var graphData = { text: paramName, data: [] };
+		var graphData = {text: paramName, data: []};
 		var that = this;
 
-		if( !stopDate ) {
+		if (!stopDate) {
 			graphData.stopDate = moment().utc();
 		}
-		if( !startDate ) {
+		if (!startDate) {
 			graphData.startDate = moment(graphData.stopDate.toISOString());
 			graphData.startDate.subtract(30, "days");
 		}
-		
+
 		// to get the label we need to know from which list comes the parameter
-		if( ["General","HDIM"].indexOf(category) !== -1 ) { 
-			category = "parameters"; 
+		if (["General", "HDIM"].indexOf(category) !== -1) {
+			category = "parameters";
 		}
 
-		var promises = [category,"unity"].map(function (listName) {
-			return physioDOM.Lists.getListArray(listName);
-		});
+		function paramPromise(listName, param) {
+			return new promise(function (resolve, reject) {
+				physioDOM.Lists.getList(listName)
+					.then(function (list) {
+						return list.getItem(paramName);
+					})
+					.then(function(param) {
+						physioDOM.Lists.getList("unity")
+							.then(function(unity) {
+								return unity.getItem(param.unity);
+							})
+							.then( function(unit) {
+								if( unit.label[session.lang || "en"] === undefined ) {
+									param.unitLabel = unit.ref;
+								} else {
+									param.unitLabel = unit.label[session.lang || "en"];
+								}
+								resolve(param);
+							})
+							.catch(function() {
+								param.unitLabel = "";
+								resolve(param);
+							});
+					})
+					.catch(reject);
+			});
+		}
 		
 		return new promise(function (resolve, reject) {
 			logger.trace("getGraphData", paramName, graphData.startDate, graphData.stopDate);
-
-			RSVP.all(promises)
-				.then(function (lists) {
-					logger.warning("communication", session.lang || "en");
-					graphData.label = lists[0].items[paramName][session.lang || "en"] || paramName;
-					// graphData.unit = lists[1].items[paramName][session.lang || "en"] || paramName;
+			
+			paramPromise( category, paramName )
+				.then( function( param ) {
+					graphData.label = param.label[session.lang || "en"] || paramName;
+					graphData.unit = param.unitLabel;
 					var search = {
 						subject : that._id,
 						text    : paramName,
@@ -801,7 +833,8 @@ function Beneficiary( ) {
 						});
 						resolve(graphData);
 					});
-				});
+				})
+				.catch( reject );
 		});
 	};
 }
