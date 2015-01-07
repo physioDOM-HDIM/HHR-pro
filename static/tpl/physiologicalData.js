@@ -9,16 +9,50 @@ physiologicalData.list = {};
 physiologicalData.dataRecords = {};
 
 
+/**
+ * INIT
+ */
+
 window.addEventListener("DOMContentLoaded", function() {
     infos.lang = document.querySelector('#lang').innerText;
     getParamList();
 }, false);
 
 /**
- * Actions
+ * API Communication
  */
 
+var getParamList = function(isRendered, callback) {
+    Utils.promiseXHR("GET", "/api/beneficiary/graph", 200).then(function(results) {
 
+    	var param = JSON.parse(results);
+		var parsing = function(category, showThreshold) {
+			param[category].forEach(function(param) {
+				param.edition = showThreshold;
+				param.lastReport = moment(param.lastReport).format("YYYY-MM-DD HH:mm");
+			});
+
+			physiologicalData.list[category] = param[category];
+			if(!isRendered) {
+				renderLine(physiologicalData.list[category], '#param-'+category+'-container');
+			}
+		};
+
+		parsing('General', true);
+		parsing('HDIM', true);
+		parsing('symptom', false);
+		parsing('questionnaire', false);
+
+		if(!isRendered) {
+			initGraph();
+		} else {
+			renderGraph(physiologicalData.dataRecords);
+		}
+	}, function(error) {
+		new Modal('errorOccured');
+	});
+
+};
 
 var getDataRecords = function(init) {
 	var dateFrom = document.querySelector('.date-from').value,
@@ -75,37 +109,7 @@ var getDataRecords = function(init) {
     		physiologicalData.dataRecords.yellow = null;
     	}
     }, function(error) {
-    	console.log(error);
-
-    	//MOCK
-    	//TODO at integration: ex: if only blue is selected, pass the physiologicalData.dataRecords.yellow to null and vice versa
-    	physiologicalData.dataRecords.blue = {
-			ref: 'TEMP',
-			name: 'Température',
-			lastReport: '2014-12-09T14:44:42.061Z',
-			data: [
-				[1420368924, 38],
-				[1420455324, 41],
-				[1420541724, 39],
-				[1420636945, 37]
-			],
-			unit: 'C°'
-		};
-
-		physiologicalData.dataRecords.yellow = {
-			ref: 'DIST',
-			name: 'Distance per week',
-			lastReport: '2014-12-09T14:44:42.061Z',
-			data: [
-				[1420368924, 500],
-				[1420455324, 650],
-				[1420541724, 800],
-				[1420636945, 210]
-			],
-			unit: 'km'
-		};
-		//ENDMOCK
-
+    	new Modal('errorOccured');
     }).then(function() {
     	renderGraph(physiologicalData.dataRecords);
     });
@@ -125,15 +129,24 @@ var updateThreshold = function(elt) {
 		}
 
 	Utils.promiseXHR("POST", "/api/beneficiary/thresholds", 200, JSON.stringify(datas)).then(function(response) {
+
        	setThresholdUI(line);
     	toggleMode(line);
+    	getParamList(true); //Get once again Param List (with isRendered arg) to have newly thresholds added
        	new Modal('updateSuccess');
+
     }, function(error) {
+
     	resetThresholdUI(line);
     	toggleMode(line);
     	new Modal('errorOccured');
+
     });
 };
+
+/**
+ * UI
+ */
 
 var back = function(elt) {
 	var line = elt.parentNode.parentNode.parentNode;
@@ -146,10 +159,6 @@ var edit = function(elt) {
 	var line = elt.parentNode.parentNode.parentNode;
 	toggleMode(line);
 };
-
-/**
- * UI
- */
 
 var setThresholdUI = function(line) {
 	line.querySelector('.read-min').innerText = line.querySelector('.input-min').value;
@@ -189,35 +198,6 @@ var resetLine = function(lineColor, elt) {
 			lineList[i].checked = false;
 		}
 	}
-};
-
-
-/**
- * INIT
- */
-
-var getParamList = function() {
-    Utils.promiseXHR("GET", "/api/beneficiary/graph", 200).then(function(results) {
-
-    	var param = JSON.parse(results);
-		var parsing = function(category, showThreshold) {
-			param[category].forEach(function(param) {
-				param.edition = showThreshold;
-				param.lastReport = moment(param.lastReport).format("YYYY-MM-DD HH:mm");
-			});
-
-			physiologicalData.list[category] = param[category];
-			renderLine(physiologicalData.list[category], '#param-'+category+'-container');
-		};
-
-		parsing('General', true);
-		parsing('HDIM', true);
-		parsing('symptom', false);
-		parsing('questionnaire', false);
-
-		initGraph();
-	});
-
 };
 
 var renderLine = function(list, containerName) {
