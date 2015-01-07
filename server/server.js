@@ -333,6 +333,8 @@ server.post('/api/lists/:listName', ILists.addItem );
 server.put( '/api/lists/:listName/:itemRef', ILists.translateItem );
 server.post('/api/lists/:listName/:itemRef', ILists.activateItem );
 
+server.get( '/api/beneficiary/dataprog', IBeneficiary.getDataProg );
+
 //DEV ONLY for creation & update
 server.get( '/api/questionnaires', IQuestionnaire.getList );
 server.get( '/api/questionnaires/:entryID', IQuestionnaire.getQuestionnaire );

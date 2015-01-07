@@ -382,7 +382,6 @@ var IBeneficiary = {
 		logger.trace("setThreshold");
 		var beneficiary,updateItems;
 		
-		
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
 				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
@@ -400,7 +399,26 @@ var IBeneficiary = {
 				res.send(err.code || 400, err);
 				next(false);
 			});
+	},
+	
+	getDataProg: function( req, res, next) {
+		logger.trace("getDataProg");
+		var beneficiary;
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then( function(selectedBeneficiary) {
+				beneficiary = selectedBeneficiary;
+				res.send({code: 501, message: "not yet implemented"});
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
 	}
+	
 };
 
 module.exports = IBeneficiary;

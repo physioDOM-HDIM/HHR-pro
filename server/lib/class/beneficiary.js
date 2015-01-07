@@ -675,6 +675,15 @@ function Beneficiary( ) {
 				});
 		});
 	};
+	
+	this.getDataProg = function() {
+		var that = this;
+
+		return new promise( function(resolve, reject) {
+			logger.trace("getDataProg", that._id);
+			resolve( {} );
+		});
+	}
 }
 
 module.exports = Beneficiary;
