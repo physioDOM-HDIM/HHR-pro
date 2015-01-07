@@ -242,7 +242,7 @@ var renderGraph = function(dataRecords) {
 		yAxisConf = [];
 
 	//blue graph config
-	if(dataRecords.blue !== null) {
+	if(dataRecords.blue !== null && dataRecords.blue.data.length !== 0) {
 
 		var blueIndex = 0;
 
@@ -305,7 +305,7 @@ var renderGraph = function(dataRecords) {
 	}
 
 	//yellow graph config
-	if(dataRecords.yellow !== null) {
+	if(dataRecords.yellow !== null && dataRecords.yellow.data.length !== 0) {
 
 		var yellowIndex = 1;
 
