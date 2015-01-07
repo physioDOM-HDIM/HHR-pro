@@ -198,6 +198,8 @@ function DataRecord( beneficiaryID ) {
 					var count = items.length;
 					items.forEach( function( item ) {
 						var dataRecordItem = new DataRecordItem( that._id );
+						dataRecordItem.subject = that.subject;
+						dataRecordItem.datetime = that.datetime;
 						dataRecordItem.setup( item )
 							.then( function (recordItem) {
 								if (--count === 0) {
@@ -267,6 +269,8 @@ function DataRecord( beneficiaryID ) {
 						var dataRecordItem = new DataRecordItem( that._id );
 						delete item.dataRecordID;
 						delete item._id;
+						item.subject = that.subject;
+						item.datetime = that.datetime;
 						dataRecordItem.setup( item )
 							.then( function (recordItem) {
 								if (--count === 0) {
