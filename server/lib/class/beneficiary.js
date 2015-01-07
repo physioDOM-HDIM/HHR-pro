@@ -770,13 +770,33 @@ function Beneficiary( ) {
 	this.getGraphData = function(category, paramName, startDate, stopDate, session ) {
 		var graphData = {text: paramName, data: []};
 		var that = this;
-
+		
 		if (!stopDate) {
 			graphData.stopDate = moment().utc();
+			graphData.stopDate.hours(23);
+			graphData.stopDate.minutes(59);
+		} else {
+			graphData.stopDate = moment(stopDate);
+			graphData.stopDate.hours(23);
+			graphData.stopDate.minutes(59);
+			if( !graphData.stopDate.isValid() ) {
+				throw { code:405, message: "stop date is invalid"};
+			}
 		}
 		if (!startDate) {
 			graphData.startDate = moment(graphData.stopDate.toISOString());
 			graphData.startDate.subtract(30, "days");
+		} else {
+			graphData.startDate = moment(startDate);
+			graphData.startDate.hours(0);
+			graphData.startDate.minutes(0);
+			if( !graphData.startDate.isValid() ) {
+				throw { code:405, message: "start date is invalid"};
+			}
+		}
+		
+		if(graphData.startDate.valueOf() >=  graphData.stopDate.valueOf() ) {
+			throw { code:405, message: "start date must be before stop date"};
 		}
 
 		// to get the label we need to know from which list comes the parameter
