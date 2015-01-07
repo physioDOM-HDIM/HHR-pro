@@ -727,7 +727,7 @@ function Beneficiary( ) {
 								reject(err);
 							} else {
 								results.forEach( function( result ) {
-									result.name = labels[result.text].en;
+									result.name = labels[result.text].en || result.text;
 									if( thresholds[result.text]) {
 										result.threshold = thresholds[result.text];
 									}
