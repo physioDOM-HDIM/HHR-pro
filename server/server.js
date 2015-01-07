@@ -331,6 +331,7 @@ server.get( '/api/lists', ILists.getLists );
 server.get( '/api/lists/:listName', ILists.getList );
 server.get( '/api/lists/:listName/array', ILists.getListArray );
 server.get( '/api/lists/:listName/translate', ILists.getListTranslate );
+server.get( '/api/lists/:listName/:itemRef', ILists.getItem );
 server.put( '/api/lists/:listName', ILists.updateList );
 server.post('/api/lists/:listName', ILists.addItem );
 server.put( '/api/lists/:listName/:itemRef', ILists.translateItem );

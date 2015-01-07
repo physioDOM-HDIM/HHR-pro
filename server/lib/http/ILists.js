@@ -199,6 +199,22 @@ var ILists = {
             });
     },
 
+    getItem: function( req, res, next) {
+        logger.trace("getItem ", req.params.itemRef);
+        physioDOM.Lists.getList(req.params.listName)
+            .then( function(list) {
+                return list.getItem( req.params.itemRef );
+            })
+            .then( function(item) {
+                res.send(item);
+                next();
+            })
+            .catch(function(err) {
+                res.send(err.code || 400, err);
+                next(false);
+            });
+    },
+    
     /**
      * Request activate/deactivate an item
      *
