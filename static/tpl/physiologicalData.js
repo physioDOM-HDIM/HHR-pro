@@ -18,6 +18,8 @@ window.addEventListener("DOMContentLoaded", function() {
  * Actions
  */
 
+
+
 var getDataRecords = function(init) {
 	var dateFrom = document.querySelector('.date-from').value,
 		dateTo = document.querySelector('.date-to').value,
@@ -27,6 +29,8 @@ var getDataRecords = function(init) {
 		len = lineBlueList.length,
 		BlueChoice = null,
 		YellowChoice = null,
+		BlueCategory = null,
+		YellowCategory = null,
 		dateOption = '',
 		promises = {};
 
@@ -34,9 +38,11 @@ var getDataRecords = function(init) {
 	for(i; i<len; i++) {
 		if(lineBlueList[i].checked) {
 			BlueChoice = lineBlueList[i].value;
+			BlueCategory = lineBlueList[i].parentNode.parentNode.querySelector('.category').innerText;
 		}
 		if(lineYellowList[i].checked) {
 			YellowChoice = lineYellowList[i].value;
+			YellowCategory = lineBlueList[i].parentNode.parentNode.querySelector('.category').innerText;
 		}
 	}
 
@@ -46,17 +52,28 @@ var getDataRecords = function(init) {
 	}
 
 	if(BlueChoice) {
-		promises.blue = Utils.promiseXHR("GET", "/api/beneficiary/datarecords/"+BlueChoice+dateOption, 200);
+		promises.blue = Utils.promiseXHR('GET', '/api/beneficiary/graph/'+BlueCategory+'/'+BlueChoice+dateOption, 200);
 	}
 
 	if(YellowChoice) {
-        promises.yellow = Utils.promiseXHR("GET", "/api/beneficiary/datarecords/"+YellowChoice+dateOption, 200);
+        promises.yellow = Utils.promiseXHR('GET', '/api/beneficiary/graph/'+YellowCategory+'/'+YellowChoice+dateOption, 200);
     }
 
     //TODO when API is defined/done: update graph with received datas
     RSVP.hash(promises).then(function(dataRecords) {
-    	console.log(dataRecords.blue);
-    	console.log(dataRecords.yellow);
+    	if(dataRecords.blue) {
+    		physiologicalData.dataRecords.blue = JSON.parse(dataRecords.blue);
+    		physiologicalData.dataRecords.blue.category = BlueCategory;
+    	} else {
+    		physiologicalData.dataRecords.blue = null;
+    	}
+
+    	if(dataRecords.yellow) {
+    		physiologicalData.dataRecords.yellow = JSON.parse(dataRecords.yellow);
+    		physiologicalData.dataRecords.yellow.category = YellowCategory;
+    	} else {
+    		physiologicalData.dataRecords.yellow = null;
+    	}
     }, function(error) {
     	console.log(error);
 
@@ -180,50 +197,23 @@ var resetLine = function(lineColor, elt) {
  */
 
 var getParamList = function() {
-	var promises = {
-            physiological: Utils.promiseXHR("GET", "/api/lists/parameters", 200),
-            symptom: Utils.promiseXHR("GET", "/api/lists/symptom", 200),
-            questionnaire: Utils.promiseXHR("GET", "/api/lists/questionnaire", 200),
-            userThreshold: Utils.promiseXHR("GET", "/api/beneficiary/thresholds", 200)
-        };
+    Utils.promiseXHR("GET", "/api/beneficiary/graph", 200).then(function(results) {
 
-	RSVP.hash(promises).then(function(results) {
-		physiologicalData.list.physiological = JSON.parse(results.physiological);
-		physiologicalData.list.symptom = JSON.parse(results.symptom);
-		physiologicalData.list.questionnaire = JSON.parse(results.questionnaire);
-		physiologicalData.list.userThreshold = JSON.parse(results.userThreshold);
+    	var param = JSON.parse(results);
+		var parsing = function(category, showThreshold) {
+			param[category].forEach(function(param) {
+				param.edition = showThreshold;
+				param.lastReport = moment(param.lastReport).format("YYYY-MM-DD HH:mm");
+			});
 
+			physiologicalData.list[category] = param[category];
+			renderLine(physiologicalData.list[category], '#param-'+category+'-container');
+		};
 
-		var userThreshold = physiologicalData.list.userThreshold,
-			physiologicalList = physiologicalData.list.physiological.items,
-			i = 0,
-	        leni = physiologicalList.length,
-	        symptomList = physiologicalData.list.symptom.items,
-	        y = 0,
-	        leny = symptomList.length,
-	        questionnaireList = physiologicalData.list.questionnaire.items,
-	        z = 0,
-	        lenz = questionnaireList.length;
-
-	    for(i; i<leni; i++) {
-	        physiologicalList[i].labelLang = physiologicalList[i].label[infos.lang];
-	        physiologicalList[i].edition = true;
-
-	        physiologicalList[i].threshold.min = userThreshold[physiologicalList[i].ref].min;
-	        physiologicalList[i].threshold.max = userThreshold[physiologicalList[i].ref].max;
-	    }
-	    for(y; y<leny; y++) {
-	        symptomList[y].labelLang = symptomList[y].label[infos.lang];
-	        symptomList[y].edition = false;
-	    }
-	    for(z; z<lenz; z++) {
-	        questionnaireList[z].labelLang = questionnaireList[z].label[infos.lang];
-	        questionnaireList[z].edition = false;
-	    }
-
-		renderLine(physiologicalList, '#param-physiological-container');
-		renderLine(symptomList, '#param-symptom-container');
-		renderLine(questionnaireList, '#param-questionnaire-container');
+		parsing('General', true);
+		parsing('HDIM', true);
+		parsing('symptom', false);
+		parsing('questionnaire', false);
 
 		initGraph();
 	});
@@ -271,17 +261,20 @@ var renderGraph = function(dataRecords) {
 		datas = [],
 		yAxisConf = [];
 
+	console.log(dataRecords);
+
 	//blue graph config
 	if(dataRecords.blue !== null) {
-		var thresholdBlue = Utils.findInObject(physiologicalData.list.physiological.items, 'ref', dataRecords.blue.ref).threshold,
+
+		var thresholdBlue = Utils.findInObject(physiologicalData.list[dataRecords.blue.category], 'text', dataRecords.blue.text).threshold,
 			blueColor = {
 				line: '#2980b9',
 				area: '#5C97BF'
 			};
-
+console.log(thresholdBlue);
 		var yAxisBlue = {
 			title: {
-				text: dataRecords.blue.name,
+				text: dataRecords.blue.label,
 				style: {
 					color: blueColor.line
 				}
@@ -295,7 +288,7 @@ var renderGraph = function(dataRecords) {
 		};
 
 		var lineBlue = {
-			name: dataRecords.blue.name,
+			name: dataRecords.blue.label,
 			color: blueColor.line,
 			yAxis: 0,
 			data: dataRecords.blue.data,
@@ -311,7 +304,7 @@ var renderGraph = function(dataRecords) {
 		};
 
 		var areaBlue = {
-			name: 'Threshold '+dataRecords.blue.name,
+			name: 'Threshold '+dataRecords.blue.label,
 			type: 'arearange',
 			color: '#5C97BF',
 			yAxis: 0,
@@ -330,7 +323,7 @@ var renderGraph = function(dataRecords) {
 
 	//yellow graph config
 	if(dataRecords.yellow !== null) {
-		var thresholdYellow = Utils.findInObject(physiologicalData.list.physiological.items, 'ref', dataRecords.yellow.ref).threshold,
+		var thresholdYellow = Utils.findInObject(physiologicalData.list[dataRecords.blue.category], 'text', dataRecords.yellow.text).threshold,
 			yellowColor = {
 				line: '#f39c12',
 				area: '#EB974E'
@@ -338,7 +331,7 @@ var renderGraph = function(dataRecords) {
 
 		var yAxisYellow = {
 			title: {
-				text: dataRecords.yellow.name,
+				text: dataRecords.yellow.label,
 				style: {
 					color: yellowColor.line
 				}
@@ -353,7 +346,7 @@ var renderGraph = function(dataRecords) {
 		};
 
 		var lineYellow = {
-			name: dataRecords.yellow.name,
+			name: dataRecords.yellow.label,
 			color: yellowColor.line,
 			yAxis: 1,
 			data: dataRecords.yellow.data,
@@ -369,7 +362,7 @@ var renderGraph = function(dataRecords) {
 		};
 
 		var areaYellow = {
-			name: 'Threshold '+dataRecords.yellow.name,
+			name: 'Threshold '+dataRecords.yellow.label,
 			type: 'arearange',
 			color: yellowColor.area,
 			yAxis: 1,
@@ -379,7 +372,7 @@ var renderGraph = function(dataRecords) {
 				[dataRecords.yellow.data[0][0], thresholdYellow.min, thresholdYellow.max],
 				[dataRecords.yellow.data[dataRecords.yellow.data.length-1][0], thresholdYellow.min, thresholdYellow.max]
 			]
-		}
+		};
 
 		datas.push(lineYellow);
 		datas.push(areaYellow);

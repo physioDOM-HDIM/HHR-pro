@@ -41,7 +41,7 @@
 	<zdk-input-date class="date-to" name="date-to" style="z-index:100" onchange="getDataRecords()"></zdk-input-date>
 </div>
 
-<zdk-panel heading="{{'Measures'|i18n}}" id="param-physiological-container" collapsable="true" collapsed="false">
+<zdk-panel heading="{{'General'|i18n}}" id="param-General-container" collapsable="true" collapsed="false">
 	<div class="row">
 		<div class="col"></div>
 		<div class="col">Minimum threshold</div>
@@ -49,6 +49,7 @@
 		<div class="col">Last Report on</div>
 	</div>
 </zdk-panel>
+<zdk-panel heading="{{'HDIM'|i18n}}" id="param-HDIM-container" collapsable="true" collapsed="false"></zdk-panel>
 <zdk-panel heading="{{'Symptoms'|i18n}}" id="param-symptom-container" collapsable="true" collapsed="false"></zdk-panel>
 <zdk-panel heading="{{'Questionnaires scores'|i18n}}" id="param-questionnaire-container" collapsable="true" collapsed="false"></zdk-panel>
 
@@ -56,11 +57,11 @@
 
 <script type="template" id="param-line-tpl">
 	{{#param}}
-
+		<div class="category hidden">{{category}}</div>
 		<div class="col">
-			<input type="checkbox" class="line-blue" value="{{ref}}" onchange="resetLine('blue', this); getDataRecords();"/>
-			<input type="checkbox" class="line-yellow" value="{{ref}}" onchange="resetLine('yellow', this); getDataRecords()"/>
-			{{labelLang}}
+			<input type="checkbox" class="line-blue" value="{{text}}" onchange="resetLine('blue', this); getDataRecords();"/>
+			<input type="checkbox" class="line-yellow" value="{{text}}" onchange="resetLine('yellow', this); getDataRecords()"/>
+			{{name}}
 		</div>
 		{{#threshold}}
 			<div class="col">
@@ -68,7 +69,7 @@
 					<span class="read-min">{{min}}</span>
 				</div>
 				<div class="mode-update hidden">
-					<input type="text" value="{{min}}" name="{{ref}}.min" class="input-min"/>
+					<input type="text" value="{{min}}" name="{{text}}.min" class="input-min"/>
 				</div>
 			</div>
 			<div class="col">
@@ -76,11 +77,15 @@
 					<span class="read-max">{{max}}</span>
 				</div>
 				<div class="mode-update hidden">
-					<input type="text" value="{{max}}" name="{{ref}}.max" class="input-max"/>
+					<input type="text" value="{{max}}" name="{{text}}.max" class="input-max"/>
 				</div>
 			</div>
 		{{/threshold}}
-		<div class="col"></div>
+		{{^threshold}}
+			<div class="col"></div>
+			<div class="col"></div>
+		{{/threshold}}
+		<div class="col">{{lastReport}}</div>
 
 		<div>
 			{{#edition}}
@@ -91,6 +96,9 @@
 					<button type="button" class="green small" onclick="updateThreshold(this)">Save</button>
 					<button type="button" class="blue small" onclick="back(this)">Back</button>
 				</div>
+			{{/edition}}
+			{{^edition}}
+				<div class="spacing-nobutton"></div>
 			{{/edition}}
 		</div>
 
