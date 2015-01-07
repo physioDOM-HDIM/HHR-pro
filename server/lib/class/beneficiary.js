@@ -758,7 +758,7 @@ function Beneficiary( ) {
 		});
 	};
 	
-	this.getGraphData = function(paramName, startDate, stopDate ) {
+	this.getGraphData = function(category, paramName, startDate, stopDate, session ) {
 		var graphData = { text: paramName, data: [] };
 		var that = this;
 
@@ -769,24 +769,39 @@ function Beneficiary( ) {
 			graphData.startDate = moment(graphData.stopDate.toISOString());
 			graphData.startDate.subtract(30, "days");
 		}
-	
+		
+		// to get the label we need to know from which list comes the parameter
+		if( ["General","HDIM"].indexOf(category) !== -1 ) { 
+			category = "parameters"; 
+		}
+
+		var promises = [category,"unity"].map(function (listName) {
+			return physioDOM.Lists.getListArray(listName);
+		});
+		
 		return new promise(function (resolve, reject) {
 			logger.trace("getGraphData", paramName, graphData.startDate, graphData.stopDate);
-			var search = { 
-				subject: that._id, 
-				text: paramName, 
-				datetime: { 
-					'$gte': graphData.startDate.toISOString(), 
-					'$lte': graphData.stopDate.toISOString()
-				}
-			};
-			physioDOM.db.collection("dataRecordItems").find( search ).sort({ datetime: 1 }).toArray( function(err, results) {
-				results.forEach( function( result ) {
-					graphData.data.push( [ moment(result.datetime).valueOf(), result.value ] );
+
+			RSVP.all(promises)
+				.then(function (lists) {
+					logger.warning("communication", session.lang || "en");
+					graphData.label = lists[0].items[paramName][session.lang || "en"] || paramName;
+					// graphData.unit = lists[1].items[paramName][session.lang || "en"] || paramName;
+					var search = {
+						subject : that._id,
+						text    : paramName,
+						datetime: {
+							'$gte': graphData.startDate.toISOString(),
+							'$lte': graphData.stopDate.toISOString()
+						}
+					};
+					physioDOM.db.collection("dataRecordItems").find(search).sort({datetime: 1}).toArray(function (err, results) {
+						results.forEach(function (result) {
+							graphData.data.push([ moment(result.datetime).valueOf(), result.value]);
+						});
+						resolve(graphData);
+					});
 				});
-				resolve(graphData);
-			});
-			
 		});
 	};
 }
