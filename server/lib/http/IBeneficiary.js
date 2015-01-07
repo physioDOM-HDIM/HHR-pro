@@ -454,7 +454,7 @@ var IBeneficiary = {
 			})
 			.then( function(selectedBeneficiary) {
 				beneficiary = selectedBeneficiary;
-				return beneficiary.getGraphData(req.params.paramName);
+				return beneficiary.getGraphData(req.params.category, req.params.paramName, req.params.startDate, req.params.stopDate, req.session);
 			}).then( function( graphData) {
 				res.send(graphData);
 				next();
