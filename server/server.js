@@ -311,6 +311,8 @@ server.del( '/api/beneficiaries/:entryID', IBeneficiary.deleteBeneficiary );
 server.get( '/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryProfessionals );
 server.post('/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryAddProfessional );
 server.del( '/api/beneficiaries/:entryID/professionals/:profID', IBeneficiary.beneficiaryDelProfessional );
+server.get( '/api/beneficiaries/:entryID/graph', IBeneficiary.getGraphDataList );
+server.get( '/api/beneficiaries/:entryID/graph/:category/:paramName', IBeneficiary.getGraphData );
 
 // use of the session to determine the selected beneficiary
 server.get( '/api/beneficiary', IBeneficiary.getBeneficiary  );
