@@ -4,51 +4,42 @@ var utils = new Utils(),
     infos = {},
     lists = {};
 
-window.addEventListener("DOMContentLoaded", function() {
-
-    infos.category = document.querySelector('.param-category').innerText;
-    infos.lang = document.querySelector('#lang').innerText;
-    getList();
-
-}, false);
-
-
 /**
  * Getting dataprog
  */
 
 var getList = function() {
     var promises = {
-            //dataprog: /api/beneficiary/dataprog,
+            dataprog: utils.promiseXHR("GET", "/api/beneficiary/dataprog",200),
             parameterList: utils.promiseXHR("GET", "/api/lists/"+infos.category, 200)
         };
 
     RSVP.hash(promises).then(function(results) {
 
         //MOCK to delete when integrating with backend
-        if(infos.category === 'physiologicalGeneral') {
-            lists.dataprog = [{
-                "category": "general",
-                "ref": "TEMP",
-                "frequency": "weekly",
-                "repeat": 5,
-                "startDate": "2014-12-20",
-                "endDate": "2014-12-20",
-                "when": [{
-                    "days": [5,2,3,1]
-                }]
-            },{
-                "category": "General",
-                "ref": "APS",
-                "frequency": "weekly",
-                "repeat": 2,
-                "startDate": "2014-12-20",
-                "endDate": "2014-12-20",
-                "when": [{
-                    "days": [1,3]
-                }]
-            }];
-        } else if(infos.category === 'physiologicalHDIM') {
+        if(infos.category === 'parameters' && infos.subcategory === 'General') {
+            lists.dataprog = [
+                {
+                    "category": "general",
+                    "ref": "TEMP",
+                    "frequency": "weekly",
+                    "repeat": 5,
+                    "startDate": "2014-12-20",
+                    "endDate": "2014-12-20",
+                    "when": [
+                        { "days": [5,2,3,1] }]
+                },{
+                    "category": "General",
+                    "ref": "APS",
+                    "frequency": "weekly",
+                    "repeat": 2,
+                    "startDate": "2014-12-20",
+                    "endDate": "2014-12-20",
+                    "when": [
+                        { "days": [1,3] }]
+                }
+            ];
+        } else if(infos.category === 'parameters' && infos.subcategory === 'HDIM') {
             lists.dataprog = [{
                 "category": "HDIM",
                 "ref": "WEG",
@@ -76,11 +67,13 @@ var getList = function() {
         //ENDMOCK
 
         lists.parameters = JSON.parse(results.parameterList);
-
-        var i = 0,
-        leni = lists.parameters.items.length;
-
-        for(i; i<leni; i++) {
+        if(infos.subcategory) {
+            lists.parameters.items =  lists.parameters.items.filter( function(item) {
+                return item.category === infos.subcategory;
+            });
+        }
+        
+        for(var i = 0, leni = lists.parameters.items.length; i<leni; i++) {
             lists.parameters.items[i].labelLang = lists.parameters.items[i].label[infos.lang];
         }
 
@@ -265,3 +258,11 @@ var removeData = function(ref) {
     });
 
 };
+
+window.addEventListener("DOMContentLoaded", function() {
+    infos.category = document.querySelector('.param-category').innerText;
+    infos.subcategory = document.querySelector('.param-subcategory').innerText;
+    infos.lang = document.querySelector('#lang').innerText;
+    getList();
+
+}, false);
