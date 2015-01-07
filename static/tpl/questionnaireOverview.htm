@@ -71,6 +71,8 @@
 <div class="mainContainer">
 	<h2>{{questionnaire.label[lang]}}</h2>
 	<form autocomplete="off" name="questionnaire" onsubmit="checkForm(); return false;">
+		<input type="hidden" name="ref" value="{{questionnaire._id.toString()}}" />
+		<input type="hidden" name="score" value="{{questionnaire.score}}" />
 		{% for q in questionnaire.questions %}
 			<div class="itemContainer">
 				{% set number = "" %}

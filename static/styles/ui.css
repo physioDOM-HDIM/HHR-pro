@@ -210,7 +210,7 @@ div.col + div.col {
 	margin-left:5px; 
 }
 span, label { display:inline-block; }
-span.spacer { 
+span.spacer, .flex-line { 
 	-webkit-flex:1; 
 	-ms-flex:1; 
 	flex:1; 
@@ -301,8 +301,12 @@ input[type=radio] + input[type=radio] {
 	margin-left:10px;
 }
 
-.hidden{
+.hidden, .hide {
 	display: none;
+}
+
+.show {
+	display: block;
 }
 
 tsante-list { margin-top:30px; }
@@ -358,9 +362,45 @@ div[drawer] ul.menu {
 	font-weight: bold;
 }
 
+.right {
+	text-align: right;
+}
+
+.left {
+	text-align: left;
+}
+
+.float-right {
+	float: right;
+}
+
+.spacing-around, input.spacing-around {
+	margin: 0 10px;
+}
+
+i.icon {
+	background-size: cover;
+	width: 30px;
+	height: 30px;
+}
+
+.icon-delete {
+	background: url('../img/icons/delete.svg') no-repeat;
+}
+
+.spacing-nobutton {
+	width: 55px;
+	height: 19px;
+}
+
 div.row.title { height:40px; background:rgb(80, 80, 80); color:white; padding:0px 10px; margin-bottom:20px; }
 label.title { font-size:1.3em; width:initial !important }
 
+/* Polymer */
+zdk-input-date {
+    z-index:50;
+    position: static;
+}
 
 .btn {
 	background: transparent;

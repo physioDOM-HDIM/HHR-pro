@@ -31,7 +31,7 @@ core-toolbar {
 }
 
 core-drawer-panel {
-	top: 56px;
+	top: 64px;
 	bottom: 0px;
 	width: 100%;
 	height: auto;

@@ -19,7 +19,8 @@ var Account = require("./account"),
 	Directory = require("./directory"),
 	Beneficiaries = require("./beneficiaries"),
 	Lists = require("./lists"),
-	Questionnaires = require("./questionnaires");
+	Questionnaires = require("./questionnaires"),
+	DataRecords = require("./dataRecords");
 
 /**
  * PhysioDOM
@@ -96,6 +97,13 @@ function PhysioDOM( ) {
 		});
 	};
 
+	this.DataRecords = function( beneficiaryID ) {
+		return new promise( function(resolve, reject) {
+			logger.trace("DataRecords");
+			resolve( new DataRecords(beneficiaryID) );
+		});
+	};
+	
 	/**
 	 * return a promise with the Session Object
 	 */

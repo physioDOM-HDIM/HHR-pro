@@ -71,6 +71,30 @@ var IQuestionnaire = {
 			res.send(400, { error: "bad json format"});
 			next(false);
 		}
+	},
+	
+	getList : function(req, res, next ) {
+		logger.trace("Questionnaire list");
+		physioDOM.Questionnaires()
+			.then(function(questionnaires){
+				return questionnaires.getQuestionnaires();
+			})
+			.then( function(questionnaire) {
+				res.send( questionnaire );
+				next();
+			});
+	},
+	
+	getQuestionnaire : function(req, res, next) {
+		logger.trace("Questionnaire ", req.params.entryID );
+		physioDOM.Questionnaires()
+			.then(function(questionnaires){
+				return questionnaires.getQuestionnaireByID(req.params.entryID);
+			})
+			.then( function(questionnaire) {
+				res.send( questionnaire );
+				next();
+			});
 	}
 };
 

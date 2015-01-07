@@ -75,6 +75,9 @@ var beneficiarySchema = {
 				}
 			},
 			"additionalProperties": false
+		},
+		"threshold": {
+			type: "object"
 		}
 	},
 	"additionalProperties": false
