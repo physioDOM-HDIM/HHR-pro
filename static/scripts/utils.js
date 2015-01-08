@@ -1,0 +1,85 @@
+"use strict";
+
+function Utils() {
+
+}
+
+/**
+ * Promise for XHR with RSVP
+ */
+Utils.prototype.promiseXHR = function(method, url, statusOK, data) {
+    var promise = new RSVP.Promise(function(resolve, reject) {
+        var client = new XMLHttpRequest();
+        statusOK = statusOK ? statusOK : 200;
+        client.open(method, url);
+        client.onreadystatechange = function handler() {
+            if (this.readyState === this.DONE) {
+                if (this.status === statusOK) {
+                    resolve(this.response);
+                } else {
+                    reject(this);
+                }
+            }
+        };
+        client.send(data ? data : null);
+    });
+
+    return promise;
+};
+
+/**
+ * return the obj that matches the value of item in args
+ */
+Utils.prototype.findInObject = function(obj, item, value) {
+    var i = 0,
+        len = obj.length,
+        result = null;
+
+    for(i; i<len; i++) {
+        if(obj[i][item] === value) {
+            result = obj[i];
+            break;
+        }
+    }
+
+    return result;
+};
+
+/**
+ * getting Day name from Day Number
+ */
+Utils.prototype.getDayName = function(day) {
+  return ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][day];
+};
+
+/**
+ * Parsing string to check if its a date
+ */
+Utils.prototype.parseDate = function(str) {
+    if(!str) {
+        return false;
+    }
+
+	var match = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  	return (match !== null);
+};
+
+/**
+ * Check if an element as a className passed as arg defined
+ */
+
+Utils.prototype.hasClass = function(element, cls) {
+    return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
+};
+
+/**
+ * Toggle an element
+ */
+
+Utils.prototype.showHideElt = function(elt, className) {
+    if(this.hasClass(elt, 'hidden')) {
+        elt.className = className;
+    } else {
+        elt.className = className + ' hidden';
+    }
+};
