@@ -1,3 +1,5 @@
+var Utils = new Utils();
+
 function paginate(init, params) {
     var listPagerElt = document.querySelector("tsante-list");
 
@@ -56,3 +58,31 @@ function validFilter() {
     var params = getParams();
     paginate(true, params);
 }
+
+function init() {
+    // need to set the locale for moment ( read from cookie lang or default get the language from navigator )
+    var listPager = document.querySelector('tsante-list');
+    listPager.addEventListener('tsante-response', function(data) {
+        var list = data.detail.list;
+        var i = 0,
+            len = list.items.length;
+        for (i; i < len; i++) {
+            // the date is displayed in local time
+            list.items[i].datetime = moment(list.items[i].datetime).format("L LT") + " ("+moment(list.items[i].datetime).from(moment())+")" ;
+        }
+        this.render(list);
+    });
+}
+window.addEventListener("polymer-ready", init, false);
+
+var showDetail = function(elt) {
+	var message = elt.parentNode.parentNode,
+		messageDetail = message.querySelector('.message-detail'),
+		detailShow = elt.querySelector('.detail-show');
+		detailHide = elt.querySelector('.detail-hide');
+
+	//toggle elements
+	Utils.showHideElt(messageDetail, 'row message-detail');
+	Utils.showHideElt(detailShow, 'detail-show');
+	Utils.showHideElt(detailHide, 'detail-hide');
+};

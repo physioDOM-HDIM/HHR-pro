@@ -8,10 +8,12 @@
 <script src="/scripts/utils.js"></script>
 <script src="/scripts/modal.js"></script>
 <script src="/tpl/messageList.js"></script>
+<link rel="stylesheet" href="styles/message.css">
 
 <script src="/bower_components/zdk-calendar/form2js.js"></script>
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
 <link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
+
 {% endblock %}
 
 {% block content %}
@@ -107,8 +109,26 @@
 
 <tsante-list url="/api/beneficiary/messages" pg="1" auto="true" autoRender="false" unresolved id="tsanteList">
 <template is="auto-binding" repeat="{% raw %}{{item in list.items}}{% endraw %}">
+	{% raw %}
 	<div class="item">
+		<div class="row">
+			<h3>{{item.title}}</h3>
+			<div class="spacer"></div>
+			<button type="button" class="blue small" onclick="showDetail(this)">
+				<span class="detail-show">Show Detail</span>
+				<span class="detail-hide hidden">Hide Detail</span>
+			</button>
+		</div>
+		<div class="row spacing-around">
+			<div class="col bold">{{ item.datetime }}</div>
+			<div class="col">send by: {{item.sender.name.family}} {{item.sender.name.given}}</div>
+			<div class="col">status: {{item.status}}</div>
+		</div>
+		<div class="row message-detail hidden">
+			{{item.content}}
+		</div>
 	</div>
+	{% endraw %}
 </template>
 </tsante-list>
 
