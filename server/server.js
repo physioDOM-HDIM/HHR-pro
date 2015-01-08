@@ -335,7 +335,9 @@ server.post('/api/lists/:listName/:itemRef', ILists.activateItem );
 
 server.get( '/api/beneficiary/dataprog', IBeneficiary.getDataProg );
 server.get( '/api/beneficiary/dataprog/:category', IBeneficiary.getDataProgCategory );
-server.post( '/api/beneficiary/dataprog', IBeneficiary.setDataProg );
+server.get( '/api/beneficiaries/:entryID/dataprog/:category', IBeneficiary.getDataProgCategory );
+server.post('/api/beneficiary/dataprog', IBeneficiary.setDataProg );
+server.post('/api/beneficiaries/:entryID/dataprog', IBeneficiary.setDataProg );
 
 //DEV ONLY for creation & update
 server.get( '/api/questionnaires', IQuestionnaire.getList );
