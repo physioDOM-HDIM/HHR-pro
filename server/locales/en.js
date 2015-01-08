@@ -89,5 +89,8 @@
 	"New message": "New message",
 	"Cancel": "Cancel",
 	"Send": "Send",
-	"Message successfully send": "Message successfully send"
+	"Message successfully send": "Message successfully send",
+	"Title is empty": "Title is empty",
+	"Sender is missing": "Sender is missing",
+	"Content is empty": "Content is empty"
 }

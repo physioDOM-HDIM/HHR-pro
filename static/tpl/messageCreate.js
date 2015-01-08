@@ -38,9 +38,18 @@ window.addEventListener('DOMContentLoaded', function() {
 }, false);
 
 var sendMessage = function() {
-	var obj = form2js(document.forms.message);
+	var obj = form2js(document.forms.message),
+		message = {
+			title: obj.title,
+			author: obj.author,
+			content: obj.content
+		};
 
-	Utils.promiseXHR("POST", "/api/beneficiary/message", 200, JSON.stringify(obj)).then(function(response) {
+	if(!Utils.isValid(message)) {
+		return;
+	}
+
+	Utils.promiseXHR("POST", "/api/beneficiary/message", 200, JSON.stringify(message)).then(function(response) {
         new Modal('sendSuccess', function() {
         	window.location.href = "/message";
         });

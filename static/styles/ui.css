@@ -409,3 +409,9 @@ zdk-input-date {
     z-index:50;
     position: static;
 }
+
+.error-message {
+	color: red;
+	text-align: center;
+	width: 100%;
+}

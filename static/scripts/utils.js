@@ -83,3 +83,48 @@ Utils.prototype.showHideElt = function(elt, className) {
         elt.className = className + ' hidden';
     }
 };
+
+/**
+ * Hide element
+ */
+
+Utils.prototype.hideElt = function(elt) {
+    if(!this.hasClass(elt, 'hidden')) {
+        elt.className = elt.className + ' hidden';
+    }
+};
+
+/**
+ * Show element
+ */
+
+Utils.prototype.showElt = function(elt, className) {
+    elt.className = className;
+};
+
+/**
+ * Check Fields
+ */
+
+Utils.prototype.isValid = function(obj) {
+    var result = [];
+
+    for(var key in obj) {
+        var isValid = (obj[key] !== undefined && obj[key] !== null && obj[key] !== ''),
+            field = document.querySelector('.error-'+key);
+
+        this.hideElt(field);
+        if(!isValid) {
+            this.showElt(field, 'error-'+key);
+        }
+        result.push(isValid);
+    }
+
+    for(field in result) {
+        if(!result[field]) {
+            return false;
+        }
+    }
+
+    return true;
+}

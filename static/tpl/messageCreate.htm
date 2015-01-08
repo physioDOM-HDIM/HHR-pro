@@ -49,10 +49,12 @@
 		<label for="content">Content: </label> <div class="spacer limitInfo"></div>
 	</div>
 	<div class="row spaced-down">
-		<textarea name="content" id="content" onclick="this.focus();"></textarea>
+		<textarea name="content" id="content"></textarea>
 	</div>
 
 </form>
+
+{% include 'errorMessage.htm'%}
 
 <div class="row control actions">
 	<span class="spacer"></span>
