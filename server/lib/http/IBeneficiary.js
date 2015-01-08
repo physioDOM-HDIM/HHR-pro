@@ -451,6 +451,13 @@ var IBeneficiary = {
 			});
 	},
 
+	/**
+	 * Add a new data prescription to the selected beneficiary
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
 	setDataProg: function( req, res, next) {
 		logger.trace("getDataProgCategory");
 		var beneficiary;

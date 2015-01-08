@@ -23,7 +23,17 @@ var logger = new Logger("DataProgItem");
  */
 function DataProgItem( beneficiaryID ) {
 	this.subject = beneficiaryID;
-	
+
+	/**
+	 * create an object with the `prescription` object given
+	 * 
+	 * the object must check the dataProgItem schema
+	 * 
+	 * the promise, if succeed, send the object as saved in database.
+	 * 
+	 * @param prescription
+	 * @returns {promise}
+	 */
 	this.setup = function( prescription ) {
 		var that = this;
 
@@ -85,7 +95,16 @@ function DataProgItem( beneficiaryID ) {
 			}
 		});
 	}
-	
+
+	/**
+	 * Save the object in the measurePlan collection
+	 * 
+	 * it remove old entries for the reference parameter, and save the new one
+	 * 
+	 * the promise if succeed return the recorded object
+	 * 
+	 * @returns {promise}
+	 */
 	this.save = function() {
 		var that = this;
 		return new promise( function(resolve, reject) {
