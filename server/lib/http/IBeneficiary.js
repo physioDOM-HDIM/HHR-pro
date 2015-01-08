@@ -417,8 +417,61 @@ var IBeneficiary = {
 				res.send(err.code || 400, err);
 				next(false);
 			});
+	},
+
+	/**
+	 * Get the array of prescription measurements for one category
+	 * the category is declared in the url `/api/beneficiary/dataprog/:category`
+	 * 
+	 * category are "General","HDIM","symptom","questionnaire"
+	 *
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	getDataProgCategory: function( req, res, next) {
+		logger.trace("getDataProgCategory");
+		var beneficiary;
+		
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+			})
+			.then(function (selectedBeneficiary) {
+				beneficiary = selectedBeneficiary;
+				return beneficiary.getDataProgCategory( req.params.category );
+			})
+			.then( function( prescriptions ) {
+				res.send(prescriptions);
+				next();
+			})
+			.catch(function (err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	setDataProg: function( req, res, next) {
+		logger.trace("getDataProgCategory");
+		var beneficiary;
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+			})
+			.then(function (selectedBeneficiary) {
+				beneficiary = selectedBeneficiary;
+				return beneficiary.setDataProg( JSON.parse(req.body) );
+			})
+			.then( function( prescription ) {
+				res.send(prescription);
+				next();
+			})
+			.catch(function (err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
 	}
-	
 };
 
 module.exports = IBeneficiary;

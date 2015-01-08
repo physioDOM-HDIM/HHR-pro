@@ -334,6 +334,8 @@ server.put( '/api/lists/:listName/:itemRef', ILists.translateItem );
 server.post('/api/lists/:listName/:itemRef', ILists.activateItem );
 
 server.get( '/api/beneficiary/dataprog', IBeneficiary.getDataProg );
+server.get( '/api/beneficiary/dataprog/:category', IBeneficiary.getDataProgCategory );
+server.post( '/api/beneficiary/dataprog', IBeneficiary.setDataProg );
 
 //DEV ONLY for creation & update
 server.get( '/api/questionnaires', IQuestionnaire.getList );

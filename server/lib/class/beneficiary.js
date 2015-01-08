@@ -13,6 +13,8 @@ var RSVP = require("rsvp"),
 	ObjectID = require("mongodb").ObjectID,
 	beneficiarySchema = require("./../schema/beneficiarySchema"),
 	DataRecord = require("./dataRecord"),
+	DataProg = require("./dataProg"),
+	DataProgItem = require("./dataProgItem"),
 	dbPromise = require("./database");
 
 var logger = new Logger("Beneficiary");
@@ -683,7 +685,23 @@ function Beneficiary( ) {
 			logger.trace("getDataProg", that._id);
 			resolve( {} );
 		});
-	}
+	};
+
+	this.getDataProgCategory = function( category ) {
+		var that = this;
+		logger.trace("getDataProgCategory", that._id, category );
+		
+		var dataProg = new DataProg( that._id );
+		return dataProg.getCategory( category );
+	};
+	
+	this.setDataProg = function( prescription ) {
+		var that = this;
+		logger.trace("setDataProg", that._id, prescription.ref );
+
+		var dataProgItem = new DataProgItem( that._id );
+		return dataProgItem.setup( prescription );
+	};
 }
 
 module.exports = Beneficiary;
