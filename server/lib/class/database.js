@@ -53,6 +53,22 @@ module.exports = {
 		});
 	},
 	
+	getArray: function( cursor) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			that.count(cursor)
+				.then( function() {
+					cursor.toArray( function(err, results) {
+						if(err) {
+							reject(err);
+						} else {
+							resolve(results);
+						}
+					});
+				});
+		});
+	},
+	
 	findOne: function( db, collectionName, criteria, projection ) {
 		return new promise( function(resolve, reject) {
 			db.collection(collectionName).findOne(criteria, projection, function (err, doc) {
