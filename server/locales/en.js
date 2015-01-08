@@ -79,5 +79,11 @@
 	"Start at": "Start at",
 	"of the month": "of the month",
 	"at": "at",
-	"Select a questionnaire": "Select a questionnaire"
+	"Select a questionnaire": "Select a questionnaire",
+	"Message to Home": "Message to Home",
+	"Status": "Status",
+	"All": "All",
+	"Pending": "Pending",
+	"Read": "Read",
+	"Sender": "Sender"
 }

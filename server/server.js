@@ -368,6 +368,8 @@ server.get( '/datarecord/', IPage.dataRecord);
 server.get( '/datarecord/create', IPage.dataRecordCreate);
 server.get( '/datarecord/:dataRecordID', IPage.dataRecordDetail);
 
+server.get( '/messages', IPage.messageList);
+
 // Services
 server.get( '/services/health', IPage.basicHealthServices);
 server.get( '/services/health/create', IPage.basicHealthServiceCreate);

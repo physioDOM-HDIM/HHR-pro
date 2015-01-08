@@ -910,6 +910,62 @@ function IPage() {
 		}
 	};
 
+
+	/**
+	 * Message List - Message to Home
+	 */
+
+	this.messageList = function(req, res, next) {
+		logger.trace("messageList");
+		var html;
+
+		init(req);
+		var data = {
+			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
+		};
+
+		if( !req.session.beneficiary ) {
+			logger.debug("no beneficiary selected");
+			res.header('Location', '/beneficiaries');
+			res.send(302);
+			return next();
+		} else {
+			physioDOM.Beneficiaries()
+				.then(function (beneficiaries) {
+					return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+				})
+				.then(function (beneficiary) {
+					data.beneficiary = beneficiary;
+					return beneficiary._id ? beneficiary.getProfessionals() : null;
+				}).then(function (professionalList) {
+					if (professionalList) {
+						data.professionalList = professionalList;
+					}
+					data.lang = lang;
+
+					html = swig.renderFile(DOCUMENTROOT + '/static/tpl/messageList.htm', data, function (err, output) {
+						if (err) {
+							console.log("error", err);
+							console.log("output", output);
+							res.write(err);
+							res.end();
+							next();
+						} else {
+							sendPage(output, res, next);
+						}
+					});
+
+				})
+				.catch(function (err) {
+					logger.error(err);
+					res.write(err);
+					res.end();
+					next();
+				});
+		}
+	};
+
+
 	// -------------- Basic health services pages ---------------------
 
 	/**
