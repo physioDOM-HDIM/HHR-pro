@@ -338,6 +338,8 @@ server.get( '/api/beneficiary/dataprog/:category', IBeneficiary.getDataProgCateg
 server.get( '/api/beneficiaries/:entryID/dataprog/:category', IBeneficiary.getDataProgCategory );
 server.post('/api/beneficiary/dataprog', IBeneficiary.setDataProg );
 server.post('/api/beneficiaries/:entryID/dataprog', IBeneficiary.setDataProg );
+server.del( '/api/beneficiary/dataprog/:dataProgItemID', IBeneficiary.removeDataProg );
+server.del( '/api/beneficiaries/:entryID/dataprog/:dataProgItemID', IBeneficiary.removeDataProg );
 
 //DEV ONLY for creation & update
 server.get( '/api/questionnaires', IQuestionnaire.getList );

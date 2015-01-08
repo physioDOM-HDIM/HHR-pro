@@ -723,6 +723,14 @@ function Beneficiary( ) {
 		var dataProgItem = new DataProgItem( that._id );
 		return dataProgItem.setup( prescription );
 	};
+	
+	this.delDataProg = function( dataProgItemID ) {
+		var that = this;
+		logger.trace("delDataProg", that._id, dataProgItemID );
+
+		var dataProg = new DataProg( that._id );
+		return dataProg.remove( dataProgItemID );
+	}
 }
 
 module.exports = Beneficiary;

@@ -478,6 +478,39 @@ var IBeneficiary = {
 				res.send(err.code || 400, err);
 				next(false);
 			});
+	},
+
+	/**
+	 * Delete a existing data prescription
+	 * 
+	 * the selected prescription is given by the url : `/api/beneficiary/dataprog/:dataProgItemID`
+	 * 
+	 * on success send a 200 HTTP code, else send a 4xx HTTP Code
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	removeDataProg: function( req, res, next ) {
+		logger.trace("removeDataProg");
+		var beneficiary;
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+			})
+			.then(function (selectedBeneficiary) {
+				beneficiary = selectedBeneficiary;
+				return beneficiary.delDataProg( req.params.dataProgItemID );
+			})
+			.then( function( done ) {
+				res.send(200, { err: 200, message: "item successfully deleted"});
+				next();
+			})
+			.catch(function (err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
 	}
 };
 
