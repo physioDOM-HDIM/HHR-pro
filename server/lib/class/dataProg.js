@@ -25,6 +25,14 @@ var logger = new Logger("DataProg");
 function DataProg( beneficiaryID ) {
 	this.subject = beneficiaryID;
 
+	this.getCategory = function( category ) {
+		if( ["General","HDIM","symptom","questionnaire"].indexOf( category ) === -1 ) {
+			throw {code: 405, message: "unknown category"};
+		}
+
+		var cursor = physioDOM.db.collection("measurePlan").find( { category: category, subject: this.subject } );
+		return dbPromise.getArray(cursor);
+	};
 }
 
 module.exports = DataProg;
