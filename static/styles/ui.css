@@ -397,6 +397,10 @@ div.row.spaced {
 	margin: 5px 0;
 }
 
+.flex-right {
+	justify-content: flex-end;
+}
+
 div.row.title { height:40px; background:rgb(80, 80, 80); color:white; padding:0px 10px; margin-bottom:20px; }
 label.title { font-size:1.3em; width:initial !important }
 

@@ -85,5 +85,8 @@
 	"All": "All",
 	"Pending": "Pending",
 	"Read": "Read",
-	"Sender": "Sender"
+	"Sender": "Sender",
+	"New message": "New message",
+	"Cancel": "Cancel",
+	"Send": "Send"
 }

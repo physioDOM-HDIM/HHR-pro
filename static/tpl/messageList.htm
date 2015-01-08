@@ -8,7 +8,7 @@
 <script src="/scripts/utils.js"></script>
 <script src="/scripts/modal.js"></script>
 <script src="/tpl/messageList.js"></script>
-<link rel="stylesheet" href="styles/message.css">
+<link rel="stylesheet" href="/styles/message.css">
 
 <script src="/bower_components/zdk-calendar/form2js.js"></script>
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
@@ -121,7 +121,7 @@
 		</div>
 		<div class="row spacing-around">
 			<div class="col bold">{{ item.datetime }}</div>
-			<div class="col">send by: {{item.sender.name.family}} {{item.sender.name.given}}</div>
+			<div class="col">send by: {{item.author.name.family}} {{item.author.name.given}}</div>
 			<div class="col">status: {{item.status}}</div>
 		</div>
 		<div class="row message-detail hidden">
@@ -131,6 +131,11 @@
 	{% endraw %}
 </template>
 </tsante-list>
+
+<div class="row control actions">
+	<span class="spacer"></span>
+	<a href="/message/create"><button class="blue big">{{ "New message"|i18n }}</button></a>
+</div>
 
 {% include 'modal.htm' %}
 

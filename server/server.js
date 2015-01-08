@@ -322,6 +322,10 @@ server.put( '/api/beneficiary/datarecords/:dataRecordID', IBeneficiary.updateDat
 server.post('/api/beneficiary/thresholds', IBeneficiary.setThreshold);
 server.get( '/api/beneficiary/thresholds', IBeneficiary.getThreshold);
 //MOCK
+server.post('/api/beneficiary/message', function(req, res) {
+	res.send(200);
+	next();
+})
 server.get( '/api/beneficiary/messages', function(req, res) {
 	var data = {
 		"nb":3,
@@ -332,7 +336,7 @@ server.get( '/api/beneficiary/messages', function(req, res) {
 				"_id":"54ad02c9d36036b03576cd3b",
 				"title":"Message for Ben",
 				"datetime":"2015-01-07T09:56:25.263Z",
-				"sender": {
+				"author": {
 					"name": {
 						"given": 'Sasha',
 						"family": 'Touille'
@@ -345,7 +349,7 @@ server.get( '/api/beneficiary/messages', function(req, res) {
 				"_id":"54acf2f5c8c05d852d5d8829",
 				"title":"Waiting for results",
 				"datetime":"2015-01-07T08:48:53.307Z",
-				"sender": {
+				"author": {
 					"name": {
 						"given": 'Kelly',
 						"family": 'Diote'
@@ -358,7 +362,7 @@ server.get( '/api/beneficiary/messages', function(req, res) {
 				"_id":"54aac3f8c7f65b09440cc306",
 				"title":"New affectation",
 				"datetime":"2015-01-05T17:03:52.012Z",
-				"sender": {
+				"author": {
 					"name": {
 						"given": 'Alain',
 						"family": 'Proviste'
@@ -420,7 +424,8 @@ server.get( '/datarecord/', IPage.dataRecord);
 server.get( '/datarecord/create', IPage.dataRecordCreate);
 server.get( '/datarecord/:dataRecordID', IPage.dataRecordDetail);
 
-server.get( '/messages', IPage.messageList);
+server.get( '/message', IPage.messageList);
+server.get( '/message/create', IPage.messageCreate);
 
 // Services
 server.get( '/services/health', IPage.basicHealthServices);
