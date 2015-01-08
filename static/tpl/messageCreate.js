@@ -38,6 +38,13 @@ window.addEventListener('DOMContentLoaded', function() {
 }, false);
 
 var sendMessage = function() {
-	
-	window.location.href = "/message";
+	var obj = form2js(document.forms.message);
+
+	Utils.promiseXHR("POST", "/api/beneficiary/message", 200, JSON.stringify(obj)).then(function(response) {
+        new Modal('sendSuccess', function() {
+        	window.location.href = "/message";
+        });
+    }, function(error) {
+        new Modal('errorOccured');
+    });
 };

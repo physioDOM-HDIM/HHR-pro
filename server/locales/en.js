@@ -88,5 +88,6 @@
 	"Sender": "Sender",
 	"New message": "New message",
 	"Cancel": "Cancel",
-	"Send": "Send"
+	"Send": "Send",
+	"Message successfully send": "Message successfully send"
 }

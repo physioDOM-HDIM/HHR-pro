@@ -27,6 +27,17 @@ function Modal (type, callback) {
         }]
     };
 
+    content.sendSuccess = {
+        title: "trad_send",
+        content: "trad_success_send",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                callback();
+            }
+        }]
+    };
+
     content.updateSuccess = {
         title: "trad_update",
         content: "trad_success_update",

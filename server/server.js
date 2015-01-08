@@ -323,8 +323,8 @@ server.post('/api/beneficiary/thresholds', IBeneficiary.setThreshold);
 server.get( '/api/beneficiary/thresholds', IBeneficiary.getThreshold);
 //MOCK
 server.post('/api/beneficiary/message', function(req, res) {
+	console.log(req.body);
 	res.send(200);
-	next();
 })
 server.get( '/api/beneficiary/messages', function(req, res) {
 	var data = {
@@ -375,7 +375,6 @@ server.get( '/api/beneficiary/messages', function(req, res) {
 	};
 
 	res.send(data);
-	next();
 });
 //ENDMOCK
 server.get( '/api/sessions/', getSessions);
