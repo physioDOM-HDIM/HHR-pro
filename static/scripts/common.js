@@ -58,11 +58,6 @@ function initFrame() {
 	
 	if(parent.setTitle) {
 		parent.setTitle();
-
-		var nav = parent.document.querySelector("nav");
-		if (window.innerWidth < 993 && nav.classList.contains("show")) {
-			parent.toggleNav();
-		}
 	}
 }
 
