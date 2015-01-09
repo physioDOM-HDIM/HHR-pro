@@ -13,6 +13,7 @@ var RSVP = require("rsvp"),
 	ObjectID = require("mongodb").ObjectID,
 	beneficiarySchema = require("./../schema/beneficiarySchema"),
 	DataRecord = require("./dataRecord"),
+	Messages = require("./messages"),
 	dbPromise = require("./database");
 
 var logger = new Logger("Beneficiary");
@@ -349,6 +350,23 @@ function Beneficiary( ) {
 		});
 	};
 
+	this.hasProfessional = function( professionalID ) {
+		var that = this;
+		if( that.professionals === undefined ) {
+			that.professionals = [];
+		}
+		return new promise( function(resolve, reject) {
+			logger.trace("hasProfessional", professionalID);
+			var hasProfessional = false;
+			that.professionals.forEach( function(professional) {
+				if( professional.professionalID === professionalID.toString() ) { 
+					hasProfessional = true;
+				}
+			})
+			resolve( hasProfessional );
+		});
+	};
+	
 	/**
 	 * Attach a professional to the beneficiary
 	 * 
@@ -510,18 +528,6 @@ function Beneficiary( ) {
 		});
 	};
 
-	this.getMessages = function() {
-		return new promise( function(resolve, reject) {
-			logger.trace("getMessages");
-		});
-	};
-
-	this.getIPMessages = function() {
-		return new promise( function(resolve, reject) {
-			logger.trace("getIPMessages");
-		});
-	};
-
 	/**
 	 * on resolve return the list of dataRecords of the current beneficiary
 	 * 
@@ -674,6 +680,26 @@ function Beneficiary( ) {
 					reject(err);
 				});
 		});
+	};
+	
+	this.getMessages = function( pg, offset, sort, sortDir, filter ) {
+		logger.trace("getMessages");
+
+		var messages = new Messages( this._id );
+		return messages.list( pg, offset, sort, sortDir, filter );
+	};
+
+	/**
+	 * Create a message to home
+	 * 
+	 * @param professionalID
+	 * @param msg
+	 */
+	this.createMessage = function( session, professionalID, msg ) {
+		logger.trace("setMessage");
+
+		var messages = new Messages( this._id );
+		return messages.create( session, professionalID, msg );
 	};
 }
 
