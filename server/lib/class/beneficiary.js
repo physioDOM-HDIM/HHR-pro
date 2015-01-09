@@ -14,6 +14,8 @@ var RSVP = require("rsvp"),
 	beneficiarySchema = require("./../schema/beneficiarySchema"),
 	DataRecord = require("./dataRecord"),
 	Messages = require("./messages"),
+	DataProg = require("./dataProg"),
+	DataProgItem = require("./dataProgItem"),
 	dbPromise = require("./database"),
 	moment = require("moment");
 
@@ -883,6 +885,61 @@ function Beneficiary( ) {
 				.catch( reject );
 		});
 	};
+
+
+	/**
+	 * getDataProg
+	 * 
+	 * @returns {promise}
+	 */
+	this.getDataProg = function() {
+		var that = this;
+
+		return new promise( function(resolve, reject) {
+			logger.trace("getDataProg", that._id);
+			resolve( {} );
+		});
+	};
+
+	/**
+	 * get the data prescription for a given category
+	 * 
+	 * category is one of "General","HDIM","symptom","questionnaire"
+	 * 
+	 * the promise, if succeed, return an array of all data prescription.
+	 * 
+	 * @param category
+	 * @returns {*}
+	 */
+	this.getDataProgCategory = function( category ) {
+		var that = this;
+		logger.trace("getDataProgCategory", that._id, category );
+		
+		var dataProg = new DataProg( that._id );
+		return dataProg.getCategory( category );
+	};
+
+	/**
+	 * add a data prescription`defined by the given `prescription` object
+	 *
+	 * @param prescription 
+	 * @returns {promise}
+	 */
+	this.setDataProg = function( prescription ) {
+		var that = this;
+		logger.trace("setDataProg", that._id, prescription.ref );
+
+		var dataProgItem = new DataProgItem( that._id );
+		return dataProgItem.setup( prescription );
+	};
+	
+	this.delDataProg = function( dataProgItemID ) {
+		var that = this;
+		logger.trace("delDataProg", that._id, dataProgItemID );
+
+		var dataProg = new DataProg( that._id );
+		return dataProg.remove( dataProgItemID );
+	}
 }
 
 module.exports = Beneficiary;

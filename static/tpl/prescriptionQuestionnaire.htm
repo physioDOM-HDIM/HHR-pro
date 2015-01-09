@@ -1,0 +1,94 @@
+{% extends './page.htm' %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+{% parent %}
+<script src="/bower_components/mustache/mustache.js"></script>
+<script src="/bower_components/rsvp/rsvp.min.js"></script>
+<script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
+<script src="/bower_components/zdk-calendar/form2js.js"></script>
+<script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
+<script src="/tpl/prescriptionQuestionnaire.js"></script>
+
+<link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
+<link href="https://fontastic.s3.amazonaws.com/nwyYQQLXDKry2PeZf58hxC/icons.css" rel="stylesheet">
+<link rel="stylesheet" href="/styles/prescriptionData.css">
+{% endblock %}
+
+{% block content %}
+
+
+<div class="hidden" id="lang">{{ lang }}</div>
+<div class="row title">
+    <label class="title">
+        {{title}}
+    </label>
+</div>
+
+<form name="questionnaire">
+	<div class="questionnaire-prog-list"></div>
+</form>
+
+<div class="row control">
+	<span class="spacer"></span>
+	<button type="button" class="green" onclick="saveData()">Save</button>
+</div>
+
+<script type="template" id="tpl-questionnaire-prog">
+	{% raw %}
+	{{#data}}
+	<div class="row">
+		<div class="col col05 bold data-text">{{labelLang}}</div>
+		<div class="col">
+			<label>Frequency</label>
+			<input type="text" name="questionnaire[{{idx}}].frequency" value="{{frequency}}"/>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col col05"></div>
+		<div class="col">
+			<label>Comment</label>
+			<input type="text" name="questionnaire[{{idx}}].comment" value="{{comment}}">
+		</div>
+	</div>
+	<div class="row">
+		<div class="col col05"></div>
+		<div class="col">
+			<label>Dates</label>
+			<ul class="dates-list">
+				{{#dates}}
+					{{#setAddedDate}}{{.}}{{/setAddedDate}}
+				{{/dates}}
+			</ul>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col col05"></div>
+		<div class="col">
+			<label></label>
+			<zdk-input-date id="date" name="newDate" value="" style="z-index:100"></zdk-input-date>
+			<button type="button" class="small blue" onclick="addDate(this, {{idx}})">Add</button>
+		</div>
+	</div>
+
+	<hr>
+	{{/data}}
+	{% endraw %}
+</script>
+
+<script type="template" id="dateAddedTpl">
+	{% raw %}
+	<li>
+		<button type="button" class="btn btn-delete" onclick="removeDate(this)">
+			<i class="icon icon-delete-circle"></i>
+		</button>
+		{{dateValue}}
+		<input type="hidden" name="questionnaire[{{idx}}].dates[{{dateIdx}}]" value="{{dateValue}}">
+	</li>
+	{% endraw %}
+</script>
+
+{% include "./modal.htm" %}
+{% endblock %}
+

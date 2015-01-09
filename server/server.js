@@ -343,6 +343,14 @@ server.post('/api/lists/:listName', ILists.addItem );
 server.put( '/api/lists/:listName/:itemRef', ILists.translateItem );
 server.post('/api/lists/:listName/:itemRef', ILists.activateItem );
 
+server.get( '/api/beneficiary/dataprog', IBeneficiary.getDataProg );
+server.get( '/api/beneficiary/dataprog/:category', IBeneficiary.getDataProgCategory );
+server.get( '/api/beneficiaries/:entryID/dataprog/:category', IBeneficiary.getDataProgCategory );
+server.post('/api/beneficiary/dataprog', IBeneficiary.setDataProg );
+server.post('/api/beneficiaries/:entryID/dataprog', IBeneficiary.setDataProg );
+server.del( '/api/beneficiary/dataprog/:dataProgItemID', IBeneficiary.removeDataProg );
+server.del( '/api/beneficiaries/:entryID/dataprog/:dataProgItemID', IBeneficiary.removeDataProg );
+
 //DEV ONLY for creation & update
 server.get( '/api/questionnaires', IQuestionnaire.getList );
 server.get( '/api/questionnaires/:entryID', IQuestionnaire.getQuestionnaire );
@@ -385,6 +393,11 @@ server.get( '/message/create', IPage.messageCreate);
 // Services
 server.get( '/services/health', IPage.basicHealthServices);
 server.get( '/services/health/create', IPage.basicHealthServiceCreate);
+
+server.get( '/prescription/general', IPage.prescriptionDataGeneral);
+server.get( '/prescription/hdim', IPage.prescriptionDataHDIM);
+server.get( '/prescription/symptom', IPage.prescriptionDataSymptom);
+server.get( '/prescription/questionnaire', IPage.prescriptionQuestionnaire);
 
 server.get(/\/[^api|components\/]?$/, function(req, res, next) {
 	logger.trace("index");

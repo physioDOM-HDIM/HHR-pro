@@ -1,0 +1,226 @@
+{% extends './page.htm' %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+{% parent %}
+<script src="/bower_components/mustache/mustache.js"></script>
+<script src="/bower_components/rsvp/rsvp.min.js"></script>
+<script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
+<script src="/bower_components/zdk-calendar/form2js.js"></script>
+<script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
+<script src="/tpl/prescriptionData.js"></script>
+
+<link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
+<link rel="stylesheet" href="/styles/prescriptionData.css">
+{% endblock %}
+
+{% block content %}
+
+<div class="hidden" id="lang">{{ lang }}</div>
+<div class="hidden param-category">{{ category }}</div>
+<div class="hidden param-list">{{ parameterList }}</div>
+<div class="row title">
+    <label class="title">
+        {{title}}
+    </label>
+</div>
+
+<div class="dataprog-list">
+</div>
+
+<div class="row control">
+	<span class="spacer"></span>
+	<button type="button" class="blue" onclick="showForm()">Add</button>
+</div>
+
+<zdk-modal id="editModal" closebutton="false">
+	<form name="dataprog" id="dataprog-form">
+
+	</form>
+</zdk-modal>
+
+<script type="template" id="tpl-dataprog">
+	{% raw %}
+	{{#param}}
+	<div class="row">
+		<div class="col col05 bold data-text">{{labelLang}}</div>
+		<div class="col">
+			<label>Min Threshold</label><span class="data-min">{{#threshold}}{{min}}{{/threshold}}</span>
+		</div>
+		<div class="col">
+			<label>Max Threshold</label><span class="data-max">{{#threshold}}{{max}}{{/threshold}}</span>
+		</div>
+	</div>
+	{{/param}}
+	<div class="row">
+		<div class="col col05"></div>
+		<div class="col">
+			<label>Start date</label><span>{{ data.startDate }}</span>
+		</div>
+		<div class="col">
+			<label>End date</label><span>{{ data.endDate }}</span>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col col05"></div>
+		<div class="col">
+			<label>
+				{{#data.hasDetail}}
+					Every {{data.repeat}} {{data.frequencyType}}
+				{{/data.hasDetail}}
+				{{^data.hasDetail}}
+					Everyday
+				{{/data.hasDetail}}
+			</label>
+			<ul class="data-list">
+			{{#data}}
+				{{#when}}
+					{{#days}}
+						<li>{{#getDay}}{{.}}{{/getDay}}</li>
+					{{/days}}
+				{{/when}}
+			{{/data}}
+			</ul>
+		</div>
+		<div class="col"></div>
+	</div>
+
+	{{#data.hasMoreDetail}}
+	<div class="row">
+		<div class="col col05"></div>
+		<div class="col">
+			The {{data.when.weekNumber}} week from the {{data.when.order}} of the month
+		</div>
+		<div class="col"></div>
+	</div>
+	{{/data.hasMoreDetail}}
+	<div class="row control">
+		<span class="spacer"></span>
+		<button type="button" onclick="showForm('{{data.ref}}')" class="small blue">Edit</button>
+	</div>
+
+	<hr>
+	{% endraw %}
+</script>
+
+<script type="template" id="tpl-form">
+	<h2>{{title}}</h2>
+	{% raw %}
+	<div class="row">
+		<label>Type of data</label>
+
+		<select name="ref" onchange="updateParam(this)" id="ref-select">
+			{{#paramList}}
+			<option value="{{ref}}" {{#selection}}{{ref}}{{/selection}}>{{labelLang}}</option>
+			{{/paramList}}
+		</select>
+
+	</div>
+
+	{{#param}}
+	<div class="row">
+		<div class="col">
+			<label>Min Threshold</label>
+			<span class="min-threshold">{{#threshold}}{{min}}{{/threshold}}</span>
+		</div>
+
+		<div class="col">
+			<label>Max Threshold</label>
+			<span class="max-threshold">{{#threshold}}{{max}}{{/threshold}}</span>
+		</div>
+	</div>
+	{{/param}}
+
+	<div class="row">
+		<div class="col">
+			<label>Start date</label>
+			<zdk-input-date name="startDate" value="{{data.startDate}}" style="z-index:100"></zdk-input-date>
+		</div>
+		<div class="col">
+			<label>End date</label>
+			<zdk-input-date name="endDate" value="{{data.endDate}}" style="z-index:100"></zdk-input-date>
+		</div>
+	</div>
+
+	<div class="row">
+		<label>Frequency</label>
+	</div>
+
+	<div class="row frequency-choice">
+		<input type="radio" name="frequency" onchange="showOptions('monthly')" value="monthly" 
+		{{#getFrequencyDefault}}monthly{{/getFrequencyDefault}}><label>Monthly</label>
+		<input type="radio" name="frequency" onchange="showOptions('weekly')" value="weekly"
+		{{#getFrequencyDefault}}weekly{{/getFrequencyDefault}}><label>Weekly</label>
+		<input type="radio" name="frequency" onchange="showOptions('daily')" value="daily"
+		{{#getFrequencyDefault}}daily{{/getFrequencyDefault}}><label>Daily</label>
+	</div>
+
+	<div class="frequency-options"></div>
+
+	<hr>
+
+
+	<div class="row control">
+		<span class="spacer"></span>
+		<button type="button" onclick="closeForm()" class="red">Cancel</button>
+		<button type="button" onclick="removeData('{{data._id}}')" class="red">Delete</button>
+		<button type="button" onclick="saveData()" class="green">Save</button>
+	</div>
+	{% endraw %}
+</script>
+
+{% raw %}
+<script type="template" id="tpl-option-weekly">
+
+	<div class="row">
+		Every <input type="number" name="repeat" class="option-repeat" value="{{data.repeat}}"> Week
+	</div>
+	<div class="row">
+		<input type="checkbox" name="when.days[]" value="1" {{#getDaysDefault}}1{{/getDaysDefault}}/>Mon
+		<input type="checkbox" name="when.days[]" value="2" {{#getDaysDefault}}2{{/getDaysDefault}}/>Tue
+		<input type="checkbox" name="when.days[]" value="3" {{#getDaysDefault}}3{{/getDaysDefault}}/>Wed
+		<input type="checkbox" name="when.days[]" value="4" {{#getDaysDefault}}4{{/getDaysDefault}}/>Thu
+		<input type="checkbox" name="when.days[]" value="5" {{#getDaysDefault}}5{{/getDaysDefault}}/>Fri
+		<input type="checkbox" name="when.days[]" value="6" {{#getDaysDefault}}6{{/getDaysDefault}}/>Sat
+		<input type="checkbox" name="when.days[]" value="0" {{#getDaysDefault}}0{{/getDaysDefault}}/>Sun
+	</div>
+
+</script>
+
+<script type="template" id="tpl-option-monthly">
+
+	<div class="row">
+		Every <input type="number" name="repeat" class="option-repeat" value="{{data.repeat}}"> Month
+	</div>
+	<div class="row">
+		The <select name="when.week" class="spacing-around">
+			<option value="1">first</option>
+			<option value="2">second</option>
+			<option value="3">third</option>
+			<option value="4">fourth</option>
+		</select> week
+	</div>
+	<div class="row">
+		from the <select name="when.order" class="spacing-around">
+			<option value="">beginning</option>
+			<option value="-">end</option>
+		</select> of the month
+	</div>
+	<div class="row">
+		<input type="checkbox" name="when.days[]" value="1" {{#getDaysDefault}}1{{/getDaysDefault}}/>Mon
+		<input type="checkbox" name="when.days[]" value="2" {{#getDaysDefault}}2{{/getDaysDefault}}/>Tue
+		<input type="checkbox" name="when.days[]" value="3" {{#getDaysDefault}}3{{/getDaysDefault}}/>Wed
+		<input type="checkbox" name="when.days[]" value="4" {{#getDaysDefault}}4{{/getDaysDefault}}/>Thu
+		<input type="checkbox" name="when.days[]" value="5" {{#getDaysDefault}}5{{/getDaysDefault}}/>Fri
+		<input type="checkbox" name="when.days[]" value="6" {{#getDaysDefault}}6{{/getDaysDefault}}/>Sat
+		<input type="checkbox" name="when.days[]" value="0" {{#getDaysDefault}}0{{/getDaysDefault}}/>Sun
+	</div>
+
+</script>
+{% endraw %}
+
+
+{% include "./modal.htm" %}
+{% endblock %}
+

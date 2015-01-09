@@ -1,0 +1,36 @@
+ul.data-list{
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+}
+
+div.col05 {
+	-webkit-flex:0.5;
+	-ms-flex:0.5;
+	flex:0.5;
+}
+
+.modalContainer .row {
+	min-height: 35px;
+}
+
+.modalContainer .option-repeat {
+	width: 70px;
+	margin: 0 20px;
+}
+
+.frequency-choice, .frequency-options {
+	margin-left: 150px;
+}
+
+/* Questionnaires */
+ul.dates-list {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+}
+
+ul.dates-list li {
+	display: inline-block;
+	margin: 0 10px;
+}

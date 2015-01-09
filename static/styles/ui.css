@@ -343,7 +343,7 @@ ul.admin {
 }
 
 div[drawer] {
-	display:-ms-flexbox; 
+	display:-ms-flexbox;
 	display:-webkit-flex;
 	display: flex;
 	-webkit-flex-direction: column;
@@ -418,4 +418,28 @@ zdk-input-date {
 	color: red;
 	text-align: center;
 	width: 100%;
+}
+
+.btn {
+	background: transparent;
+	min-width: initial;
+	height: auto;
+	cursor: pointer;
+	display: inline-block;
+	text-align: center;
+	outline:none;
+}
+
+.btn-delete {
+	color: #e74c3c;
+}
+
+.btn-delete:hover {
+	color: #c0392b;
+}
+
+.icon {
+	display: inline-block;
+	font-size: 1.6em;
+	vertical-align: middle;
 }
