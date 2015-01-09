@@ -16,55 +16,6 @@ var getList = function() {
         };
 
     RSVP.hash(promises).then(function(results) {
-        // //MOCK to delete when integrating with backend
-        // if(infos.category === 'parameters' && infos.subcategory === 'General') {
-        //     lists.dataprog = [
-        //         {
-        //             "category": "general",
-        //             "ref": "TEMP",
-        //             "frequency": "weekly",
-        //             "repeat": 5,
-        //             "startDate": "2014-12-20",
-        //             "endDate": "2014-12-20",
-        //             "when": [
-        //                 { "days": [5,2,3,1] }]
-        //         },{
-        //             "category": "General",
-        //             "ref": "APS",
-        //             "frequency": "weekly",
-        //             "repeat": 2,
-        //             "startDate": "2014-12-20",
-        //             "endDate": "2014-12-20",
-        //             "when": [
-        //                 { "days": [1,3] }]
-        //         }
-        //     ];
-        // } else if(infos.category === 'parameters' && infos.subcategory === 'HDIM') {
-        //     lists.dataprog = [{
-        //         "category": "HDIM",
-        //         "ref": "WEG",
-        //         "frequency": "monthly",
-        //         "repeat": 4,
-        //         "startDate": "2014-12-20",
-        //         "endDate": "2014-12-20",
-        //         "when": [{
-        //             "days": [2,1]
-        //         }]
-        //     }];
-        // } else if(infos.category === 'symptom') {
-        //     lists.dataprog = [{
-        //         "category": "symptom",
-        //         "ref": "PAIN",
-        //         "frequency": "monthly",
-        //         "repeat": 4,
-        //         "startDate": "2014-12-20",
-        //         "endDate": "2014-12-20",
-        //         "when": [{
-        //             "days": [2,3,1]
-        //         }]
-        //     }];
-        // }
-        // //ENDMOCK
         lists.dataprog = JSON.parse(results.dataprog);
         lists.parameters = JSON.parse(results.parameterList);
         lists.thresholds = JSON.parse(results.thresholds);
