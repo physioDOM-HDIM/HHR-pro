@@ -182,5 +182,20 @@
 	"From Consultation": "From Consultation",
 	"Are you sure you want to save those changes ?": "Are you sure you want to save those changes ?",
 	"Ok": "Ok",
-	"Update": "Update"
+	"Update": "Update",
+	"Message to Home": "Message to Home",
+	"Status": "Status",
+	"All": "All",
+	"Pending": "Pending",
+	"Read": "Read",
+	"Sender": "Sender",
+	"New message": "New message",
+	"Send": "Send",
+	"Message successfully send": "Message successfully send",
+	"Title is empty": "Title is empty",
+	"Sender is missing": "Sender is missing",
+	"Content is empty": "Content is empty",
+	"transmitting": "transmitting",
+	"read": "read",
+	"Transmitting": "Transmitting"
 }

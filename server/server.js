@@ -321,7 +321,14 @@ server.post('/api/beneficiary/datarecord', IBeneficiary.newDataRecord );
 server.put( '/api/beneficiary/datarecords/:dataRecordID', IBeneficiary.updateDataRecord );
 server.post('/api/beneficiary/thresholds', IBeneficiary.setThreshold);
 server.get( '/api/beneficiary/thresholds', IBeneficiary.getThreshold);
+//MOCK
 
+server.get( '/api/beneficiary/messages', IBeneficiary.getMessages );
+server.get( '/api/beneficiaries/:entryID/messages', IBeneficiary.getMessages );
+server.post('/api/beneficiary/messages', IBeneficiary.createMessage );
+server.post('/api/beneficiaries/:entryID/messages', IBeneficiary.createMessage );
+
+//ENDMOCK
 server.get( '/api/sessions/', getSessions);
 
 server.get( '/api/lists', ILists.getLists );
@@ -367,6 +374,9 @@ server.get( '/questionnaire/:questionnaireName', IPage.questionnaireOverview);
 server.get( '/datarecord/', IPage.dataRecord);
 server.get( '/datarecord/create', IPage.dataRecordCreate);
 server.get( '/datarecord/:dataRecordID', IPage.dataRecordDetail);
+
+server.get( '/message', IPage.messageList);
+server.get( '/message/create', IPage.messageCreate);
 
 // Services
 server.get( '/services/health', IPage.basicHealthServices);
