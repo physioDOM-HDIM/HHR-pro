@@ -10,73 +10,70 @@ var utils = new Utils(),
 
 var getList = function() {
     var promises = {
-            dataprog: utils.promiseXHR("GET", "/api/beneficiary/dataprog",200),
-            parameterList: utils.promiseXHR("GET", "/api/lists/"+infos.category, 200)
+            dataprog: utils.promiseXHR("GET", "/api/beneficiary/dataprog/"+infos.category,200),
+            parameterList: utils.promiseXHR("GET", "/api/lists/"+infos.paramList, 200),
+            thresholds: utils.promiseXHR("GET", "/api/beneficiary/thresholds", 200)
         };
 
     RSVP.hash(promises).then(function(results) {
-
-        //MOCK to delete when integrating with backend
-        if(infos.category === 'parameters' && infos.subcategory === 'General') {
-            lists.dataprog = [
-                {
-                    "category": "general",
-                    "ref": "TEMP",
-                    "frequency": "weekly",
-                    "repeat": 5,
-                    "startDate": "2014-12-20",
-                    "endDate": "2014-12-20",
-                    "when": [
-                        { "days": [5,2,3,1] }]
-                },{
-                    "category": "General",
-                    "ref": "APS",
-                    "frequency": "weekly",
-                    "repeat": 2,
-                    "startDate": "2014-12-20",
-                    "endDate": "2014-12-20",
-                    "when": [
-                        { "days": [1,3] }]
-                }
-            ];
-        } else if(infos.category === 'parameters' && infos.subcategory === 'HDIM') {
-            lists.dataprog = [{
-                "category": "HDIM",
-                "ref": "WEG",
-                "frequency": "monthly",
-                "repeat": 4,
-                "startDate": "2014-12-20",
-                "endDate": "2014-12-20",
-                "when": [{
-                    "days": [2,1]
-                }]
-            }];
-        } else if(infos.category === 'symptom') {
-            lists.dataprog = [{
-                "category": "symptom",
-                "ref": "PAIN",
-                "frequency": "monthly",
-                "repeat": 4,
-                "startDate": "2014-12-20",
-                "endDate": "2014-12-20",
-                "when": [{
-                    "days": [2,3,1]
-                }]
-            }];
-        }
-        //ENDMOCK
-
+        // //MOCK to delete when integrating with backend
+        // if(infos.category === 'parameters' && infos.subcategory === 'General') {
+        //     lists.dataprog = [
+        //         {
+        //             "category": "general",
+        //             "ref": "TEMP",
+        //             "frequency": "weekly",
+        //             "repeat": 5,
+        //             "startDate": "2014-12-20",
+        //             "endDate": "2014-12-20",
+        //             "when": [
+        //                 { "days": [5,2,3,1] }]
+        //         },{
+        //             "category": "General",
+        //             "ref": "APS",
+        //             "frequency": "weekly",
+        //             "repeat": 2,
+        //             "startDate": "2014-12-20",
+        //             "endDate": "2014-12-20",
+        //             "when": [
+        //                 { "days": [1,3] }]
+        //         }
+        //     ];
+        // } else if(infos.category === 'parameters' && infos.subcategory === 'HDIM') {
+        //     lists.dataprog = [{
+        //         "category": "HDIM",
+        //         "ref": "WEG",
+        //         "frequency": "monthly",
+        //         "repeat": 4,
+        //         "startDate": "2014-12-20",
+        //         "endDate": "2014-12-20",
+        //         "when": [{
+        //             "days": [2,1]
+        //         }]
+        //     }];
+        // } else if(infos.category === 'symptom') {
+        //     lists.dataprog = [{
+        //         "category": "symptom",
+        //         "ref": "PAIN",
+        //         "frequency": "monthly",
+        //         "repeat": 4,
+        //         "startDate": "2014-12-20",
+        //         "endDate": "2014-12-20",
+        //         "when": [{
+        //             "days": [2,3,1]
+        //         }]
+        //     }];
+        // }
+        // //ENDMOCK
+        lists.dataprog = JSON.parse(results.dataprog);
         lists.parameters = JSON.parse(results.parameterList);
-        if(infos.subcategory) {
-            lists.parameters.items =  lists.parameters.items.filter( function(item) {
-                return item.category === infos.subcategory;
-            });
-        }
-        
+        lists.thresholds = JSON.parse(results.thresholds);
+
         for(var i = 0, leni = lists.parameters.items.length; i<leni; i++) {
             lists.parameters.items[i].labelLang = lists.parameters.items[i].label[infos.lang];
+            lists.parameters.items[i].threshold = lists.thresholds[lists.parameters.items[i].ref];
         }
-
+        console.log(lists.parameters.items);
         init();
 
     });
@@ -121,8 +118,10 @@ var updateParam = function(elt) {
         maxContainer = container.querySelector('.max-threshold'),
         param = utils.findInObject(lists.parameters.items, 'ref', ref);
 
-    minContainer.innerText = param.threshold.min;
-    maxContainer.innerText = param.threshold.max;
+    if(param.threshold) {
+        minContainer.innerText = param.threshold.min;
+        maxContainer.innerText = param.threshold.max;
+    }
 };
 
 var showOptions = function(frequency, dataModel) {
@@ -179,7 +178,8 @@ function showForm(ref) {
             },
             getDaysDefault: function() {
                 return function(val, render) {
-                    if (dataItem.when[0].days.indexOf(parseInt(render(val))) > -1) {
+                    console.log(dataItem.when);
+                    if (dataItem.when.days.indexOf(parseInt(render(val))) > -1) {
                         return 'checked';
                     }
                 };
@@ -192,6 +192,10 @@ function showForm(ref) {
 
     formContainer.appendChild(formDiv);
 
+
+    //Set threshold for first param of the list
+    var select = formContainer.querySelector('#ref-select');
+    updateParam(select);
     //show default frequency option template
     showOptions(dataItem.frequency, dataModel);
 
@@ -216,9 +220,8 @@ var saveData = function() {
     var data = form2js(document.forms.dataprog),
         param = utils.findInObject(lists.parameters.items, 'ref', data.ref);
 
-    if(param) {
-        data.category = param.category;
-    }
+    data.ref = data.ref;
+    data.category = infos.category;
 
     if(data.repeat) {
         data.repeat = parseFloat(data.repeat);
@@ -239,8 +242,10 @@ var saveData = function() {
 
     console.log(data);
 
-    utils.promiseXHR("POST", "/api/beneficiary/dataprog/"+data.ref, 200, JSON.stringify(data)).then(function() {
-        new Modal('createSuccess');
+    utils.promiseXHR('POST', '/api/beneficiary/dataprog', 200, JSON.stringify(data)).then(function() {
+        new Modal('createSuccess', function() {
+            window.location.href = "/prescription/"+ infos.category.toLowerCase();
+        });
     }, function(error) {
         new Modal('errorOccured');
         console.log("saveData - error: ", error);
@@ -248,20 +253,25 @@ var saveData = function() {
 };
 
 
-var removeData = function(ref) {
+var removeData = function(id) {
 
-    utils.promiseXHR("DELETE", "/api/beneficiary/dataprog/"+ref, 200).then(function() {
-        new Modal('confirmDeleteItem');
-    }, function(error) {
-        new Modal('errorOccured');
-        console.log("saveData - error: ", error);
-    });
+    var deleteAction = function() {
+        utils.promiseXHR("DELETE", "/api/beneficiary/dataprog/"+id, 200).then(function() {
+            new Modal('deleteSuccess', function() {
+                window.location.href = "/prescription/"+ infos.category.toLowerCase();
+            });
+        }, function(error) {
+            new Modal('errorOccured');
+            console.log("saveData - error: ", error);
+        });
+    };
 
+    new Modal('confirmDeleteItem', deleteAction);
 };
 
 window.addEventListener("DOMContentLoaded", function() {
     infos.category = document.querySelector('.param-category').innerText;
-    infos.subcategory = document.querySelector('.param-subcategory').innerText;
+    infos.paramList = document.querySelector('.param-list').innerText;
     infos.lang = document.querySelector('#lang').innerText;
     getList();
 

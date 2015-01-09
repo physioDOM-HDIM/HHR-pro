@@ -13,10 +13,10 @@ var dataProgItemSchema = {
 	id        : "/DataProgItem",
 	type      : "object",
 	properties: {
-		"category" : {type: "string", enum: ["General", "HDIM", "symptoms"] , required: true },
+		"category" : {type: "string", enum: ["General", "HDIM", "symptom"] , required: true },
 		"ref"      : {type: "string" , required: true },
 		"frequency": {type: "string", enum: ["weekly", "daily", "monthly"], default: "weekly", required: true},
-		"repeat"   : {type: "integer", default: 1, required: true},
+		"repeat"   : {type: "integer", default: 1},
 		"startDate": {type: "string", format: "date", required: true},
 		"endDate"  : {type: "string", format: "date"},
 		"when"     : [

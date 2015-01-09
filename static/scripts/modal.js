@@ -22,6 +22,23 @@ function Modal (type, callback) {
         buttons: [{
             id: "trad_ok",
             action: function() {
+                if(callback) {
+                    callback();
+                }
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.deleteSuccess = {
+        title: "trad_delete",
+        content: "trad_success_delete",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                if(callback) {
+                    callback();
+                }
                 self.closeModal();
             }
         }]

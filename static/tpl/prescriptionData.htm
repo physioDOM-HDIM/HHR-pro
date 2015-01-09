@@ -18,7 +18,7 @@
 
 <div class="hidden" id="lang">{{ lang }}</div>
 <div class="hidden param-category">{{ category }}</div>
-<div class="hidden param-subcategory">{{ subcategory }}</div>
+<div class="hidden param-list">{{ parameterList }}</div>
 <div class="row title">
     <label class="title">
         {{title}}
@@ -91,7 +91,7 @@
 	<div class="row">
 		<label>Type of data</label>
 
-		<select name="ref" onchange="updateParam(this)">
+		<select name="ref" onchange="updateParam(this)" id="ref-select">
 			{{#paramList}}
 			<option value="{{ref}}" {{#selection}}{{ref}}{{/selection}}>{{labelLang}}</option>
 			{{/paramList}}
@@ -115,7 +115,7 @@
 
 	<div class="row">
 		<label>Start date</label>
-		<zdk-input-date name="startDate" value="{{startDate}}" style="z-index:100"></zdk-input-date>
+		<zdk-input-date name="startDate" value="{{data.startDate}}" style="z-index:100"></zdk-input-date>
 	</div>
 
 	<div class="row">
@@ -139,7 +139,7 @@
 	<div class="row control">
 		<span class="spacer"></span>
 		<button type="button" onclick="closeForm()" class="red">Cancel</button>
-		<button type="button" onclick="removeData('{{data.ref}}')" class="red">Delete</button>
+		<button type="button" onclick="removeData('{{data._id}}')" class="red">Delete</button>
 		<button type="button" onclick="saveData()" class="green">Save</button>
 	</div>
 	{% endraw %}
