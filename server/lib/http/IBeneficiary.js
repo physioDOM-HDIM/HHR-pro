@@ -382,7 +382,6 @@ var IBeneficiary = {
 		logger.trace("setThreshold");
 		var beneficiary,updateItems;
 		
-		
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
 				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
@@ -394,6 +393,69 @@ var IBeneficiary = {
 			})
 			.then( function (thresholds) {
 				res.send( thresholds );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	/**
+	 * Get the list of messages to home
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	getMessages: function(req, res, next) {
+		logger.trace("getMessages");
+		var beneficiary;
+
+		var pg      = parseInt(req.params.pg,10) || 1;
+		var offset  = parseInt(req.params.offset,10) || 25;
+		var sort    = req.params.sort || null;
+		var sortDir = parseInt(req.params.dir,10) || 1;
+		var filter  = req.params.filter || null;
+		
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then( function(selectedBeneficiary) {
+				beneficiary = selectedBeneficiary;
+				return beneficiary.getMessages( pg, offset, sort, sortDir, filter );
+			})
+			.then( function (messages) {
+				res.send( messages );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+	
+	createMessage : function(req, res, next) {
+		logger.trace("createMessage");
+		var beneficiary;
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then( function(selectedBeneficiary) {
+				beneficiary = selectedBeneficiary;
+				try {
+					var msg = JSON.parse( req.body );
+					return beneficiary.createMessage( req.session, msg );
+				} catch( err ) {
+					throw { code:405, message: "message is not a JSON object"};
+				}
+				
+			})
+			.then( function (message) {
+				res.send( message );
 				next();
 			})
 			.catch( function(err) {

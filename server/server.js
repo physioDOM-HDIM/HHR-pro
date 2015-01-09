@@ -322,60 +322,12 @@ server.put( '/api/beneficiary/datarecords/:dataRecordID', IBeneficiary.updateDat
 server.post('/api/beneficiary/thresholds', IBeneficiary.setThreshold);
 server.get( '/api/beneficiary/thresholds', IBeneficiary.getThreshold);
 //MOCK
-server.post('/api/beneficiary/message', function(req, res) {
-	console.log(req.body);
-	res.send(200);
-})
-server.get( '/api/beneficiary/messages', function(req, res) {
-	var data = {
-		"nb":3,
-		"pg":1,
-		"offset":10,
-		"items":[
-			{
-				"_id":"54ad02c9d36036b03576cd3b",
-				"title":"Message for Ben",
-				"datetime":"2015-01-07T09:56:25.263Z",
-				"author": {
-					"name": {
-						"given": 'Sasha',
-						"family": 'Touille'
-					}
-				},
-				"status": "pending",
-				"content": "Hi Ben ! was wondering if you saw Maria today, I need to talk to her about M. Arthur"
-			},
-			{
-				"_id":"54acf2f5c8c05d852d5d8829",
-				"title":"Waiting for results",
-				"datetime":"2015-01-07T08:48:53.307Z",
-				"author": {
-					"name": {
-						"given": 'Kelly',
-						"family": 'Diote'
-					}
-				},
-				"status": "read",
-				"content": "Hi, did the results arrived yet? I need thoses asap !"
-			},
-			{
-				"_id":"54aac3f8c7f65b09440cc306",
-				"title":"New affectation",
-				"datetime":"2015-01-05T17:03:52.012Z",
-				"author": {
-					"name": {
-						"given": 'Alain',
-						"family": 'Proviste'
-					}
-				},
-				"status": "read",
-				"content": "Hello, the hospital is affecting you a new nurse for the week, its only temporary. Her name is Axel Aire. Feel free to ask for more informations if needed. Best regards, Alain Provist."
-			}
-		]
-	};
 
-	res.send(data);
-});
+server.get( '/api/beneficiary/messages', IBeneficiary.getMessages );
+server.get( '/api/beneficiaries/:entryID/messages', IBeneficiary.getMessages );
+server.post('/api/beneficiary/messages', IBeneficiary.createMessage );
+server.post('/api/beneficiaries/:entryID/messages', IBeneficiary.createMessage );
+
 //ENDMOCK
 server.get( '/api/sessions/', getSessions);
 
