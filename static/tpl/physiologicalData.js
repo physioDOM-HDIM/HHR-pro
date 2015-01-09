@@ -236,7 +236,7 @@ var initGraph = function() {
 	stop.value = today;
 	start.value = monthAgo;
 	lineBlueList[0].checked = true;
-	lineYellowList[0].checked = true;
+	//lineYellowList[0].checked = false;
 
 	getDataRecords();
 
