@@ -197,5 +197,9 @@
 	"Content is empty": "Content is empty",
 	"transmitting": "transmitting",
 	"read": "read",
-	"Transmitting": "Transmitting"
+	"Transmitting": "Transmitting",
+	"Quick Look: Physiological Data": "Quick Look: Physiological Data",
+	"Measures": "Measures",
+	"Symptoms": "Symptoms",
+	"Questionnaires scores": "Questionnaires scores"
 }

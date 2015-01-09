@@ -311,6 +311,8 @@ server.del( '/api/beneficiaries/:entryID', IBeneficiary.deleteBeneficiary );
 server.get( '/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryProfessionals );
 server.post('/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryAddProfessional );
 server.del( '/api/beneficiaries/:entryID/professionals/:profID', IBeneficiary.beneficiaryDelProfessional );
+server.get( '/api/beneficiaries/:entryID/graph', IBeneficiary.getGraphDataList );
+server.get( '/api/beneficiaries/:entryID/graph/:category/:paramName', IBeneficiary.getGraphData );
 
 // use of the session to determine the selected beneficiary
 server.get( '/api/beneficiary', IBeneficiary.getBeneficiary  );
@@ -321,20 +323,21 @@ server.post('/api/beneficiary/datarecord', IBeneficiary.newDataRecord );
 server.put( '/api/beneficiary/datarecords/:dataRecordID', IBeneficiary.updateDataRecord );
 server.post('/api/beneficiary/thresholds', IBeneficiary.setThreshold);
 server.get( '/api/beneficiary/thresholds', IBeneficiary.getThreshold);
-//MOCK
 
+server.get( '/api/beneficiary/graph', IBeneficiary.getGraphDataList );
+server.get( '/api/beneficiary/graph/:category/:paramName', IBeneficiary.getGraphData );
 server.get( '/api/beneficiary/messages', IBeneficiary.getMessages );
 server.get( '/api/beneficiaries/:entryID/messages', IBeneficiary.getMessages );
 server.post('/api/beneficiary/messages', IBeneficiary.createMessage );
 server.post('/api/beneficiaries/:entryID/messages', IBeneficiary.createMessage );
 
-//ENDMOCK
 server.get( '/api/sessions/', getSessions);
 
 server.get( '/api/lists', ILists.getLists );
 server.get( '/api/lists/:listName', ILists.getList );
 server.get( '/api/lists/:listName/array', ILists.getListArray );
 server.get( '/api/lists/:listName/translate', ILists.getListTranslate );
+server.get( '/api/lists/:listName/:itemRef', ILists.getItem );
 server.put( '/api/lists/:listName', ILists.updateList );
 server.post('/api/lists/:listName', ILists.addItem );
 server.put( '/api/lists/:listName/:itemRef', ILists.translateItem );
@@ -375,6 +378,7 @@ server.get( '/datarecord/', IPage.dataRecord);
 server.get( '/datarecord/create', IPage.dataRecordCreate);
 server.get( '/datarecord/:dataRecordID', IPage.dataRecordDetail);
 
+server.get( '/physiological-data', IPage.physiologicalData);
 server.get( '/message', IPage.messageList);
 server.get( '/message/create', IPage.messageCreate);
 
