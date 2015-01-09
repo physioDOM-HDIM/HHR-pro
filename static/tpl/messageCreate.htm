@@ -25,7 +25,6 @@
 </div>
 
 <form name="message">
-
 	<div class="row spaced-down">
 		<div class="col">
 			<label for="title">Title: </label>
@@ -35,7 +34,7 @@
 		<div class="col flex-right">
 			<label for="author">Sender: </label>
 			<select id="author" name="author">
-				<option value=""></option>
+				<option value="{{session.person.id.toString()}}">{{session.person.item.name.given}} {{session.person.item.name.family}}</option>
 				{% for item in professionalList %}
 				<option value="{{item._id.toString()}}" >{{item.name.given}} {{item.name.family}}</option>
 				{% endfor %}

@@ -20,7 +20,7 @@ window.addEventListener('DOMContentLoaded', function() {
 		},
 		limitInputCheck = function () {
 			if (this.value.length >= contentLimit) {
-				return false
+				return false;
 			}
 		},
 		limitPasteCheck = function(e) {
@@ -49,7 +49,7 @@ var sendMessage = function() {
 		return;
 	}
 
-	Utils.promiseXHR("POST", "/api/beneficiary/message", 200, JSON.stringify(message)).then(function(response) {
+	Utils.promiseXHR("POST", "/api/beneficiary/messages", 200, JSON.stringify(message)).then(function(response) {
         new Modal('sendSuccess', function() {
         	window.location.href = "/message";
         });

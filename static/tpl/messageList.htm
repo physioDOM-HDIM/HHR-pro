@@ -24,7 +24,7 @@
 </label>
 </div>
 
-<zdk-panel heading="{{'Filter'|i18n}} / {{'Sort'|i18n}}" collapsable="true" collapsed="false">
+<zdk-panel heading="{{'Filter'|i18n}} / {{'Sort'|i18n}}" collapsable="true" collapsed="true">
 	<div>
 		<form class="filter" name="filter" autocomplete="off" onsubmit="validFilter(); return false;">
 
@@ -34,7 +34,7 @@
 					<div class="colcontent">
 						<select name="status" id="status">
 							<option value="">{{ "All"|i18n }}</option>
-							<option value="pending" >{{ "Pending"|i18n }}</option>
+							<option value="transmitting" >{{ "Transmitting"|i18n }}</option>
 							<option value="read" >{{ "Read"|i18n }}</option>
 						</select>
 					</div>
@@ -83,16 +83,16 @@
 				<div class="col">
 					<label>{{ "Sort"|i18n }}:</label>
 					<select name="sort">
+						<option value="datetime" selected>{{ "Date"|i18n }}</option>
 						<option value="source">{{ "Status"|i18n }}</option>
-						<option value="datetime">{{ "Date"|i18n }}</option>
-						<option value="home">{{ "Sender"|i18n }}</option>
+						<!-- <option value="home">{{ "Sender"|i18n }}</option> -->
 					</select>
 				</div>
 				<div class="col">
 					<label>{{ "Direction"|i18n }}:</label>
 					<select name="dir">
 						<option value="1">{{ "ascending"|i18n }}</option>
-						<option value="-1">{{ "descending"|i18n }}</option>
+						<option value="-1" selected>{{ "descending"|i18n }}</option>
 					</select>
 				</div>
 			</div>
@@ -107,12 +107,12 @@
 
 </zdk-panel>
 
-<tsante-list url="/api/beneficiary/messages" pg="1" auto="true" autoRender="false" unresolved id="tsanteList">
+<tsante-list url="/api/beneficiary/messages" pg="1" offset="25" auto="true" autoRender="false" unresolved id="tsanteList">
 <template is="auto-binding" repeat="{% raw %}{{item in list.items}}{% endraw %}">
 	{% raw %}
 	<div class="item">
 		<div class="row">
-			<h3>{{item.title}}</h3>
+			<h3 style="margin: 0.2em;">{{item.title}}</h3>
 			<div class="spacer"></div>
 			<button type="button" class="blue small" onclick="showDetail(this)">
 				<span class="detail-show">Show Detail</span>
@@ -120,7 +120,7 @@
 			</button>
 		</div>
 		<div class="row spacing-around">
-			<div class="col bold">{{ item.datetime }}</div>
+			<div class="col" style="display: block;"><div class="bold">{{ item.datetime }}</div><div>&nbsp;{{ item.from }}</div></div>
 			<div class="col">send by: {{item.author.name.family}} {{item.author.name.given}}</div>
 			<div class="col">status: {{item.status}}</div>
 		</div>

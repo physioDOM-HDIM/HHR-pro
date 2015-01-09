@@ -68,7 +68,8 @@ function init() {
             len = list.items.length;
         for (i; i < len; i++) {
             // the date is displayed in local time
-            list.items[i].datetime = moment(list.items[i].datetime).format("L LT") + " ("+moment(list.items[i].datetime).from(moment())+")" ;
+            list.items[i].from = " ("+ moment(list.items[i].datetime).from(moment()) +")" ;
+            list.items[i].datetime = moment(list.items[i].datetime).format("L LT");
         }
         this.render(list);
     });
