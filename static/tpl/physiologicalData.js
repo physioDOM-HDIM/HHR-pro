@@ -111,8 +111,14 @@ var getDataRecords = function(init) {
     }, function(error) {
     	new Modal('errorOccured');
     }).then(function() {
-    	renderGraph(physiologicalData.dataRecords);
+    	if(BlueChoice || YellowChoice) {
+    		renderGraph(physiologicalData.dataRecords);
+    	}
     });
+
+    if(!BlueChoice && !YellowChoice) {
+    	renderGraph();
+    }
 
 };
 
@@ -245,10 +251,11 @@ var initGraph = function() {
 var renderGraph = function(dataRecords) {
 	var user = JSON.parse(document.querySelector('#user').innerText),
 		datas = [],
-		yAxisConf = [];
+		yAxisConf = [],
+		tooltip = true;
 
 	//blue graph config
-	if(dataRecords.blue !== null && dataRecords.blue.data.length !== 0) {
+	if(dataRecords && dataRecords.blue !== null && dataRecords.blue.data.length !== 0) {
 
 		var blueIndex = 0;
 
@@ -311,7 +318,7 @@ var renderGraph = function(dataRecords) {
 	}
 
 	//yellow graph config
-	if(dataRecords.yellow !== null && dataRecords.yellow.data.length !== 0) {
+	if(dataRecords && dataRecords.yellow !== null && dataRecords.yellow.data.length !== 0) {
 
 		var yellowIndex = 1;
 
@@ -377,6 +384,39 @@ var renderGraph = function(dataRecords) {
 		yAxisConf.push(yAxisYellow);
 	}
 
+	if(!dataRecords) {
+
+		var yAxis = {
+			title: {
+				text: ' ',
+				style: {
+					color: '#000000'
+				}
+			},
+			labels: {
+				format: ' ',
+				style: {
+					color: '#000000'
+				}
+			}
+		};
+
+		var infos = {
+			name: ' ',
+			color: 'transparent',
+			yAxis: 0,
+			data: [
+				[moment().unix(), 0]
+			],
+			zIndex: 1,
+		};
+
+		datas.push(infos);
+		yAxisConf.push(yAxis);
+
+		tooltip = false;
+	}
+
 	var graph = {
 		chart: {
 			renderTo: document.querySelector('#container')
@@ -399,7 +439,7 @@ var renderGraph = function(dataRecords) {
 		yAxis: yAxisConf,
 		tooltip: {
 			shared: true,
-			enabled: true,
+			enabled: tooltip,
 			crosshairs: true
 		},
 		credits: {
