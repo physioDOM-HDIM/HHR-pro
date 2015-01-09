@@ -57,12 +57,22 @@
 		<div class="col">
 			<label>Start date</label><span>{{ data.startDate }}</span>
 		</div>
-		<div class="col"></div>
+		<div class="col">
+			<label>End date</label><span>{{ data.endDate }}</span>
+		</div>
 	</div>
+
 	<div class="row">
 		<div class="col col05"></div>
 		<div class="col">
-			<label>{{ data.frequency }}</label>
+			<label>
+				{{#data.hasDetail}}
+					Every {{data.repeat}} {{data.frequencyType}}
+				{{/data.hasDetail}}
+				{{^data.hasDetail}}
+					Everyday
+				{{/data.hasDetail}}
+			</label>
 			<ul class="data-list">
 			{{#data}}
 				{{#when}}
@@ -76,6 +86,15 @@
 		<div class="col"></div>
 	</div>
 
+	{{#data.hasMoreDetail}}
+	<div class="row">
+		<div class="col col05"></div>
+		<div class="col">
+			The {{data.when.weekNumber}} week from the {{data.when.order}} of the month
+		</div>
+		<div class="col"></div>
+	</div>
+	{{/data.hasMoreDetail}}
 	<div class="row control">
 		<span class="spacer"></span>
 		<button type="button" onclick="showForm('{{data.ref}}')" class="small blue">Edit</button>
@@ -114,8 +133,14 @@
 	{{/param}}
 
 	<div class="row">
-		<label>Start date</label>
-		<zdk-input-date name="startDate" value="{{data.startDate}}" style="z-index:100"></zdk-input-date>
+		<div class="col">
+			<label>Start date</label>
+			<zdk-input-date name="startDate" value="{{data.startDate}}" style="z-index:100"></zdk-input-date>
+		</div>
+		<div class="col">
+			<label>End date</label>
+			<zdk-input-date name="endDate" value="{{data.endDate}}" style="z-index:100"></zdk-input-date>
+		</div>
 	</div>
 
 	<div class="row">
@@ -169,13 +194,18 @@
 		Every <input type="number" name="repeat" class="option-repeat" value="{{data.repeat}}"> Month
 	</div>
 	<div class="row">
-		The <select name="when.week">
+		The <select name="when.week" class="spacing-around">
 			<option value="1">first</option>
 			<option value="2">second</option>
 			<option value="3">third</option>
 			<option value="4">fourth</option>
-			<option value="5">fifth</option>
-		</select>
+		</select> week
+	</div>
+	<div class="row">
+		from the <select name="when.order" class="spacing-around">
+			<option value="">beginning</option>
+			<option value="-">end</option>
+		</select> of the month
 	</div>
 	<div class="row">
 		<input type="checkbox" name="when.days[]" value="1" {{#getDaysDefault}}1{{/getDaysDefault}}/>Mon

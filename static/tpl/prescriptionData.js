@@ -43,15 +43,49 @@ var init = function() {
     for(i; i<len; i++) {
 
         var dataItem = lists.dataprog[i],
-            param = utils.findInObject(lists.parameters.items, 'ref', dataItem.ref),
-            dataModel = {
+            param = utils.findInObject(lists.parameters.items, 'ref', dataItem.ref);
+
+        //translate options of weekly and montly for the template
+        if(dataItem.frequency === 'monthly') {
+            dataItem.frequencyType = 'month';
+            dataItem.hasDetail = true;
+            dataItem.hasMoreDetail = true;
+
+            var weekNumber = Number(String(Math.abs(dataItem.when.days[0])).charAt(0));
+
+            if(weekNumber === 1) {
+                dataItem.when.weekNumber = 'first';
+            } else if(weekNumber === 2){
+                dataItem.when.weekNumber = 'second';
+            } else if(weekNumber === 3){
+                dataItem.when.weekNumber = 'third';
+            } else if(weekNumber === 4){
+                dataItem.when.weekNumber = 'fourth';
+            }
+
+            if(dataItem.when.days[0] > 0) {
+                dataItem.when.order = 'beginning';
+            } else {
+                dataItem.when.order = 'end';
+            }
+        } else if (dataItem.frequency === 'weekly') {
+            dataItem.frequencyType = 'week';
+            dataItem.hasDetail = true;
+            dataItem.hasMoreDetail = false;
+        } else {
+            dataItem.hasDetail = false;
+            dataItem.hasMoreDetail = false;
+        }
+
+        var dataModel = {
                 param: param,
                 data: dataItem,
                 getDay: function () {
                     return function(val, render) {
-                        return utils.getDayName(parseInt(render(val)));
+                        var dayNumber = Number(String(Math.abs(render(val))).charAt(1));
+                        return utils.getDayName(dayNumber);
                     };
-                }
+                },
             };
 
         var dataContainer = document.createElement("div");
@@ -169,31 +203,37 @@ function closeForm() {
 var saveData = function() {
 
     var data = form2js(document.forms.dataprog),
-        param = utils.findInObject(lists.parameters.items, 'ref', data.ref);
+        param = utils.findInObject(lists.parameters.items, 'ref', data.ref),
+        dataprog = {};
 
-    data.ref = data.ref;
-    data.category = infos.category;
+    dataprog.ref = data.ref;
+    dataprog.category = infos.category;
+    dataprog.startDate = data.startDate;
+    dataprog.endDate = data.endDate;
+    dataprog.frequency = data.frequency;
 
     if(data.repeat) {
-        data.repeat = parseFloat(data.repeat);
+        dataprog.repeat = parseFloat(data.repeat);
     }
 
     if(data.when) {
         var i = 0,
             len = data.when.days.length;
 
-        for(i; i<len; i++) {
-            data.when.days[i] = parseInt(data.when.days[i]);
-        }
+        dataprog.when = {};
+        dataprog.when.days = [];
 
-        if(data.when.week) {
-            data.when.week = parseInt(data.when.week);
+        for(i; i<len; i++) {
+            dataprog.when.days[i] = parseInt(data.when.days[i]);
+            if(data.when.week) {
+                dataprog.when.days[i] = parseFloat(data.when.order + data.when.week + data.when.days[i]);
+            }
         }
     }
 
     console.log(data);
 
-    utils.promiseXHR('POST', '/api/beneficiary/dataprog', 200, JSON.stringify(data)).then(function() {
+    utils.promiseXHR('POST', '/api/beneficiary/dataprog', 200, JSON.stringify(dataprog)).then(function() {
         new Modal('createSuccess', function() {
             window.location.href = "/prescription/"+ infos.category.toLowerCase();
         });
