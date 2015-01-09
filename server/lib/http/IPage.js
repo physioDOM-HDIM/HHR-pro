@@ -986,7 +986,7 @@ function IPage() {
 				data.lang = lang;
 				data.title = 'General Data';
 				data.category = 'General';
-				data.parameterList = 'physiologicalGeneral';
+				data.parameterList = 'parameters';
 				// jsut for test, otherwise read locale from session
 
 				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/prescriptionData.htm', data, function(err, output) {
@@ -1028,7 +1028,7 @@ function IPage() {
 				data.lang = lang;
 				data.title = 'HDIM Data';
 				data.category = 'HDIM';
-				data.parameterList = 'physiologicalHDIM';
+				data.parameterList = 'parameters';
 				// jsut for test, otherwise read locale from session
 
 				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/prescriptionData.htm', data, function(err, output) {
@@ -1069,9 +1069,8 @@ function IPage() {
 				data.beneficiary = beneficiary;
 				data.lang = lang;
 				data.title = 'Symptom Data';
-				data.category = 'symptom';
+				data.category = '';
 				data.parameterList = 'symptom';
-				// jsut for test, otherwise read locale from session
 
 				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/prescriptionData.htm', data, function(err, output) {
 					if (err) {

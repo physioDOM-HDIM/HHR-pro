@@ -10,7 +10,7 @@ var utils = new Utils(),
 
 var getList = function() {
     var promises = {
-            dataprog: utils.promiseXHR("GET", "/api/beneficiary/dataprog/"+infos.category,200),
+            dataprog: utils.promiseXHR("GET", "/api/beneficiary/dataprog/"+( infos.category || infos.paramList ),200),
             parameterList: utils.promiseXHR("GET", "/api/lists/"+infos.paramList, 200),
             thresholds: utils.promiseXHR("GET", "/api/beneficiary/thresholds", 200)
         };
@@ -18,15 +18,20 @@ var getList = function() {
     RSVP.hash(promises).then(function(results) {
         lists.dataprog = JSON.parse(results.dataprog);
         lists.parameters = JSON.parse(results.parameterList);
+        if(infos.category) {
+            lists.parameters.items =  lists.parameters.items.filter( function(item) {
+                return item.category === infos.category;
+            });
+        }
         lists.thresholds = JSON.parse(results.thresholds);
 
         for(var i = 0, leni = lists.parameters.items.length; i<leni; i++) {
             lists.parameters.items[i].labelLang = lists.parameters.items[i].label[infos.lang];
-            lists.parameters.items[i].threshold = lists.thresholds[lists.parameters.items[i].ref];
+            if(lists.thresholds[lists.parameters.items[i].ref]) {
+                lists.parameters.items[i].threshold = lists.thresholds[lists.parameters.items[i].ref];
+            }
         }
-        console.log(lists.parameters.items);
         init();
-
     });
 };
 
@@ -207,7 +212,7 @@ var saveData = function() {
         dataprog = {};
 
     dataprog.ref = data.ref;
-    dataprog.category = infos.category;
+    dataprog.category = infos.category || infos.paramList;
     dataprog.startDate = data.startDate;
     dataprog.endDate = data.endDate;
     dataprog.frequency = data.frequency;
@@ -235,7 +240,7 @@ var saveData = function() {
 
     utils.promiseXHR('POST', '/api/beneficiary/dataprog', 200, JSON.stringify(dataprog)).then(function() {
         new Modal('createSuccess', function() {
-            window.location.href = "/prescription/"+ infos.category.toLowerCase();
+            window.location.href = "/prescription/"+ ( infos.category || infos.paramList ).toLowerCase();
         });
     }, function(error) {
         new Modal('errorOccured');
