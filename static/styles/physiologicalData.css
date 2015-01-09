@@ -48,3 +48,19 @@ div.row label.css-label.color-blue {
 div.row label.css-label.color-yellow {
 	background-image:url(/img/icons/checkbox-yellow.png);
 }
+
+div.empty-graph {
+	text-align: center;
+	position: absolute;
+	width: 100%;
+	height: 80px;
+	left: 0;
+	top: 250px;
+	z-index: 999;
+	font-size: 30px;
+	color: #313131;
+}
+
+body {
+	position: relative;
+}

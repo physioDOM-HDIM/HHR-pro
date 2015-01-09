@@ -252,7 +252,11 @@ var renderGraph = function(dataRecords) {
 	var user = JSON.parse(document.querySelector('#user').innerText),
 		datas = [],
 		yAxisConf = [],
-		tooltip = true;
+		tooltip = true,
+		noDataTip = document.querySelector('.empty-graph');
+
+console.log(noDataTip);
+	Utils.hideElt(noDataTip);
 
 	//blue graph config
 	if(dataRecords && dataRecords.blue !== null && dataRecords.blue.data.length !== 0) {
@@ -415,6 +419,7 @@ var renderGraph = function(dataRecords) {
 		yAxisConf.push(yAxis);
 
 		tooltip = false;
+		Utils.showElt(noDataTip, 'empty-graph');
 	}
 
 	var graph = {
@@ -423,11 +428,9 @@ var renderGraph = function(dataRecords) {
 		},
 		title: {
 			text: 'Physiological Data',
-			x   : -20
 		},
 		subtitle: {
 			text: user.name.given + ' ' + user.name.family,
-			x: -20
 		},
 		xAxis: {
 			type: 'datetime',
