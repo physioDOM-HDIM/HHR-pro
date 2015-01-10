@@ -34,6 +34,12 @@
 <body unresolved>
 
 <style>
+	@font-face {
+		font-family: 'Glyphicons Halflings';
+		
+		src: url('/fonts/glyphicons-halflings-regular.eot');
+		src: url('/fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('/fonts/glyphicons-halflings-regular.woff') format('woff'), url('/fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+	}
 	li > div {
 		color: white;
 		margin: 0px 5px 0px -5px;
@@ -163,17 +169,22 @@
 			<li class="collapsed">
 				<div>Physiological Data</div>
 				<ul class="tree">
-					<!--<li class="menuitem"><a href="tpl/dataRecord.htm" target="main">Constants registration</a></li>-->
-					<li class="menuitem"><a href="/prescription/general" target="main">General Data</a></li>
-					<li class="menuitem"><a href="/prescription/hdim" target="main">HDIM Data</a></li>
-					<li class="menuitem"><a href="/prescription/symptom" target="main">Symptom assessments</a></li>
-					<li class="menuitem"><a href="/prescription/questionnaire" target="main">Questionnaires</a></li>
-					<li class="menuitem">Attachments</li>
-					<li class="menuitem">Warning threshold</li>
+					<li class="collapsed">
+						<div>Prescritption of data monitoring</div>
+						<ul class="tree">
+							<li class="menuitem"><a href="/prescription/general" target="main">General Data</a></li>
+							<li class="menuitem"><a href="/prescription/hdim" target="main">HDIM Data</a></li>
+							<li class="menuitem"><a href="/prescription/symptom" target="main">Symptom assessments</a></li>
+							<li class="menuitem"><a href="/prescription/questionnaire" target="main">Questionnaires</a></li>
+						</ul>
+					</li>
+					<li class="menuitem"><a href="/datarecord" target="main">Results from Data Recording</a></li>
+					<li class="menuitem"><a href="/datarecord/create" target="main">Data Recording</a></li>
+					<li class="menuitem" style="DarkGray">Specific data for evaluation</li>
 				</ul>
 			</li>
-			<li class="menuitem"><a href="/datarecord" target="main">Results from Data Recording</a></li>
-			<li class="menuitem"><a href="/datarecord/create" target="main">Data Recording</a></li>
+			
+			
 			<li class="menuitem"><a href="/directory" target="main">Directory</a></li>
 		</ul>
 		{% if admin %}
@@ -212,6 +223,7 @@
 					break;
 				default:
 					entry.addEventListener("click", function(e) {
+						e.stopPropagation();
 						var parent = e.target.parentNode;
 						parent.classList.toggle("collapsed");
 					}, false);
@@ -235,7 +247,7 @@
 		if( selected ) {
 			selected.classList.remove("selected");
 		}
-		var link = document.querySelector("a[href='"+pathname+"']");
+		var link = document.querySelector("[drawer] a[href='"+pathname+"']");
 		if( link ) {
 			link = link.parentNode;
 			link.classList.add("selected");
