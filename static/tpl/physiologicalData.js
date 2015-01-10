@@ -253,9 +253,10 @@ var renderGraph = function(dataRecords) {
 		datas = [],
 		yAxisConf = [],
 		tooltip = true,
-		noDataTip = document.querySelector('.empty-graph');
-
-console.log(noDataTip);
+		noDataTip = document.querySelector('.empty-graph'),
+		dateFrom = moment(document.querySelector('.date-from').value).valueOf(),
+		dateTo = moment(document.querySelector('.date-to').value).valueOf();
+	
 	Utils.hideElt(noDataTip);
 
 	//blue graph config
@@ -309,9 +310,11 @@ console.log(noDataTip);
 				zIndex: 0,
 				lineWidth: 0,
 				data: [
-					[dataRecords.blue.data[0][0], thresholdBlue.min, thresholdBlue.max],
-					[dataRecords.blue.data[dataRecords.blue.data.length-1][0], thresholdBlue.min, thresholdBlue.max]
+					[dateFrom, thresholdBlue.min, thresholdBlue.max],
+					[dateTo, thresholdBlue.min, thresholdBlue.max]
 				]
+				// dataRecords.blue.data[0][0]
+				// dataRecords.blue.data[dataRecords.blue.data.length-1][0]
 			};
 
 			datas.push(areaBlue);
@@ -434,6 +437,8 @@ console.log(noDataTip);
 		},
 		xAxis: {
 			type: 'datetime',
+			min: dateFrom,
+			max: dateTo,
 			dateTimeLabelFormats: {
 				month: '%e %b',
 				year : '%b'
