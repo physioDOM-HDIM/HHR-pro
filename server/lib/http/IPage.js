@@ -353,30 +353,45 @@ function IPage() {
 		var data = {
 			admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false
 		};
-		physioDOM.Lists.getList("perimeter", lang)
-			.then(function(list) {
-				if (list) {
-					data.perimeter = list;
-				}
-
-				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/beneficiaries.htm', data, function(err, output) {
-					if (err) {
-						console.log("error", err);
-						console.log("output", output);
-						res.write(err);
-						res.end();
-						next();
-					} else {
-						sendPage(output, res, next);
+		
+			physioDOM.Beneficiaries()
+				.then(function (beneficiaries) {
+					if(req.session && req.session.beneficiary) {
+						return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+					} else { 
+						throw( { code:404, message:"no beneficiary selected"});
 					}
+				})
+				.then(function (beneficiary) {
+					data.beneficiary = beneficiary;
+				})
+				.finally(function () {
+					physioDOM.Lists.getList("perimeter", lang)
+						.then(function (list) {
+							if (list) {
+								data.perimeter = list;
+							}
+
+							html = swig.renderFile(DOCUMENTROOT + '/static/tpl/beneficiaries.htm', data, function (err, output) {
+								if (err) {
+									console.log("error", err);
+									console.log("output", output);
+									res.write(err);
+									res.end();
+									next();
+								} else {
+									sendPage(output, res, next);
+								}
+							});
+						})
+						.catch(function (err) {
+							logger.error(err);
+							res.write(err);
+							res.end();
+							next();
+						});
 				});
-			})
-			.catch(function(err) {
-				logger.error(err);
-				res.write(err);
-				res.end();
-				next();
-			});
+		
 	};
 
 	/**
