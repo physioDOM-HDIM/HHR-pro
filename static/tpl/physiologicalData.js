@@ -14,7 +14,7 @@ physiologicalData.dataRecords = {};
  */
 
 window.addEventListener("DOMContentLoaded", function() {
-    infos.lang = document.querySelector('#lang').innerText;
+    infos.lang = document.querySelector('#lang').innerHTML;
     getParamList();
 }, false);
 
@@ -72,11 +72,11 @@ var getDataRecords = function(init) {
 	for(i; i<len; i++) {
 		if(lineBlueList[i].checked) {
 			BlueChoice = lineBlueList[i].value;
-			BlueCategory = lineBlueList[i].parentNode.parentNode.querySelector('.category').innerText;
+			BlueCategory = lineBlueList[i].parentNode.parentNode.querySelector('.category').innerHTML;
 		}
 		if(lineYellowList[i].checked) {
 			YellowChoice = lineYellowList[i].value;
-			YellowCategory = lineBlueList[i].parentNode.parentNode.querySelector('.category').innerText;
+			YellowCategory = lineBlueList[i].parentNode.parentNode.querySelector('.category').innerHTML;
 		}
 	}
 
@@ -167,13 +167,13 @@ var edit = function(elt) {
 };
 
 var setThresholdUI = function(line) {
-	line.querySelector('.read-min').innerText = line.querySelector('.input-min').value;
-	line.querySelector('.read-max').innerText = line.querySelector('.input-max').value;
+	line.querySelector('.read-min').innerHTML = line.querySelector('.input-min').value;
+	line.querySelector('.read-max').innerHTML = line.querySelector('.input-max').value;
 };
 
 var resetThresholdUI = function(line) {
-	line.querySelector('.input-min').value = line.querySelector('.read-min').innerText;
-	line.querySelector('.input-max').value = line.querySelector('.read-max').innerText;
+	line.querySelector('.input-min').value = line.querySelector('.read-min').innerHTML;
+	line.querySelector('.input-max').value = line.querySelector('.read-max').innerHTML;
 };
 
 var toggleMode = function(line) {
@@ -249,7 +249,7 @@ var initGraph = function() {
 };
 
 var renderGraph = function(dataRecords) {
-	var user = JSON.parse(document.querySelector('#user').innerText),
+	var user = JSON.parse(document.querySelector('#user').innerHTML),
 		datas = [],
 		yAxisConf = [],
 		tooltip = true,
