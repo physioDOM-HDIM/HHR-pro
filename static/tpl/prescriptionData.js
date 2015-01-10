@@ -266,9 +266,9 @@ var removeData = function(id) {
 };
 
 window.addEventListener("DOMContentLoaded", function() {
-    infos.category = document.querySelector('.param-category').innerText;
-    infos.paramList = document.querySelector('.param-list').innerText;
-    infos.lang = document.querySelector('#lang').innerText;
+    infos.category = document.querySelector('.param-category').textContent;
+    infos.paramList = document.querySelector('.param-list').textContent;
+    infos.lang = document.querySelector('#lang').textContent;
     getList();
 
 }, false);
