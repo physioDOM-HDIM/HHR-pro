@@ -30,6 +30,10 @@ input[type=checkbox].css-checkbox:checked + label.css-label {
 	background-position: 0 -21px;
 }
 
+div.mode-update input[type=text] {
+	max-width: 100px;
+}
+
 div.row label.css-label {
 	margin-right: 5px;
 	width: 21px;
