@@ -281,6 +281,7 @@ function updateItem(obj) {
     data = obj;
     delete data.account;
     data.active = data.active?true:false;
+    data.organization = data.organization?true:false;
     
     // check address
     if( !(data.address.line && data.address.zip && data.address.city) ) {
@@ -426,5 +427,6 @@ function deleteItem() {
 function init() {
     console.log("init");
     _idxNbTelecom = document.querySelectorAll(".telecomContainer").length;
+    checkOrganization();
 }
 window.addEventListener("DOMContentLoaded", init, false);

@@ -197,7 +197,8 @@ function IPage() {
 			"use",
 			"role",
 			"job",
-			"communication"
+			"communication",
+			"perimeter"
 		].map(promiseList);
 
 		RSVP.all(promises)

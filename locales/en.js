@@ -201,5 +201,6 @@
 	"Quick Look: Physiological Data": "Quick Look: Physiological Data",
 	"Measures": "Measures",
 	"Symptoms": "Symptoms",
-	"Questionnaires scores": "Questionnaires scores"
+	"Questionnaires scores": "Questionnaires scores",
+	"Job": "Job"
 }

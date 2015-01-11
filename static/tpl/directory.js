@@ -80,6 +80,7 @@ function validFilter() {
         listPagerElt = document.querySelector("tsante-list"),
         params = "",
         nameValue = "",
+        perimeterValue = "",
         filterObj = {};
 
     params += "?sort=" + dataFormat[filterForm.sortSelection.options[filterForm.sortSelection.selectedIndex].value];
@@ -96,6 +97,10 @@ function validFilter() {
     nameValue = filterForm.querySelector("input[name=nameTxt]").value;
     if (nameValue) {
         filterObj[dataFormat.nameData] = nameValue;
+    }
+    perimeterValue = filterForm.querySelector("select[name=perimeter]").value;
+    if (perimeterValue) {
+        filterObj.perimeter = perimeterValue;
     }
     if(JSON.stringify(filterObj) !== "{}"){
     	params += "&filter=" + JSON.stringify(filterObj);
@@ -126,6 +131,9 @@ function onHaveData(data){
         }
         if( item.role ) {
             item.role = _dataLists.role.items[item.role] ? _dataLists.role.items[item.role][_lang] : item.role;
+        }
+        if( item.perimeter ) {
+            item.perimeter = _dataLists.perimeter.items[item.perimeter] ? _dataLists.perimeter.items[item.perimeter][_lang] : item.perimeter;
         }
     }
     listPagerElt.render( _dataObj.list );
@@ -206,7 +214,8 @@ function init() {
 
     var promises = {
         job: promiseXHR("GET", "/api/lists/job/array", 200),
-        role: promiseXHR("GET", "/api/lists/role/array", 200)
+        role: promiseXHR("GET", "/api/lists/role/array", 200),
+        perimeter: promiseXHR("GET", "/api/lists/perimeter/array", 200)
     };
     var errorCB = function(error){
         console.log("Init error", error);
@@ -228,7 +237,8 @@ function init() {
             _dataLists = {};
             _dataLists.job = JSON.parse(results.job);
             _dataLists.role = JSON.parse(results.role);
-
+            _dataLists.perimeter = JSON.parse(results.perimeter);
+            
             //TODO: get lang from cookie
             _lang = "en";
 

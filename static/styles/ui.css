@@ -232,7 +232,7 @@ div.row textarea {
 	border:1px solid lightgray; 
 	resize: none;
 }
-input[type=text],input[type=password],input[type=email] { 
+input[type=text],input[type=password],input[type=email], input.text { 
 	-webkit-flex:1; 
 	-ms-flex:1; 
 	flex:1; 
