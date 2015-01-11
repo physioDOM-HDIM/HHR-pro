@@ -72,25 +72,33 @@
                                     {% raw %}{{!item.organization ? item.name.family+" "+(item.name.given ? item.name.given : "")+" ("+item.gender+")" : item.name.family}}{% endraw %}
                                 </span>
                             </div>
-                            <div class="col">
-                                <span class="communication" style="-webkit-flex:1; -ms-flex:1; flex:1">
+                        </div>
+                        <div class="row">
+                            <div class="col" style="padding-left:50px">
+                                <div class="communication" style="-webkit-flex:1; -ms-flex:1; flex:1">
                                     <template repeat="{% raw %}{{telecomItem in item.telecom}}{% endraw %}">
                                         <template if="{% raw %}{{telecomItem.system === 'email'}}{% endraw %}">
                                             <a class="email" href="mailto:{% raw %}{{telecomItem.value}}{% endraw %}">{% raw %}{{telecomItem.value}}{% endraw %}</a>
                                         </template>
                                     </template>
-                                </span>
+                                </div>
+                                <div style="-webkit-flex:1; -ms-flex:1; flex:1">
+                                    {{ "Perimeter"|i18n }} : {% raw %}{{item.perimeter}}{% endraw %}
+                                </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col">
-                                <div class="role" style="padding-left:50px;flex:1">role : {% raw %}{{item.role}}{% endraw %}</div>
-                                <div class="job" style="flex:1">job : {% raw %}{{item.job}}{% endraw %}</div>
+                                <div class="role" style="padding-left:50px;-webkit-flex:1; -ms-flex:1; flex:1">role : {% raw %}{{item.role}}{% endraw %}</div>
+                                <div class="job" style="-webkit-flex:1; -ms-flex:1; flex:1">job : {% raw %}{{item.job}}{% endraw %}</div>
                             </div>
-                            <div class="col">
+                        </div>
+                        <div class="row">
+                            <div class="col" style="padding-left:50px;">
                                 <template repeat="{% raw %}{{telecomItem in item.telecom}}{% endraw %}">
                                     <template if="{% raw %}{{telecomItem.system !== 'email'}}{% endraw %}">
-                                        <span class="{% raw %}{{telecomItem.system}}{% endraw %}">{% raw %}{{telecomItem.value}}{% endraw %}</span>
+                                        <div style="flex:1">{% raw %}{{telecomItem.system}} : {{telecomItem.value}}{% endraw %}</div>
+                                        <!--<span class="{% raw %}{{telecomItem.system}}{% endraw %}">{% raw %}{{telecomItem.system}} : {{telecomItem.value}}{% endraw %}</span>-->
                                     </template>
                                 </template>
                             </div>
@@ -98,7 +106,7 @@
                     </div>
                     <div>
                         <template if="{% raw %}{{item.address && item.address.line && item.address.line.length > 0 || item.address.zip || item.address.city}}{% endraw %}">
-                            <button type="button" class="green small" onclick="toggleHiddenNode(this, '.address')">detail</button>
+                            <button type="button" class="green small" onclick="toggleHiddenNode(this, '.address')">detail</button><br/>
                         </template>
                         {% if admin %}
                         <a href="/directory/{% raw %}{{item._id}}{% endraw %}"><button class="blue small" type="button" onclick="/* updateDirectory({% raw %}{{i}}{% endraw %}) */">edit</button></a>

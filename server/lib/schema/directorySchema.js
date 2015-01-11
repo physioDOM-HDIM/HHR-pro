@@ -47,6 +47,7 @@ var organizationSchema = {
 		},
 		"organization": { type:"boolean",  "enum": [ true ], required:true},
 		"role": { type:"string", required:true },
+		"job": { type:"string"},
 		"communication": { type:"string", "enum": [ "fr", "es", "nl", "en" ] },
 		"telecom": { type:"array",item: { "$ref":"/Contact" } },
 		"address": { "$ref":"/SimpleAddress" },

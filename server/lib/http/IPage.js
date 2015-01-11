@@ -197,7 +197,8 @@ function IPage() {
 			"use",
 			"role",
 			"job",
-			"communication"
+			"communication",
+			"perimeter"
 		].map(promiseList);
 
 		RSVP.all(promises)
@@ -353,30 +354,45 @@ function IPage() {
 		var data = {
 			admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false
 		};
-		physioDOM.Lists.getList("perimeter", lang)
-			.then(function(list) {
-				if (list) {
-					data.perimeter = list;
-				}
-
-				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/beneficiaries.htm', data, function(err, output) {
-					if (err) {
-						console.log("error", err);
-						console.log("output", output);
-						res.write(err);
-						res.end();
-						next();
-					} else {
-						sendPage(output, res, next);
+		
+			physioDOM.Beneficiaries()
+				.then(function (beneficiaries) {
+					if(req.session && req.session.beneficiary) {
+						return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+					} else { 
+						throw( { code:404, message:"no beneficiary selected"});
 					}
+				})
+				.then(function (beneficiary) {
+					data.beneficiary = beneficiary;
+				})
+				.finally(function () {
+					physioDOM.Lists.getList("perimeter", lang)
+						.then(function (list) {
+							if (list) {
+								data.perimeter = list;
+							}
+
+							html = swig.renderFile(DOCUMENTROOT + '/static/tpl/beneficiaries.htm', data, function (err, output) {
+								if (err) {
+									console.log("error", err);
+									console.log("output", output);
+									res.write(err);
+									res.end();
+									next();
+								} else {
+									sendPage(output, res, next);
+								}
+							});
+						})
+						.catch(function (err) {
+							logger.error(err);
+							res.write(err);
+							res.end();
+							next();
+						});
 				});
-			})
-			.catch(function(err) {
-				logger.error(err);
-				res.write(err);
-				res.end();
-				next();
-			});
+		
 	};
 
 	/**
@@ -910,6 +926,120 @@ function IPage() {
 		}
 	};
 
+
+	/**
+	 * Message - Message to Home
+	 */
+
+	this.messageList = function(req, res, next) {
+		logger.trace("messageList");
+		var html;
+
+		init(req);
+		var data = {
+			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
+		};
+
+		if( !req.session.beneficiary ) {
+			logger.debug("no beneficiary selected");
+			res.header('Location', '/beneficiaries');
+			res.send(302);
+			return next();
+		} else {
+			physioDOM.Beneficiaries()
+				.then(function (beneficiaries) {
+					return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+				})
+				.then(function (beneficiary) {
+					data.beneficiary = beneficiary;
+					return beneficiary._id ? beneficiary.getProfessionals() : null;
+				}).then(function (professionalList) {
+					if (professionalList) {
+						data.professionalList = professionalList;
+					}
+					data.lang = lang;
+
+					html = swig.renderFile(DOCUMENTROOT + '/static/tpl/messageList.htm', data, function (err, output) {
+						if (err) {
+							console.log("error", err);
+							console.log("output", output);
+							res.write(err);
+							res.end();
+							next();
+						} else {
+							sendPage(output, res, next);
+						}
+					});
+
+				})
+				.catch(function (err) {
+					logger.error(err);
+					res.write(err);
+					res.end();
+					next();
+				});
+		}
+	};
+
+	this.messageCreate = function(req, res, next) {
+		logger.trace("messageCreate");
+		var html;
+
+		init(req);
+		var data = {
+			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
+		};
+
+		if( !req.session.beneficiary ) {
+			logger.debug("no beneficiary selected");
+			res.header('Location', '/beneficiaries');
+			res.send(302);
+			return next();
+		} else {
+
+			var promises = {
+				beneficiaries: physioDOM.Beneficiaries(),
+				session: req.session.getPerson()
+			};
+
+			RSVP.hash(promises)
+				.then(function(result) {
+					data.session = result.session;
+					console.log(data.session);
+					return result.beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+				})
+				.then(function (beneficiary) {
+					data.beneficiary = beneficiary;
+					return beneficiary._id ? beneficiary.getProfessionals() : null;
+				}).then(function (professionalList) {
+					if (professionalList) {
+						data.professionalList = professionalList;
+					}
+					data.lang = lang;
+
+					html = swig.renderFile(DOCUMENTROOT + '/static/tpl/messageCreate.htm', data, function (err, output) {
+						if (err) {
+							console.log("error", err);
+							console.log("output", output);
+							res.write(err);
+							res.end();
+							next();
+						} else {
+							sendPage(output, res, next);
+						}
+					});
+
+				})
+				.catch(function (err) {
+					logger.error(err);
+					res.write(err);
+					res.end();
+					next();
+				});
+		}
+	};
+
+
 	// -------------- Basic health services pages ---------------------
 
 	/**
@@ -940,6 +1070,46 @@ function IPage() {
 		});
 	};
 
+
+	this.physiologicalData = function(req, res, next) {
+		logger.trace("PhysiologicalData");
+		var html;
+
+		init(req);
+		var data = {
+			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
+		};
+
+		physioDOM.Beneficiaries()
+			.then(function(beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+			})
+			.then(function(beneficiary) {
+				data.beneficiary = beneficiary;
+				logger.trace(data.beneficiary);
+				data.lang = lang;
+
+				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/physiologicalData.htm', data, function(err, output) {
+					if (err) {
+						console.log("error", err);
+						console.log("output", output);
+						res.write(err);
+						res.end();
+						next();
+					} else {
+						sendPage(output, res, next);
+					}
+				});
+
+			})
+			.catch(function(err) {
+				logger.error(err);
+				res.write(err);
+				res.end();
+				next();
+			});
+	};
+
 	/**
 	 * Basic health services creation page
 	 *
@@ -968,6 +1138,172 @@ function IPage() {
 		});
 	};
 	
+	this.prescriptionDataGeneral = function(req, res, next) {
+		logger.trace("PrescriptionDataGeneral");
+		var html;
+
+		init(req);
+		var data = {
+			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
+		};
+
+		physioDOM.Beneficiaries()
+			.then(function(beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+			})
+			.then(function(beneficiary) {
+				data.beneficiary = beneficiary;
+				data.lang = lang;
+				data.title = 'General Data';
+				data.category = 'General';
+				data.parameterList = 'parameters';
+				// jsut for test, otherwise read locale from session
+
+				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/prescriptionData.htm', data, function(err, output) {
+					if (err) {
+						console.log("error", err);
+						console.log("output", output);
+						res.write(err);
+						res.end();
+						next();
+					} else {
+						sendPage(output, res, next);
+					}
+				});
+
+			})
+			.catch(function(err) {
+				logger.error(err);
+				res.write(err);
+				res.end();
+				next();
+			});
+	};
+
+	this.prescriptionDataHDIM = function(req, res, next) {
+		logger.trace("PrescriptionDataHDIM");
+		var html;
+
+		init(req);
+		var data = {
+			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
+		};
+
+		physioDOM.Beneficiaries()
+			.then(function(beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+			})
+			.then(function(beneficiary) {
+				data.beneficiary = beneficiary;
+				data.lang = lang;
+				data.title = 'HDIM Data';
+				data.category = 'HDIM';
+				data.parameterList = 'parameters';
+				// jsut for test, otherwise read locale from session
+
+				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/prescriptionData.htm', data, function(err, output) {
+					if (err) {
+						console.log("error", err);
+						console.log("output", output);
+						res.write(err);
+						res.end();
+						next();
+					} else {
+						sendPage(output, res, next);
+					}
+				});
+
+			})
+			.catch(function(err) {
+				logger.error(err);
+				res.write(err);
+				res.end();
+				next();
+			});
+	};
+
+	this.prescriptionDataSymptom = function(req, res, next) {
+		logger.trace("PrescriptionDataSymptom");
+		var html;
+
+		init(req);
+		var data = {
+			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
+		};
+
+		physioDOM.Beneficiaries()
+			.then(function(beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+			})
+			.then(function(beneficiary) {
+				data.beneficiary = beneficiary;
+				data.lang = lang;
+				data.title = 'Symptom Data';
+				data.category = '';
+				data.parameterList = 'symptom';
+
+				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/prescriptionData.htm', data, function(err, output) {
+					if (err) {
+						console.log("error", err);
+						console.log("output", output);
+						res.write(err);
+						res.end();
+						next();
+					} else {
+						sendPage(output, res, next);
+					}
+				});
+
+			})
+			.catch(function(err) {
+				logger.error(err);
+				res.write(err);
+				res.end();
+				next();
+			});
+	};
+
+
+	this.prescriptionQuestionnaire = function(req, res, next) {
+		logger.trace("PrescriptionQuestionnaire");
+		var html;
+
+		init(req);
+		var data = {
+			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
+		};
+
+		physioDOM.Beneficiaries()
+			.then(function(beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+			})
+			.then(function(beneficiary) {
+				data.beneficiary = beneficiary;
+				data.lang = lang;
+				data.title = 'Questionnaires';
+				// jsut for test, otherwise read locale from session
+
+				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/prescriptionQuestionnaire.htm', data, function(err, output) {
+					if (err) {
+						console.log("error", err);
+						console.log("output", output);
+						res.write(err);
+						res.end();
+						next();
+					} else {
+						sendPage(output, res, next);
+					}
+				});
+
+			})
+			.catch(function(err) {
+				logger.error(err);
+				res.write(err);
+				res.end();
+				next();
+			});
+	};
+
 	/**
 	 * Send the page to the browser
 	 *

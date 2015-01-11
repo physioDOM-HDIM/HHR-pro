@@ -1,0 +1,140 @@
+{% extends './page.htm' %}
+
+{% block title %}Physiological Data{% endblock %}
+
+{% block head %}
+{% parent %}
+<script src="/bower_components/rsvp/rsvp.min.js"></script>
+<script src="/bower_components/mustache/mustache.js"></script>
+<script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
+<script src="/bower_components/zdk-calendar/form2js.js"></script>
+<script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
+
+<script src="/bower_components/highcharts-release/adapters/standalone-framework.js"></script>
+<script src="/bower_components/highcharts-release/highcharts.js"></script>
+<script src="/bower_components/highcharts-release/highcharts-more.js"></script>
+
+<link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
+<link rel="stylesheet" href="/styles/physiologicalData.css">
+{% endblock %}
+
+{% block content %}
+
+<div id="user" class="hidden">{{ JSON.stringify(beneficiary) }}</div>
+<div id="lang" class="hidden">{{lang}}</div>
+
+<div class="row title">
+<label class="title">
+	{{ "Quick Look: Physiological Data"|i18n }}
+</label>
+</div>
+
+<div id="container" style="height: auto; width: 100%;"></div>
+<div class="empty-graph hidden">No data available</div>
+<div class="row spaced">
+	<span class="spacing-around">From</span>
+	<zdk-input-date class="date-from" name="date-from" style="z-index:100" onchange="getDataRecords()"></zdk-input-date>
+
+	<span class="spacer"></span>
+
+	<span class="spacing-around">To</span>
+	<zdk-input-date class="date-to" name="date-to" style="z-index:100" onchange="getDataRecords()"></zdk-input-date>
+</div>
+
+<zdk-panel heading="{{'General'|i18n}}" id="param-General-container" collapsable="true" collapsed="false">
+	<div class="row">
+		<div class="col"></div>
+		<div class="col">Minimum threshold</div>
+		<div class="col">Maximum threshold</div>
+		<div class="col">Last Report on</div>
+		<div class="col"></div>
+	</div>
+</zdk-panel>
+<zdk-panel heading="{{'HDIM'|i18n}}" id="param-HDIM-container" collapsable="true" collapsed="false">
+	<div class="row">
+		<div class="col"></div>
+		<div class="col">Minimum threshold</div>
+		<div class="col">Maximum threshold</div>
+		<div class="col">Last Report on</div>
+		<div class="col"></div>
+	</div>
+</zdk-panel>
+<zdk-panel heading="{{'Symptoms'|i18n}}" id="param-symptom-container" collapsable="true" collapsed="false">
+	<div class="row">
+		<div class="col"></div>
+		<div class="col"></div>
+		<div class="col"></div>
+		<div class="col">Last Report on</div>
+	</div>
+</zdk-panel>
+<zdk-panel heading="{{'Questionnaires scores'|i18n}}" id="param-questionnaire-container" collapsable="true" collapsed="false">
+	<div class="row">
+		<div class="col"></div>
+		<div class="col"></div>
+		<div class="col"></div>
+		<div class="col">Last Report on</div>
+	</div>
+</zdk-panel>
+
+{% raw %}
+
+<script type="template" id="param-line-tpl">
+	{{#param}}
+		<div class="category hidden">{{category}}</div>
+		<div class="col">
+
+			<input type="checkbox" id="param-blue-{{text}}" class="line-blue css-checkbox" value="{{text}}" onchange="resetLine('blue', this); getDataRecords();"/>
+			<label for="param-blue-{{text}}" class="css-label color-blue"></label>
+			<input type="checkbox" id="param-yellow-{{text}}" class="line-yellow css-checkbox" value="{{text}}" onchange="resetLine('yellow', this); getDataRecords()"/>
+			<label for="param-yellow-{{text}}" class="css-label color-yellow"></label>
+			{{name}}
+
+		</div>
+		{{#threshold}}
+			<div class="col">
+				<div class="mode-read">
+					<span class="read-min">{{min}}</span>
+				</div>
+				<div class="mode-update hidden">
+					<input type="text" value="{{min}}" name="{{text}}.min" class="input-min"/>
+				</div>
+			</div>
+			<div class="col">
+				<div class="mode-read">
+					<span class="read-max">{{max}}</span>
+				</div>
+				<div class="mode-update hidden">
+					<input type="text" value="{{max}}" name="{{text}}.max" class="input-max"/>
+				</div>
+			</div>
+		{{/threshold}}
+		{{^threshold}}
+			<div class="col"></div>
+			<div class="col"></div>
+		{{/threshold}}
+		<div class="col">{{lastReport}}</div>
+
+		<div>
+			{{#edition}}
+				<div class="mode-read">
+					<button type="button" class="blue small" onclick="edit(this)">Edit</button>
+				</div>
+				<div class="mode-update hidden">
+					<button type="button" class="green small" onclick="updateThreshold(this)">Save</button>
+					<button type="button" class="blue small" onclick="back(this)">Back</button>
+				</div>
+			{{/edition}}
+			{{^edition}}
+				<div class="spacing-nobutton"></div>
+			{{/edition}}
+		</div>
+
+	{{/param}}
+</script>
+{% endraw %}
+{% include "./modal.htm" %}
+
+<script src="/tpl/physiologicalData.js"></script>
+
+{% endblock %}

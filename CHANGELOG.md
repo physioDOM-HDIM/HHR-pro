@@ -1,3 +1,10 @@
+__v0.0.6__
+
+  - API dataRecording , FIX dataRecordItems : add subject and datetime
+  - API getGraphData : NEW
+  - page "physiological data" ( graph page ) : NEW
+  
+
 __2015-01-05__ ( v0.0.5 )
 
   - redirect to "select a beneficiary" when a beneficiary is required and none is selected 

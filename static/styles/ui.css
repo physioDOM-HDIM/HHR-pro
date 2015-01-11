@@ -232,7 +232,7 @@ div.row textarea {
 	border:1px solid lightgray; 
 	resize: none;
 }
-input[type=text],input[type=password],input[type=email] { 
+input[type=text],input[type=password],input[type=email], input.text { 
 	-webkit-flex:1; 
 	-ms-flex:1; 
 	flex:1; 
@@ -343,7 +343,7 @@ ul.admin {
 }
 
 div[drawer] {
-	display:-ms-flexbox; 
+	display:-ms-flexbox;
 	display:-webkit-flex;
 	display: flex;
 	-webkit-flex-direction: column;
@@ -374,6 +374,10 @@ div[drawer] ul.menu {
 	float: right;
 }
 
+.row.spaced {
+	margin: 10px 0;
+}
+
 .spacing-around, input.spacing-around {
 	margin: 0 10px;
 }
@@ -393,6 +397,14 @@ i.icon {
 	height: 19px;
 }
 
+div.row.spaced {
+	margin: 5px 0;
+}
+
+.flex-right {
+	justify-content: flex-end;
+}
+
 div.row.title { height:40px; background:rgb(80, 80, 80); color:white; padding:0px 10px; margin-bottom:20px; }
 label.title { font-size:1.3em; width:initial !important }
 
@@ -400,4 +412,34 @@ label.title { font-size:1.3em; width:initial !important }
 zdk-input-date {
     z-index:50;
     position: static;
+}
+
+.error-message {
+	color: red;
+	text-align: center;
+	width: 100%;
+}
+
+.btn {
+	background: transparent;
+	min-width: initial;
+	height: auto;
+	cursor: pointer;
+	display: inline-block;
+	text-align: center;
+	outline:none;
+}
+
+.btn-delete {
+	color: #e74c3c;
+}
+
+.btn-delete:hover {
+	color: #c0392b;
+}
+
+.icon {
+	display: inline-block;
+	font-size: 1.6em;
+	vertical-align: middle;
 }

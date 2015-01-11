@@ -255,7 +255,15 @@ var IBeneficiary = {
 				next(false);
 			});
 	},
-	
+
+	/**
+	 * get the detail of a dataRecord
+	 * the requested dataRecord is given in the url : '/api/beneficiary/datarecords/:dataRecordID'
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
 	dataRecord: function(req,res,next) {
 		logger.trace("datarecord", req.params.dataRecordID );
 		physioDOM.Beneficiaries()
@@ -382,7 +390,6 @@ var IBeneficiary = {
 		logger.trace("setThreshold");
 		var beneficiary,updateItems;
 		
-		
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
 				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
@@ -397,6 +404,236 @@ var IBeneficiary = {
 				next();
 			})
 			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	/**
+	 * Get the list of messages to home
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	getMessages: function(req, res, next) {
+		logger.trace("getMessages");
+		var beneficiary;
+
+		var pg      = parseInt(req.params.pg,10) || 1;
+		var offset  = parseInt(req.params.offset,10) || 25;
+		var sort    = req.params.sort || null;
+		var sortDir = parseInt(req.params.dir,10) || 1;
+		var filter  = req.params.filter || null;
+		
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then( function(selectedBeneficiary) {
+				beneficiary = selectedBeneficiary;
+				return beneficiary.getMessages( pg, offset, sort, sortDir, filter );
+			})
+			.then( function (messages) {
+				res.send( messages );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+	
+	createMessage : function(req, res, next) {
+		logger.trace("createMessage");
+		var beneficiary;
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then( function(selectedBeneficiary) {
+				beneficiary = selectedBeneficiary;
+				try {
+					var msg = JSON.parse( req.body );
+					return beneficiary.createMessage( req.session, msg );
+				} catch( err ) {
+					throw { code:405, message: "message is not a JSON object"};
+				}
+				
+			})
+			.then( function (message) {
+				res.send( message );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	/**
+	 * Get the list of parameters that could be displayed on graph
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	getGraphDataList: function( req, res, next) {
+		logger.trace("getGraphDataList");
+
+		var beneficiary;
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then( function(selectedBeneficiary) {
+				beneficiary = selectedBeneficiary;
+				return beneficiary.getGraphDataList();
+			}).then( function( graphList) {
+				res.send(graphList);
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	/**
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	getGraphData: function( req, res, next ) {
+		logger.trace("getGraphData");
+
+		var beneficiary;
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then( function(selectedBeneficiary) {
+				beneficiary = selectedBeneficiary;
+				return beneficiary.getGraphData(req.params.category, req.params.paramName, req.params.start, req.params.stop, req.session);
+			}).then( function( graphData) {
+				res.send(graphData);
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	getDataProg: function( req, res, next) {
+		logger.trace("getDataProg");
+		var beneficiary;
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then( function(selectedBeneficiary) {
+				beneficiary = selectedBeneficiary;
+				res.send({code: 501, message: "not yet implemented"});
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	/**
+	 * Get the array of prescription measurements for one category
+	 * the category is declared in the url `/api/beneficiary/dataprog/:category`
+	 * 
+	 * category are "General","HDIM","symptom","questionnaire"
+	 *
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	getDataProgCategory: function( req, res, next) {
+		logger.trace("getDataProgCategory");
+		var beneficiary;
+		
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+			})
+			.then(function (selectedBeneficiary) {
+				beneficiary = selectedBeneficiary;
+				return beneficiary.getDataProgCategory( req.params.category );
+			})
+			.then( function( prescriptions ) {
+				res.send(prescriptions);
+				next();
+			})
+			.catch(function (err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	/**
+	 * Add a new data prescription to the selected beneficiary
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	setDataProg: function( req, res, next) {
+		logger.trace("getDataProgCategory");
+		var beneficiary;
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+			})
+			.then(function (selectedBeneficiary) {
+				beneficiary = selectedBeneficiary;
+				return beneficiary.setDataProg( JSON.parse(req.body) );
+			})
+			.then( function( prescription ) {
+				res.send(prescription);
+				next();
+			})
+			.catch(function (err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	/**
+	 * Delete a existing data prescription
+	 * 
+	 * the selected prescription is given by the url : `/api/beneficiary/dataprog/:dataProgItemID`
+	 * 
+	 * on success send a 200 HTTP code, else send a 4xx HTTP Code
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	removeDataProg: function( req, res, next ) {
+		logger.trace("removeDataProg");
+		var beneficiary;
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+			})
+			.then(function (selectedBeneficiary) {
+				beneficiary = selectedBeneficiary;
+				return beneficiary.delDataProg( req.params.dataProgItemID );
+			})
+			.then( function( done ) {
+				res.send(200, { err: 200, message: "item successfully deleted"});
+				next();
+			})
+			.catch(function (err) {
 				res.send(err.code || 400, err);
 				next(false);
 			});

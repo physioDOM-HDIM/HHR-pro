@@ -1,5 +1,6 @@
 "use strict";
 
+/*
 function setFixedTable(table) {
 	if(!table) { return console.error("setFixedTable : no element given");}
 	var table = (typeof table === 'string')?document.querySelector(table):table;
@@ -50,6 +51,7 @@ function getScrollbarWidth() {
 
 	return widthNoScroll - widthWithScroll;
 }
+*/
 
 window.addEventListener("DOMContentLoaded", initFrame, false);
 
@@ -58,11 +60,6 @@ function initFrame() {
 	
 	if(parent.setTitle) {
 		parent.setTitle();
-
-		var nav = parent.document.querySelector("nav");
-		if (window.innerWidth < 993 && nav.classList.contains("show")) {
-			parent.toggleNav();
-		}
 	}
 }
 

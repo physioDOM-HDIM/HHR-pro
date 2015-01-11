@@ -217,7 +217,7 @@ function List() {
 	this.getItemIndx = function( itemRef ) {
 		var that = this;
 		return new promise( function(resolve, reject) {
-			logger.trace("getItem", itemRef);
+			logger.trace("getItemIndx", itemRef);
 			var indx = -1;
 			that.items.forEach( function( item, i) {
 				if( item.ref === itemRef ) {
@@ -262,6 +262,20 @@ function List() {
 				})
 				.then( function(list) {
 					resolve(list);
+				})
+				.catch( function(err) {
+					reject(err);
+				});
+		});
+	};
+	
+	this.getItem = function( itemRef ) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("getItem", itemRef);
+			that.getItemIndx( itemRef )
+				.then( function(indx) {
+					resolve( that.items[indx] );
 				})
 				.catch( function(err) {
 					reject(err);

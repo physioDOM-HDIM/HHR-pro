@@ -50,10 +50,12 @@ function show(page, title) {
 	// iframe.src= "/tpl/"+page+".htm";
 	iframe.src= page;
 	
+	/*
 	var nav = document.querySelector("nav");
 	if(window.innerWidth < 993 && nav.classList.contains("show")) {
 		toggleNav();
 	}
+	*/
 }
 
 function setTitle() {

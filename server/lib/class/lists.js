@@ -96,17 +96,17 @@ function Lists( ) {
 		return new promise( function(resolve, reject) {
 			that.getList(listName, lang)
 				.then( function(list) {
-					logger.debug("list "+listName, list);
+					// logger.debug("list "+listName, list);
 					var i, key, obj = {};
-	                for(i=0; i<list.items.length; i++){
-	                    key = list.items[i].ref;
-	                    //If list returned already translated with lang param
-	                    if(typeof key === "undefined"){
-	                    	key = list.items[i].value;
-	                    }
-	                    obj[key] = list.items[i].label;
-	                }
-	                list.items = obj;
+	 				for(i=0; i<list.items.length; i++){
+	 					key = list.items[i].ref;
+	 					//If list returned already translated with lang param
+	 					if(typeof key === "undefined"){
+	 						key = list.items[i].value;
+	 					}
+	 					obj[key] = list.items[i].label;
+	 				}
+	 				list.items = obj;
 					resolve(list);
 				})
 				.catch( function(err) {

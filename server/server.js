@@ -311,6 +311,8 @@ server.del( '/api/beneficiaries/:entryID', IBeneficiary.deleteBeneficiary );
 server.get( '/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryProfessionals );
 server.post('/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryAddProfessional );
 server.del( '/api/beneficiaries/:entryID/professionals/:profID', IBeneficiary.beneficiaryDelProfessional );
+server.get( '/api/beneficiaries/:entryID/graph', IBeneficiary.getGraphDataList );
+server.get( '/api/beneficiaries/:entryID/graph/:category/:paramName', IBeneficiary.getGraphData );
 
 // use of the session to determine the selected beneficiary
 server.get( '/api/beneficiary', IBeneficiary.getBeneficiary  );
@@ -322,16 +324,32 @@ server.put( '/api/beneficiary/datarecords/:dataRecordID', IBeneficiary.updateDat
 server.post('/api/beneficiary/thresholds', IBeneficiary.setThreshold);
 server.get( '/api/beneficiary/thresholds', IBeneficiary.getThreshold);
 
+server.get( '/api/beneficiary/graph', IBeneficiary.getGraphDataList );
+server.get( '/api/beneficiary/graph/:category/:paramName', IBeneficiary.getGraphData );
+server.get( '/api/beneficiary/messages', IBeneficiary.getMessages );
+server.get( '/api/beneficiaries/:entryID/messages', IBeneficiary.getMessages );
+server.post('/api/beneficiary/messages', IBeneficiary.createMessage );
+server.post('/api/beneficiaries/:entryID/messages', IBeneficiary.createMessage );
+
 server.get( '/api/sessions/', getSessions);
 
 server.get( '/api/lists', ILists.getLists );
 server.get( '/api/lists/:listName', ILists.getList );
 server.get( '/api/lists/:listName/array', ILists.getListArray );
 server.get( '/api/lists/:listName/translate', ILists.getListTranslate );
+server.get( '/api/lists/:listName/:itemRef', ILists.getItem );
 server.put( '/api/lists/:listName', ILists.updateList );
 server.post('/api/lists/:listName', ILists.addItem );
 server.put( '/api/lists/:listName/:itemRef', ILists.translateItem );
 server.post('/api/lists/:listName/:itemRef', ILists.activateItem );
+
+server.get( '/api/beneficiary/dataprog', IBeneficiary.getDataProg );
+server.get( '/api/beneficiary/dataprog/:category', IBeneficiary.getDataProgCategory );
+server.get( '/api/beneficiaries/:entryID/dataprog/:category', IBeneficiary.getDataProgCategory );
+server.post('/api/beneficiary/dataprog', IBeneficiary.setDataProg );
+server.post('/api/beneficiaries/:entryID/dataprog', IBeneficiary.setDataProg );
+server.del( '/api/beneficiary/dataprog/:dataProgItemID', IBeneficiary.removeDataProg );
+server.del( '/api/beneficiaries/:entryID/dataprog/:dataProgItemID', IBeneficiary.removeDataProg );
 
 //DEV ONLY for creation & update
 server.get( '/api/questionnaires', IQuestionnaire.getList );
@@ -368,9 +386,18 @@ server.get( '/datarecord/', IPage.dataRecord);
 server.get( '/datarecord/create', IPage.dataRecordCreate);
 server.get( '/datarecord/:dataRecordID', IPage.dataRecordDetail);
 
+server.get( '/physiological-data', IPage.physiologicalData);
+server.get( '/message', IPage.messageList);
+server.get( '/message/create', IPage.messageCreate);
+
 // Services
 server.get( '/services/health', IPage.basicHealthServices);
 server.get( '/services/health/create', IPage.basicHealthServiceCreate);
+
+server.get( '/prescription/general', IPage.prescriptionDataGeneral);
+server.get( '/prescription/hdim', IPage.prescriptionDataHDIM);
+server.get( '/prescription/symptom', IPage.prescriptionDataSymptom);
+server.get( '/prescription/questionnaire', IPage.prescriptionQuestionnaire);
 
 server.get(/\/[^api|components\/]?$/, function(req, res, next) {
 	logger.trace("index");

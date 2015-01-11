@@ -16,28 +16,32 @@
 <style>
     .telecomContainer {
         margin-top: 5px;
-        border-top: 1px solid black;
-        padding-top: 5px;
-    }
-    .telecomContainer:first-child {
-        margin-top: 5px;
         border-top: none;
         padding-top: 5px;
+    }
+    .telecomContainer:nth-child(n+3) {
+        border-top: 1px solid black;
+    }
+    div.row {
+        min-height: 30px;
     }
 </style>
 <script type="template" id="tplTelecomContainer">
     <div class="row">
+        <input type="hidden" name="telecom[{%raw%}{{indx}}{%endraw%}].use" value="work">
+        <!--
         <div class="col">
             <label>Use:</label>
-            <select name="telecom[{%raw%}{{indx}}{%endraw%}].use">
+            <select name="telecom[{%raw%}{{indx}}{%endraw%}].use"  style="min-width: 150px;">
                 {% for item in use.items %}
                 <option value="{{item.value}}" {{telecom_use_selected}}>{{item.label}}</option>
                 {% endfor %}
             </select>
         </div>
+        -->
         <div class="col">
             <label>System:</label>
-            <select name="telecom[{%raw%}{{indx}}{%endraw%}].system" onchange="checkEmailTypeValidation(this)">
+            <select name="telecom[{%raw%}{{indx}}{%endraw%}].system" style="min-width: 150px;" onchange="checkEmailTypeValidation(this)">
                 {% for item in system.items %}
                 <option value="{{item.value}}" {{telecom_system_selected}}>{{item.label}}</option>
                 {% endfor %}
@@ -47,9 +51,9 @@
     <div class="row">
         <div class="col">
             <label>Value:</label>
-            <input name="telecom[{%raw%}{{indx}}{%endraw%}].value" type="{%raw%}{{telecom_email_type_default}}{%endraw%}" />
+            <input name="telecom[{%raw%}{{indx}}{%endraw%}].value" type="{%raw%}{{telecom_email_type_default}}{%endraw%}" class="text" />
         </div>
-        <div class="col">
+        <div>
             <span class="spacer"></span>
             <button type="button" class="red small" onclick="deleteTelecom(this)">delete</button>
         </div>
@@ -62,9 +66,14 @@
                 <legend>Identity</legend>
                 <input type="hidden" name="_id" value="{{professional._id.toString()}}">
                 <div class="row">
+                    <label {%raw%}{{organization_disabled}}{%endraw%}>Organization:</label>
+                    <input type="checkbox" name="organization" onchange="checkOrganization()" {% if professional && professional.organization===true %}checked{% endif %} />
+                </div>
+                <div class="row">
                     <label>Name</label>
                     <input type="text" name="name.family" placeholder="Mandatory field" required value="{{professional.name.family}}" />
                 </div>
+                
                 <div id="nonOrgContainer">
                     <div class="row">
                         <label>Given:</label>
@@ -76,7 +85,7 @@
                         <input type="radio" name="gender" value="F" {% if professional.gender == 'F' %}checked{% endif %} />Woman
                     </div>
                     <div class="row">
-                        <label>Job:</label>
+                        <label>{{ "Job" | i18n }}:</label>
                         <select name="job" required>
                             {% for item in job.items %}
                             <option value="{{item.value}}" {% if  professional.job == item.value %}selected{% endif %}>{{item.label}}</option>
@@ -84,8 +93,9 @@
                         </select>
                     </div>
                 </div>
+                
                 <div class="row">
-                    <label>Role:</label>
+                    <label>{{ "Role" | i18n }}:</label>
                     <select name="role" required>
                         {% for item in role.items %}
                         <option value="{{item.value}}" {% if professional.role == item.value %}selected{% endif %}>{{item.label}}</option>
@@ -93,14 +103,23 @@
                     </select>
                 </div>
                 <div class="row">
-                    <label>Communication:</label>
+                    <label>{{ "Language" | i18n }} :</label>
                     <select name="communication">
                         {% for item in communication.items %}
                         <option value="{{item.value}}" {% if professional.communication == item.value %}selected{% endif %}>{{item.label}}</option>
                         {% endfor %}
                     </select>
                 </div>
+                <div class="row">
+                    <label>{{ "Perimeter" | i18n }}:</label>
+                    <select name="perimeter">
+                        {% for item in perimeter.items %}
+                        <option value="{{item.value}}" {% if professional.perimeter == item.value %}selected{% endif %}>{{item.label}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
             </fieldset>
+            <!--
             <fieldset>
                 <legend>Status</legend>
                 <div class="row">
@@ -112,11 +131,14 @@
                     <input type="checkbox" name="active" {% if professional && professional.active===true %}checked{% endif %}/>
                 </div>
             </fieldset>
+            -->
             <fieldset>
                 <legend>Telecom</legend>
                 {% if !professional.telecom %}
                 <div class="telecomContainer">
                     <div class="row">
+                        <input type="hidden" name="telecom[0].use" value="work">
+                        <!--
                         <div class="col">
                             <label>Use:</label>
                             <select name="telecom[0].use" required>
@@ -125,6 +147,7 @@
                                 {% endfor %}
                             </select>
                         </div>
+                        -->
                         <div class="col">
                             <label>System:</label>
                             <select name="telecom[0].system" onchange="checkEmailTypeValidation(this)" required>
@@ -149,29 +172,32 @@
                 {% for entry in professional.telecom %}
                 <div class="telecomContainer">
                     <div class="row">
-                    <div class="col">
-                        <label>Use:</label>
-                        <select name="telecom[{{loop.index}}].use" required>
-                            {% for item in use.items %}
-                            <option value="{{item.value}}" {% if (!entry.use && item.value=='work')||entry.use==item.value %}selected{% endif %}>{{item.label}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col">
-                        <label>System:</label>
-                        <select name="telecom[{{loop.index}}].system" onchange="checkEmailTypeValidation(this)" required>
-                            {% for item in system.items %}
-                            <option value="{{item.value}}" {% if entry.system==item.value %}selected{% endif %}>{{item.label}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
+                        <input type="hidden" name="telecom[{{loop.index}}].use" value="work">
+                        <!--
+                        <div class="col">
+                            <label>Use:</label>
+                            <select name="telecom[{{loop.index}}].use" style="min-width: 150px;" required>
+                                {% for item in use.items %}
+                                <option value="{{item.value}}" {% if (!entry.use && item.value=='work')||entry.use==item.value %}selected{% endif %}>{{item.label}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        -->
+                        <div class="col">
+                            <label>System:</label>
+                            <select name="telecom[{{loop.index}}].system" style="min-width: 150px;" onchange="checkEmailTypeValidation(this)" required>
+                                {% for item in system.items %}
+                                <option value="{{item.value}}" {% if entry.system==item.value %}selected{% endif %}>{{item.label}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col">
                             <label>Value:</label>
                             <input name="telecom[{{loop.index}}].value" value="{{entry.value}}" type="{% if entry.system=='email' %}email{% else %}text{% endif %}" />
                         </div>
-                        <div class="col">
+                        <div>
                             <span class="spacer"></span>
                             <button type="button" class="red small" onclick="deleteTelecom(this)">delete</button>
                         </div>
@@ -181,11 +207,13 @@
                 {% endif %}
                 <div id="addTelecomBtn" class="row control">
                     <span class="spacer"></span>
-                    <button class="blue" type="button" onclick="addTelecom()">Add</button>
+                    <button class="blue small" type="button" onclick="addTelecom()">Add</button>
                 </div>
             </fieldset>
             <fieldset>
                 <legend>Address</legend>
+                <input type="hidden" name="address.use" value="work">
+                <!--
                 <div class="row">
                     <label>Use:</label>
                     <select name="address.use" required>
@@ -194,14 +222,18 @@
                         {% endfor %}
                     </select>
                 </div>
+                -->
+                <!--
                 <div class="row">
                     <label>Text:</label>
                     <input type="text" name="address.text" value="{{professional.address.text}}" />
                 </div>
-                    
+                -->
                 <div class="row">
                     <label>Street :</label>
-                    <textarea name="address.line">{{professional.address.line}}</textarea>
+                    <!-- Line break is needed to place each line -->
+                    <textarea name="address.line">{% for line in professional.address.line %}{{line}}
+{% endfor %}</textarea>
                 </div>
                 <div class="row">
                     <div class="col">
@@ -228,6 +260,10 @@
                 <div class="row">
                     <label>Confirm password:</label>
                     <input type="password" name="checkAccountPassword" />
+                </div>
+                <div class="row">
+                    <label>Active:</label>
+                    <input type="checkbox" name="active" {% if professional && professional.active===true %}checked{% endif %}/>
                 </div>
             </fieldset>
             <br />

@@ -13,7 +13,11 @@ var RSVP = require("rsvp"),
 	ObjectID = require("mongodb").ObjectID,
 	beneficiarySchema = require("./../schema/beneficiarySchema"),
 	DataRecord = require("./dataRecord"),
-	dbPromise = require("./database");
+	Messages = require("./messages"),
+	DataProg = require("./dataProg"),
+	DataProgItem = require("./dataProgItem"),
+	dbPromise = require("./database"),
+	moment = require("moment");
 
 var logger = new Logger("Beneficiary");
 
@@ -349,6 +353,23 @@ function Beneficiary( ) {
 		});
 	};
 
+	this.hasProfessional = function( professionalID ) {
+		var that = this;
+		if( that.professionals === undefined ) {
+			that.professionals = [];
+		}
+		return new promise( function(resolve, reject) {
+			logger.trace("hasProfessional", professionalID);
+			var hasProfessional = false;
+			that.professionals.forEach( function(professional) {
+				if( professional.professionalID === professionalID.toString() ) { 
+					hasProfessional = true;
+				}
+			})
+			resolve( hasProfessional );
+		});
+	};
+	
 	/**
 	 * Attach a professional to the beneficiary
 	 * 
@@ -510,18 +531,6 @@ function Beneficiary( ) {
 		});
 	};
 
-	this.getMessages = function() {
-		return new promise( function(resolve, reject) {
-			logger.trace("getMessages");
-		});
-	};
-
-	this.getIPMessages = function() {
-		return new promise( function(resolve, reject) {
-			logger.trace("getIPMessages");
-		});
-	};
-
 	/**
 	 * on resolve return the list of dataRecords of the current beneficiary
 	 * 
@@ -675,6 +684,262 @@ function Beneficiary( ) {
 				});
 		});
 	};
+	
+	this.getMessages = function( pg, offset, sort, sortDir, filter ) {
+		logger.trace("getMessages");
+
+		var messages = new Messages( this._id );
+		return messages.list( pg, offset, sort, sortDir, filter );
+	};
+
+	/**
+	 * Create a message to home
+	 * 
+	 * @param professionalID
+	 * @param msg
+	 */
+	this.createMessage = function( session, professionalID, msg ) {
+		logger.trace("setMessage");
+
+		var messages = new Messages( this._id );
+		return messages.create( session, professionalID, msg );
+	};
+
+	this.getGraphDataList = function() {
+		var that = this;
+
+		return new promise(function (resolve, reject) {
+			logger.trace("getGraphDataList", that._id);
+			var graphList = {
+				"General"      : [],
+				"HDIM"         : [],
+				"symptom"      : [],
+				"questionnaire": []
+			};
+
+			var groupRequest = {
+				key    : {text: 1, category: 1},
+				cond   : {subject: that._id},
+				reduce : "function ( curr, result ) { if( result.lastReport < curr.datetime) { result.lastReport = curr.datetime; } }",
+				initial: {lastReport: ""}
+			};
+
+			function compareItems(a, b) {
+				if (a.text < b.text) {
+					return -1;
+				}
+				if (a.text > b.text) {
+					return 1;
+				}
+				return 0;
+			}
+
+			var promises = ["parameters", "symptom", "questionnaire"].map(function (listName) {
+				return physioDOM.Lists.getListArray(listName);
+			});
+			
+			var thresholds;
+			that.getThreshold()
+				.then( function(_thresholds) {
+					thresholds = _thresholds;
+					return physioDOM.Lists.getList("unity")
+				})
+				.then(function (units) {
+					RSVP.all(promises).then(function (lists) {
+						var labels = {};
+						for (var i = 0; i < lists.length; i++) {
+							for (var prop in lists[i].items) {
+								labels[prop] = lists[i].items[prop];
+							}
+						}
+
+						physioDOM.db.collection("dataRecordItems").group(groupRequest.key, groupRequest.cond, groupRequest.initial, groupRequest.reduce, function (err, results) {
+							if (err) {
+								reject(err);
+							} else {
+								RSVP.all( results.map(function (result) {
+											result.name = labels[result.text].en || result.text;
+											if (thresholds[result.text]) {
+												result.threshold = thresholds[result.text];
+											}
+											return result;
+										})
+									)
+									.then( function(results) {
+										graphList.General = results.filter(function (item) {
+											return item.category === "General";
+										});
+										graphList.HDIM = results.filter(function (item) {
+											return item.category === "HDIM";
+										});
+										graphList.symptom = results.filter(function (item) {
+											return item.category === "symptom";
+										});
+										graphList.questionnaire = results.filter(function (item) {
+											return item.category === "questionnaire";
+										});
+
+										graphList.General.sort(compareItems);
+										graphList.HDIM.sort(compareItems);
+										graphList.symptom.sort(compareItems);
+										graphList.questionnaire.sort(compareItems);
+
+										resolve(graphList);
+									})
+									.catch( reject );
+							}
+						});
+					});
+				})
+				.catch( reject );
+		});
+	};
+	
+	this.getGraphData = function(category, paramName, startDate, stopDate, session ) {
+		var graphData = {text: paramName, data: []};
+		var that = this;
+		
+		if (!stopDate) {
+			graphData.stopDate = moment().utc();
+			graphData.stopDate.hours(23);
+			graphData.stopDate.minutes(59);
+		} else {
+			graphData.stopDate = moment(stopDate);
+			graphData.stopDate.hours(23);
+			graphData.stopDate.minutes(59);
+			if( !graphData.stopDate.isValid() ) {
+				throw { code:405, message: "stop date is invalid"};
+			}
+		}
+		if (!startDate) {
+			graphData.startDate = moment(graphData.stopDate.toISOString());
+			graphData.startDate.subtract(30, "days");
+		} else {
+			graphData.startDate = moment(startDate);
+			graphData.startDate.hours(0);
+			graphData.startDate.minutes(0);
+			if( !graphData.startDate.isValid() ) {
+				throw { code:405, message: "start date is invalid"};
+			}
+		}
+		
+		if(graphData.startDate.valueOf() >=  graphData.stopDate.valueOf() ) {
+			throw { code:405, message: "start date must be before stop date"};
+		}
+
+		// to get the label we need to know from which list comes the parameter
+		if (["General", "HDIM"].indexOf(category) !== -1) {
+			category = "parameters";
+		}
+
+		function paramPromise(listName, param) {
+			return new promise(function (resolve, reject) {
+				physioDOM.Lists.getList(listName)
+					.then(function (list) {
+						return list.getItem(paramName);
+					})
+					.then(function(param) {
+						physioDOM.Lists.getList("unity")
+							.then(function(unity) {
+								return unity.getItem(param.unity);
+							})
+							.then( function(unit) {
+								if( unit.label[session.lang || "en"] === undefined ) {
+									param.unitLabel = unit.ref;
+								} else {
+									param.unitLabel = unit.label[session.lang || "en"];
+								}
+								resolve(param);
+							})
+							.catch(function() {
+								param.unitLabel = "";
+								resolve(param);
+							});
+					})
+					.catch(reject);
+			});
+		}
+		
+		return new promise(function (resolve, reject) {
+			logger.trace("getGraphData", paramName, graphData.startDate, graphData.stopDate);
+			
+			paramPromise( category, paramName )
+				.then( function( param ) {
+					graphData.label = param.label[session.lang || "en"] || paramName;
+					graphData.unit = param.unitLabel;
+					var search = {
+						subject : that._id,
+						text    : paramName,
+						datetime: {
+							'$gte': graphData.startDate.toISOString(),
+							'$lte': graphData.stopDate.toISOString()
+						}
+					};
+					physioDOM.db.collection("dataRecordItems").find(search).sort({datetime: 1}).toArray(function (err, results) {
+						results.forEach(function (result) {
+							graphData.data.push([ moment(result.datetime).valueOf(), result.value]);
+						});
+						resolve(graphData);
+					});
+				})
+				.catch( reject );
+		});
+	};
+
+
+	/**
+	 * getDataProg
+	 * 
+	 * @returns {promise}
+	 */
+	this.getDataProg = function() {
+		var that = this;
+
+		return new promise( function(resolve, reject) {
+			logger.trace("getDataProg", that._id);
+			resolve( {} );
+		});
+	};
+
+	/**
+	 * get the data prescription for a given category
+	 * 
+	 * category is one of "General","HDIM","symptom","questionnaire"
+	 * 
+	 * the promise, if succeed, return an array of all data prescription.
+	 * 
+	 * @param category
+	 * @returns {*}
+	 */
+	this.getDataProgCategory = function( category ) {
+		var that = this;
+		logger.trace("getDataProgCategory", that._id, category );
+		
+		var dataProg = new DataProg( that._id );
+		return dataProg.getCategory( category );
+	};
+
+	/**
+	 * add a data prescription`defined by the given `prescription` object
+	 *
+	 * @param prescription 
+	 * @returns {promise}
+	 */
+	this.setDataProg = function( prescription ) {
+		var that = this;
+		logger.trace("setDataProg", that._id, prescription.ref );
+
+		var dataProgItem = new DataProgItem( that._id );
+		return dataProgItem.setup( prescription );
+	};
+	
+	this.delDataProg = function( dataProgItemID ) {
+		var that = this;
+		logger.trace("delDataProg", that._id, dataProgItemID );
+
+		var dataProg = new DataProg( that._id );
+		return dataProg.remove( dataProgItemID );
+	}
 }
 
 module.exports = Beneficiary;

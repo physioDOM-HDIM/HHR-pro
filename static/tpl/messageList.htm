@@ -1,0 +1,142 @@
+{% extends './page.htm' %}
+
+{% block title %}Message to Home{% endblock %}
+
+{% block head %}
+{% parent %}
+
+<script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
+<script src="/tpl/messageList.js"></script>
+<link rel="stylesheet" href="/styles/message.css">
+
+<script src="/bower_components/zdk-calendar/form2js.js"></script>
+<script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
+<link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
+
+{% endblock %}
+
+{% block content %}
+
+<div class="row title">
+<label class="title">
+	{{ "Message to Home"|i18n }}
+</label>
+</div>
+
+<zdk-panel heading="{{'Filter'|i18n}} / {{'Sort'|i18n}}" collapsable="true" collapsed="false">
+	<div>
+		<form class="filter" name="filter" autocomplete="off" onsubmit="validFilter(); return false;">
+
+			<div class="row spaced">
+				<div class="col">
+					<label class="collabel" for="status">{{ "Status"|i18n }} : </label>
+					<div class="colcontent">
+						<select name="status" id="status">
+							<option value="">{{ "All"|i18n }}</option>
+							<option value="transmitting" >{{ "Transmitting"|i18n }}</option>
+							<option value="read" >{{ "Read"|i18n }}</option>
+						</select>
+					</div>
+				</div>
+				<div class="col">
+					<label class="collabel" for="sender">{{ "Sender"|i18n }} : </label>
+					<div class="colcontent">
+						<select name="sender" id="sender">
+							<option value=""></option>
+							{% for item in professionalList %}
+							<option value="{{item._id.toString()}}" >{{item.name.given}} {{item.name.family}}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</div>
+			</div>
+
+			<div class="row spaced">
+				<div class="col">
+					<label class="collabel" for="startDate">{{ "Since"|i18n }}: </label>
+					<div class="colcontent">
+						<zdk-input-date class="startDate" name="startDate" style="z-index:100"></zdk-input-date>
+					</div>
+				</div>
+				<div class="col">
+					<label class="collabel" for="stopDate">{{ "To"|i18n }}: </label>
+					<div class="colcontent">
+						<zdk-input-date class="stopDate" name="stopDate" style="z-index:100"></zdk-input-date>
+					</div>
+				</div>
+			</div>
+
+			<div class="row control">
+				<span class="spacer"></span>
+				<button type="button" class="red" onclick="resetFilter()">{{ "Reset"|i18n }}</button>
+				<button class="green">{{ "Filter"|i18n }}</button>
+			</div>
+
+		</form>
+
+		<div style="height:10px">&nbsp;</div>
+		<hr/>
+
+		<form class="order" name="order" autocomplete="off" onsubmit="validFilter(); return false;">
+			<div class="row">
+				<div class="col">
+					<label>{{ "Sort"|i18n }}:</label>
+					<select name="sort">
+						<option value="datetime" selected>{{ "Date"|i18n }}</option>
+						<option value="source">{{ "Status"|i18n }}</option>
+						<!-- <option value="home">{{ "Sender"|i18n }}</option> -->
+					</select>
+				</div>
+				<div class="col">
+					<label>{{ "Direction"|i18n }}:</label>
+					<select name="dir">
+						<option value="1">{{ "ascending"|i18n }}</option>
+						<option value="-1" selected>{{ "descending"|i18n }}</option>
+					</select>
+				</div>
+			</div>
+			<div class="row control">
+				<span class="spacer"></span>
+
+				<button type="button" class="red" onclick="resetOrder()">{{ "Reset"|i18n }}</button>
+				<button class="green">{{ "Sort"|i18n }}</button>
+			</div>
+		</form>
+	</div>
+
+</zdk-panel>
+
+<tsante-list url="/api/beneficiary/messages" pg="1" offset="25" auto="true" autoRender="false" unresolved id="tsanteList">
+<template is="auto-binding" repeat="{% raw %}{{item in list.items}}{% endraw %}">
+	{% raw %}
+	<div class="item">
+		<div class="row">
+			<h3 style="margin: 0.2em;">{{item.title}}</h3>
+			<div class="spacer"></div>
+			<button type="button" class="blue small" onclick="showDetail(this)">
+				<span class="detail-show">Show Detail</span>
+				<span class="detail-hide hidden">Hide Detail</span>
+			</button>
+		</div>
+		<div class="row spacing-around">
+			<div class="col" style="display: block;"><div class="bold">{{ item.datetime }}</div><div>&nbsp;{{ item.from }}</div></div>
+			<div class="col">send by: {{item.author.name.family}} {{item.author.name.given}}</div>
+			<div class="col">status: {{item.status}}</div>
+		</div>
+		<div class="row message-detail hidden">
+			{{item.content}}
+		</div>
+	</div>
+	{% endraw %}
+</template>
+</tsante-list>
+
+<div class="row control actions">
+	<span class="spacer"></span>
+	<a href="/message/create"><button class="blue big">{{ "New message"|i18n }}</button></a>
+</div>
+
+{% include 'modal.htm' %}
+
+{% endblock %}
