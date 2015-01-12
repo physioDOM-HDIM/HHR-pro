@@ -5,9 +5,7 @@ ul.data-list{
 }
 
 div.col05 {
-	-webkit-flex:0.5;
-	-ms-flex:0.5;
-	flex:0.5;
+	width:130px;
 }
 
 .modalContainer .row {
@@ -33,4 +31,12 @@ ul.dates-list {
 ul.dates-list li {
 	display: inline-block;
 	margin: 0 10px;
+}
+
+select {
+	min-width:100px;
+}
+
+.vert {
+	align-items: center;
 }

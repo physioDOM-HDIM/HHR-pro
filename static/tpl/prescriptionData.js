@@ -12,7 +12,7 @@ var getList = function() {
     var promises = {
             dataprog: utils.promiseXHR("GET", "/api/beneficiary/dataprog/"+( infos.category || infos.paramList ),200),
             parameterList: utils.promiseXHR("GET", "/api/lists/"+infos.paramList, 200),
-            thresholds: utils.promiseXHR("GET", "/api/beneficiary/thresholds", 200)
+            // thresholds: utils.promiseXHR("GET", "/api/beneficiary/thresholds", 200)
         };
 
     RSVP.hash(promises).then(function(results) {
@@ -23,13 +23,15 @@ var getList = function() {
                 return item.category === infos.category;
             });
         }
-        lists.thresholds = JSON.parse(results.thresholds);
+        // lists.thresholds = JSON.parse(results.thresholds);
 
         for(var i = 0, leni = lists.parameters.items.length; i<leni; i++) {
             lists.parameters.items[i].labelLang = lists.parameters.items[i].label[infos.lang];
+            /*
             if(lists.thresholds[lists.parameters.items[i].ref]) {
                 lists.parameters.items[i].threshold = lists.thresholds[lists.parameters.items[i].ref];
             }
+            */
         }
         init();
     });
@@ -104,14 +106,16 @@ var init = function() {
 var updateParam = function(elt) {
     var container = elt.parentNode.parentNode,
         ref = elt.value,
-        minContainer = container.querySelector('.min-threshold'),
-        maxContainer = container.querySelector('.max-threshold'),
         param = utils.findInObject(lists.parameters.items, 'ref', ref);
-
+        // minContainer = container.querySelector('.min-threshold'),
+        // maxContainer = container.querySelector('.max-threshold'),
+    
+    /*
     if(param.threshold) {
         minContainer.innerText = param.threshold.min;
         maxContainer.innerText = param.threshold.max;
     }
+    */
 };
 
 var showOptions = function(frequency, dataModel) {
@@ -169,8 +173,30 @@ function showForm(ref) {
             getDaysDefault: function() {
                 return function(val, render) {
                     console.log(dataItem.when);
-                    if (dataItem.when.days.indexOf(parseInt(render(val))) > -1) {
+                    var tmp = [];
+                    if( dataItem.frequency === "monthly" ) {
+                        for( var i= 0, l=dataItem.when.days.length; i < l; i++) {
+                            tmp.push ( Math.abs(dataItem.when.days[i] % 10 ));
+                        }
+                    } else {
+                        tmp = dataItem.when.days;
+                    }
+                    if (tmp.indexOf(parseInt(render(val))) > -1) {
                         return 'checked';
+                    }
+                };
+            },
+            getWeekDefault: function() {
+                return function(val, render) {
+                    if(Math.abs(parseInt(dataItem.when.days[0]/10)) === parseInt(render(val),10)) {
+                        return 'selected';
+                    }
+                };
+            },
+            getStartDefault: function() {
+                return function(val, render) {
+                    if( parseInt(render(val),10) * dataItem.when.days[0] > 0 ) {
+                        return 'selected';
                     }
                 };
             }
@@ -218,7 +244,7 @@ var saveData = function() {
     dataprog.frequency = data.frequency;
 
     if(data.repeat) {
-        dataprog.repeat = parseFloat(data.repeat);
+        dataprog.repeat = parseInt(data.repeat,10);
     }
 
     if(data.when) {
@@ -229,9 +255,9 @@ var saveData = function() {
         dataprog.when.days = [];
 
         for(i; i<len; i++) {
-            dataprog.when.days[i] = parseInt(data.when.days[i]);
+            dataprog.when.days[i] = parseInt(data.when.days[i],10);
             if(data.when.week) {
-                dataprog.when.days[i] = parseFloat(data.when.order + data.when.week + data.when.days[i]);
+                dataprog.when.days[i] = parseInt(data.when.order,10) * ( parseInt(data.when.week,10)*10 + parseInt(data.when.days[i],10) );
             }
         }
     }
