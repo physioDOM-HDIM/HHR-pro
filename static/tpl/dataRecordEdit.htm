@@ -7,6 +7,18 @@
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
 <script src="/bower_components/zdk-calendar/form2js.js"></script>
 <script src="/tpl/dataRecordEdit.js"></script>
+<style>
+    select {
+        min-width:100px;
+    }
+    input[type=text] {
+        width: 100%;
+    }
+    h2 {
+        margin: 0;
+        font-size: 1.2em;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -46,46 +58,45 @@
 
             {% raw %}
             {{#item}}
-            <div class="col bold">{{ labelLang }}</div>
-            <div class="col item-value">{% endraw %}{{ item.value }}{% raw %}</div>
-            <div class="col">{{ unityLabel }}</div>
-            <div class="col">
-                {{ 'Min threshold' | i18n }}
+            <div class="col bold" style="flex:2">{{ labelLang }}</div>
+            <div class="col item-value" style="max-width:150px">{% endraw %}{{ item.value }}{% raw %}</div>
+            <div class="col" style="max-width:150px">{{ unityLabel }}</div>
+            <div class="col" style="max-width:150px">
                 <div class="min-treshold spacing-around">{{#threshold}}{{min}}{{/threshold}}</div>
             </div>
-            <div class="col">
-                {{ 'Max threshold' | i18n }}
+            <div class="col" style="max-width:150px">
                 <div class="max-treshold spacing-around">{{#threshold}}{{max}}{{/threshold}}</div>
             </div>
             {{/item}}
             {% endraw %}
 
             {% if admin %}
-            <div>
-                <button type="button" class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">Edit</button>
+            <div style="width:100px; text-align:right">
+                <div>
+                    <button type="button" class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">Edit</button>
+                </div>
+                <div>
+                    <button type="button" class="red small" onclick="confirmDeleteItem('{{item._id.toString()}}')">Delete</button>
+                </div>
             </div>
-            <div>
-                <button type="button" class="red small" onclick="confirmDeleteItem('{{item._id.toString()}}')">Delete</button>
-            </div>
+            {% else %}
+            <div style="width:70px"></div>
             {% endif %}
 
         </div>
     </div>
     <div class="updateMode hidden">
         <div class="row">
-
             {% raw %}
             {{#item}}
-            <div class="col item-text"></div>
-            <div class="col item-value">
+            <div class="col item-text" style="flex:2"></div>
+            <div class="col item-value" style="max-width:150px">
                {% endraw %}<input type="text" value="{{ item.value }}" name="items[{{item._id.toString()}}].value"/></div>{% raw %}
-            <div class="col unity">{{ unityLabel }}</div>
-            <div class="col">
-                {{ 'Min threshold' | i18n }}
+            <div class="col unity" style="max-width:150px">{{ unityLabel }}</div>
+            <div class="col" style="max-width:150px">
                 <div class="min-treshold spacing-around">{{#threshold}}{{min}}{{/threshold}}</div>
             </div>
-            <div class="col">
-                {{ 'Max threshold' | i18n }}
+            <div class="col" style="max-width:150px">
                 <div class="max-treshold spacing-around">{{#threshold}}{{max}}{{/threshold}}</div>
             </div>
             {{/item}}
@@ -95,12 +106,14 @@
             <input name="items[{{item._id.toString()}}]._id" type="hidden" value="{{item._id.toString()}}">
             <input name="items[{{item._id.toString()}}].automatic" type="hidden" value="{{item.automatic}}">
             <input name="items[{{item._id.toString()}}].dataRecordID" type="hidden" value="{{item.dataRecordID.toString()}}">
-
-            <div>
-                <button type="button" class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">Back</button>
-            </div>
-            <div>
-                <button type="button" class="red small" onclick="confirmDeleteItem('{{item._id.toString()}}')">Delete</button>
+    
+            <div style="width:100px; text-align:right">
+                <div>
+                    <button type="button" class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">Back</button>
+                </div>
+                <div>
+                    <button type="button" class="red small" onclick="confirmDeleteItem('{{item._id.toString()}}')">Delete</button>
+                </div>
             </div>
         </div>
 
@@ -124,19 +137,17 @@
 
 
 <script type="template" id="newItem">
-    <div class="col item-text"></div>
-    <div class="col"><input type="text" name="items[{% raw %}{{idx}}{% endraw %}].value"/></div>
-    <div class="col"><span class="unity"></span></div>
-    <div class="col">
-        {{ 'Min threshold' | i18n }}
+    <div class="col item-text" style="flex:2"></div>
+    <div class="col" style="max-width:150px"><input type="text" name="items[{% raw %}{{idx}}{% endraw %}].value"/></div>
+    <div class="col" style="max-width:150px"><span class="unity"></span></div>
+    <div class="col" style="max-width:150px">
         <div class="min-treshold spacing-around"></div>
     </div>
-    <div class="col">
-        {{ 'Max threshold' | i18n }}
+    <div class="col" style="max-width:150px">
         <div class="max-treshold spacing-around"></div>
     </div>
     <input name="items[{% raw %}{{idx}}{% endraw %}].category" id="new-item-category" type="hidden">
-    <div>
+    <div style="width:100px; text-align:right">
         <button type="button" class="blue small" onclick="removeLine(this)">Annuler</button>
     </div>
 </script>
@@ -162,7 +173,14 @@
 
 <form name="dataRecord" id="dataRecord">
     <zdk-panel heading="{{'Physiological parameters' |i18n}}" collapsable="false" collapsed="false">
-
+        <div class="row">
+            <div class="col bold" style="flex:2">{{ 'Parameter'|i18n }}</div>
+            <div class="col bold" style="max-width:150px">{{ 'Value'|i18n }}</div>
+            <div class="col bold" style="max-width:150px">{{ 'Unity'|i18n }}</div>
+            <div class="col bold" style="max-width:150px">{{ 'Min threshold' | i18n }}</div>
+            <div class="col bold" style="max-width:150px">{{ 'Max threshold' | i18n }}</div>
+            <div style="width:70px; text-align:right"></div>
+        </div>
         {% if view === 'create'%}
             {{ addItem('General') }}
         {% else %}
@@ -182,7 +200,14 @@
 
     </zdk-panel>
     <zdk-panel heading="{{'Symptoms assessments' |i18n}}" collapsable="false" collapsed="false">
-
+        <div class="row">
+            <div class="col bold" style="flex:2">{{ 'Assessment'|i18n }}</div>
+            <div class="col bold" style="max-width:150px">{{ 'Value'|i18n }}</div>
+            <div class="col bold" style="max-width:150px"></div>
+            <div class="col bold" style="max-width:150px"></div>
+            <div class="col bold" style="max-width:150px"></div>
+            <div style="width:70px; text-align:right"></div>
+        </div>
         {% if view === 'create'%}
             {{ addItem('symptom') }}
         {% else %}
@@ -195,7 +220,14 @@
 
     </zdk-panel>
     <zdk-panel heading="{{'Questionnaires' |i18n}}" collapsable="false" collapsed="false">
-
+        <div class="row">
+            <div class="col bold" style="flex:2">{{ 'Questionnaire'|i18n }}</div>
+            <div class="col bold" style="max-width:150px">{{ 'Value'|i18n }}</div>
+            <div class="col bold" style="max-width:150px"></div>
+            <div class="col bold" style="max-width:150px"></div>
+            <div class="col bold" style="max-width:150px"></div>
+            <div style="width:70px; text-align:right"></div>
+        </div>
         {% if view === 'create'%}
             {{ addItem('questionnaire') }}
         {% else %}
