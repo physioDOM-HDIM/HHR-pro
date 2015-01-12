@@ -326,6 +326,8 @@ server.get( '/api/beneficiary/thresholds', IBeneficiary.getThreshold);
 
 server.get( '/api/beneficiary/graph', IBeneficiary.getGraphDataList );
 server.get( '/api/beneficiary/graph/:category/:paramName', IBeneficiary.getGraphData );
+
+// messages to home
 server.get( '/api/beneficiary/messages', IBeneficiary.getMessages );
 server.get( '/api/beneficiaries/:entryID/messages', IBeneficiary.getMessages );
 server.post('/api/beneficiary/messages', IBeneficiary.createMessage );
@@ -350,6 +352,9 @@ server.post('/api/beneficiary/dataprog', IBeneficiary.setDataProg );
 server.post('/api/beneficiaries/:entryID/dataprog', IBeneficiary.setDataProg );
 server.del( '/api/beneficiary/dataprog/:dataProgItemID', IBeneficiary.removeDataProg );
 server.del( '/api/beneficiaries/:entryID/dataprog/:dataProgItemID', IBeneficiary.removeDataProg );
+
+server.get( '/api/beneficiary/questprog', IBeneficiary.getQuestProg );
+server.get( '/api/beneficiary/questprog/:name', IBeneficiary.getQuestProg );
 
 //DEV ONLY for creation & update
 server.get( '/api/questionnaires', IQuestionnaire.getList );

@@ -37,22 +37,20 @@
 <script type="template" id="tpl-questionnaire-prog">
 	{% raw %}
 	{{#data}}
+	<div class="row bold">{{labelLang}}</div>
 	<div class="row">
-		<div class="col col05 bold data-text">{{labelLang}}</div>
 		<div class="col">
 			<label>Frequency</label>
 			<input type="text" name="questionnaire[{{idx}}].frequency" value="{{frequency}}"/>
 		</div>
 	</div>
 	<div class="row">
-		<div class="col col05"></div>
 		<div class="col">
 			<label>Comment</label>
 			<input type="text" name="questionnaire[{{idx}}].comment" value="{{comment}}">
 		</div>
 	</div>
 	<div class="row">
-		<div class="col col05"></div>
 		<div class="col">
 			<label>Dates</label>
 			<ul class="dates-list">
@@ -64,8 +62,7 @@
 	</div>
 
 	<div class="row">
-		<div class="col col05"></div>
-		<div class="col">
+		<div class="col vert">
 			<label></label>
 			<zdk-input-date id="date" name="newDate" value="" style="z-index:100"></zdk-input-date>
 			<button type="button" class="small blue" onclick="addDate(this, {{idx}})">Add</button>

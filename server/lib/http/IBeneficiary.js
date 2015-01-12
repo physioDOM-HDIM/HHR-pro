@@ -637,6 +637,36 @@ var IBeneficiary = {
 				res.send(err.code || 400, err);
 				next(false);
 			});
+	},
+
+	/**
+	 * Get the array of prescription of questionnaires
+	 * the category is declared in the url `/api/beneficiary/questprog`
+	 *
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	getQuestProg: function( req, res, next) {
+		logger.trace("getDataProgCategory");
+		var beneficiary;
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+			})
+			.then(function (selectedBeneficiary) {
+				beneficiary = selectedBeneficiary;
+				return beneficiary.getQuestProg( );
+			})
+			.then( function( prescriptions ) {
+				res.send(prescriptions);
+				next();
+			})
+			.catch(function (err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
 	}
 };
 
