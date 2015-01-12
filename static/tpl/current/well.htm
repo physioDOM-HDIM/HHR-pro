@@ -1,0 +1,29 @@
+{% extends '../page.htm' %}
+
+{% block title %}{{ 'Healthcare: current health status' | i18n }}{% endblock %}
+
+{% block head %}
+{% parent %}
+<link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
+<link rel="import" href="/bower_components/zdk-panel/zdk-panel.html">
+
+{% endblock %}
+
+{% block content %}
+<zdk-panel heading="{{ 'Well being' | i18n }}">
+	<form name="form" id="form-well" autocomplete="off" onsubmit="return false;">
+		<div class="row value-row">
+			<div flex class="value-name">SF 12 score</div>
+			<div class="questionnaire-date">{{today}}</div>
+			<div class="questionnaire-score"></div>
+			<button type="button" class="small blue">Questionnaire</button>
+		</div>
+		<div class="row control">
+			<span class="spacer"></span>
+			<button class="blue">Validate</button>
+		</div>
+	</form>
+</zdk-panel>
+
+<script src="/tpl/current/well.js"></script>
+{% endblock %}

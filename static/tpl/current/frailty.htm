@@ -1,0 +1,35 @@
+{% extends '../page.htm' %}
+
+{% block title %}{{ 'Healthcare: current health status' | i18n }}{% endblock %}
+
+{% block head %}
+{% parent %}
+<link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
+<link rel="import" href="/bower_components/zdk-panel/zdk-panel.html">
+
+{% endblock %}
+
+{% block content %}
+<zdk-panel heading="{{ 'Frailty status' | i18n }}">
+	<form name="form" id="form-frailty" autocomplete="off" onsubmit="return false;">
+		<div class="row value-row">
+			<div flex class="value-name">Chair stand results</div>
+			<div class="questionnaire-date"></div>
+			<div class="questionnaire-score"></div>
+			<button type="button" class="small blue">Questionnaire</button>
+		</div>
+		<div class="row value-row">
+			Normal <input type="checkbox" flex class="value-checkbox">
+			Risk of fail <input type="checkbox" flex class="value-checkbox">
+		</div>
+		<div class="row control">
+			<span class="spacer"></span>
+			<button class="blue">Validate</button>
+			<button class="red">Cancel</button>
+			<button class="green">Save</button>
+		</div>
+	</form>
+</zdk-panel>
+
+<script src="/tpl/current/frailty.js"></script>
+{% endblock %}

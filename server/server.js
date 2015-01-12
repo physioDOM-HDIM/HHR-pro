@@ -394,6 +394,12 @@ server.get( '/message/create', IPage.messageCreate);
 server.get( '/services/health', IPage.basicHealthServices);
 server.get( '/services/health/create', IPage.basicHealthServiceCreate);
 
+// Current (initial) health status
+server.get( '/current/well', IPage.currentWellBeing);
+server.get( '/current/nutrition', IPage.currentNutritionalStatus);
+server.get( '/current/activity', IPage.currentActivityStatus);
+server.get( '/current/frailty', IPage.currentFrailtyStatus);
+
 server.get( '/prescription/general', IPage.prescriptionDataGeneral);
 server.get( '/prescription/hdim', IPage.prescriptionDataHDIM);
 server.get( '/prescription/symptom', IPage.prescriptionDataSymptom);

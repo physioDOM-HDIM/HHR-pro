@@ -1,0 +1,88 @@
+{% extends '../page.htm' %}
+
+{% block title %}{{ 'Healthcare: current health status' | i18n }}{% endblock %}
+
+{% block head %}
+{% parent %}
+<link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
+<link rel="import" href="/bower_components/zdk-panel/zdk-panel.html">
+
+{% endblock %}
+
+{% block content %}
+<zdk-panel heading="{{ 'Nutritional status' | i18n }}">
+	<form name="form" id="form-nutrition" autocomplete="off" onsubmit="return false;">
+		<fieldset>
+			<legend>Diet values</legend>
+			<div class="row value-row">
+				<div flex class="value-name">Size</div>
+				<input type="text" class="value-input" />
+				<div flex class="value-unit">meter</div>
+			</div>
+			<div class="row value-row">
+				<div flex class="value-name">Weight</div>
+				<input type="text" class="value-input" />
+				<div flex class="value-unit">kilogram</div>
+			</div>
+			<div class="row value-row">
+				<div flex class="value-name">Lean/fat ratio</div>
+				<input type="text" class="value-input" />
+				<div flex class="value-unit"></div>
+			</div>
+			<div class="row value-row">
+				<div flex class="value-name">BMI</div>
+				<input type="text" class="value-input" />
+				<div flex class="value-unit"></div>
+			</div>
+			<div class="row value-row">
+				<div flex class="value-name">MNA score</div>
+				<div class="questionnaire-date"></div>
+				<div class="questionnaire-score"></div>
+				<button type="button" class="small blue">Questionnaire</button>
+			</div>
+			<div class="row value-row">
+				<div flex class="value-name">MNA SF score</div>
+				<div class="questionnaire-date"></div>
+				<div class="questionnaire-score"></div>
+				<button type="button" class="small blue">Questionnaire</button>
+			</div>
+			<div class="row value-row">
+				<div flex class="value-name">SNAQ score</div>
+				<div class="questionnaire-date"></div>
+				<div class="questionnaire-score"></div>
+				<button type="button" class="small blue">Questionnaire</button>
+			</div>
+			<div class="row value-row">
+				<div flex class="value-name">DHD-FFQ score</div>
+				<div class="questionnaire-date"></div>
+				<div class="questionnaire-score"></div>
+				<button type="button" class="small blue">Questionnaire</button>
+			</div>
+		</fieldset>
+
+		<fieldset>
+			<legend>Special diet prescriptions</legend>
+			<textarea></textarea>
+		</fieldset>
+
+		<fieldset>
+			<legend>Assistance services</legend>
+
+			<div class="row value-row">
+				<div flex class="value-name">Delivery assistance</div>
+				<input type="checkbox" class="value-checkbox" />
+				<input type="text" class="value-input" />
+			</div>
+		</fieldset>
+
+		<div class="row control">
+			<span class="spacer"></span>
+			<button class="blue">Validate</button>
+			<button class="red">Cancel</button>
+			<button class="green">Save</button>
+		</div>
+	</form>
+</zdk-panel>
+
+<script src="/tpl/current/nutrition.js"></script>
+{% endblock %}

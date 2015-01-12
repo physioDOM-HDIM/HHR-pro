@@ -202,5 +202,9 @@
 	"Measures": "Measures",
 	"Symptoms": "Symptoms",
 	"Questionnaires scores": "Questionnaires scores",
-	"Job": "Job"
+	"Job": "Job",
+	"Healthcare: current health status": "Healthcare: current health status",
+	"Well being": "Well being",
+	"Distance travelled": "Distance travelled",
+	"Frailty status": "Frailty status"
 }
