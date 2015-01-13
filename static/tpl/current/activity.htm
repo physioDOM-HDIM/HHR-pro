@@ -4,6 +4,8 @@
 
 {% block head %}
 {% parent %}
+<script src="/bower_components/form2js/src/form2js.js"></script>
+
 <link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
 <link rel="import" href="/bower_components/zdk-panel/zdk-panel.html">
 
@@ -11,11 +13,11 @@
 
 {% block content %}
 <zdk-panel heading="{{ 'Distance travelled' | i18n }}">
-	<form name="form" id="form-well" autocomplete="off" onsubmit="return false;">
+	<form name="form" id="formActivity" autocomplete="off" onsubmit="checkActivityForm(); return false;">
 		<div class="row value-row">
 			<div flex class="value-name">Number of steps (optional)</div>
-			<input type="checkbox" class="value-checkbox" />
-			<input type="text" class="value-input" />
+			<input type="checkbox" name="stepsCheck" class="value-checkbox" {% if activity.stepsCheck %}checked{% endif %} />
+			<input type="text" name="stepsNumber" class="value-input" value="{{activity.stepsNumber}}" />
 			<div class="value-unit">steps per week</div>
 		</div>
 		<div class="row control">

@@ -278,6 +278,10 @@ a.button {
 	box-sizing: border-box;
 }
 
+.row button:first-child {
+	margin-left: 0;
+}
+
 a.button {
 	display: block;
 	text-align: center;

@@ -16,7 +16,8 @@ var IDirectory = require('./lib/http/IDirectory'),
 	ILists = require("./lib/http/ILists"),
 	IPage = require("./lib/http/IPage"),
 	IQuestionnaire = require("./lib/http/IQuestionnaire"),
-	IDataRecord = require("./lib/http/IDataRecord");
+	IDataRecord = require("./lib/http/IDataRecord"),
+	ICurrentStatus = require('./lib/http/ICurrentStatus');
 
 var pkg     = require('../package.json');
 var logger = new Logger( "PhysioDOM App");
@@ -350,6 +351,9 @@ server.post('/api/beneficiary/dataprog', IBeneficiary.setDataProg );
 server.post('/api/beneficiaries/:entryID/dataprog', IBeneficiary.setDataProg );
 server.del( '/api/beneficiary/dataprog/:dataProgItemID', IBeneficiary.removeDataProg );
 server.del( '/api/beneficiaries/:entryID/dataprog/:dataProgItemID', IBeneficiary.removeDataProg );
+
+server.get( '/api/beneficiary/current/:name', ICurrentStatus.get);
+server.put( '/api/beneficiary/current/:name', ICurrentStatus.put);
 
 //DEV ONLY for creation & update
 server.get( '/api/questionnaires', IQuestionnaire.getList );

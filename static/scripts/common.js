@@ -78,3 +78,24 @@ function renderTemplate(elementId, templateId, data) {
 		document.getElementById(elementId).innerHTML = rendered;
 	}
 }
+
+function promiseXHR(method, url, statusOK, data) {
+	var promise = new RSVP.Promise(function(resolve, reject) {
+		var client = new XMLHttpRequest();
+		statusOK = statusOK ? statusOK : 200;
+		client.open(method, url);
+		client.onreadystatechange = function handler() {
+			if (this.readyState === this.DONE) {
+				if (this.status === statusOK) {
+					resolve(this.response);
+				}
+				else {
+					reject(this);
+				}
+			}
+		};
+		client.send(data ? data : null);
+	});
+
+	return promise;
+}
