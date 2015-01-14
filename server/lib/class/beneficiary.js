@@ -16,6 +16,7 @@ var RSVP = require("rsvp"),
 	Messages = require("./messages"),
 	DataProg = require("./dataProg"),
 	DataProgItem = require("./dataProgItem"),
+	QuestionnairePlan = require("./questionnairePlan"),
 	dbPromise = require("./database"),
 	moment = require("moment");
 
@@ -939,7 +940,12 @@ function Beneficiary( ) {
 
 		var dataProg = new DataProg( that._id );
 		return dataProg.remove( dataProgItemID );
-	}
+	};
+	
+	this.questionnairePlan = function() {
+		logger.trace("questionnairePlan", this._id );
+		return  new QuestionnairePlan( this._id );
+	};
 }
 
 module.exports = Beneficiary;

@@ -20,7 +20,7 @@ var questionnaireSchema = {
         },
         "questions": {
             type:"array",
-            item: {
+            items: {
                 anyOf: [
                     { $ref:"/Questionnaire.group"},
                     { $ref:"/Questionnaire.question"}
@@ -48,7 +48,7 @@ var questionnaireGroupSchema = {
         },
         "questions": {
             type:"array",
-            item: {
+            items: {
                 anyOf: [
                     { $ref:"/Questionnaire.group"},
                     { $ref:"/Questionnaire.question"}
@@ -58,7 +58,7 @@ var questionnaireGroupSchema = {
         },
         "subscore": { type:"string", description:"calculation of the subscore, if omitted subscore is the sum" }
     }
-}
+};
 
 var questionnaireQuestionSchema = {
     id:"/Questionnaire.question",
@@ -81,7 +81,7 @@ var questionnaireQuestionSchema = {
         },
         { $ref:"/Questionnaire.simplequestion" }
     ]
-}
+};
 
 var questionnaireSimpleQuestionSchema = {
 	id:"/Questionnaire.simplequestion",
@@ -155,7 +155,27 @@ var questionnaireSimpleQuestionSchema = {
             additionalProperties:false
         }
     ]
-}
+};
+
+var questionnairePlan = {
+    id                  : "/Questionnaire.plan",
+    type                : "object",
+    properties          : {
+        "_id": { type:"string" },
+        "ref": { type:"string", required:true },
+        "subject": { type:"string"},
+        "frequency": { type:"string" },
+        "comment": { type:"string" },
+        "date": { 
+            type:"array",
+            items: {
+                type:"string",
+                pattern:"^20[0-9]{2}-[0-1][0-9]-[0-3][0-9]$" 
+            }
+        }
+    },
+    additionalProperties: false
+};
 
 var Validator = require('jsonschema').Validator;
 var validator = new Validator();
@@ -163,5 +183,6 @@ validator.addSchema(questionnaireSchema,"/Questionnaire");
 validator.addSchema(questionnaireGroupSchema,"/Questionnaire.group");
 validator.addSchema(questionnaireQuestionSchema,"/Questionnaire.question");
 validator.addSchema(questionnaireSimpleQuestionSchema,"/Questionnaire.simplequestion");
+validator.addSchema(questionnairePlan,"/Questionnaire.plan");
 
 module.exports.validator = validator;
