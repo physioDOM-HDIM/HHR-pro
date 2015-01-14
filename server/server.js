@@ -355,6 +355,9 @@ server.del( '/api/beneficiaries/:entryID/dataprog/:dataProgItemID', IBeneficiary
 server.get( '/api/beneficiary/current/:name', ICurrentStatus.get);
 server.put( '/api/beneficiary/current/:name', ICurrentStatus.put);
 
+// Questionnaire answers for the current beneficiary
+server.post('/api/beneficiary/questionnaires/:entryID/answers', IBeneficiary.createQuestionnaireAnswers);
+
 //DEV ONLY for creation & update
 server.get( '/api/questionnaires', IQuestionnaire.getList );
 server.get( '/api/questionnaires/:entryID', IQuestionnaire.getQuestionnaire );

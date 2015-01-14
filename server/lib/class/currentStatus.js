@@ -139,6 +139,79 @@ function CurrentStatus() {
 				.catch(reject);
 		});
 	};
+
+	/**
+	 * Save a questionnaire answer in a current health status,
+	 * if the status don't already have answer data.
+	 * 
+	 * @param  {Object} beneficiaryID ID of the beneficiary
+	 * @param  {Object} answer        Answer object
+	 * @param  {String} statusName    Name of the status where 
+	 *                                to save the answer data
+	 * @param  {String} prefix        Prefix of the answer properties
+	 */
+	this._saveAnswerInQuestionnaire = function(beneficiaryID, answer, statusName, prefix) {
+		var that = this;
+		return new Promise( function(resolve, reject) {
+			logger.trace('_saveAnswerInQuestionnaire');
+
+			new CurrentStatus().get(beneficiaryID, statusName)
+			.then(function(status) {
+				if (!status[prefix + 'Answer']) {
+					status[prefix + 'Answer'] = answer._id.toString();
+					status[prefix + 'Date'] = answer.datetime;
+					status[prefix + 'Score'] = answer.score;
+					status.save()
+					.then(function() {
+						resolve(answer);
+					})
+					.catch(function(err) {
+						reject({code: 500, error: err});
+					});
+				}
+				else {
+					resolve(answer);
+				}
+			})
+			.catch (function (err) {
+				var status = {};
+				status.name = statusName;
+				status.subject = beneficiaryID;
+				status[prefix + 'Answer'] = answer._id.toString();
+				status[prefix + 'Date'] = answer.datetime;
+				status[prefix + 'Score'] = answer.score;
+				that.update(status)
+				.then(function() {
+					resolve(answer);
+				})
+				.catch(function(err) {
+					reject({code: 500, error: err});
+				});
+			});
+		});
+	};
+
+	this.saveAnswer = function(beneficiaryID, questionnaireName, answer) {
+		switch (questionnaireName) {
+
+			case 'SF12':
+				return this._saveAnswerInQuestionnaire(beneficiaryID, answer, 'well', 'sf12');
+			case 'MNA':
+				return this._saveAnswerInQuestionnaire(beneficiaryID, answer, 'nutrition', 'mna');
+			case 'MNA SF':
+				return this._saveAnswerInQuestionnaire(beneficiaryID, answer, 'nutrition', 'mnaSf');
+			case 'SNAQ':
+				return this._saveAnswerInQuestionnaire(beneficiaryID, answer, 'nutrition', 'snaq');
+			case 'DHD-FFQ':
+				return this._saveAnswerInQuestionnaire(beneficiaryID, answer, 'nutrition', 'dhd');
+			case 'Chair stand':
+				return this._saveAnswerInQuestionnaire(beneficiaryID, answer, 'frailty', 'chairStand');
+			default:
+				return new Promise( function(resolve, reject) {
+					resolve(answer);
+				});
+		}
+	};
 }
 
 module.exports = CurrentStatus;

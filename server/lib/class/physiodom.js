@@ -21,7 +21,8 @@ var Account = require("./account"),
 	Lists = require("./lists"),
 	Questionnaires = require("./questionnaires"),
 	DataRecords = require("./dataRecords"),
-	CurrentStatus = require("./currentStatus");
+	CurrentStatus = require("./currentStatus"),
+	QuestionnaireAnswer = require("./questionnaireAnswer");
 
 /**
  * PhysioDOM
@@ -109,6 +110,18 @@ function PhysioDOM( ) {
 			resolve( new Questionnaires() );
 		});
 	};
+
+	/**
+	 * Return a promise with the QuestionnaireAnswer object.
+	 * {@link module:Questionnaires}
+	 * @returns {promise}
+	 */
+	this.QuestionnaireAnswer = function() {
+		return new promise( function(resolve, reject) {
+			logger.trace("QuestionnaireAnswer");
+			resolve( new QuestionnaireAnswer() );
+		});
+	},
 
 	this.DataRecords = function( beneficiaryID ) {
 		return new promise( function(resolve, reject) {
