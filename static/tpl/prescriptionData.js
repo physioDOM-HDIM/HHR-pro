@@ -89,7 +89,7 @@ var init = function() {
                 data: dataItem,
                 getDay: function () {
                     return function(val, render) {
-                        var dayNumber = Number(String(Math.abs(render(val))).charAt(1));
+                        var dayNumber = Number(String(Math.abs(render(val))) % 10 );
                         return utils.getDayName(dayNumber);
                     };
                 },
@@ -125,8 +125,10 @@ var showOptions = function(frequency, dataModel) {
         monthlyTpl = document.querySelector('#tpl-option-monthly');
 
     if(frequency === 'weekly') {
+        if( dataModel === undefined ) { dataModel = { data: { repeat:1 } }; }
         optionsContainer.innerHTML = Mustache.render(weeklyTpl.innerHTML, dataModel);
     } else if(frequency === 'monthly') {
+        if( dataModel === undefined ) { dataModel = { data: { repeat:1 } }; }
         optionsContainer.innerHTML = Mustache.render(monthlyTpl.innerHTML, dataModel);
     } else {
         optionsContainer.innerHTML = '';
@@ -179,6 +181,9 @@ function showForm(ref) {
                             tmp.push ( Math.abs(dataItem.when.days[i] % 10 ));
                         }
                     } else {
+                        if( !dataItem.when ) {
+                            dataItem.when = { days:[]};
+                        }
                         tmp = dataItem.when.days;
                     }
                     if (tmp.indexOf(parseInt(render(val))) > -1) {
@@ -247,6 +252,23 @@ var saveData = function() {
         dataprog.repeat = parseInt(data.repeat,10);
     }
 
+    if( !data.startDate ) {
+        document.forms.dataprog.querySelector("zdk-input-date[name=startDate]").style.border = "2px solid red";
+        return;
+    } else {
+        document.forms.dataprog.querySelector("zdk-input-date[name=startDate]").style.border = null;
+    }
+    if(!data.frequency) {
+        document.forms.dataprog.querySelector(".frequency-choice").style.border = "2px solid red";
+        return;
+    } else {
+        document.forms.dataprog.querySelector(".frequency-choice").style.border = null;
+    }
+    if(data.frequency !== "daily" && !data.when ) {
+        document.forms.dataprog.querySelector(".days").style.border = "2px solid red";
+        return;
+    }
+    
     if(data.when) {
         var i = 0,
             len = data.when.days.length;
@@ -254,6 +276,10 @@ var saveData = function() {
         dataprog.when = {};
         dataprog.when.days = [];
 
+        if( len === 0 ) {
+            document.forms.dataprog.querySelector(".days").style.border = "2px solid red";
+            return;
+        }
         for(i; i<len; i++) {
             dataprog.when.days[i] = parseInt(data.when.days[i],10);
             if(data.when.week) {
@@ -262,12 +288,13 @@ var saveData = function() {
         }
     }
 
-    console.log(data);
-
     utils.promiseXHR('POST', '/api/beneficiary/dataprog', 200, JSON.stringify(dataprog)).then(function() {
+        window.location.href = "/prescription/"+ ( infos.category || infos.paramList ).toLowerCase();
+        /*
         new Modal('createSuccess', function() {
             window.location.href = "/prescription/"+ ( infos.category || infos.paramList ).toLowerCase();
         });
+        */
     }, function(error) {
         new Modal('errorOccured');
         console.log("saveData - error: ", error);
@@ -280,7 +307,7 @@ var removeData = function(id) {
     var deleteAction = function() {
         utils.promiseXHR("DELETE", "/api/beneficiary/dataprog/"+id, 200).then(function() {
             new Modal('deleteSuccess', function() {
-                window.location.href = "/prescription/"+ infos.category.toLowerCase();
+                window.location.href = "/prescription/"+ ( infos.category || infos.paramList ).toLowerCase();
             });
         }, function(error) {
             new Modal('errorOccured');

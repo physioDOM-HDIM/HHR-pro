@@ -157,7 +157,7 @@
 	<div class="row control">
 		<span class="spacer"></span>
 		<button type="button" onclick="closeForm()" class="red">{{"Cancel"|i18n}}</button>
-		<button type="button" onclick="removeData('{{data._id}}')" class="red">{{"Delete"|i18n}}</button>
+		<button type="button" onclick="removeData('{% raw %}{{data._id}}{% endraw %}')" class="red">{{"Delete"|i18n}}</button>
 		<button type="button" onclick="saveData()" class="green">{{"Save"|i18n}}</button>
 	</div>
 	
@@ -168,7 +168,7 @@
 	<div class="row">
 		{{"Every"|i18n}} <input type="number" name="repeat" class="option-repeat" value="{% raw %}{{data.repeat}}{% endraw %}"> {{"Week"|i18n}}
 	</div>
-	<div class="row">
+	<div class="row days" >
 		<input type="checkbox" name="when.days[]" value="1" {% raw %}{{#getDaysDefault}}1{{/getDaysDefault}}{% endraw %}/>{{"Mon"|i18n}}
 		<input type="checkbox" name="when.days[]" value="2" {% raw %}{{#getDaysDefault}}2{{/getDaysDefault}}{% endraw %}/>{{"Tue"|i18n}}
 		<input type="checkbox" name="when.days[]" value="3" {% raw %}{{#getDaysDefault}}3{{/getDaysDefault}}{% endraw %}/>{{"Wed"|i18n}}
@@ -199,7 +199,7 @@
 			<option value="-1" {% raw %}{{#getStartDefault}}-1{{/getStartDefault}}{% endraw %}>{{"end"|i18n}}</option>
 		</select> {{"of the month"|i18n}}
 	</div>
-	<div class="row">
+	<div class="row days">
 		<input type="checkbox" name="when.days[]" value="1" {% raw %}{{#getDaysDefault}}1{{/getDaysDefault}}{% endraw %}/>{{"Mon"|i18n}}
 		<input type="checkbox" name="when.days[]" value="2" {% raw %}{{#getDaysDefault}}2{{/getDaysDefault}}{% endraw %}/>{{"Tue"|i18n}}
 		<input type="checkbox" name="when.days[]" value="3" {% raw %}{{#getDaysDefault}}3{{/getDaysDefault}}{% endraw %}/>{{"Wed"|i18n}}
