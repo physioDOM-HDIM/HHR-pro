@@ -163,9 +163,9 @@ var questionnairePlan = {
     properties          : {
         "_id": { type:"string" },
         "ref": { type:"string", required:true },
-        "subject": { type:"string", required:true},
-        "frequency": { type:"string", required:true },
-        "comment": { type:"string", required:true },
+        "subject": { type:"string"},
+        "frequency": { type:"string" },
+        "comment": { type:"string" },
         "date": { 
             type:"array",
             items: {

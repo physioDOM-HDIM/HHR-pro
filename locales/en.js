@@ -226,5 +226,9 @@
 	"fourth": "fourth",
 	"from the": "from the",
 	"beginning": "beginning",
-	"end": "end"
+	"end": "end",
+	"Comment": "Comment",
+	"Dates": "Dates",
+	"You have unsaved data": "You have unsaved data",
+	"Successfully saved": "Successfully saved"
 }

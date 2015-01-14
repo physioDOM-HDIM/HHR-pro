@@ -37,28 +37,19 @@ function QuestionnairePlan( beneficiaryID ) {
 						return new promise( function(resolve, reject) {
 							var search = {subject: that.subject, ref: questionnaire.name};
 							physioDOM.db.collection("questionnairePlan").findOne(search, function (err, result) {
-								if(err) {
+								if(err || !result ) {
 									var ret = {
 										subject: that.subject,
 										frequency: "",
 										comment: "",
 										ref: search.ref,
-										date: [ ]
+										date: [ ],
+										label: questionnaire.label
 									};
 									resolve( ret );
 								} else {
-									if( result ) {
-										resolve(result);
-									} else {
-										var ret = {
-											subject: that.subject,
-											frequency: "",
-											comment: "",
-											ref: search.ref,
-											date: [ ]
-										};
-										resolve( ret );
-									}
+									result.label = questionnaire.label;
+									resolve(result);
 								}
 							});
 						});
@@ -161,15 +152,14 @@ function QuestionnairePlan( beneficiaryID ) {
 		return new promise( function(resolve,reject) {
 			logger.trace("setQuestionnaire");
 			var check = questionnaireSchema.validator.validate( obj, { "$ref":"/Questionnaire.plan"} );
-			if( obj.subject !== that.subject.toString()) {
-				return reject( { code:405, message:"bad subject _id"});
-			}
 			if( check.errors.length ) {
 				return reject( { error:"bad format", detail: check.errors } );
 			} else {
 				obj.subject = that.subject;
 				var search = { subject: that.subject, ref: obj.ref };
-				obj.date.sort();
+				if( obj.date) { 
+					obj.date.sort(); 
+				}
 				physioDOM.db.collection("questionnairePlan").remove( search, function( err, result ) {
 					physioDOM.db.collection("questionnairePlan").save(obj, function (err, result) {
 						resolve(result);
