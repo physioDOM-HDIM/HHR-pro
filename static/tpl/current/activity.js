@@ -1,7 +1,7 @@
 'use strict';
 
-function checkActivityForm() {
-	var formObj = form2js(document.getElementById('formActivity'));
+function checkForm() {
+	var formObj = form2js(document.getElementById('form'));
 
 	formObj.stepsNumber = parseInt(formObj.stepsNumber, 10);
 	formObj.stepsCheck = !!formObj.stepsCheck;

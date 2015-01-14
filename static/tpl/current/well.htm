@@ -4,6 +4,8 @@
 
 {% block head %}
 {% parent %}
+<script src="/bower_components/form2js/src/form2js.js"></script>
+
 <link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
 <link rel="import" href="/bower_components/zdk-panel/zdk-panel.html">
 
@@ -11,7 +13,7 @@
 
 {% block content %}
 <zdk-panel heading="{{ 'Well being' | i18n }}">
-	<form name="form" id="form-well" autocomplete="off" onsubmit="return false;">
+	<form name="form" id="form" autocomplete="off" onsubmit="checkForm(); return false;">
 		<div class="row value-row">
 			<div flex class="value-name">SF 12 score</div>
 			<div class="questionnaire-date">{{sf12Date}}</div>

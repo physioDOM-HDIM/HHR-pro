@@ -4,6 +4,8 @@
 
 {% block head %}
 {% parent %}
+<script src="/bower_components/form2js/src/form2js.js"></script>
+
 <link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
 <link rel="import" href="/bower_components/zdk-panel/zdk-panel.html">
 
@@ -11,16 +13,16 @@
 
 {% block content %}
 <zdk-panel heading="{{ 'Frailty status' | i18n }}">
-	<form name="form" id="form-frailty" autocomplete="off" onsubmit="return false;">
+	<form name="form" id="form" autocomplete="off" onsubmit="checkForm(); return false;">
 		<div class="row value-row">
 			<div flex class="value-name">Chair stand results</div>
-			<div class="questionnaire-date"></div>
-			<div class="questionnaire-score"></div>
+			<div class="questionnaire-date">{{status.chairStandDate}}</div>
+			<div class="questionnaire-score">{{status.chairStandScore}}</div>
 			<button type="button" class="small blue">Questionnaire</button>
 		</div>
 		<div class="row value-row">
-			Normal <input type="checkbox" flex class="value-checkbox">
-			Risk of fail <input type="checkbox" flex class="value-checkbox">
+			Normal <input type="checkbox" name="normal" flex class="value-checkbox" {% if status.normal %}checked{% endif %} />
+			Risk of fail <input type="checkbox" name="risk" flex class="value-checkbox" {% if status.risk %}checked{% endif %} />
 		</div>
 		<div class="row control">
 			<span class="spacer"></span>

@@ -4,6 +4,8 @@
 
 {% block head %}
 {% parent %}
+<script src="/bower_components/form2js/src/form2js.js"></script>
+
 <link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
 <link rel="import" href="/bower_components/zdk-panel/zdk-panel.html">
 
@@ -11,58 +13,58 @@
 
 {% block content %}
 <zdk-panel heading="{{ 'Nutritional status' | i18n }}">
-	<form name="form" id="form-nutrition" autocomplete="off" onsubmit="return false;">
+	<form name="form" id="form" autocomplete="off" onsubmit="checkForm(); return false;">
 		<fieldset>
 			<legend>Diet values</legend>
 			<div class="row value-row">
 				<div flex class="value-name">Size</div>
-				<input type="text" class="value-input" />
+				<input type="text" name="size" class="value-input" value="{{status.size}}" />
 				<div flex class="value-unit">meter</div>
 			</div>
 			<div class="row value-row">
 				<div flex class="value-name">Weight</div>
-				<input type="text" class="value-input" />
+				<input type="text" name="weight" class="value-input" value="{{status.weight}}" />
 				<div flex class="value-unit">kilogram</div>
 			</div>
 			<div class="row value-row">
 				<div flex class="value-name">Lean/fat ratio</div>
-				<input type="text" class="value-input" />
+				<input type="text" name="lean" class="value-input" value="{{status.lean}}" />
 				<div flex class="value-unit"></div>
 			</div>
 			<div class="row value-row">
 				<div flex class="value-name">BMI</div>
-				<input type="text" class="value-input" />
+				<input type="text" class="value-input" value="{{status.bmi}}" />
 				<div flex class="value-unit"></div>
 			</div>
 			<div class="row value-row">
 				<div flex class="value-name">MNA score</div>
-				<div class="questionnaire-date"></div>
-				<div class="questionnaire-score"></div>
+				<div class="questionnaire-date">{{status.mnaDate}}</div>
+				<div class="questionnaire-score">{{status.mnaScore}}</div>
 				<button type="button" class="small blue">Questionnaire</button>
 			</div>
 			<div class="row value-row">
 				<div flex class="value-name">MNA SF score</div>
-				<div class="questionnaire-date"></div>
-				<div class="questionnaire-score"></div>
+				<div class="questionnaire-date">{{status.mnaSfDate}}</div>
+				<div class="questionnaire-score">{{status.mnaSfScore}}</div>
 				<button type="button" class="small blue">Questionnaire</button>
 			</div>
 			<div class="row value-row">
 				<div flex class="value-name">SNAQ score</div>
-				<div class="questionnaire-date"></div>
-				<div class="questionnaire-score"></div>
+				<div class="questionnaire-date">{{status.snaqDate}}</div>
+				<div class="questionnaire-score">{{status.snaqScore}}</div>
 				<button type="button" class="small blue">Questionnaire</button>
 			</div>
 			<div class="row value-row">
 				<div flex class="value-name">DHD-FFQ score</div>
-				<div class="questionnaire-date"></div>
-				<div class="questionnaire-score"></div>
+				<div class="questionnaire-date">{{status.dhdDate}}</div>
+				<div class="questionnaire-score">{{status.dhdScore}}</div>
 				<button type="button" class="small blue">Questionnaire</button>
 			</div>
 		</fieldset>
 
 		<fieldset>
 			<legend>Special diet prescriptions</legend>
-			<textarea></textarea>
+			<textarea name="dietPresc">{{status.dietPresc}}</textarea>
 		</fieldset>
 
 		<fieldset>

@@ -13,11 +13,11 @@
 
 {% block content %}
 <zdk-panel heading="{{ 'Distance travelled' | i18n }}">
-	<form name="form" id="formActivity" autocomplete="off" onsubmit="checkActivityForm(); return false;">
+	<form name="form" id="form" autocomplete="off" onsubmit="checkForm(); return false;">
 		<div class="row value-row">
 			<div flex class="value-name">Number of steps (optional)</div>
-			<input type="checkbox" name="stepsCheck" class="value-checkbox" {% if activity.stepsCheck %}checked{% endif %} />
-			<input type="text" name="stepsNumber" class="value-input" value="{{activity.stepsNumber}}" />
+			<input type="checkbox" name="stepsCheck" class="value-checkbox" {% if status.stepsCheck %}checked{% endif %} />
+			<input type="text" name="stepsNumber" class="value-input" value="{{status.stepsNumber}}" />
 			<div class="value-unit">steps per week</div>
 		</div>
 		<div class="row control">

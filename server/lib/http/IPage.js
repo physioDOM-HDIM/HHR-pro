@@ -1141,14 +1141,14 @@ function IPage() {
 	};
 
 	/**
-	 * Current well being page
-	 *
-	 * @param req
-	 * @param res
-	 * @param next
+	 * Current health status page
+	 * @param  req
+	 * @param  res
+	 * @param  next
 	 */
-	this.currentWellBeing = function(req, res, next) {
-		logger.trace('currentWellBeing');
+	this.currentHealthStatus = function(req, res, next) {
+		var name = req.params.name;
+		logger.trace('currentHealthStatus', name);
 
 		init(req);
 		var data = {
@@ -1162,16 +1162,16 @@ function IPage() {
 			return next();
 		}
 		else {
-			new CurrentStatus().get(req.session.beneficiary, 'well')
-				.then( function(current) {
-					data.current = current;
+			new CurrentStatus().get(req.session.beneficiary, name)
+				.then( function(status) {
+					data.status = status;
 
-					render('/static/tpl/current/well.htm', data, res, next);
+					render('/static/tpl/current/' + name + '.htm', data, res, next);
 				})
 				.catch(function(err) {
 					if (err.code && err.code === 404) {
-						data.current = {};
-						render('/static/tpl/current/well.htm', data, res, next);
+						data.status = {};
+						render('/static/tpl/current/' + name + '.htm', data, res, next);
 					}
 					else {
 						logger.error(err);
@@ -1181,107 +1181,6 @@ function IPage() {
 					}
 				});
 		}
-	};
-
-	/**
-	 * Current nutritional status page
-	 *
-	 * @param req
-	 * @param res
-	 * @param next
-	 */
-	this.currentNutritionalStatus = function(req, res, next) {
-		logger.trace('currentNutritionalStatus');
-
-		init(req);
-		var data = {
-			admin: ['coordinator', 'administrator'].indexOf(req.session.role) !== -1 ? true : false
-		};
-
-		swig.renderFile(DOCUMENTROOT + '/static/tpl/current/nutrition.htm', data, function (err, output) {
-			if (err) {
-				console.log("error", err);
-				console.log("output", output);
-				res.write(err);
-				res.end();
-				next();
-			}
-			else {
-				sendPage(output, res, next);
-			}
-		});
-	};
-
-	/**
-	 * Current activity/motricity status page
-	 *
-	 * @param req
-	 * @param res
-	 * @param next
-	 */
-	this.currentActivityStatus = function(req, res, next) {
-		logger.trace('currentActivityStatus');
-
-		init(req);
-		var data = {
-			admin: ['coordinator', 'administrator'].indexOf(req.session.role) !== -1 ? true : false
-		};
-
-		if (!req.session.beneficiary) {
-			logger.debug("No beneficiary selected");
-			res.header('Location', '/beneficiaries');
-			res.send(302);
-			return next();
-		}
-		else {
-			new CurrentStatus().get(req.session.beneficiary, 'activity')
-				.then( function(activity) {
-					data.activity = activity;
-
-					render('/static/tpl/current/activity.htm', data, res, next);
-				})
-				.catch(function(err) {
-					if (err.code && err.code === 404) {
-						data.activity = {};
-						render('/static/tpl/current/activity.htm', data, res, next);
-					}
-					else {
-						logger.error(err);
-						res.write(err);
-						res.end();
-						next();
-					}
-				});
-		}
-	};
-
-	/**
-	 * Current frailty status page
-	 *
-	 * @param req
-	 * @param res
-	 * @param next
-	 */
-	this.currentFrailtyStatus = function(req, res, next) {
-		logger.trace('currentFrailtyStatus');
-
-		init(req);
-		var data = {
-			admin: ['coordinator', 'administrator'].indexOf(req.session.role) !== -1 ? true : false
-		};
-
-		swig.renderFile(DOCUMENTROOT + '/static/tpl/current/frailty.htm', data, function (err, output) {
-			if (err) {
-				console.log("error", err);
-				console.log("output", output);
-				res.write(err);
-				res.end();
-				next();
-			}
-			else {
-				sendPage(output, res, next);
-			}
-		});
 	};
 
 	this.prescriptionDataGeneral = function(req, res, next) {
