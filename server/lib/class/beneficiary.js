@@ -16,7 +16,7 @@ var RSVP = require("rsvp"),
 	Messages = require("./messages"),
 	DataProg = require("./dataProg"),
 	DataProgItem = require("./dataProgItem"),
-	QuestProg = require("./questProg"),
+	QuestionnairePlan = require("./questionnairePlan"),
 	dbPromise = require("./database"),
 	moment = require("moment");
 
@@ -941,19 +941,10 @@ function Beneficiary( ) {
 		var dataProg = new DataProg( that._id );
 		return dataProg.remove( dataProgItemID );
 	};
-
-	/**
-	 * getDataProg
-	 *
-	 * @returns {promise}
-	 */
-	this.getQuestProg = function() {
-		var that = this;
-
-		
-		logger.trace("getQuestProg", that._id);
-		var questProg = new QuestProg( that._id );
-		return questProg.getList( );
+	
+	this.questionnairePlan = function() {
+		logger.trace("questionnairePlan", this._id );
+		return  new QuestionnairePlan( this._id );
 	};
 }
 

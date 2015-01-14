@@ -639,31 +639,101 @@ var IBeneficiary = {
 			});
 	},
 
-	/**
-	 * Get the array of prescription of questionnaires
-	 * the category is declared in the url `/api/beneficiary/questprog`
-	 *
-	 * @param req
-	 * @param res
-	 * @param next
-	 */
 	getQuestProg: function( req, res, next) {
-		logger.trace("getDataProgCategory");
+		logger.trace("getQuestProg");
 		var beneficiary;
 
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
 			})
-			.then(function (selectedBeneficiary) {
+			.then( function(selectedBeneficiary) {
 				beneficiary = selectedBeneficiary;
-				return beneficiary.getQuestProg( );
+				return beneficiary.questionnairePlan( );
+			})
+			.then( function( questionnairePlan) {
+				return questionnairePlan.getList();
 			})
 			.then( function( prescriptions ) {
 				res.send(prescriptions);
 				next();
 			})
-			.catch(function (err) {
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+	
+	addQuestProg: function( req, res, next) {
+		logger.trace("addQuestProg");
+		var beneficiary;
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then( function(selectedBeneficiary) {
+				beneficiary = selectedBeneficiary;
+				return beneficiary.questionnairePlan( );
+			})
+			.then( function( questionnairePlan ) {
+				return questionnairePlan.addDate( req.params.ref, JSON.parse(req.body) );
+			})
+			.then( function( prescription ) {
+				res.send(prescription);
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	delQuestProg: function( req, res, next) {
+		logger.trace("delQuestProg");
+		var beneficiary;
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then( function(selectedBeneficiary) {
+				beneficiary = selectedBeneficiary;
+				return beneficiary.questionnairePlan( );
+			})
+			.then( function( questionnairePlan ) {
+				return questionnairePlan.delDate( req.params.ref, JSON.parse(req.body) );
+			})
+			.then( function( prescription ) {
+				res.send(prescription);
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	setQuestProg: function( req, res, next) {
+		logger.trace("setQuestProg");
+		var beneficiary;
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then( function(selectedBeneficiary) {
+				beneficiary = selectedBeneficiary;
+				return beneficiary.questionnairePlan( );
+			})
+			.then( function( questionnairePlan ) {
+				return questionnairePlan.setQuestionnaire( JSON.parse(req.body) );
+			})
+			.then( function( prescription ) {
+				res.send(prescription);
+				next();
+			})
+			.catch( function(err) {
 				res.send(err.code || 400, err);
 				next(false);
 			});
