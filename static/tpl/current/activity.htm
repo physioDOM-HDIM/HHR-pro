@@ -9,6 +9,8 @@
 <link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
 <link rel="import" href="/bower_components/zdk-panel/zdk-panel.html">
 
+<link rel="stylesheet" href="../styles/current.css">
+
 {% endblock %}
 
 {% block content %}
@@ -20,12 +22,15 @@
 			<input type="text" name="stepsNumber" class="value-input" value="{{status.stepsNumber}}" />
 			<div class="value-unit">steps per week</div>
 		</div>
+
+		{% if !status.validated %}
 		<div class="row control">
 			<span class="spacer"></span>
 			<button class="blue">Validate</button>
 			<button class="red">Cancel</button>
 			<button class="green">Save</button>
 		</div>
+		{% endif %}
 	</form>
 </zdk-panel>
 

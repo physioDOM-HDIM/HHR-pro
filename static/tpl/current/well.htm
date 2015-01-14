@@ -9,6 +9,8 @@
 <link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
 <link rel="import" href="/bower_components/zdk-panel/zdk-panel.html">
 
+<link rel="stylesheet" href="../styles/current.css">
+
 {% endblock %}
 
 {% block content %}
@@ -16,14 +18,19 @@
 	<form name="form" id="form" autocomplete="off" onsubmit="checkForm(); return false;">
 		<div class="row value-row">
 			<div flex class="value-name">SF 12 score</div>
-			<div class="questionnaire-date">{{sf12Date}}</div>
-			<div class="questionnaire-score">{{sf12Score}}</div>
-			<a class="button small blue" href="/questionnaire/SF12">Questionnaire</a>
+			<div class="questionnaire-date">{% if status.sf12Date %}{{status.sf12Date | date('Y-m-d')}}{% endif %}</div>
+			<input type="text" class="questionnaire-score" value="{{status.sf12Score}}" disabled />
+			<input type="hidden" name="sf12Answer" value="{{status.sf12Answer}}" />
+			<div class="questionnaire-button-container">
+				<a class="button small blue" href={% if status.sf12Answer %}"/answers/{{status.sf12Answer}}"{% else %}"/questionnaire/SF12"{% endif %}>Questionnaire</a>
+			</div>
 		</div>
+		{% if !status.validated %}
 		<div class="row control">
 			<span class="spacer"></span>
 			<button class="blue">Validate</button>
 		</div>
+		{% endif %}
 	</form>
 </zdk-panel>
 

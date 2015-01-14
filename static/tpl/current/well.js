@@ -1,0 +1,12 @@
+'use strict';
+
+function checkForm() {
+	var formObj = form2js(document.getElementById('form'));
+
+	promiseXHR('PUT', '../api/beneficiary/current/well', 200, JSON.stringify(formObj))
+		.then(function(res) {
+			console.log(res);
+		}, function(error) {
+			console.log(error);
+		});
+}

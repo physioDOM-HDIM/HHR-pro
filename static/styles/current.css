@@ -1,0 +1,51 @@
+.row {
+	margin: 5px 0;
+}
+
+fieldset {
+	border: none;
+}
+
+legend {
+	font-weight: bold;
+	margin: 0;
+	padding: 0;
+}
+
+.value-name {
+
+}
+
+input.value-input {
+	margin: 0 10px;
+	max-width: 150px;
+}
+
+.value-unit {
+	padding: 0 0 0 10px;
+	width: 120px;
+	color: #999;
+	font-size: 0.9em;
+}
+
+.questionnaire-date {
+	color: #b0b0b0;
+	padding: 0 10px;
+}
+
+input.questionnaire-score {
+	margin: 0 10px;
+	font-weight: bold;
+	max-width: 150px;
+}
+
+.questionnaire-button-container {
+	padding: 0 0 0 10px;
+	width: 120px;
+	text-align: left;
+}
+
+textarea {
+	display: block;
+	height: 200px;
+}

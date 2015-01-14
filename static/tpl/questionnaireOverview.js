@@ -67,5 +67,12 @@ function checkForm() {
 	var scoreElt = document.getElementById('score');
 	scoreElt.innerHTML = '' + obj.score;
 
+	promiseXHR('POST', '../api/beneficiary/questionnaires/' + obj.ref + '/answers', 200, JSON.stringify(obj))
+		.then(function(res) {
+			console.log(res);
+		}, function(error) {
+			console.log(error);
+		});
+
 	showModal();
 }

@@ -9,6 +9,8 @@
 <link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
 <link rel="import" href="/bower_components/zdk-panel/zdk-panel.html">
 
+<link rel="stylesheet" href="../styles/current.css">
+
 {% endblock %}
 
 {% block content %}
@@ -19,52 +21,66 @@
 			<div class="row value-row">
 				<div flex class="value-name">Size</div>
 				<input type="text" name="size" class="value-input" value="{{status.size}}" />
-				<div flex class="value-unit">meter</div>
+				<div class="value-unit">meter</div>
 			</div>
 			<div class="row value-row">
 				<div flex class="value-name">Weight</div>
 				<input type="text" name="weight" class="value-input" value="{{status.weight}}" />
-				<div flex class="value-unit">kilogram</div>
+				<div class="value-unit">kilogram</div>
 			</div>
 			<div class="row value-row">
 				<div flex class="value-name">Lean/fat ratio</div>
 				<input type="text" name="lean" class="value-input" value="{{status.lean}}" />
-				<div flex class="value-unit"></div>
+				<div class="value-unit"></div>
 			</div>
 			<div class="row value-row">
 				<div flex class="value-name">BMI</div>
 				<input type="text" class="value-input" value="{{status.bmi}}" />
-				<div flex class="value-unit"></div>
+				<div class="value-unit"></div>
 			</div>
 			<div class="row value-row">
 				<div flex class="value-name">MNA score</div>
-				<div class="questionnaire-date">{{status.mnaDate}}</div>
-				<div class="questionnaire-score">{{status.mnaScore}}</div>
-				<button type="button" class="small blue">Questionnaire</button>
+				<div class="questionnaire-date">{% if status.mnaDate %}{{status.mnaDate | date('Y-m-d')}}{% endif %}</div>
+				<input type="text" class="questionnaire-score" value="{{status.mnaScore}}" disabled />
+				<input type="hidden" name="mnaAnswer" value="{{status.mnaAnswer}}" />
+				<div class="questionnaire-button-container">
+					<a class="button small blue" href={% if status.mnaAnswer %}"/answers/{{status.mnaAnswer}}"{% else %}"/questionnaire/MNA"{% endif %}>Questionnaire</a>
+				</div>
 			</div>
 			<div class="row value-row">
 				<div flex class="value-name">MNA SF score</div>
-				<div class="questionnaire-date">{{status.mnaSfDate}}</div>
-				<div class="questionnaire-score">{{status.mnaSfScore}}</div>
-				<button type="button" class="small blue">Questionnaire</button>
+				<div class="questionnaire-date">{% if status.mnaSfDate %}{{status.mnaSfDate | date('Y-m-d')}}{% endif %}</div>
+				<input type="text" class="questionnaire-score" value="{{status.mnaSfScore}}" disabled />
+				<input type="hidden" name="mnaSfAnswer" value="{{status.mnaSfAnswer}}" />
+				<div class="questionnaire-button-container">
+					<a class="button small blue" href={% if status.mnaSfAnswer %}"/answers/{{status.mnaSfAnswer}}"{% else %}"/questionnaire/MNASF"{% endif %}>Questionnaire</a>
+				</div>
 			</div>
 			<div class="row value-row">
 				<div flex class="value-name">SNAQ score</div>
-				<div class="questionnaire-date">{{status.snaqDate}}</div>
-				<div class="questionnaire-score">{{status.snaqScore}}</div>
-				<button type="button" class="small blue">Questionnaire</button>
+				<div class="questionnaire-date">{% if status.snaqDate %}{{status.snaqDate | date('Y-m-d')}}{% endif %}</div>
+				<input type="text" class="questionnaire-score" value="{{status.snaqScore}}" disabled />
+				<input type="hidden" name="snaqAnswer" value="{{status.snaqAnswer}}" />
+				<div class="questionnaire-button-container">
+					<a class="button small blue" href={% if status.snaqAnswer %}"/answers/{{status.snaqAnswer}}"{% else %}"/questionnaire/SNAQ"{% endif %}>Questionnaire</a>
+				</div>
 			</div>
 			<div class="row value-row">
 				<div flex class="value-name">DHD-FFQ score</div>
-				<div class="questionnaire-date">{{status.dhdDate}}</div>
-				<div class="questionnaire-score">{{status.dhdScore}}</div>
-				<button type="button" class="small blue">Questionnaire</button>
+				<div class="questionnaire-date">{% if status.dhdDate %}{{status.dhdDate | date('Y-m-d')}}{% endif %}</div>
+				<input type="text" class="questionnaire-score" value="{{status.dhdScore}}" disabled />
+				<input type="hidden" name="dhdAnswer" value="{{status.dhdAnswer}}" />
+				<div class="questionnaire-button-container">
+					<a class="button small blue" href={% if status.dhdAnswer %}"/answers/{{status.dhdAnswer}}"{% else %}"/questionnaire/DHD"{% endif %}>Questionnaire</a>
+				</div>
 			</div>
 		</fieldset>
 
 		<fieldset>
 			<legend>Special diet prescriptions</legend>
-			<textarea name="dietPresc">{{status.dietPresc}}</textarea>
+			<div class="row value-row">
+				<textarea flex name="dietPresc">{{status.dietPresc}}</textarea>
+			</div>
 		</fieldset>
 
 		<fieldset>
@@ -77,12 +93,14 @@
 			</div>
 		</fieldset>
 
+		{% if !status.validated %}
 		<div class="row control">
 			<span class="spacer"></span>
 			<button class="blue">Validate</button>
 			<button class="red">Cancel</button>
 			<button class="green">Save</button>
 		</div>
+		{% endif %}
 	</form>
 </zdk-panel>
 

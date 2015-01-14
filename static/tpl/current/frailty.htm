@@ -9,6 +9,8 @@
 <link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
 <link rel="import" href="/bower_components/zdk-panel/zdk-panel.html">
 
+<link rel="stylesheet" href="../styles/current.css">
+
 {% endblock %}
 
 {% block content %}
@@ -16,20 +18,26 @@
 	<form name="form" id="form" autocomplete="off" onsubmit="checkForm(); return false;">
 		<div class="row value-row">
 			<div flex class="value-name">Chair stand results</div>
-			<div class="questionnaire-date">{{status.chairStandDate}}</div>
-			<div class="questionnaire-score">{{status.chairStandScore}}</div>
-			<button type="button" class="small blue">Questionnaire</button>
+			<div class="questionnaire-date">{% if status.chairStandDate %}{{status.chairStandDate | date('Y-m-d')}}{% endif %}</div>
+			<input type="text" class="questionnaire-score" value="{{status.chairStandScore}}" disabled />
+			<input type="hidden" name="chairStandAnswer" value="{{status.chairStandAnswer}}" />
+			<div class="questionnaire-button-container">
+				<a class="button small blue" href={% if status.chairStandAnswer %}"/answers/{{status.chairStandAnswer}}"{% else %}"/questionnaire/ChairStand"{% endif %}>Questionnaire</a>
+			</div>
 		</div>
 		<div class="row value-row">
 			Normal <input type="checkbox" name="normal" flex class="value-checkbox" {% if status.normal %}checked{% endif %} />
 			Risk of fail <input type="checkbox" name="risk" flex class="value-checkbox" {% if status.risk %}checked{% endif %} />
 		</div>
+
+		{% if !status.validated %}
 		<div class="row control">
 			<span class="spacer"></span>
 			<button class="blue">Validate</button>
 			<button class="red">Cancel</button>
 			<button class="green">Save</button>
 		</div>
+		{% endif %}
 	</form>
 </zdk-panel>
 

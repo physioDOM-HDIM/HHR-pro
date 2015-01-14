@@ -278,12 +278,13 @@ a.button {
 	box-sizing: border-box;
 }
 
-.row button:first-child {
+.row button:first-child,
+.row a.button:first-child{
 	margin-left: 0;
 }
 
 a.button {
-	display: block;
+	display: inline-block;
 	text-align: center;
 	line-height: 30px;
 	padding: 0 6px;
