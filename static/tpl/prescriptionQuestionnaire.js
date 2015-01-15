@@ -106,6 +106,9 @@ var saveData = function( ) {
             console.log("all saved");
             modified = false;
             new Modal('saveSuccess', function() { });
+        })
+        .catch( function() {
+            new Modal('errorOccured', function() { });
         });
 };
 
