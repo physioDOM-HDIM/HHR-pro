@@ -738,7 +738,7 @@ var IBeneficiary = {
 				res.send(err.code || 400, err);
 				next(false);
 			});
-	}
+	},
 
 	/**
 	 * Create questionnaire answers.
