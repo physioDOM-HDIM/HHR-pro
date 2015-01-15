@@ -403,6 +403,8 @@ server.get( '/questionnaire/create', IPage.createQuestionnaire);
 server.get( '/questionnaire/edit/:questionnaireName', IPage.createQuestionnaire);
 server.get( '/questionnaire/:questionnaireName', IPage.questionnaireOverview);
 
+server.get( '/answers/:entryID', IPage.questionnaireAnswers);
+
 server.get( '/datarecord/', IPage.dataRecord);
 server.get( '/datarecord/create', IPage.dataRecordCreate);
 server.get( '/datarecord/:dataRecordID', IPage.dataRecordDetail);
