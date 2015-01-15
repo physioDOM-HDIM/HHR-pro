@@ -53,7 +53,7 @@
 				<input type="text" class="questionnaire-score" value="{{status.mnaSfScore}}" disabled />
 				<input type="hidden" name="mnaSfAnswer" value="{{status.mnaSfAnswer}}" />
 				<div class="questionnaire-button-container">
-					<a class="button small blue" href={% if status.mnaSfAnswer %}"/answers/{{status.mnaSfAnswer}}"{% else %}"/questionnaire/MNASF"{% endif %}>Questionnaire</a>
+					<a class="button small blue" href={% if status.mnaSfAnswer %}"/answers/{{status.mnaSfAnswer}}"{% else %}"/questionnaire/MNA_MINI"{% endif %}>Questionnaire</a>
 				</div>
 			</div>
 			<div class="row value-row">
@@ -71,7 +71,7 @@
 				<input type="text" class="questionnaire-score" value="{{status.dhdScore}}" disabled />
 				<input type="hidden" name="dhdAnswer" value="{{status.dhdAnswer}}" />
 				<div class="questionnaire-button-container">
-					<a class="button small blue" href={% if status.dhdAnswer %}"/answers/{{status.dhdAnswer}}"{% else %}"/questionnaire/DHD"{% endif %}>Questionnaire</a>
+					<a class="button small blue" href={% if status.dhdAnswer %}"/answers/{{status.dhdAnswer}}"{% else %}"/questionnaire/DHD-FFQ"{% endif %}>Questionnaire</a>
 				</div>
 			</div>
 		</fieldset>
@@ -94,15 +94,26 @@
 		</fieldset>
 
 		{% if !status.validated %}
-		<div class="row control">
+		<div id="buttons" class="row control">
 			<span class="spacer"></span>
-			<button class="blue">Validate</button>
-			<button class="red">Cancel</button>
+			<button type="button" class="blue" onclick="showConfirm();">Validate</button>
+			<button type="button" class="red" onclick="location.reload();">Cancel</button>
 			<button class="green">Save</button>
 		</div>
 		{% endif %}
 	</form>
 </zdk-panel>
+
+<zdk-modal id="confirmModal" closebutton="false">
+	<div class="modalContainer">
+		<div class="modalTitleContainer">{{'Confirmation' | i18n}}</div>
+		<div class="modalContentContainer">{{'Are you sure?' |i18n}}</div>
+		<div class="modalButtonContainer">
+			<button class="red" onclick="hideConfirm();">{{'Cancel' | i18n}}</script>
+			<button class="green" onclick="hideConfirm(); checkForm(true);">{{'Validate' | i18n}}</script>
+		</div>
+	</button>
+</zdk-modal>
 
 <script src="/tpl/current/nutrition.js"></script>
 {% endblock %}

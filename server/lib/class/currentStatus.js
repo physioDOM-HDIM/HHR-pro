@@ -198,13 +198,13 @@ function CurrentStatus() {
 				return this._saveAnswerInQuestionnaire(beneficiaryID, answer, 'well', 'sf12');
 			case 'MNA':
 				return this._saveAnswerInQuestionnaire(beneficiaryID, answer, 'nutrition', 'mna');
-			case 'MNA SF':
+			case 'MNA_MINI':
 				return this._saveAnswerInQuestionnaire(beneficiaryID, answer, 'nutrition', 'mnaSf');
 			case 'SNAQ':
 				return this._saveAnswerInQuestionnaire(beneficiaryID, answer, 'nutrition', 'snaq');
 			case 'DHD-FFQ':
 				return this._saveAnswerInQuestionnaire(beneficiaryID, answer, 'nutrition', 'dhd');
-			case 'Chair stand':
+			case 'CHAIR_TEST':
 				return this._saveAnswerInQuestionnaire(beneficiaryID, answer, 'frailty', 'chairStand');
 			default:
 				return new Promise( function(resolve, reject) {

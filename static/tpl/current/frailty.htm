@@ -22,7 +22,7 @@
 			<input type="text" class="questionnaire-score" value="{{status.chairStandScore}}" disabled />
 			<input type="hidden" name="chairStandAnswer" value="{{status.chairStandAnswer}}" />
 			<div class="questionnaire-button-container">
-				<a class="button small blue" href={% if status.chairStandAnswer %}"/answers/{{status.chairStandAnswer}}"{% else %}"/questionnaire/ChairStand"{% endif %}>Questionnaire</a>
+				<a class="button small blue" href={% if status.chairStandAnswer %}"/answers/{{status.chairStandAnswer}}"{% else %}"/questionnaire/CHAIR_TEST"{% endif %}>Questionnaire</a>
 			</div>
 		</div>
 		<div class="row value-row">
@@ -31,15 +31,26 @@
 		</div>
 
 		{% if !status.validated %}
-		<div class="row control">
+		<div id="buttons" class="row control">
 			<span class="spacer"></span>
-			<button class="blue">Validate</button>
-			<button class="red">Cancel</button>
+			<button type="button" class="blue" onclick="showConfirm();">Validate</button>
+			<button type="button" class="red" onclick="location.reload();">Cancel</button>
 			<button class="green">Save</button>
 		</div>
 		{% endif %}
 	</form>
 </zdk-panel>
+
+<zdk-modal id="confirmModal" closebutton="false">
+	<div class="modalContainer">
+		<div class="modalTitleContainer">{{'Confirmation' | i18n}}</div>
+		<div class="modalContentContainer">{{'Are you sure?' |i18n}}</div>
+		<div class="modalButtonContainer">
+			<button class="red" onclick="hideConfirm();">{{'Cancel' | i18n}}</script>
+			<button class="green" onclick="hideConfirm(); checkForm(true);">{{'Validate' | i18n}}</script>
+		</div>
+	</button>
+</zdk-modal>
 
 <script src="/tpl/current/frailty.js"></script>
 {% endblock %}
