@@ -20,12 +20,22 @@
 			<legend>Diet values</legend>
 			<div class="row value-row">
 				<div flex class="value-name">Size</div>
-				<input type="text" name="size" class="value-input" value="{{status.size}}" {% if status.validated %}disabled{% endif %} />
+				<input
+					id="sizeInput"
+					type="text"
+					name="size"
+					class="value-input"
+					value="{{status.size}}" {% if status.validated %}disabled{% endif %} />
 				<div class="value-unit">meter</div>
 			</div>
 			<div class="row value-row">
 				<div flex class="value-name">Weight</div>
-				<input type="text" name="weight" class="value-input" value="{{status.weight}}" {% if status.validated %}disabled{% endif %} />
+				<input
+					id="weightInput"
+					type="text"
+					name="weight"
+					class="value-input"
+					value="{{status.weight}}" {% if status.validated %}disabled{% endif %} />
 				<div class="value-unit">kilogram</div>
 			</div>
 			<div class="row value-row">
@@ -35,7 +45,11 @@
 			</div>
 			<div class="row value-row">
 				<div flex class="value-name">BMI</div>
-				<input type="text" class="value-input" value="{{status.bmi}}" {% if status.validated %}disabled{% endif %} />
+				<input
+					id="bmiInput"
+					type="text"
+					class="value-input"
+					value="{{status.bmi}}" {% if status.validated %}disabled{% endif %} />
 				<div class="value-unit"></div>
 			</div>
 			<div class="row value-row">

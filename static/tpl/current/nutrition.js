@@ -30,10 +30,28 @@ function checkForm(validate) {
 				for (var i = 0; i < inputs.length; ++i) {
 					inputs[i].setAttribute('disabled', true);
 				}
+
+				var textareas = document.querySelectorAll('textarea');
+				for (var i = 0; i < textareas.length; ++i) {
+					textareas[i].setAttribute('disabled', true);
+				}
 			}
 		}, function(error) {
 			console.log(error);
 		});
+}
+
+function computeBMI() {
+	var size = parseFloat(document.getElementById('sizeInput').value);
+	var weight = parseFloat(document.getElementById('weightInput').value);
+
+	if (isNaN(size) || isNaN(weight) || size === 0 || weight === 0) {
+		document.getElementById('bmiInput').value = '';
+	}
+	else {
+		var bmi = weight / (size * size);
+		document.getElementById('bmiInput').value = bmi.toFixed(2);
+	}
 }
 
 function showConfirm() {
@@ -43,3 +61,8 @@ function showConfirm() {
 function hideConfirm() {
 	document.getElementById('confirmModal').hide();
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+	document.getElementById('sizeInput').addEventListener('change', computeBMI);
+	document.getElementById('weightInput').addEventListener('change', computeBMI);
+});
