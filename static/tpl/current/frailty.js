@@ -11,7 +11,13 @@ function checkForm(validate) {
 	promiseXHR('PUT', '../api/beneficiary/current/frailty', 200, JSON.stringify(formObj))
 		.then(function(res) {
 			if (JSON.parse(res).validated) {
-				document.getElementById('buttons').style.display = 'none';
+				document.getElementById('buttons').innerHTML = '';
+
+				var inputs = document.querySelectorAll('input');
+				for (var i = 0; i < inputs.length; ++i) {
+					inputs[i].setAttribute('disabled', true);
+				}
+
 			}
 		}, function(error) {
 			console.log(error);

@@ -20,22 +20,22 @@
 			<legend>Diet values</legend>
 			<div class="row value-row">
 				<div flex class="value-name">Size</div>
-				<input type="text" name="size" class="value-input" value="{{status.size}}" />
+				<input type="text" name="size" class="value-input" value="{{status.size}}" {% if status.validated %}disabled{% endif %} />
 				<div class="value-unit">meter</div>
 			</div>
 			<div class="row value-row">
 				<div flex class="value-name">Weight</div>
-				<input type="text" name="weight" class="value-input" value="{{status.weight}}" />
+				<input type="text" name="weight" class="value-input" value="{{status.weight}}" {% if status.validated %}disabled{% endif %} />
 				<div class="value-unit">kilogram</div>
 			</div>
 			<div class="row value-row">
 				<div flex class="value-name">Lean/fat ratio</div>
-				<input type="text" name="lean" class="value-input" value="{{status.lean}}" />
+				<input type="text" name="lean" class="value-input" value="{{status.lean}}" {% if status.validated %}disabled{% endif %} />
 				<div class="value-unit"></div>
 			</div>
 			<div class="row value-row">
 				<div flex class="value-name">BMI</div>
-				<input type="text" class="value-input" value="{{status.bmi}}" />
+				<input type="text" class="value-input" value="{{status.bmi}}" {% if status.validated %}disabled{% endif %} />
 				<div class="value-unit"></div>
 			</div>
 			<div class="row value-row">
@@ -79,7 +79,7 @@
 		<fieldset>
 			<legend>Special diet prescriptions</legend>
 			<div class="row value-row">
-				<textarea flex name="dietPresc">{{status.dietPresc}}</textarea>
+				<textarea flex name="dietPresc" {% if status.validated %}disabled{% endif %}>{{status.dietPresc}}</textarea>
 			</div>
 		</fieldset>
 

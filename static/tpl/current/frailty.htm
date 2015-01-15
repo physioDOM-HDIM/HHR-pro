@@ -26,8 +26,8 @@
 			</div>
 		</div>
 		<div class="row value-row">
-			Normal <input type="checkbox" name="normal" flex class="value-checkbox" {% if status.normal %}checked{% endif %} />
-			Risk of fail <input type="checkbox" name="risk" flex class="value-checkbox" {% if status.risk %}checked{% endif %} />
+			Normal <input type="checkbox" name="normal" flex class="value-checkbox" {% if status.normal %}checked{% endif %} {% if status.validated %}disabled{% endif %} />
+			Risk of fail <input type="checkbox" name="risk" flex class="value-checkbox" {% if status.risk %}checked{% endif %} {% if status.validated %}disabled{% endif %} />
 		</div>
 
 		{% if !status.validated %}
