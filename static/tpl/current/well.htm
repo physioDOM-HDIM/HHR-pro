@@ -1,0 +1,49 @@
+{% extends '../page.htm' %}
+
+{% block title %}{{ 'Healthcare: current health status' | i18n }}{% endblock %}
+
+{% block head %}
+{% parent %}
+<script src="/bower_components/form2js/src/form2js.js"></script>
+
+<link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
+<link rel="import" href="/bower_components/zdk-panel/zdk-panel.html">
+
+<link rel="stylesheet" href="../styles/current.css">
+
+{% endblock %}
+
+{% block content %}
+<zdk-panel heading="{{ 'Well being' | i18n }}">
+	<form name="form" id="form" autocomplete="off" onsubmit="checkForm(); return false;">
+		<div class="row value-row">
+			<div flex class="value-name">SF 12 score</div>
+			<div class="questionnaire-date">{% if status.sf12Date %}{{status.sf12Date | date('Y-m-d')}}{% endif %}</div>
+			<input type="text" class="questionnaire-score" value="{{status.sf12Score}}" disabled />
+			<input type="hidden" name="sf12Answer" value="{{status.sf12Answer}}" />
+			<div class="questionnaire-button-container">
+				<a class="button small blue" href={% if status.sf12Answer %}"/answers/{{status.sf12Answer}}"{% else %}"/questionnaire/SF12"{% endif %}>Questionnaire</a>
+			</div>
+		</div>
+		{% if !status.validated %}
+		<div id="buttons" class="row control">
+			<span class="spacer"></span>
+			<button type="button" class="blue" onclick="showConfirm();">Validate</button>
+		</div>
+		{% endif %}
+	</form>
+</zdk-panel>
+
+<zdk-modal id="confirmModal" closebutton="false">
+	<div class="modalContainer">
+		<div class="modalTitleContainer">{{'Confirmation' | i18n}}</div>
+		<div class="modalContentContainer">{{'Are you sure?' |i18n}}</div>
+		<div class="modalButtonContainer">
+			<button class="red" onclick="hideConfirm();">{{'Cancel' | i18n}}</script>
+			<button class="green" onclick="hideConfirm(); checkForm(true);">{{'Validate' | i18n}}</script>
+		</div>
+	</button>
+</zdk-modal>
+
+<script src="/tpl/current/well.js"></script>
+{% endblock %}

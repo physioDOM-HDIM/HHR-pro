@@ -16,7 +16,8 @@ var IDirectory = require('./lib/http/IDirectory'),
 	ILists = require("./lib/http/ILists"),
 	IPage = require("./lib/http/IPage"),
 	IQuestionnaire = require("./lib/http/IQuestionnaire"),
-	IDataRecord = require("./lib/http/IDataRecord");
+	IDataRecord = require("./lib/http/IDataRecord"),
+	ICurrentStatus = require('./lib/http/ICurrentStatus');
 
 var pkg     = require('../package.json');
 var logger = new Logger( "PhysioDOM App");
@@ -353,6 +354,12 @@ server.post('/api/beneficiaries/:entryID/dataprog', IBeneficiary.setDataProg );
 server.del( '/api/beneficiary/dataprog/:dataProgItemID', IBeneficiary.removeDataProg );
 server.del( '/api/beneficiaries/:entryID/dataprog/:dataProgItemID', IBeneficiary.removeDataProg );
 
+server.get( '/api/beneficiary/current/:name', ICurrentStatus.get);
+server.put( '/api/beneficiary/current/:name', ICurrentStatus.put);
+
+// Questionnaire answers for the current beneficiary
+server.post('/api/beneficiary/questionnaires/:entryID/answers', IBeneficiary.createQuestionnaireAnswers);
+
 
 server.get( '/api/beneficiary/questprog', IBeneficiary.getQuestProg );
 server.get( '/api/beneficiaries/:entryID/questprog', IBeneficiary.getQuestProg );
@@ -407,6 +414,9 @@ server.get( '/message/create', IPage.messageCreate);
 // Services
 server.get( '/services/health', IPage.basicHealthServices);
 server.get( '/services/health/create', IPage.basicHealthServiceCreate);
+
+// Current (initial) health status
+server.get( '/current/:name', IPage.currentHealthStatus);
 
 server.get( '/prescription/general', IPage.prescriptionDataGeneral);
 server.get( '/prescription/hdim', IPage.prescriptionDataHDIM);

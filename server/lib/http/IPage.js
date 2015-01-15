@@ -19,6 +19,8 @@ var swig = require("swig"),
 	promise = RSVP.Promise,
 	moment = require("moment"),
 	ObjectID = require("mongodb").ObjectID;
+
+var CurrentStatus = require('../class/currentStatus.js');
 // var DOCUMENTROOT= "/home/http/physiodom";
 var DOCUMENTROOT=require("path").join(__dirname,"../../../");
 
@@ -1137,7 +1139,50 @@ function IPage() {
 			}
 		});
 	};
-	
+
+	/**
+	 * Current health status page
+	 * @param  req
+	 * @param  res
+	 * @param  next
+	 */
+	this.currentHealthStatus = function(req, res, next) {
+		var name = req.params.name;
+		logger.trace('currentHealthStatus', name);
+
+		init(req);
+		var data = {
+			admin: ['coordinator', 'administrator'].indexOf(req.session.role) !== -1 ? true : false
+		};
+
+		if (!req.session.beneficiary) {
+			logger.debug("No beneficiary selected");
+			res.header('Location', '/beneficiaries');
+			res.send(302);
+			return next();
+		}
+		else {
+			new CurrentStatus().get(req.session.beneficiary, name)
+				.then( function(status) {
+					data.status = status;
+
+					render('/static/tpl/current/' + name + '.htm', data, res, next);
+				})
+				.catch(function(err) {
+					if (err.code && err.code === 404) {
+						data.status = {};
+						render('/static/tpl/current/' + name + '.htm', data, res, next);
+					}
+					else {
+						logger.error(err);
+						res.write(err);
+						res.end();
+						next();
+					}
+				});
+		}
+	};
+
 	this.prescriptionDataGeneral = function(req, res, next) {
 		logger.trace("PrescriptionDataGeneral");
 		var html;
@@ -1303,6 +1348,29 @@ function IPage() {
 				next();
 			});
 	};
+
+	/**
+	 * Render a page using a template and given data.
+	 * 
+	 * @param  {String}   tpl  Path of the template (relative to DOCUMENT ROOT)
+	 * @param             data Data used in the template
+	 * @param  {Object}   res 
+	 * @param  {Function} next
+	 */
+	function render(tpl, data, res, next) {
+		swig.renderFile(DOCUMENTROOT + tpl, data, function (err, output) {
+			if (err) {
+				console.log('error', err);
+				console.log('output', output);
+				res.write(err);
+				res.end();
+				next();
+			}
+			else {
+				sendPage(output, res, next);
+			}
+		});
+	}
 
 	/**
 	 * Send the page to the browser

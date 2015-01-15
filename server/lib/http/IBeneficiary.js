@@ -9,6 +9,7 @@
 var Logger = require("logger"),
 	ObjectID = require("mongodb").ObjectID,
 	DataRecords = require("../class/dataRecords");
+var CurrentStatus = require('../class/currentStatus');
 var logger = new Logger("IBeneficiary");
 
 /**
@@ -734,6 +735,58 @@ var IBeneficiary = {
 				next();
 			})
 			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	}
+
+	/**
+	 * Create questionnaire answers.
+	 * 
+	 * the selected prescription is given by the url : `/api/beneficiary/dataprog/:dataProgItemID`
+	 * 
+	 * on success send a 200 HTTP code, else send a 4xx HTTP Code
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	createQuestionnaireAnswers: function(req, res, next) {
+		logger.trace('createQuestionnaireAnswers');
+		var beneficiary;
+		var questionnaireID = req.params.entryID;
+		var questionnaire;
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+			})
+			.then(function (selectedBeneficiary) {
+				beneficiary = selectedBeneficiary;
+				return physioDOM.Questionnaires();
+			})
+			.then (function(questionnaires) {
+				return questionnaires.getQuestionnaireByID(questionnaireID);
+			})
+			.then (function(selectedQuestionnaire) {
+				questionnaire = selectedQuestionnaire;
+				return physioDOM.QuestionnaireAnswer();
+			})
+			.then (function(questionnaireAnswer) {
+				var entry = JSON.parse(req.body);
+				entry.subject = beneficiary._id;
+				entry.ref = questionnaire._id;
+				entry.datetime = new Date();
+				return questionnaireAnswer.create(entry);
+			})
+			.then (function(answer) {
+				return new CurrentStatus().saveAnswer(beneficiary._id, questionnaire.name, answer);
+			})
+			.then (function(answer) {
+				res.send(answer);
+				next();
+			})
+			.catch(function (err) {
 				res.send(err.code || 400, err);
 				next(false);
 			});

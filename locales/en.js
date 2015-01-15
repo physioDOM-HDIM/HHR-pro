@@ -230,5 +230,11 @@
 	"Comment": "Comment",
 	"Dates": "Dates",
 	"You have unsaved data": "You have unsaved data",
-	"Successfully saved": "Successfully saved"
+	"Successfully saved": "Successfully saved",
+	"Healthcare: current health status": "Healthcare: current health status",
+	"Well being": "Well being",
+	"Distance travelled": "Distance travelled",
+	"Frailty status": "Frailty status",
+	"Confirmation": "Confirmation",
+	"Are you sure?": "Are you sure?"
 }
