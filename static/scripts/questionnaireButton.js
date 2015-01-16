@@ -10,6 +10,7 @@ function onIframeLoaded() {
 function loadQuestionnaire(url) {
 	var iframe = document.createElement('iframe');
 	iframe.id = 'questionnaireIframe';
+	iframe.setAttribute('scrolling', 'no');
 	iframe.addEventListener('load', onIframeLoaded);
 	document.documentElement.appendChild(iframe);
 	iframe.src = url;
