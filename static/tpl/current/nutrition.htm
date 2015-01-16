@@ -5,6 +5,7 @@
 {% block head %}
 {% parent %}
 <script src="/bower_components/form2js/src/form2js.js"></script>
+<script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
 
 <link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
 <link rel="import" href="/bower_components/zdk-panel/zdk-panel.html">
@@ -14,109 +15,111 @@
 {% endblock %}
 
 {% block content %}
-<zdk-panel heading="{{ 'Nutritional status' | i18n }}">
-	<form name="form" id="form" autocomplete="off" onsubmit="checkForm(); return false;">
-		<fieldset>
-			<legend>Diet values</legend>
-			<div class="row value-row">
-				<div flex class="value-name">Size</div>
-				<input
-					id="sizeInput"
-					type="text"
-					name="size"
-					class="value-input"
-					value="{{status.size}}" {% if status.validated %}disabled{% endif %} />
-				<div class="value-unit">meter</div>
-			</div>
-			<div class="row value-row">
-				<div flex class="value-name">Weight</div>
-				<input
-					id="weightInput"
-					type="text"
-					name="weight"
-					class="value-input"
-					value="{{status.weight}}" {% if status.validated %}disabled{% endif %} />
-				<div class="value-unit">kilogram</div>
-			</div>
-			<div class="row value-row">
-				<div flex class="value-name">Lean/fat ratio</div>
-				<input type="text" name="lean" class="value-input" value="{{status.lean}}" {% if status.validated %}disabled{% endif %} />
-				<div class="value-unit"></div>
-			</div>
-			<div class="row value-row">
-				<div flex class="value-name">BMI</div>
-				<input
-					id="bmiInput"
-					type="text"
-					class="value-input"
-					value="{{status.bmi}}" {% if status.validated %}disabled{% endif %} />
-				<div class="value-unit"></div>
-			</div>
-			<div class="row value-row">
-				<div flex class="value-name">MNA score</div>
-				<div class="questionnaire-date">{% if status.mnaDate %}{{status.mnaDate | date('Y-m-d')}}{% endif %}</div>
-				<input type="text" class="questionnaire-score" value="{{status.mnaScore}}" disabled />
-				<input type="hidden" name="mnaAnswer" value="{{status.mnaAnswer}}" />
-				<div class="questionnaire-button-container">
-					<a class="button small blue" href={% if status.mnaAnswer %}"/answers/{{status.mnaAnswer}}"{% else %}"/questionnaire/MNA"{% endif %}>Questionnaire</a>
+<div id="content">
+	<zdk-panel heading="{{ 'Nutritional status' | i18n }}">
+		<form name="form" id="form" autocomplete="off" onsubmit="checkForm(); return false;">
+			<fieldset>
+				<legend>Diet values</legend>
+				<div class="row value-row">
+					<div flex class="value-name">Size</div>
+					<input
+						id="sizeInput"
+						type="text"
+						name="size"
+						class="value-input"
+						value="{{status.size}}" {% if status.validated %}disabled{% endif %} />
+					<div class="value-unit">meter</div>
 				</div>
-			</div>
-			<div class="row value-row">
-				<div flex class="value-name">MNA SF score</div>
-				<div class="questionnaire-date">{% if status.mnaSfDate %}{{status.mnaSfDate | date('Y-m-d')}}{% endif %}</div>
-				<input type="text" class="questionnaire-score" value="{{status.mnaSfScore}}" disabled />
-				<input type="hidden" name="mnaSfAnswer" value="{{status.mnaSfAnswer}}" />
-				<div class="questionnaire-button-container">
-					<a class="button small blue" href={% if status.mnaSfAnswer %}"/answers/{{status.mnaSfAnswer}}"{% else %}"/questionnaire/MNA_MINI"{% endif %}>Questionnaire</a>
+				<div class="row value-row">
+					<div flex class="value-name">Weight</div>
+					<input
+						id="weightInput"
+						type="text"
+						name="weight"
+						class="value-input"
+						value="{{status.weight}}" {% if status.validated %}disabled{% endif %} />
+					<div class="value-unit">kilogram</div>
 				</div>
-			</div>
-			<div class="row value-row">
-				<div flex class="value-name">SNAQ score</div>
-				<div class="questionnaire-date">{% if status.snaqDate %}{{status.snaqDate | date('Y-m-d')}}{% endif %}</div>
-				<input type="text" class="questionnaire-score" value="{{status.snaqScore}}" disabled />
-				<input type="hidden" name="snaqAnswer" value="{{status.snaqAnswer}}" />
-				<div class="questionnaire-button-container">
-					<a class="button small blue" href={% if status.snaqAnswer %}"/answers/{{status.snaqAnswer}}"{% else %}"/questionnaire/SNAQ"{% endif %}>Questionnaire</a>
+				<div class="row value-row">
+					<div flex class="value-name">Lean/fat ratio</div>
+					<input type="text" name="lean" class="value-input" value="{{status.lean}}" {% if status.validated %}disabled{% endif %} />
+					<div class="value-unit"></div>
 				</div>
-			</div>
-			<div class="row value-row">
-				<div flex class="value-name">DHD-FFQ score</div>
-				<div class="questionnaire-date">{% if status.dhdDate %}{{status.dhdDate | date('Y-m-d')}}{% endif %}</div>
-				<input type="text" class="questionnaire-score" value="{{status.dhdScore}}" disabled />
-				<input type="hidden" name="dhdAnswer" value="{{status.dhdAnswer}}" />
-				<div class="questionnaire-button-container">
-					<a class="button small blue" href={% if status.dhdAnswer %}"/answers/{{status.dhdAnswer}}"{% else %}"/questionnaire/DHD-FFQ"{% endif %}>Questionnaire</a>
+				<div class="row value-row">
+					<div flex class="value-name">BMI</div>
+					<input
+						id="bmiInput"
+						type="text"
+						class="value-input"
+						value="{{status.bmi}}" {% if status.validated %}disabled{% endif %} />
+					<div class="value-unit"></div>
 				</div>
+				<div class="row value-row questionnaire-row" data-name="MNA">
+					<div flex class="value-name">MNA score</div>
+					<div class="questionnaire-date">{% if status.mnaDate %}{{status.mnaDate | date('Y-m-d')}}{% endif %}</div>
+					<input type="text" class="questionnaire-score" value="{{status.mnaScore}}" disabled />
+					<input type="hidden" class="questionnaire-answer" name="mnaAnswer" value="{{status.mnaAnswer}}" />
+					<div class="questionnaire-button-container">
+						<a class="button small blue" href={% if status.mnaAnswer %}"/answers/{{status.mnaAnswer}}"{% else %}"/questionnaire/MNA"{% endif %}>Questionnaire</a>
+					</div>
+				</div>
+				<div class="row value-row questionnaire-row" data-name="MNA_MINI">
+					<div flex class="value-name">MNA SF score</div>
+					<div class="questionnaire-date">{% if status.mnaSfDate %}{{status.mnaSfDate | date('Y-m-d')}}{% endif %}</div>
+					<input type="text" class="questionnaire-score" value="{{status.mnaSfScore}}" disabled />
+					<input type="hidden" class="questionnaire-answer" name="mnaSfAnswer" value="{{status.mnaSfAnswer}}" />
+					<div class="questionnaire-button-container">
+						<a class="button small blue" href={% if status.mnaSfAnswer %}"/answers/{{status.mnaSfAnswer}}"{% else %}"/questionnaire/MNA_MINI"{% endif %}>Questionnaire</a>
+					</div>
+				</div>
+				<div class="row value-row questionnaire-row" data-name="SNAQ">
+					<div flex class="value-name">SNAQ score</div>
+					<div class="questionnaire-date">{% if status.snaqDate %}{{status.snaqDate | date('Y-m-d')}}{% endif %}</div>
+					<input type="text" class="questionnaire-score" value="{{status.snaqScore}}" disabled />
+					<input type="hidden" class="questionnaire-answer" name="snaqAnswer" value="{{status.snaqAnswer}}" />
+					<div class="questionnaire-button-container">
+						<a class="button small blue" href={% if status.snaqAnswer %}"/answers/{{status.snaqAnswer}}"{% else %}"/questionnaire/SNAQ"{% endif %}>Questionnaire</a>
+					</div>
+				</div>
+				<div class="row value-row questionnaire-row" data-name="DHD-FFQ">
+					<div flex class="value-name">DHD-FFQ score</div>
+					<div class="questionnaire-date">{% if status.dhdDate %}{{status.dhdDate | date('Y-m-d')}}{% endif %}</div>
+					<input type="text" class="questionnaire-score" value="{{status.dhdScore}}" disabled />
+					<input type="hidden" class="questionnaire-answer" name="dhdAnswer" value="{{status.dhdAnswer}}" />
+					<div class="questionnaire-button-container">
+						<a class="button small blue" href={% if status.dhdAnswer %}"/answers/{{status.dhdAnswer}}"{% else %}"/questionnaire/DHD-FFQ"{% endif %}>Questionnaire</a>
+					</div>
+				</div>
+			</fieldset>
+
+			<fieldset>
+				<legend>Special diet prescriptions</legend>
+				<div class="row value-row">
+					<textarea flex name="dietPresc" {% if status.validated %}disabled{% endif %}>{{status.dietPresc}}</textarea>
+				</div>
+			</fieldset>
+
+			<fieldset>
+				<legend>Assistance services</legend>
+
+				<div class="row value-row">
+					<div flex class="value-name">Delivery assistance</div>
+					<input type="checkbox" class="value-checkbox" />
+					<input type="text" class="value-input" />
+				</div>
+			</fieldset>
+
+			{% if !status.validated %}
+			<div id="buttons" class="row control">
+				<span class="spacer"></span>
+				<button type="button" class="blue" onclick="showConfirm();">Validate</button>
+				<button type="button" class="red" onclick="location.reload();">Cancel</button>
+				<button class="green">Save</button>
 			</div>
-		</fieldset>
-
-		<fieldset>
-			<legend>Special diet prescriptions</legend>
-			<div class="row value-row">
-				<textarea flex name="dietPresc" {% if status.validated %}disabled{% endif %}>{{status.dietPresc}}</textarea>
-			</div>
-		</fieldset>
-
-		<fieldset>
-			<legend>Assistance services</legend>
-
-			<div class="row value-row">
-				<div flex class="value-name">Delivery assistance</div>
-				<input type="checkbox" class="value-checkbox" />
-				<input type="text" class="value-input" />
-			</div>
-		</fieldset>
-
-		{% if !status.validated %}
-		<div id="buttons" class="row control">
-			<span class="spacer"></span>
-			<button type="button" class="blue" onclick="showConfirm();">Validate</button>
-			<button type="button" class="red" onclick="location.reload();">Cancel</button>
-			<button class="green">Save</button>
-		</div>
-		{% endif %}
-	</form>
-</zdk-panel>
+			{% endif %}
+		</form>
+	</zdk-panel>
+</div>
 
 <zdk-modal id="confirmModal" closebutton="false">
 	<div class="modalContainer">
@@ -129,5 +132,6 @@
 	</button>
 </zdk-modal>
 
+<script src="/scripts/questionnaireButton.js"></script>
 <script src="/tpl/current/nutrition.js"></script>
 {% endblock %}

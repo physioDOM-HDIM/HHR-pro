@@ -71,24 +71,29 @@ function getCategoryParam(category) {
 }
 
 function addLine(category) {
-    var tpl = document.querySelector('#newItem'),
-        container = document.querySelector('#newItems-'+category),
+    var tpl = document.getElementById('newItem'),
+        container = document.getElementById('newItems-'+category),
         newLine = document.createElement('div'),
-        selectParamTpl = document.querySelector('#selectParam').innerHTML;
+        selectParamTpl = document.getElementById('selectParam').innerHTML;
 
     //add index to line for form2js formating
     var modelData = {
             idx: ++idx,
-            lists: getCategoryParam(category)
+            lists: getCategoryParam(category),
+            questionnaire: (category === 'questionnaire')
         };
 
-    newLine.className = 'row';
     newLine.innerHTML = tpl.innerHTML;
+    newLine.className = 'row questionnaire-row';
 
     newLine.querySelector('.item-text').innerHTML = selectParamTpl;
 
     var html = Mustache.render(newLine.innerHTML, modelData);
     newLine.innerHTML = html;
+
+    if (category === 'questionnaire') {
+        newLine.querySelector('.questionnaire-button-container a.button').addEventListener('click', onQuestionnaireButtonClick);
+    }
 
     container.appendChild(newLine);
 }
@@ -101,7 +106,7 @@ function removeLine(element) {
 }
 
 function removeItem(id) {
-    var item = document.querySelector('#ID'+id),
+    var item = document.getElementById('ID' + id),
         container = item.parentNode;
 
     container.removeChild(item);
@@ -135,7 +140,6 @@ function update(dataRecordID) {
 
         }
 
-        console.log("res", data);
         promiseXHR("PUT", "/api/beneficiary/datarecords/"+dataRecordID, 200, JSON.stringify(data)).then(function(response) {
             updateSuccess();
         }, function(error) {
@@ -185,7 +189,7 @@ function create() {
 
 window.addEventListener("DOMContentLoaded", function() {
     infos.datasInit = form2js(document.forms.dataRecord);
-    infos.lang = document.querySelector('#lang').innerText;
+    infos.lang = document.getElementById('lang').textContent;
     getLists();
 }, false);
 
@@ -221,7 +225,6 @@ function getLists() {
                 }
             }
         }
-        console.log(lists);
         setLang();
         initParams();
 
@@ -230,24 +233,17 @@ function getLists() {
 }
 
 function setLang() {
+    var i, len;
 
-    var i = 0,
-        leni = lists.parameters.items.length,
-        y = 0,
-        leny = lists.symptom.items.length,
-        z = 0,
-        lenz = lists.questionnaire.items.length;
-
-    for(i; i<leni; i++) {
+    for (i = 0, len = lists.parameters.items.length; i < len; i++) {
         lists.parameters.items[i].labelLang = lists.parameters.items[i].label[infos.lang];
     }
-    for(y; y<leny; y++) {
-        lists.symptom.items[y].labelLang = lists.symptom.items[y].label[infos.lang];
+    for (i = 0, len = lists.symptom.items.length; i < len; i++) {
+        lists.symptom.items[i].labelLang = lists.symptom.items[i].label[infos.lang];
     }
-    for(z; z<lenz; z++) {
-        lists.questionnaire.items[z].labelLang = lists.questionnaire.items[z].label[infos.lang];
+    for (i = 0, len = lists.questionnaire.items.length; i < len; i++) {
+        lists.questionnaire.items[i].labelLang = lists.questionnaire.items[i].label[infos.lang];
     }
-
 }
 
 function initParams() {
@@ -255,16 +251,15 @@ function initParams() {
         i = 0,
         len = lines.length;
 
-    var selectParamTpl = document.querySelector('#selectParam').innerHTML;
+    var selectParamTpl = document.getElementById('selectParam').innerHTML;
 
     for(i; i<len; i++) {
 
         var _id = lines[i].id.substring(2),
-            category = lines[i].querySelector('.category').innerText,
+            category = lines[i].querySelector('.category').textContent,
             categoryContainer = lines[i].querySelector('.item-category');
 
-
-        var type = lines[i].querySelector('.type').innerText,
+        var type = lines[i].querySelector('.type').textContent,
             item = findInObject(getCategoryParam(category), 'ref', type),
             modelDataSelect = {
                 lists: getCategoryParam(category),
@@ -272,7 +267,7 @@ function initParams() {
                     return function(val, render) {
                         if(item.ref === render(val)) {
                             return 'selected';
-                        }
+                        }getCategoryParam
                     }
                 },
                 id: _id
@@ -281,7 +276,6 @@ function initParams() {
 
         var selectHTML = Mustache.render(selectParamTpl, modelDataSelect),
             lineHTML = Mustache.render(lines[i].innerHTML, modelDataLine);
-
 
         lines[i].innerHTML = lineHTML;
         lines[i].querySelector('.item-text').innerHTML = selectHTML;
@@ -314,46 +308,60 @@ var updateParam = function(element, directValue) {
     }
 
     //get chosen param
-    var category = container.parentNode.parentNode.querySelector('.category').innerText;
+    var category = container.parentNode.parentNode.querySelector('.category').textContent;
     var param = findInObject(getCategoryParam(category), 'ref', elt);
 
     //for create
     var newItemCategory = container.querySelector('#new-item-category');
-    if(newItemCategory) {
-        if(param.category) {
+    if (newItemCategory) {
+        if (param && param.category) {
             newItemCategory.value = param.category;
-        } else {
+        }
+        else {
             newItemCategory.value = category;
         }
     }
     //for update
-    if(categoryContainer) {
-        if(param.category) {
+    if (categoryContainer) {
+        if(param && param.category) {
             categoryContainer.value = param.category;
-        } else {
+        }
+        else {
             categoryContainer.value = category;
         }
     }
 
 
-    if(elt && category !== 'symptom' && category !== 'questionnaire') {
+    if (elt && category !== 'symptom' && category !== 'questionnaire') {
 
-        minContainer.innerText = param.threshold.min? param.threshold.min: '-';
-        maxContainer.innerText = param.threshold.max? param.threshold.max: '-';
-        unityContainer.innerText = param.unityLabel? param.unityLabel: '';
-    } else {
-        minContainer.innerText = '-';
-        maxContainer.innerText = '-';
-        unityContainer.innerText = '';
+        minContainer.innerHTML = param.threshold.min? param.threshold.min: '-';
+        maxContainer.innerHTML = param.threshold.max? param.threshold.max: '-';
+        unityContainer.innerHTML = param.unityLabel? param.unityLabel: '';
+    }
+    else if (category === 'questionnaire') {
+        // Questionnaire item
+        container.setAttribute('data-name', select.value);
+        if (select.value) {
+            container.querySelector('.questionnaire-button-container a.button').setAttribute('href', '/questionnaire/' + select.value);
+            container.querySelector('.questionnaire-button-container a.button').classList.remove('disabled');
+        }
+        else {
+            container.querySelector('.questionnaire-button-container a.button').classList.add('disabled');
+        }
+    }
+    else {
+        minContainer.innerHTML = '-';
+        maxContainer.innerHTML = '-';
+        unityContainer.innerHTML = '';
     }
 }
 
 function toggleEditMode(id) {
-    var line = document.querySelector('#ID' + id),
+    var line = document.getElementById('ID' + id),
         updateMode = line.querySelector('.updateMode'),
         readMode = line.querySelector('.readMode'),
         paramSelect = updateMode.querySelector('select'),
-        paramValue = line.querySelector('.type').innerText;
+        paramValue = line.querySelector('.type').textContent;
 
     updateParam(paramSelect, paramValue);
 
@@ -373,9 +381,9 @@ function toggleEditMode(id) {
 
 function closeModal() {
     console.log("closeModal", arguments);
-    document.querySelector("#statusModal").hide();
+    document.getElementById('statusModal').hide();
 
-    var elt = document.querySelector("#statusModal"),
+    var elt = document.getElementById('statusModal'),
         subElt, child;
     subElt = elt.querySelector(".modalTitleContainer");
     subElt.innerHTML = "";
@@ -394,16 +402,16 @@ function closeModal() {
 function showModal(modalObj) {
     console.log("showModal", arguments);
 
-    var elt = document.querySelector("#statusModal"),
+    var elt = document.getElementById("statusModal"),
         subElt;
     if (modalObj.title) {
         subElt = elt.querySelector(".modalTitleContainer");
-        subElt.innerHTML = document.querySelector("#" + modalObj.title).innerHTML;
+        subElt.innerHTML = document.getElementById(modalObj.title).innerHTML;
         subElt.classList.remove("hidden");
     }
     if (modalObj.content) {
         subElt = elt.querySelector(".modalContentContainer");
-        subElt.innerHTML = document.querySelector("#" + modalObj.content).innerHTML;
+        subElt.innerHTML = document.getElementById(modalObj.content).innerHTML;
         subElt.classList.remove("hidden");
     }
 
@@ -413,7 +421,7 @@ function showModal(modalObj) {
         for (var i = 0; i < modalObj.buttons.length; i++) {
             obj = modalObj.buttons[i];
             btn = document.createElement("button");
-            btn.innerHTML = document.querySelector("#" + obj.id).innerHTML;
+            btn.innerHTML = document.getElementById(obj.id).innerHTML;
             btn.onclick = obj.action;
             switch (obj.id) {
                 case "trad_ok":
@@ -438,7 +446,7 @@ function showModal(modalObj) {
         subElt.classList.remove("hidden");
     }
 
-    document.querySelector("#statusModal").show();
+    document.getElementById("statusModal").show();
 }
 
 function confirmDeleteItem(id) {

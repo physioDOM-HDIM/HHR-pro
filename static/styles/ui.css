@@ -290,6 +290,12 @@ a.button {
 	padding: 0 6px;
 }
 
+a.button.disabled {
+	opacity: 0.8;
+	cursor: pointer;
+	pointer-events: none;
+}
+
 .blue { background:#428bca; color:white; }
 .red { background:crimson; color:white; }
 .green { background:ForestGreen ; color:white; }
