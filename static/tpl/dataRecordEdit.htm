@@ -7,6 +7,7 @@
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
 <script src="/bower_components/zdk-calendar/form2js.js"></script>
 <script src="/scripts/questionnaireButton.js"></script>
+<script src="/scripts/utils.js"></script>
 <script src="/tpl/dataRecordEdit.js"></script>
 <style>
 	select {
@@ -71,24 +72,32 @@
 		<div class="category hidden">{{cat}}</div>
 		<div class="readMode">
 			<div class="row">
-
-				{% raw %}
-				{{#item}}
-				<div class="col bold" style="flex:2">{{ labelLang }}</div>
-				<div class="col item-value" style="max-width:150px">{% endraw %}{{ item.value }}{% raw %}</div>
+				{% raw %}{{#item}}{% endraw %}
+				<div class="col bold" style="flex:2">{% raw %}{{ labelLang }}{% endraw %}</div>
+				<div class="col item-value" style="max-width:150px">{{ item.value }}</div>
+				{% if cat !== 'questionnaire' %}
 				<div class="col" style="max-width:150px">{{ unityLabel }}</div>
-
-				{% endraw %}{% if cat !== 'questionnaire' %}{% raw %}
+				{% else %}
+				<div class="col" style="max-width:150px">
+				<button type="button" class="blue small answer" data-answer="{{item.ref}}" onclick="showAnswer('{{item.ref}}')">{{"Questionnaire"|i18n}}</button>
+				</div>
+				{% endif %}
+				
+				{% if cat !== 'questionnaire' %}
+				{% raw %}
 				<div class="col" style="max-width:150px">
 					<div class="min-treshold spacing-around">{{#threshold}}{{min}}{{/threshold}}</div>
 				</div>
 				<div class="col" style="max-width:150px">
 					<div class="max-treshold spacing-around">{{#threshold}}{{max}}{{/threshold}}</div>
 				</div>
-				{% endraw %}{% endif %}{% raw %}
-
-				{{/item}}
 				{% endraw %}
+				{% else %}
+				<div class="col" style="max-width:150px"></div>
+				<div class="col" style="max-width:150px"></div>
+				{% endif %}
+				
+				{% raw %}{{/item}}{% endraw %}
 
 				{% if admin %}
 				<div style="width:100px; text-align:right">
@@ -166,20 +175,20 @@
 		<div class="col item-text" style="flex:2"></div>
 
 		{% raw %}{{#questionnaire}}{% endraw %}
-		
 		<div class="col" style="max-width:150px">
-			<input type="text" class="questionnaire-score" value="" disabled />
+			<input type="text" class="questionnaire-score" name="items[{% raw %}{{idx}}{% endraw %}].value" value="" disabled />
+			<input type="hidden" class="questionnaire-score" name="items[{% raw %}{{idx}}{% endraw %}].value" value="" />
 		</div>
-		<input type="hidden" class="questionnaire-answer" name="items[{% raw %}{{idx}}{% endraw %}].value" value="" />
+		<input type="hidden" class="questionnaire-answer" name="items[{% raw %}{{idx}}{% endraw %}].ref" value="" />
 		<div class="col questionnaire-button-container" style="max-width:150px">
 			<span></span>
 			<a class="button small blue disabled" href="">Questionnaire</a>
 		</div>
 		<div class="col" style="max-width:150px"></div>
 		<div class="col" style="max-width:150px"></div>
-
-		{% raw %}{{/questionnaire}}{{^questionnaire}}{% endraw %}
-
+		{% raw %}{{/questionnaire}}{% endraw %}
+		
+		{% raw %}{{^questionnaire}}{% endraw %}
 		<div class="col" style="max-width:150px"><input type="text" name="items[{% raw %}{{idx}}{% endraw %}].value"/></div>
 		<div class="col" style="max-width:150px"><span class="unity"></span></div>
 		<div class="col" style="max-width:150px">
