@@ -1,6 +1,6 @@
 {% extends './page.htm' %}
 
-{% block title %}{{ "Questionnaire overview"|i18n }}{% endblock %}
+{% block title %}{{"Questionnaire overview" | i18n}}{% endblock %}
 
 {% block head %}
 {% parent %}
@@ -11,18 +11,18 @@
 {% block content %}
 
 <style>
-	div.row label{
+	div.row label {
 		width: 350px;
 	}
-	.answers{
+	.answers {
 		margin-left: 30px;
 	}
-	.space{
+	.space {
 		/* width: 20%; */
 		margin: 30px auto;
 		border-color: black;
 	}
-	.nestedQuestionnaire{
+	.nestedQuestionnaire {
 		margin-left: 20px;
 	}
 </style>
@@ -84,20 +84,21 @@
 		{% endfor%}
 		<div class="row control">
 			<span class="spacer"></span>
-			<button class="green">Validate</button>
+			<button type="button" class="red" onclick="window.parent.closeQuestionnaire()">{{'Cancel'|i18n}}</button>
+			<button class="green">{{'OK' | i18n}}</button>
 		</div>
 	</form>
+
 	<zdk-modal id="statusModal" closebutton="false">
-	    <div class="modalContainer">
-	        <div class="modalTitleContainer"></div>
-	        <div class="modalContentContainer"></div>
-	        <div class="modalButtonContainer"></div>
-	    </div>
+		<div class="modalContainer">
+			<div class="modalTitleContainer">{{'Result' | i18n}}</div>
+			<div class="modalContentContainer">{{'Your score is: ' |i18n}}<span id="score">{{score}}</span></div>
+			<div class="modalButtonContainer">
+				<button class="green" onclick="closeModal();">{{'OK' | i18n}}</script>
+			</div>
+		</button>
 	</zdk-modal>
-	<div class="hidden">
-	    <div id="trad_result">{{ "Result"|i18n }}</div>
-	    <div id="trad_success_result">{{ "Your score is: "|i18n }}</div>
-	    <div id="trad_ok">{{ "OK"|i18n }}</div>
-	</div>
 </div>
+
+<div id="questionnaireName" class="hidden">{{questionnaire.name}}</div>
 {% endblock %}

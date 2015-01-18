@@ -152,17 +152,26 @@
 			<li class="collapsed">
 				<div>Healthcare</div>
 				<ul class="tree">
-					<li class="menuitem">Summary</li>
+					<li class="collapsed">
+						<div>Current health status</div>
+						<ul class="tree">
+							<li class="menuitem"><a href="/current/well" target="main">Well being</a></li>
+							<li class="menuitem"><a href="/current/nutrition" target="main">Nutritional status</a></li>
+							<li class="menuitem"><a href="/current/activity" target="main">Activity/Motricity status</a></li>
+							<li class="menuitem"><a href="/current/frailty" target="main">Frailty status</a></li>
+						</ul>
+					</li>
 					<li class="menuitem">Care plan</li>
-					<li class="menuitem">Attachments</li>
+					<li class="menuitem">Enclosed documents</li>
 					<li class="menuitem">Professionals report</li>
 				</ul>
 			</li>
 			<li class="collapsed">
 				<div>Social</div>
 				<ul class="tree">
-					<li class="menuitem"><a href="maquette/socialPlan.htm" target="main">Social care plan</a></li>
-					<li class="menuitem">Attachments</li>
+					<!-- <li class="menuitem"><a href="maquette/socialPlan.htm" target="main">Social care plan</a></li> -->
+					<li class="menuitem">Basic social services</li>
+					<li class="menuitem">Professionals report</li>
 				</ul>
 			</li>
 
@@ -175,7 +184,7 @@
 							<li class="menuitem"><a href="/prescription/general" target="main">General Data</a></li>
 							<li class="menuitem"><a href="/prescription/hdim" target="main">HDIM Data</a></li>
 							<li class="menuitem"><a href="/prescription/symptom" target="main">Symptom assessments</a></li>
-							<!-- <li class="menuitem"><a href="/prescription/questionnaire" target="main">Questionnaires</a></li> -->
+							<li class="menuitem"><a href="/prescription/questionnaire" target="main">Questionnaires</a></li>
 						</ul>
 					</li>
 					<li class="menuitem"><a href="/datarecord" target="main">Results from Data Recording</a></li>
@@ -198,7 +207,7 @@
 	<div main>
 		<iframe name="main" src="/beneficiaries" scrolling="no"></iframe>
 	</div>
-</cora-drawer-panel>
+</core-drawer-panel>
 
 <script>
 
@@ -239,7 +248,9 @@
 	
 	function closeDrawer() {
 		var drawer = document.querySelector("core-drawer-panel");
-		drawer.closeDrawer();
+		if (drawer) {
+			drawer.closeDrawer();
+		}
 	}
 	
 	function highlight(pathname) {

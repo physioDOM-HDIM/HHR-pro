@@ -43,36 +43,40 @@
 	{% raw %}
 	{{#param}}
 	<div class="row">
-		<div class="col col05 bold data-text">{{labelLang}}</div>
+		<div class="col05 bold data-text">{{labelLang}}</div>
+		<!--
 		<div class="col">
 			<label>Min Threshold</label><span class="data-min">{{#threshold}}{{min}}{{/threshold}}</span>
 		</div>
 		<div class="col">
 			<label>Max Threshold</label><span class="data-max">{{#threshold}}{{max}}{{/threshold}}</span>
 		</div>
+		-->
 	</div>
 	{{/param}}
+	{% endraw %}
 	<div class="row">
-		<div class="col col05"></div>
+		<div class="col05"></div>
 		<div class="col">
-			<label>Start date</label><span>{{ data.startDate }}</span>
+			<label>{{"Start date"|i18n}}</label><span>{% raw %}{{ data.startDate }}{% endraw %}</span>
 		</div>
 		<div class="col">
-			<label>End date</label><span>{{ data.endDate }}</span>
+			<label>{{"End date"|i18n}}</label><span>{% raw %}{{ data.endDate }}{% endraw %}</span>
 		</div>
 	</div>
 
 	<div class="row">
-		<div class="col col05"></div>
+		<div class="col05"></div>
 		<div class="col">
 			<label>
-				{{#data.hasDetail}}
-					Every {{data.repeat}} {{data.frequencyType}}
-				{{/data.hasDetail}}
-				{{^data.hasDetail}}
-					Everyday
-				{{/data.hasDetail}}
+				{% raw %}{{#data.hasDetail}}{% endraw %}
+					{{"Every"|i18n}} {% raw %}{{data.repeat}} {{data.frequencyType}}{% endraw %}
+				{% raw %}{{/data.hasDetail}}{% endraw %}
+				{% raw %}{{^data.hasDetail}}{% endraw %}
+					{{"Everyday"|i18n}}
+				{% raw %}{{/data.hasDetail}}{% endraw %}
 			</label>
+			{% raw %}
 			<ul class="data-list">
 			{{#data}}
 				{{#when}}
@@ -82,78 +86,67 @@
 				{{/when}}
 			{{/data}}
 			</ul>
+			{% endraw %}
 		</div>
 		<div class="col"></div>
 	</div>
-
-	{{#data.hasMoreDetail}}
+	
+	{% raw %}{{#data.hasMoreDetail}}{% endraw %}
 	<div class="row">
-		<div class="col col05"></div>
+		<div class="col05"></div>
 		<div class="col">
-			The {{data.when.weekNumber}} week from the {{data.when.order}} of the month
+			{{"The"|i18n}} {% raw %}{{data.when.weekNumber}}{% endraw %} {{"week from the"|i18n}} {% raw %}{{data.when.order}}{% endraw %} {{"of the month"|i18n}}
 		</div>
-		<div class="col"></div>
+		<!-- <div class="col"></div> -->
 	</div>
-	{{/data.hasMoreDetail}}
+	{% raw %}{{/data.hasMoreDetail}}{% endraw %}
+	
 	<div class="row control">
 		<span class="spacer"></span>
-		<button type="button" onclick="showForm('{{data.ref}}')" class="small blue">Edit</button>
+		<button type="button" onclick="showForm('{% raw %}{{data.ref}}{% endraw %}')" class="small blue">{{"Edit"|i18n}}</button>
 	</div>
 
 	<hr>
-	{% endraw %}
 </script>
 
 <script type="template" id="tpl-form">
 	<h2>{{title}}</h2>
-	{% raw %}
+	
 	<div class="row">
-		<label>Type of data</label>
+		<label>{{"Type of data"|i18n}}</label>
 
 		<select name="ref" onchange="updateParam(this)" id="ref-select">
+			{% raw %}
 			{{#paramList}}
 			<option value="{{ref}}" {{#selection}}{{ref}}{{/selection}}>{{labelLang}}</option>
 			{{/paramList}}
+			{% endraw %}
 		</select>
 
 	</div>
 
-	{{#param}}
 	<div class="row">
-		<div class="col">
-			<label>Min Threshold</label>
-			<span class="min-threshold">{{#threshold}}{{min}}{{/threshold}}</span>
+		<div class="col vert">
+			<label>{{"Start date"|i18n}}</label>
+			<zdk-input-date name="startDate" value="{% raw %}{{data.startDate}}{% endraw %}" style="z-index:100" required></zdk-input-date>
 		</div>
-
-		<div class="col">
-			<label>Max Threshold</label>
-			<span class="max-threshold">{{#threshold}}{{max}}{{/threshold}}</span>
-		</div>
-	</div>
-	{{/param}}
-
-	<div class="row">
-		<div class="col">
-			<label>Start date</label>
-			<zdk-input-date name="startDate" value="{{data.startDate}}" style="z-index:100"></zdk-input-date>
-		</div>
-		<div class="col">
-			<label>End date</label>
-			<zdk-input-date name="endDate" value="{{data.endDate}}" style="z-index:100"></zdk-input-date>
+		<div class="col vert">
+			<label>{{"End date"|i18n}}</label>
+			<zdk-input-date name="endDate" value="{% raw %}{{data.endDate}}{% endraw %}" style="z-index:100"></zdk-input-date>
 		</div>
 	</div>
 
 	<div class="row">
-		<label>Frequency</label>
+		<label>{{"Frequency"|i18n}}</label>
 	</div>
 
 	<div class="row frequency-choice">
 		<input type="radio" name="frequency" onchange="showOptions('monthly')" value="monthly" 
-		{{#getFrequencyDefault}}monthly{{/getFrequencyDefault}}><label>Monthly</label>
-		<input type="radio" name="frequency" onchange="showOptions('weekly')" value="weekly"
-		{{#getFrequencyDefault}}weekly{{/getFrequencyDefault}}><label>Weekly</label>
-		<input type="radio" name="frequency" onchange="showOptions('daily')" value="daily"
-		{{#getFrequencyDefault}}daily{{/getFrequencyDefault}}><label>Daily</label>
+		       {% raw %}{{#getFrequencyDefault}}monthly{{/getFrequencyDefault}}{% endraw %}><label>{{"Monthly"|i18n}}</label>
+		<input type="radio" name="frequency" onchange="showOptions('weekly')" value="weekly" 
+		       {% raw %}{{#getFrequencyDefault}}weekly{{/getFrequencyDefault}}{% endraw %}><label>{{"Weekly"|i18n}}</label>
+		<input type="radio" name="frequency" onchange="showOptions('daily')" value="daily" 
+		       {% raw %}{{#getFrequencyDefault}}daily{{/getFrequencyDefault}}{% endraw %}><label>{{"Daily"|i18n}}</label>
 	</div>
 
 	<div class="frequency-options"></div>
@@ -163,27 +156,26 @@
 
 	<div class="row control">
 		<span class="spacer"></span>
-		<button type="button" onclick="closeForm()" class="red">Cancel</button>
-		<button type="button" onclick="removeData('{{data._id}}')" class="red">Delete</button>
-		<button type="button" onclick="saveData()" class="green">Save</button>
+		<button type="button" onclick="closeForm()" class="red">{{"Cancel"|i18n}}</button>
+		<button type="button" onclick="removeData('{% raw %}{{data._id}}{% endraw %}')" class="red">{{"Delete"|i18n}}</button>
+		<button type="button" onclick="saveData()" class="green">{{"Save"|i18n}}</button>
 	</div>
-	{% endraw %}
+	
 </script>
 
-{% raw %}
 <script type="template" id="tpl-option-weekly">
 
 	<div class="row">
-		Every <input type="number" name="repeat" class="option-repeat" value="{{data.repeat}}"> Week
+		{{"Every"|i18n}} <input type="number" name="repeat" class="option-repeat" value="{% raw %}{{data.repeat}}{% endraw %}"> {{"Week"|i18n}}
 	</div>
-	<div class="row">
-		<input type="checkbox" name="when.days[]" value="1" {{#getDaysDefault}}1{{/getDaysDefault}}/>Mon
-		<input type="checkbox" name="when.days[]" value="2" {{#getDaysDefault}}2{{/getDaysDefault}}/>Tue
-		<input type="checkbox" name="when.days[]" value="3" {{#getDaysDefault}}3{{/getDaysDefault}}/>Wed
-		<input type="checkbox" name="when.days[]" value="4" {{#getDaysDefault}}4{{/getDaysDefault}}/>Thu
-		<input type="checkbox" name="when.days[]" value="5" {{#getDaysDefault}}5{{/getDaysDefault}}/>Fri
-		<input type="checkbox" name="when.days[]" value="6" {{#getDaysDefault}}6{{/getDaysDefault}}/>Sat
-		<input type="checkbox" name="when.days[]" value="0" {{#getDaysDefault}}0{{/getDaysDefault}}/>Sun
+	<div class="row days" >
+		<input type="checkbox" name="when.days[]" value="1" {% raw %}{{#getDaysDefault}}1{{/getDaysDefault}}{% endraw %}/>{{"Mon"|i18n}}
+		<input type="checkbox" name="when.days[]" value="2" {% raw %}{{#getDaysDefault}}2{{/getDaysDefault}}{% endraw %}/>{{"Tue"|i18n}}
+		<input type="checkbox" name="when.days[]" value="3" {% raw %}{{#getDaysDefault}}3{{/getDaysDefault}}{% endraw %}/>{{"Wed"|i18n}}
+		<input type="checkbox" name="when.days[]" value="4" {% raw %}{{#getDaysDefault}}4{{/getDaysDefault}}{% endraw %}/>{{"Thu"|i18n}}
+		<input type="checkbox" name="when.days[]" value="5" {% raw %}{{#getDaysDefault}}5{{/getDaysDefault}}{% endraw %}/>{{"Fri"|i18n}}
+		<input type="checkbox" name="when.days[]" value="6" {% raw %}{{#getDaysDefault}}6{{/getDaysDefault}}{% endraw %}/>{{"Sat"|i18n}}
+		<input type="checkbox" name="when.days[]" value="0" {% raw %}{{#getDaysDefault}}0{{/getDaysDefault}}{% endraw %}/>{{"Sun"|i18n}}
 	</div>
 
 </script>
@@ -191,34 +183,33 @@
 <script type="template" id="tpl-option-monthly">
 
 	<div class="row">
-		Every <input type="number" name="repeat" class="option-repeat" value="{{data.repeat}}"> Month
+		{{"Every"|i18n}} <input type="number" name="repeat" class="option-repeat" value="{% raw %}{{data.repeat}}{% endraw %}"> {{"Month"|i18n}}
 	</div>
 	<div class="row">
 		The <select name="when.week" class="spacing-around">
-			<option value="1">first</option>
-			<option value="2">second</option>
-			<option value="3">third</option>
-			<option value="4">fourth</option>
+			<option value="1" {% raw %}{{#getWeekDefault}}1{{/getWeekDefault}}{% endraw %}>{{"first"|i18n}}</option>
+			<option value="2" {% raw %}{{#getWeekDefault}}2{{/getWeekDefault}}{% endraw %}>{{"second"|i18n}}</option>
+			<option value="3" {% raw %}{{#getWeekDefault}}3{{/getWeekDefault}}{% endraw %}>{{"third"|i18n}}</option>
+			<option value="4" {% raw %}{{#getWeekDefault}}4{{/getWeekDefault}}{% endraw %}>{{"fourth"|i18n}}</option>
 		</select> week
 	</div>
 	<div class="row">
-		from the <select name="when.order" class="spacing-around">
-			<option value="">beginning</option>
-			<option value="-">end</option>
-		</select> of the month
+		{{"from the"|i18n}} <select name="when.order" class="spacing-around">
+			<option value="1"  {% raw %}{{#getStartDefault}}1{{/getStartDefault}}{% endraw %}>{{"beginning"|i18n}}</option>
+			<option value="-1" {% raw %}{{#getStartDefault}}-1{{/getStartDefault}}{% endraw %}>{{"end"|i18n}}</option>
+		</select> {{"of the month"|i18n}}
 	</div>
-	<div class="row">
-		<input type="checkbox" name="when.days[]" value="1" {{#getDaysDefault}}1{{/getDaysDefault}}/>Mon
-		<input type="checkbox" name="when.days[]" value="2" {{#getDaysDefault}}2{{/getDaysDefault}}/>Tue
-		<input type="checkbox" name="when.days[]" value="3" {{#getDaysDefault}}3{{/getDaysDefault}}/>Wed
-		<input type="checkbox" name="when.days[]" value="4" {{#getDaysDefault}}4{{/getDaysDefault}}/>Thu
-		<input type="checkbox" name="when.days[]" value="5" {{#getDaysDefault}}5{{/getDaysDefault}}/>Fri
-		<input type="checkbox" name="when.days[]" value="6" {{#getDaysDefault}}6{{/getDaysDefault}}/>Sat
-		<input type="checkbox" name="when.days[]" value="0" {{#getDaysDefault}}0{{/getDaysDefault}}/>Sun
+	<div class="row days">
+		<input type="checkbox" name="when.days[]" value="1" {% raw %}{{#getDaysDefault}}1{{/getDaysDefault}}{% endraw %}/>{{"Mon"|i18n}}
+		<input type="checkbox" name="when.days[]" value="2" {% raw %}{{#getDaysDefault}}2{{/getDaysDefault}}{% endraw %}/>{{"Tue"|i18n}}
+		<input type="checkbox" name="when.days[]" value="3" {% raw %}{{#getDaysDefault}}3{{/getDaysDefault}}{% endraw %}/>{{"Wed"|i18n}}
+		<input type="checkbox" name="when.days[]" value="4" {% raw %}{{#getDaysDefault}}4{{/getDaysDefault}}{% endraw %}/>{{"Thu"|i18n}}
+		<input type="checkbox" name="when.days[]" value="5" {% raw %}{{#getDaysDefault}}5{{/getDaysDefault}}{% endraw %}/>{{"Fri"|i18n}}
+		<input type="checkbox" name="when.days[]" value="6" {% raw %}{{#getDaysDefault}}6{{/getDaysDefault}}{% endraw %}/>{{"Sat"|i18n}}
+		<input type="checkbox" name="when.days[]" value="0" {% raw %}{{#getDaysDefault}}0{{/getDaysDefault}}{% endraw %}/>{{"Sun"|i18n}}
 	</div>
 
 </script>
-{% endraw %}
 
 
 {% include "./modal.htm" %}

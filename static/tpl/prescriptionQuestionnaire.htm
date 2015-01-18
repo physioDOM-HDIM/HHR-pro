@@ -11,7 +11,8 @@
 <script src="/tpl/prescriptionQuestionnaire.js"></script>
 
 <link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
-<link href="https://fontastic.s3.amazonaws.com/nwyYQQLXDKry2PeZf58hxC/icons.css" rel="stylesheet">
+<!--<link href="https://fontastic.s3.amazonaws.com/nwyYQQLXDKry2PeZf58hxC/icons.css" rel="stylesheet">-->
+<link rel="stylesheet" href="/styles/icons.css">
 <link rel="stylesheet" href="/styles/prescriptionData.css">
 {% endblock %}
 
@@ -19,6 +20,7 @@
 
 
 <div class="hidden" id="lang">{{ lang }}</div>
+<div class="hidden" id="unsave">{{"You have unsaved data"|i18n}}</div>
 <div class="row title">
     <label class="title">
         {{title}}
@@ -31,50 +33,59 @@
 
 <div class="row control">
 	<span class="spacer"></span>
-	<button type="button" class="green" onclick="saveData()">Save</button>
+	<button type="button" class="green" onclick="saveData()">{{"Save"|i18n}}</button>
 </div>
 
 <script type="template" id="tpl-questionnaire-prog">
-	{% raw %}
-	{{#data}}
+	{% raw %}{{#data}}{% endraw %}
+	<div data-index="{% raw %}{{idx}}{% endraw %}">
+		{% raw %}
+		<input type="hidden" name="questionnaire[{{idx}}].ref" value="{{ref}}">
+		{% endraw %}
 	<div class="row">
-		<div class="col col05 bold data-text">{{labelLang}}</div>
-		<div class="col">
-			<label>Frequency</label>
+		<div class="col bold data-text">{% raw %}{{labelLang}}{% endraw %}</div>
+	</div>
+	<div class="row">
+		<div class="col" style="padding-left:50px">
+			<label>{{"Frequency"|i18n}}</label>
+			{% raw %}
 			<input type="text" name="questionnaire[{{idx}}].frequency" value="{{frequency}}"/>
+			{% endraw %}
 		</div>
 	</div>
 	<div class="row">
-		<div class="col col05"></div>
-		<div class="col">
-			<label>Comment</label>
+		<div class="col" style="padding-left:50px">
+			<label>{{"Comment"|i18n}}</label>
+			{% raw %}
 			<input type="text" name="questionnaire[{{idx}}].comment" value="{{comment}}">
+			{% endraw %}
 		</div>
 	</div>
 	<div class="row">
-		<div class="col col05"></div>
-		<div class="col">
-			<label>Dates</label>
+		<div class="col" style="padding-left:50px">
+			<label>{{"Dates"|i18n}}</label>
 			<ul class="dates-list">
-				{{#dates}}
+				{% raw %}
+				{{#date}}
 					{{#setAddedDate}}{{.}}{{/setAddedDate}}
-				{{/dates}}
+				{{/date}}
+				{% endraw %}
 			</ul>
 		</div>
 	</div>
 
 	<div class="row">
-		<div class="col col05"></div>
-		<div class="col">
+		<div class="col vert" style="padding-left:50px">
 			<label></label>
 			<zdk-input-date id="date" name="newDate" value="" style="z-index:100"></zdk-input-date>
+			{% raw %}
 			<button type="button" class="small blue" onclick="addDate(this, {{idx}})">Add</button>
+			{% endraw %}
 		</div>
 	</div>
-
+	</div>
 	<hr>
-	{{/data}}
-	{% endraw %}
+	{% raw %}{{/data}}{% endraw %}
 </script>
 
 <script type="template" id="dateAddedTpl">
@@ -84,7 +95,7 @@
 			<i class="icon icon-delete-circle"></i>
 		</button>
 		{{dateValue}}
-		<input type="hidden" name="questionnaire[{{idx}}].dates[{{dateIdx}}]" value="{{dateValue}}">
+		<input type="hidden" name="questionnaire[{{idx}}].date[{{dateIdx}}]" value="{{dateValue}}">
 	</li>
 	{% endraw %}
 </script>

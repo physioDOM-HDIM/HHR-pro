@@ -30,6 +30,20 @@ function Modal (type, callback) {
         }]
     };
 
+    content.saveSuccess = {
+        title: "trad_create",
+        content: "trad_success_saved",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                if(callback) {
+                    callback();
+                }
+                self.closeModal();
+            }
+        }]
+    };
+    
     content.sendSuccess = {
         title: "trad_send",
         content: "trad_success_send",

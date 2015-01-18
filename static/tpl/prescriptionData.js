@@ -12,7 +12,7 @@ var getList = function() {
     var promises = {
             dataprog: utils.promiseXHR("GET", "/api/beneficiary/dataprog/"+( infos.category || infos.paramList ),200),
             parameterList: utils.promiseXHR("GET", "/api/lists/"+infos.paramList, 200),
-            thresholds: utils.promiseXHR("GET", "/api/beneficiary/thresholds", 200)
+            // thresholds: utils.promiseXHR("GET", "/api/beneficiary/thresholds", 200)
         };
 
     RSVP.hash(promises).then(function(results) {
@@ -23,13 +23,15 @@ var getList = function() {
                 return item.category === infos.category;
             });
         }
-        lists.thresholds = JSON.parse(results.thresholds);
+        // lists.thresholds = JSON.parse(results.thresholds);
 
         for(var i = 0, leni = lists.parameters.items.length; i<leni; i++) {
             lists.parameters.items[i].labelLang = lists.parameters.items[i].label[infos.lang];
+            /*
             if(lists.thresholds[lists.parameters.items[i].ref]) {
                 lists.parameters.items[i].threshold = lists.thresholds[lists.parameters.items[i].ref];
             }
+            */
         }
         init();
     });
@@ -87,7 +89,7 @@ var init = function() {
                 data: dataItem,
                 getDay: function () {
                     return function(val, render) {
-                        var dayNumber = Number(String(Math.abs(render(val))).charAt(1));
+                        var dayNumber = Number(String(Math.abs(render(val))) % 10 );
                         return utils.getDayName(dayNumber);
                     };
                 },
@@ -104,14 +106,16 @@ var init = function() {
 var updateParam = function(elt) {
     var container = elt.parentNode.parentNode,
         ref = elt.value,
-        minContainer = container.querySelector('.min-threshold'),
-        maxContainer = container.querySelector('.max-threshold'),
         param = utils.findInObject(lists.parameters.items, 'ref', ref);
-
+        // minContainer = container.querySelector('.min-threshold'),
+        // maxContainer = container.querySelector('.max-threshold'),
+    
+    /*
     if(param.threshold) {
         minContainer.innerText = param.threshold.min;
         maxContainer.innerText = param.threshold.max;
     }
+    */
 };
 
 var showOptions = function(frequency, dataModel) {
@@ -121,8 +125,10 @@ var showOptions = function(frequency, dataModel) {
         monthlyTpl = document.querySelector('#tpl-option-monthly');
 
     if(frequency === 'weekly') {
+        if( dataModel === undefined ) { dataModel = { data: { repeat:1 } }; }
         optionsContainer.innerHTML = Mustache.render(weeklyTpl.innerHTML, dataModel);
     } else if(frequency === 'monthly') {
+        if( dataModel === undefined ) { dataModel = { data: { repeat:1 } }; }
         optionsContainer.innerHTML = Mustache.render(monthlyTpl.innerHTML, dataModel);
     } else {
         optionsContainer.innerHTML = '';
@@ -169,8 +175,33 @@ function showForm(ref) {
             getDaysDefault: function() {
                 return function(val, render) {
                     console.log(dataItem.when);
-                    if (dataItem.when.days.indexOf(parseInt(render(val))) > -1) {
+                    var tmp = [];
+                    if( dataItem.frequency === "monthly" ) {
+                        for( var i= 0, l=dataItem.when.days.length; i < l; i++) {
+                            tmp.push ( Math.abs(dataItem.when.days[i] % 10 ));
+                        }
+                    } else {
+                        if( !dataItem.when ) {
+                            dataItem.when = { days:[]};
+                        }
+                        tmp = dataItem.when.days;
+                    }
+                    if (tmp.indexOf(parseInt(render(val))) > -1) {
                         return 'checked';
+                    }
+                };
+            },
+            getWeekDefault: function() {
+                return function(val, render) {
+                    if(Math.abs(parseInt(dataItem.when.days[0]/10)) === parseInt(render(val),10)) {
+                        return 'selected';
+                    }
+                };
+            },
+            getStartDefault: function() {
+                return function(val, render) {
+                    if( parseInt(render(val),10) * dataItem.when.days[0] > 0 ) {
+                        return 'selected';
                     }
                 };
             }
@@ -218,9 +249,26 @@ var saveData = function() {
     dataprog.frequency = data.frequency;
 
     if(data.repeat) {
-        dataprog.repeat = parseFloat(data.repeat);
+        dataprog.repeat = parseInt(data.repeat,10);
     }
 
+    if( !data.startDate ) {
+        document.forms.dataprog.querySelector("zdk-input-date[name=startDate]").style.border = "2px solid red";
+        return;
+    } else {
+        document.forms.dataprog.querySelector("zdk-input-date[name=startDate]").style.border = null;
+    }
+    if(!data.frequency) {
+        document.forms.dataprog.querySelector(".frequency-choice").style.border = "2px solid red";
+        return;
+    } else {
+        document.forms.dataprog.querySelector(".frequency-choice").style.border = null;
+    }
+    if(data.frequency !== "daily" && !data.when ) {
+        document.forms.dataprog.querySelector(".days").style.border = "2px solid red";
+        return;
+    }
+    
     if(data.when) {
         var i = 0,
             len = data.when.days.length;
@@ -228,20 +276,25 @@ var saveData = function() {
         dataprog.when = {};
         dataprog.when.days = [];
 
+        if( len === 0 ) {
+            document.forms.dataprog.querySelector(".days").style.border = "2px solid red";
+            return;
+        }
         for(i; i<len; i++) {
-            dataprog.when.days[i] = parseInt(data.when.days[i]);
+            dataprog.when.days[i] = parseInt(data.when.days[i],10);
             if(data.when.week) {
-                dataprog.when.days[i] = parseFloat(data.when.order + data.when.week + data.when.days[i]);
+                dataprog.when.days[i] = parseInt(data.when.order,10) * ( parseInt(data.when.week,10)*10 + parseInt(data.when.days[i],10) );
             }
         }
     }
 
-    console.log(data);
-
     utils.promiseXHR('POST', '/api/beneficiary/dataprog', 200, JSON.stringify(dataprog)).then(function() {
+        window.location.href = "/prescription/"+ ( infos.category || infos.paramList ).toLowerCase();
+        /*
         new Modal('createSuccess', function() {
             window.location.href = "/prescription/"+ ( infos.category || infos.paramList ).toLowerCase();
         });
+        */
     }, function(error) {
         new Modal('errorOccured');
         console.log("saveData - error: ", error);
@@ -254,7 +307,7 @@ var removeData = function(id) {
     var deleteAction = function() {
         utils.promiseXHR("DELETE", "/api/beneficiary/dataprog/"+id, 200).then(function() {
             new Modal('deleteSuccess', function() {
-                window.location.href = "/prescription/"+ infos.category.toLowerCase();
+                window.location.href = "/prescription/"+ ( infos.category || infos.paramList ).toLowerCase();
             });
         }, function(error) {
             new Modal('errorOccured');

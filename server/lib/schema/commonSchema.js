@@ -101,7 +101,7 @@ module.exports.simpleAddress = {
 	"properties": {
 		"use"    : {type: "string", "enum": ["home", "work", "temp", "old"]},
 		"text"   : {type: "string"},
-		"line"   : {type: "array",item: {type: "string"}},
+		"line"   : {type: "array",items: {type: "string"}},
 		"city"   : {type: "string"},
 		"state"  : {type: "string"},
 		"zip"    : {type: "string"},

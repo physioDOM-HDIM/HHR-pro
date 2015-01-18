@@ -26,7 +26,7 @@ function getParams() {
         objFilter = form2js(filterForm),
         objOrder = form2js(orderForm),
         params = "";
-    console.log(objFilter);
+    
     if (JSON.stringify(objFilter) !== "{}") {
         params += "?filter=" + JSON.stringify(objFilter);
     }
@@ -70,7 +70,8 @@ function init() {
             len = list.items.length;
         for (i; i < len; i++) {
             // the date is displayed in local time
-            list.items[i].date = moment(list.items[i].datetime).format("L LT") + " ("+moment(list.items[i].datetime).from(moment())+")" ;
+            list.items[i].date = moment(list.items[i].datetime).format("L LT") ;
+            list.items[i].dateFrom = " ("+moment(list.items[i].datetime).from(moment())+")";
         }
         this.render(list);
     });

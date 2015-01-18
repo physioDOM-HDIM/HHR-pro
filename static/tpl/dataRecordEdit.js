@@ -1,47 +1,12 @@
 "use strict";
 
-var infos = {},
+var utils = new Utils(),
+    infos = {},
     idx = 0,
     createdDataRecordID = null,
     lists = {};
 
 infos.datasInit = null;
-
-
-var promiseXHR = function(method, url, statusOK, data) {
-    var promise = new RSVP.Promise(function(resolve, reject) {
-        var client = new XMLHttpRequest();
-        statusOK = statusOK ? statusOK : 200;
-        client.open(method, url);
-        client.onreadystatechange = function handler() {
-            if (this.readyState === this.DONE) {
-                if (this.status === statusOK) {
-                    resolve(this.response);
-                } else {
-                    reject(this);
-                }
-            }
-        };
-        client.send(data ? data : null);
-    });
-
-    return promise;
-};
-
-function findInObject(obj, item, value) {
-    var i = 0,
-        len = obj.length,
-        result = null;
-
-    for(i; i<len; i++) {
-        if(obj[i][item] === value) {
-            result = obj[i];
-            break;
-        }
-    }
-
-    return result;
-}
 
 function hasClass(element, cls) {
     return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
@@ -54,16 +19,16 @@ function getCategoryParam(category) {
 
     switch(category) {
     case 'General':
-        list = lists.parameters.items;
+        list = lists.parameters;
         break;
     case 'HDIM':
-        list = lists.parameters.items;
+        list = lists.parameters;
         break;
     case 'symptom':
-        list = lists.symptom.items;
+        list = lists.symptom;
         break;
     case 'questionnaire':
-        list = lists.questionnaire.items;
+        list = lists.questionnaire;
         break;
     }
 
@@ -71,24 +36,29 @@ function getCategoryParam(category) {
 }
 
 function addLine(category) {
-    var tpl = document.querySelector('#newItem'),
-        container = document.querySelector('#newItems-'+category),
+    var tpl = document.getElementById('newItem'),
+        container = document.getElementById('newItems-'+category),
         newLine = document.createElement('div'),
-        selectParamTpl = document.querySelector('#selectParam').innerHTML;
+        selectParamTpl = document.getElementById('selectParam').innerHTML;
 
     //add index to line for form2js formating
     var modelData = {
             idx: ++idx,
-            lists: getCategoryParam(category)
+            lists: getCategoryParam(category),
+            questionnaire: (category === 'questionnaire')
         };
 
-    newLine.className = 'row';
     newLine.innerHTML = tpl.innerHTML;
+    newLine.className = 'row questionnaire-row';
 
     newLine.querySelector('.item-text').innerHTML = selectParamTpl;
 
     var html = Mustache.render(newLine.innerHTML, modelData);
     newLine.innerHTML = html;
+
+    if (category === 'questionnaire') {
+        newLine.querySelector('.questionnaire-button-container a.button').addEventListener('click', onQuestionnaireButtonClick);
+    }
 
     container.appendChild(newLine);
 }
@@ -101,7 +71,7 @@ function removeLine(element) {
 }
 
 function removeItem(id) {
-    var item = document.querySelector('#ID'+id),
+    var item = document.getElementById('ID' + id),
         container = item.parentNode;
 
     container.removeChild(item);
@@ -135,8 +105,7 @@ function update(dataRecordID) {
 
         }
 
-        console.log("res", data);
-        promiseXHR("PUT", "/api/beneficiary/datarecords/"+dataRecordID, 200, JSON.stringify(data)).then(function(response) {
+        utils.promiseXHR("PUT", "/api/beneficiary/datarecords/"+dataRecordID, 200, JSON.stringify(data)).then(function(response) {
             updateSuccess();
         }, function(error) {
             errorOccured();
@@ -162,12 +131,13 @@ function create() {
 
             for(i; i<len; i++) {
                 //Bool and float convertion
+                // if(obj.items[i].category !== "questionnaire")
                 obj.items[i].value = parseFloat(obj.items[i].value);
                 obj.items[i].automatic = false;
             }
 
             console.log("res", obj);
-            promiseXHR("POST", "/api/beneficiary/datarecord", 200, JSON.stringify(obj)).then(function(response) {
+            utils.promiseXHR("POST", "/api/beneficiary/datarecord", 200, JSON.stringify(obj)).then(function(response) {
                 createSuccess();
                 var record = JSON.parse(response);
                 createdDataRecordID = record._id;
@@ -185,7 +155,7 @@ function create() {
 
 window.addEventListener("DOMContentLoaded", function() {
     infos.datasInit = form2js(document.forms.dataRecord);
-    infos.lang = document.querySelector('#lang').innerText;
+    infos.lang = document.getElementById('lang').textContent;
     getLists();
 }, false);
 
@@ -193,35 +163,37 @@ window.addEventListener("DOMContentLoaded", function() {
 function getLists() {
 
     var promises = {
-            parameters: promiseXHR("GET", "/api/lists/parameters", 200),
-            symptom: promiseXHR("GET", "/api/lists/symptom", 200),
-            questionnaire: promiseXHR("GET", "/api/lists/questionnaire", 200),
-            unity: promiseXHR("GET", "/api/lists/unity", 200)
+            parameters: utils.promiseXHR("GET", "/api/lists/parameters", 200),
+            symptom: utils.promiseXHR("GET", "/api/lists/symptom", 200),
+            questionnaire: utils.promiseXHR("GET", "/api/lists/questionnaire", 200),
+            unity: utils.promiseXHR("GET", "/api/lists/unity", 200)
         };
 
     RSVP.hash(promises).then(function(results) {
+        function filterActive(element) {
+            return element.active;
+        } 
+        
+        lists.parameters = JSON.parse(results.parameters).items.filter(filterActive);
+        lists.symptom = JSON.parse(results.symptom).items.filter(filterActive);
+        lists.questionnaire = JSON.parse(results.questionnaire).items.filter(filterActive);
 
-        lists.parameters = JSON.parse(results.parameters);
-        lists.symptom = JSON.parse(results.symptom);
-        lists.questionnaire = JSON.parse(results.questionnaire);
-
-        var unityList = JSON.parse(results.unity);
+        var unityList = JSON.parse(results.unity).items;
 
         var i = 0,
-            leni = lists.parameters.items.length;
+            leni = lists.parameters.length;
 
         for(i; i<leni; i++) {
             var y = 0,
-                leny = unityList.items.length;
+                leny = unityList.length;
 
             for(y; y<leny; y++) {
-                if(lists.parameters.items[i].unity === unityList.items[y].ref) {
-                    lists.parameters.items[i].unityLabel = unityList.items[y].label[infos.lang];
+                if(lists.parameters[i].unity === unityList[y].ref) {
+                    lists.parameters[i].unityLabel = unityList[y].label[infos.lang];
                     break;
                 }
             }
         }
-        console.log(lists);
         setLang();
         initParams();
 
@@ -230,24 +202,17 @@ function getLists() {
 }
 
 function setLang() {
+    var i, len;
 
-    var i = 0,
-        leni = lists.parameters.items.length,
-        y = 0,
-        leny = lists.symptom.items.length,
-        z = 0,
-        lenz = lists.questionnaire.items.length;
-
-    for(i; i<leni; i++) {
-        lists.parameters.items[i].labelLang = lists.parameters.items[i].label[infos.lang];
+    for (i = 0, len = lists.parameters.length; i < len; i++) {
+        lists.parameters[i].labelLang = lists.parameters[i].label[infos.lang];
     }
-    for(y; y<leny; y++) {
-        lists.symptom.items[y].labelLang = lists.symptom.items[y].label[infos.lang];
+    for (i = 0, len = lists.symptom.length; i < len; i++) {
+        lists.symptom[i].labelLang = lists.symptom[i].label[infos.lang];
     }
-    for(z; z<lenz; z++) {
-        lists.questionnaire.items[z].labelLang = lists.questionnaire.items[z].label[infos.lang];
+    for (i = 0, len = lists.questionnaire.length; i < len; i++) {
+        lists.questionnaire[i].labelLang = lists.questionnaire[i].label[infos.lang];
     }
-
 }
 
 function initParams() {
@@ -255,17 +220,16 @@ function initParams() {
         i = 0,
         len = lines.length;
 
-    var selectParamTpl = document.querySelector('#selectParam').innerHTML;
+    var selectParamTpl = document.getElementById('selectParam').innerHTML;
 
     for(i; i<len; i++) {
 
         var _id = lines[i].id.substring(2),
-            category = lines[i].querySelector('.category').innerText,
+            category = lines[i].querySelector('.category').textContent,
             categoryContainer = lines[i].querySelector('.item-category');
 
-
-        var type = lines[i].querySelector('.type').innerText,
-            item = findInObject(getCategoryParam(category), 'ref', type),
+        var type = lines[i].querySelector('.type').textContent,
+            item = utils.findInObject(getCategoryParam(category), 'ref', type),
             modelDataSelect = {
                 lists: getCategoryParam(category),
                 selection: function () {
@@ -273,7 +237,7 @@ function initParams() {
                         if(item.ref === render(val)) {
                             return 'selected';
                         }
-                    }
+                    };
                 },
                 id: _id
             },
@@ -281,7 +245,6 @@ function initParams() {
 
         var selectHTML = Mustache.render(selectParamTpl, modelDataSelect),
             lineHTML = Mustache.render(lines[i].innerHTML, modelDataLine);
-
 
         lines[i].innerHTML = lineHTML;
         lines[i].querySelector('.item-text').innerHTML = selectHTML;
@@ -314,46 +277,60 @@ var updateParam = function(element, directValue) {
     }
 
     //get chosen param
-    var category = container.parentNode.parentNode.querySelector('.category').innerText;
-    var param = findInObject(getCategoryParam(category), 'ref', elt);
+    var category = container.parentNode.parentNode.querySelector('.category').textContent;
+    var param = utils.findInObject(getCategoryParam(category), 'ref', elt);
 
     //for create
     var newItemCategory = container.querySelector('#new-item-category');
-    if(newItemCategory) {
-        if(param.category) {
+    if (newItemCategory) {
+        if (param && param.category) {
             newItemCategory.value = param.category;
-        } else {
+        }
+        else {
             newItemCategory.value = category;
         }
     }
     //for update
-    if(categoryContainer) {
-        if(param.category) {
+    if (categoryContainer) {
+        if(param && param.category) {
             categoryContainer.value = param.category;
-        } else {
+        }
+        else {
             categoryContainer.value = category;
         }
     }
 
 
-    if(elt && category !== 'symptom' && category !== 'questionnaire') {
+    if (elt && category !== 'symptom' && category !== 'questionnaire') {
 
-        minContainer.innerText = param.threshold.min? param.threshold.min: '-';
-        maxContainer.innerText = param.threshold.max? param.threshold.max: '-';
-        unityContainer.innerText = param.unityLabel? param.unityLabel: '';
-    } else {
-        minContainer.innerText = '-';
-        maxContainer.innerText = '-';
-        unityContainer.innerText = '';
+        minContainer.innerHTML = param.threshold.min? param.threshold.min: '-';
+        maxContainer.innerHTML = param.threshold.max? param.threshold.max: '-';
+        unityContainer.innerHTML = param.unityLabel? param.unityLabel: '';
+    }
+    else if (category === 'questionnaire') {
+        // Questionnaire item
+        container.setAttribute('data-name', select.value);
+        if (select.value) {
+            container.querySelector('.questionnaire-button-container a.button').setAttribute('href', '/questionnaire/' + select.value);
+            container.querySelector('.questionnaire-button-container a.button').classList.remove('disabled');
+        }
+        else {
+            container.querySelector('.questionnaire-button-container a.button').classList.add('disabled');
+        }
+    }
+    else {
+        minContainer.innerHTML = '-';
+        maxContainer.innerHTML = '-';
+        unityContainer.innerHTML = '';
     }
 }
 
 function toggleEditMode(id) {
-    var line = document.querySelector('#ID' + id),
+    var line = document.getElementById('ID' + id),
         updateMode = line.querySelector('.updateMode'),
         readMode = line.querySelector('.readMode'),
         paramSelect = updateMode.querySelector('select'),
-        paramValue = line.querySelector('.type').innerText;
+        paramValue = line.querySelector('.type').textContent;
 
     updateParam(paramSelect, paramValue);
 
@@ -373,9 +350,9 @@ function toggleEditMode(id) {
 
 function closeModal() {
     console.log("closeModal", arguments);
-    document.querySelector("#statusModal").hide();
+    document.getElementById('statusModal').hide();
 
-    var elt = document.querySelector("#statusModal"),
+    var elt = document.getElementById('statusModal'),
         subElt, child;
     subElt = elt.querySelector(".modalTitleContainer");
     subElt.innerHTML = "";
@@ -394,16 +371,16 @@ function closeModal() {
 function showModal(modalObj) {
     console.log("showModal", arguments);
 
-    var elt = document.querySelector("#statusModal"),
+    var elt = document.getElementById("statusModal"),
         subElt;
     if (modalObj.title) {
         subElt = elt.querySelector(".modalTitleContainer");
-        subElt.innerHTML = document.querySelector("#" + modalObj.title).innerHTML;
+        subElt.innerHTML = document.getElementById(modalObj.title).innerHTML;
         subElt.classList.remove("hidden");
     }
     if (modalObj.content) {
         subElt = elt.querySelector(".modalContentContainer");
-        subElt.innerHTML = document.querySelector("#" + modalObj.content).innerHTML;
+        subElt.innerHTML = document.getElementById(modalObj.content).innerHTML;
         subElt.classList.remove("hidden");
     }
 
@@ -413,7 +390,7 @@ function showModal(modalObj) {
         for (var i = 0; i < modalObj.buttons.length; i++) {
             obj = modalObj.buttons[i];
             btn = document.createElement("button");
-            btn.innerHTML = document.querySelector("#" + obj.id).innerHTML;
+            btn.innerHTML = document.getElementById(obj.id).innerHTML;
             btn.onclick = obj.action;
             switch (obj.id) {
                 case "trad_ok":
@@ -438,7 +415,7 @@ function showModal(modalObj) {
         subElt.classList.remove("hidden");
     }
 
-    document.querySelector("#statusModal").show();
+    document.getElementById("statusModal").show();
 }
 
 function confirmDeleteItem(id) {

@@ -2,9 +2,10 @@
 
 var utils = new Utils(),
     infos = {},
-    lists = {},
+    questionnairePlan = [],
     idx = 0,
-    dateIdx = 0;
+    dateIdx = 0,
+    modified = false;
 
 window.addEventListener("DOMContentLoaded", function() {
 
@@ -19,49 +20,11 @@ window.addEventListener("DOMContentLoaded", function() {
  */
 
 var getList = function() {
-    var promises = {
-            //questionnaireProg: No API yet,
-        };
-
-    RSVP.hash(promises).then(function(results) {
-
-        //MOCK to delete when integrating with backend
-        lists.questionnaireProg = [{
-            "_id": "54789f2b2d88c6524b345cf5",
-            "name": "CHAIR_TEST",
-            "ref": "The 30-Second Chair Stand Test",
-            "label": {
-                "en": "The 30-Second Chair Stand Test"
-            },
-            "frequency": "anytime !",
-            "comment": "This is fun to do !",
-            "dates": ["2014-07-28", "2015-02-07"]
-        }, {
-            "_id": "547d88c28a2872333a2a1c83",
-            "name": "MMSE",
-            "ref": "Mini-Mental State Examination",
-            "label": {
-                "en": "Mini-Mental State Examination"
-            },
-            "frequency": "every monday !",
-            "comment": "Be very serious on this one !",
-            "dates": ["2014-07-20"]
-        },{
-            "_id": "547d94008a2872333a2a1c88",
-            "name": "SF36",
-            "ref": "Short Form Health Survey",
-            "label": {
-                "en": "Short Form Health Survey"
-            },
-            "frequency": "I don't know, whenever you want to do it",
-            "comment": "If you want to do it anyway...",
-            "dates": ["2014-02-10", "2015-01-01"]
-        }];
-        //ENDMOCK
-
-        init();
-
-    });
+    utils.promiseXHR("GET", "/api/beneficiary/questprog", 200)
+        .then( function ( results ) {
+            questionnairePlan = JSON.parse(results);
+            init();
+        });
 };
 
 /**
@@ -70,16 +33,13 @@ var getList = function() {
 
 var init = function() {
     var questionnaireProgTpl = document.querySelector('#tpl-questionnaire-prog'),
-        questionnaireProgContainer = document.querySelector('.questionnaire-prog-list'),
-        i = 0,
-        len = lists.questionnaireProg.length;
+        questionnaireProgContainer = document.querySelector('.questionnaire-prog-list');
 
-    for(i; i<len; i++) {
-
-        lists.questionnaireProg[i].labelLang = lists.questionnaireProg[i].label[infos.lang];
-
-        var dataItem = lists.questionnaireProg[i],
-            dataModel = {
+    for(var i= 0, len=questionnairePlan.length ; i<len; i++) {
+        var dataItem = questionnairePlan[i];
+        dataItem.labelLang = dataItem.label[infos.lang];
+        
+        var dataModel = {
                 idx: idx,
                 data: dataItem,
                 setAddedDate: function() {
@@ -100,6 +60,13 @@ var init = function() {
         questionnaireProgContainer.appendChild(questionnaireContainer);
         idx++;
     }
+    
+    var inputs = document.querySelectorAll("input");
+    [].slice.call(inputs).forEach( function(input) {
+        input.addEventListener("change", function (evt) {
+            modified = true;
+        }, false);
+    });
 };
 
 var addDate = function(elt, idx) {
@@ -111,6 +78,7 @@ var addDate = function(elt, idx) {
         dateContainer.innerHTML += Mustache.render(dateAddedTpl.innerHTML, {dateValue: dateValue, idx: idx, dateIdx: dateIdx});
         elt.parentNode.querySelector('#date').value = "";
         dateIdx++;
+        modified = true;
     }
 };
 
@@ -119,14 +87,36 @@ var removeDate = function(elt) {
         dateContainer = li.parentNode;
 
     dateContainer.removeChild(li);
+    modified = true;
 };
 
 /**
  * Action on form
  */
 
-var saveData = function() {
+var saveData = function( ) {
     //Call to API (No API defined yet)
     var data = form2js(document.forms.questionnaire);
-    console.log(data.questionnaire);
+    var promises = data.questionnaire.map( function( questionnaire ) {
+        return utils.promiseXHR("PUT", "/api/beneficiary/questprog", 200, JSON.stringify(questionnaire))
+    });
+    
+    RSVP.all( promises )
+        .then( function() {
+            console.log("all saved");
+            modified = false;
+            new Modal('saveSuccess', function() { });
+        })
+        .catch( function() {
+            new Modal('errorOccured', function() { });
+        });
 };
+
+window.addEventListener("beforeunload", function( e) {
+    var confirmationMessage;
+    if(modified) {
+        confirmationMessage = document.querySelector("#unsave").innerHTML;
+        (e || window.event).returnValue = confirmationMessage;     //Gecko + IE
+        return confirmationMessage;                                //Gecko + Webkit, Safari, Chrome etc.
+    }
+});
