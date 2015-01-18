@@ -18,18 +18,20 @@ function loadQuestionnaire(url) {
 
 function onQuestionnaireValidate(name, date, score, answerID) {
 
-	history.back();
+	// history.back();
 
 	var eltDate = document.querySelector('.questionnaire-row[data-name="' + name + '"] .questionnaire-date');
-	var eltScore = document.querySelector('.questionnaire-row[data-name="' + name + '"] .questionnaire-score');
+	var eltScore = document.querySelectorAll('.questionnaire-row[data-name="' + name + '"] .questionnaire-score');
 	var eltAnswerId = document.querySelector('.questionnaire-row[data-name="' + name + '"] .questionnaire-answer');
 
 	if (eltDate) {
 		eltDate.innerHTML = moment(date, moment.ISO_8601).format('L');
 	}
 
-	if (eltScore) {
-		eltScore.value = score;
+	if (eltScore.length) {
+		[].slice.call(eltScore).forEach( function(elt) {
+			elt.value = score;
+		});
 	}
 
 	if (eltAnswerId) {
@@ -37,6 +39,12 @@ function onQuestionnaireValidate(name, date, score, answerID) {
 	}
 	document.querySelector('.questionnaire-row[data-name="' + name + '"] .questionnaire-button-container a.button').setAttribute('href', '/answers/' + answerID);
 
+	document.getElementById('questionnaireIframe').parentNode.removeChild(document.getElementById('questionnaireIframe'));
+	document.getElementById('content').style.display = '';
+}
+
+function closeQuestionnaire() {
+	// history.back();
 	document.getElementById('questionnaireIframe').parentNode.removeChild(document.getElementById('questionnaireIframe'));
 	document.getElementById('content').style.display = '';
 }
@@ -50,6 +58,21 @@ function onQuestionnaireButtonClick(e) {
 
 	e.preventDefault();
 	return false;
+}
+
+function showAnswer(answerID) {
+	console.log(answerID);
+	var iframe = document.createElement('iframe');
+	iframe.id = 'questionnaireIframe';
+	iframe.setAttribute('scrolling', 'no');
+	iframe.addEventListener('load', onIframeLoaded);
+	document.documentElement.appendChild(iframe);
+	iframe.src = "/answers/"+answerID;
+}
+
+function closeAnswer() {
+	document.getElementById('questionnaireIframe').parentNode.removeChild(document.getElementById('questionnaireIframe'));
+	document.getElementById('content').style.display = '';
 }
 
 window.onpopstate = function(event) {
