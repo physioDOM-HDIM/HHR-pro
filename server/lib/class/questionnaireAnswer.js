@@ -88,7 +88,7 @@ function QuestionnaireAnswer() {
 	};
 
 	/**
-	 * Get a questionnaire answer from the database known by its ID
+	 * Get a questionnaire answer from the database known by its ID.
 	 * 
 	 * On success the promise returns the questionnaire answer record,
 	 * else return an error (code 404)

@@ -84,7 +84,8 @@
 		{% endfor%}
 		<div class="row control">
 			<span class="spacer"></span>
-			<button class="green">{{'Validate' | i18n}}</button>
+			<button type="button" class="red" onclick="window.parent.closeQuestionnaire()">{{'Cancel'|i18n}}</button>
+			<button class="green">{{'OK' | i18n}}</button>
 		</div>
 	</form>
 
@@ -98,4 +99,6 @@
 		</button>
 	</zdk-modal>
 </div>
+
+<div id="questionnaireName" class="hidden">{{questionnaire.name}}</div>
 {% endblock %}

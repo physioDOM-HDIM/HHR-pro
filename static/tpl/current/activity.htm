@@ -5,6 +5,7 @@
 {% block head %}
 {% parent %}
 <script src="/bower_components/form2js/src/form2js.js"></script>
+<script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
 
 <link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
 <link rel="import" href="/bower_components/zdk-panel/zdk-panel.html">
@@ -14,25 +15,27 @@
 {% endblock %}
 
 {% block content %}
-<zdk-panel heading="{{ 'Distance travelled' | i18n }}">
-	<form name="form" id="form" autocomplete="off" onsubmit="checkForm(); return false;">
-		<div class="row value-row">
-			<div flex class="value-name">Number of steps (optional)</div>
-			<input type="checkbox" name="stepsCheck" class="value-checkbox" {% if status.stepsCheck %}checked{% endif %} {% if status.validated %}disabled{% endif %} />
-			<input type="text" name="stepsNumber" class="value-input" value="{{status.stepsNumber}}" {% if status.validated %}disabled{% endif %} />
-			<div class="value-unit">steps per week</div>
-		</div>
+<div id="content">
+	<zdk-panel heading="{{ 'Distance travelled' | i18n }}">
+		<form name="form" id="form" autocomplete="off" onsubmit="checkForm(); return false;">
+			<div class="row value-row">
+				<div flex class="value-name">Number of steps (optional)</div>
+				<input type="checkbox" name="stepsCheck" class="value-checkbox" {% if status.stepsCheck %}checked{% endif %} {% if status.validated %}disabled{% endif %} />
+				<input type="text" name="stepsNumber" class="value-input" value="{{status.stepsNumber}}" {% if status.validated %}disabled{% endif %} />
+				<div class="value-unit">steps per week</div>
+			</div>
 
-		{% if !status.validated %}
-		<div id="buttons" class="row control">
-			<span class="spacer"></span>
-			<button type="button" class="blue" onclick="showConfirm();">Validate</button>
-			<button type="button" class="red" onclick="location.reload();">Cancel</button>
-			<button class="green">Save</button>
-		</div>
-		{% endif %}
-	</form>
-</zdk-panel>
+			{% if !status.validated %}
+			<div id="buttons" class="row control">
+				<span class="spacer"></span>
+				<button type="button" class="blue" onclick="showConfirm();">Validate</button>
+				<button type="button" class="red" onclick="location.reload();">Cancel</button>
+				<button class="green">Save</button>
+			</div>
+			{% endif %}
+		</form>
+	</zdk-panel>
+</div>
 
 <zdk-modal id="confirmModal" closebutton="false">
 	<div class="modalContainer">
@@ -45,5 +48,6 @@
 	</button>
 </zdk-modal>
 
+<script src="/scripts/questionnaireButton.js"></script>
 <script src="/tpl/current/activity.js"></script>
 {% endblock %}

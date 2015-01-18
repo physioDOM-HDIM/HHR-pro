@@ -67,7 +67,7 @@ function Questionnaires( ) {
 	this.getQuestionnaireByName = function(qName) {
 		var that = this;
 		return new promise( function(resolve, reject) {
-			logger.trace("getQuestionnaire", qName);
+			logger.trace("getQuestionnaireByName", qName);
 			physioDOM.db.collection("questionnaires").findOne({ name: qName }, function (err, doc) {
 				if (err) {
 					logger.alert("Database Error");
@@ -94,7 +94,7 @@ function Questionnaires( ) {
 	 * @returns {promise}
 	 */
 	this.getQuestionnaireByID = function(entryID) {
-		logger.trace("getBeneficiaryByID", entryID);
+		logger.trace("getQuestionnaireByID", entryID);
 		var questionnaireByID = new ObjectID(entryID);
 		var questionnaire = new Questionnaire();
 		return questionnaire.getById(questionnaireByID);

@@ -777,6 +777,46 @@ function IPage() {
 	};
 
 	/**
+	 * Questionnaire answers page.
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	this.questionnaireAnswers = function(req, res, next) {
+		var id = req.params.entryID;
+		logger.trace('questionnaireAnswers', id);
+
+		init(req);
+		var data = {
+			admin: ['coordinator', 'administrator'].indexOf(req.session.role) !== -1 ? true : false
+		};
+
+		physioDOM.QuestionnaireAnswer()
+			.then(function(questionnaireAnswer) {
+				return questionnaireAnswer.getById(new ObjectID(id));
+			})
+			.then(function(answer) {
+				data.answer = answer;
+				return physioDOM.Questionnaires();
+			})
+			.then(function(questionnaires) {
+				return questionnaires.getQuestionnaireByID(data.answer.ref);
+			})
+			.then(function(questionnaire) {
+				data.questionnaire = questionnaire;
+				data.lang = lang;
+				render('/static/tpl/questionnaireAnswer.htm', data, res, next);
+			})
+			.catch(function(err) {
+				logger.error(err);
+				res.write(err);
+				res.end();
+				next();
+			});
+	};
+
+	/**
 	 * DataRecording
 	 *
 	 * @param req

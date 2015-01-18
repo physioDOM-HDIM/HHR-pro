@@ -46,7 +46,9 @@
 			if( window.location.pathname === "/beneficiaries") {
 				parent.highlight("/beneficiaries");
 			}
-			parent.closeDrawer();
+			if (parent.closeDrawer) {
+				parent.closeDrawer();
+			}
 		}
 	</script>
 

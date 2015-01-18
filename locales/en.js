@@ -236,5 +236,6 @@
 	"Distance travelled": "Distance travelled",
 	"Frailty status": "Frailty status",
 	"Confirmation": "Confirmation",
-	"Are you sure?": "Are you sure?"
+	"Are you sure?": "Are you sure?",
+	"Questionnaire answers": "Questionnaire answers"
 }
