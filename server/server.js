@@ -9,6 +9,7 @@ var restify = require("restify"),
 	Cookies = require("cookies"),
 	Logger  = require("logger"),
 	I18n    = require("i18n-2"),
+	promise = require("rsvp").Promise,
 	PhysioDOM = require("./lib/class/physiodom");
 
 var IDirectory = require('./lib/http/IDirectory'),
@@ -92,79 +93,87 @@ server.use( function(req, res, next) {
 	req.cookies = {};
 	
 	function readCookies( cb ) {
-		logger.trace("read cookies");
-		if( req.headers.cookie ) {
-			var cookies = req.headers.cookie.split(';');
-			var count = cookies.length;
-			cookies.forEach(function (cookie) {
-				var parts = cookie.split('=');
-				req.cookies[parts[0].trim()] = parts[1].trim() || '';
-				if( --count === 0 ) {
-					// console.log( req.cookies);
-					cb( req.cookies );
-				}
-			});
-		} else {
-			cb( {} );
-		}
+		return new promise( function(resolve,reject) {
+			logger.trace("read cookies");
+			if( req.headers.cookie ) {
+				var cookies = req.headers.cookie.split(';');
+				var count = cookies.length;
+				cookies.forEach(function (cookie) {
+					var parts = cookie.split('=');
+					req.cookies[parts[0].trim()] = parts[1].trim() || '';
+					if( --count === 0 ) {
+						// console.log( req.cookies);
+						resolve( req.cookies );
+					}
+				});
+			} else {
+				resolve( {} );
+			}
+		});
 	}
 
 	function getSession( cb ) {
-		logger.trace("getSessionAccount");
-		if( req.cookies && req.cookies.sessionID ) {
-			physioDOM.getSession( req.cookies.sessionID )
-				.then( function( session ) {
-					session.getPerson()
-						.then( function( session ) {
-							// logger.debug("session", JSON.stringify(person,null,4));
-							cb(null, session);
-						})
-						.catch( function(err) {
-							logger.error("error", JSON.stringify(err, null,4));
-							cb(err, null);
-						});
-				})
-				.catch( function(err) {
-					logger.warning("error", err);
-					cb(err, null);
-				});
-		} else {
-			logger.warning("no session");
-			cb( null, null);
-		}
-	}
-	
-	
-	readCookies( function(cookies) {
-		getSession( function(err, session) {
-			if(err) {
-				req.session = null;
+		return new promise( function(resolve,reject) {
+			logger.trace("getSessionAccount");
+			if (req.cookies && req.cookies.sessionID) {
+				physioDOM.getSession(req.cookies.sessionID)
+					.then(function (session) {
+						session.getPerson()
+							.then(function (session) {
+								// logger.debug("session", JSON.stringify(person,null,4));
+								// cb(null, session);
+								resolve(session);
+							})
+							.catch(function (err) {
+								logger.error("error", JSON.stringify(err, null, 4));
+								// cb(err, null);
+								reject(err);
+							});
+					})
+					.catch(function (err) {
+						logger.warning("error", err, cb);
+						// cb(err, null);
+						reject(err);
+					});
 			} else {
-				req.session = session;
-			}
-			requestLog(req, res);
-			if( !req.session ) {
-				cookies = new Cookies(req, res);
-				cookies.set('sessionID');
-				logger.debug("url", req.url);
-				if (req.url.match(/^(\/|\/api\/login|\/api\/logout|\/logout)$/)) {
-					// console.log("url match");
-					return next();
-				} else {
-					if( req.url.match(/^\/api/) ) {
-						res.send(403,"no session created");
-					} else {
-						logger.info("redirect to home page");
-						res.header('Location', '/');
-						res.send(302);
-					}
-					return next(false);
-				}
-			} else {
-				return next();
+				logger.warning("no session");
+				// cb(null, null);
+				reject();
 			}
 		});
-	});
+	}
+	
+	readCookies()
+		.then(function(cookies) {
+			getSession()
+				.then( function(session) {
+					req.session = session;
+					logger.debug("session exists");
+					return next();
+				})
+				.catch( function() {
+						logger.debug("remove cookie");
+						req.session = null;
+					
+						logger.debug("redirect");
+						cookies = new Cookies(req, res);
+						cookies.set('sessionID');
+						logger.debug("url", req.url);
+						if (req.url.match(/^(\/|\/api\/login|\/api\/logout|\/logout)$/)) {
+							// console.log("url match");
+							return next();
+						} else {
+							if (req.url.match(/^\/api/)) {
+								res.send(403, "no session created");
+							} else {
+								logger.info("redirect to home page");
+								res.header('Location', '/');
+								res.send(302);
+							}
+							return next(false);
+						}
+				});
+			});
 });
 
 server.use(restify.gzipResponse());
@@ -427,7 +436,7 @@ server.get( '/prescription/questionnaire', IPage.prescriptionQuestionnaire);
 
 server.get(/\/[^api|components\/]?$/, function(req, res, next) {
 	logger.trace("index");
-	if( req.cookies.sessionID ) {
+	if( req.session ) {
 		return IPage.ui( req, res, next);
 	} else {
 		return readFile(path.join(DOCUMENT_ROOT, '/index.htm'), req, res, next);

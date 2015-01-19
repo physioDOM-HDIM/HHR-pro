@@ -41,13 +41,14 @@ function Beneficiaries( ) {
 				var tmp  = JSON.parse(filter);
 				for( var prop in tmp) {
 					if(tmp.hasOwnProperty(prop)) {
-						console.log("prop",prop);
 						switch(prop) {
 							case "name":
 								search["name.family"] = new RegExp("^"+tmp.name,"i");
 								break;
 							case "perimeter":
-								search.perimeter = tmp.perimeter;
+								if( tmp.perimeter !== 'NONE') {
+									search.perimeter = tmp.perimeter;
+								}
 								break;
 							case "zip":
 								address.zip = new RegExp("^"+tmp.zip,"i");
@@ -73,7 +74,6 @@ function Beneficiaries( ) {
 		} else {
 			throw { code:403, message:"forbidden"};
 		}
-		// logger.debug("search filter", search);
 		var cursor = physioDOM.db.collection("beneficiaries").find(search);
 		var cursorSort = {};
 		if(sort) {
