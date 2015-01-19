@@ -1,47 +1,12 @@
 "use strict";
 
-var infos = {},
+var utils = new Utils(),
+    infos = {},
     idx = 0,
     createdDataRecordID = null,
     lists = {};
 
 infos.datasInit = null;
-
-
-var promiseXHR = function(method, url, statusOK, data) {
-    var promise = new RSVP.Promise(function(resolve, reject) {
-        var client = new XMLHttpRequest();
-        statusOK = statusOK ? statusOK : 200;
-        client.open(method, url);
-        client.onreadystatechange = function handler() {
-            if (this.readyState === this.DONE) {
-                if (this.status === statusOK) {
-                    resolve(this.response);
-                } else {
-                    reject(this);
-                }
-            }
-        };
-        client.send(data ? data : null);
-    });
-
-    return promise;
-};
-
-function findInObject(obj, item, value) {
-    var i = 0,
-        len = obj.length,
-        result = null;
-
-    for(i; i<len; i++) {
-        if(obj[i][item] === value) {
-            result = obj[i];
-            break;
-        }
-    }
-
-    return result;
-}
 
 function hasClass(element, cls) {
     return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
@@ -54,16 +19,16 @@ function getCategoryParam(category) {
 
     switch(category) {
     case 'General':
-        list = lists.parameters.items;
+        list = lists.parameters;
         break;
     case 'HDIM':
-        list = lists.parameters.items;
+        list = lists.parameters;
         break;
     case 'symptom':
-        list = lists.symptom.items;
+        list = lists.symptom;
         break;
     case 'questionnaire':
-        list = lists.questionnaire.items;
+        list = lists.questionnaire;
         break;
     }
 
@@ -151,7 +116,7 @@ function update(dataRecordID) {
 
         }
 
-        promiseXHR("PUT", "/api/beneficiary/datarecords/"+dataRecordID, 200, JSON.stringify(data)).then(function(response) {
+        utils.promiseXHR("PUT", "/api/beneficiary/datarecords/"+dataRecordID, 200, JSON.stringify(data)).then(function(response) {
             updateSuccess();
         }, function(error) {
             errorOccured();
@@ -177,12 +142,13 @@ function create() {
 
             for(i; i<len; i++) {
                 //Bool and float convertion
+                // if(obj.items[i].category !== "questionnaire")
                 obj.items[i].value = parseFloat(obj.items[i].value);
                 obj.items[i].automatic = false;
             }
 
             console.log("res", obj);
-            promiseXHR("POST", "/api/beneficiary/datarecord", 200, JSON.stringify(obj)).then(function(response) {
+            utils.promiseXHR("POST", "/api/beneficiary/datarecord", 200, JSON.stringify(obj)).then(function(response) {
                 createSuccess();
                 var record = JSON.parse(response);
                 createdDataRecordID = record._id;
@@ -208,30 +174,33 @@ window.addEventListener("DOMContentLoaded", function() {
 function getLists() {
 
     var promises = {
-            parameters: promiseXHR("GET", "/api/lists/parameters", 200),
-            symptom: promiseXHR("GET", "/api/lists/symptom", 200),
-            questionnaire: promiseXHR("GET", "/api/lists/questionnaire", 200),
-            unity: promiseXHR("GET", "/api/lists/unity", 200)
+            parameters: utils.promiseXHR("GET", "/api/lists/parameters", 200),
+            symptom: utils.promiseXHR("GET", "/api/lists/symptom", 200),
+            questionnaire: utils.promiseXHR("GET", "/api/lists/questionnaire", 200),
+            unity: utils.promiseXHR("GET", "/api/lists/unity", 200)
         };
 
     RSVP.hash(promises).then(function(results) {
+        function filterActive(element) {
+            return element.active;
+        } 
+        
+        lists.parameters = JSON.parse(results.parameters).items.filter(filterActive);
+        lists.symptom = JSON.parse(results.symptom).items.filter(filterActive);
+        lists.questionnaire = JSON.parse(results.questionnaire).items.filter(filterActive);
 
-        lists.parameters = JSON.parse(results.parameters);
-        lists.symptom = JSON.parse(results.symptom);
-        lists.questionnaire = JSON.parse(results.questionnaire);
-
-        var unityList = JSON.parse(results.unity);
+        var unityList = JSON.parse(results.unity).items;
 
         var i = 0,
-            leni = lists.parameters.items.length;
+            leni = lists.parameters.length;
 
         for(i; i<leni; i++) {
             var y = 0,
-                leny = unityList.items.length;
+                leny = unityList.length;
 
             for(y; y<leny; y++) {
-                if(lists.parameters.items[i].unity === unityList.items[y].ref) {
-                    lists.parameters.items[i].unityLabel = unityList.items[y].label[infos.lang];
+                if(lists.parameters[i].unity === unityList[y].ref) {
+                    lists.parameters[i].unityLabel = unityList[y].label[infos.lang];
                     break;
                 }
             }
@@ -246,14 +215,14 @@ function getLists() {
 function setLang() {
     var i, len;
 
-    for (i = 0, len = lists.parameters.items.length; i < len; i++) {
-        lists.parameters.items[i].labelLang = lists.parameters.items[i].label[infos.lang];
+    for (i = 0, len = lists.parameters.length; i < len; i++) {
+        lists.parameters[i].labelLang = lists.parameters[i].label[infos.lang];
     }
-    for (i = 0, len = lists.symptom.items.length; i < len; i++) {
-        lists.symptom.items[i].labelLang = lists.symptom.items[i].label[infos.lang];
+    for (i = 0, len = lists.symptom.length; i < len; i++) {
+        lists.symptom[i].labelLang = lists.symptom[i].label[infos.lang];
     }
-    for (i = 0, len = lists.questionnaire.items.length; i < len; i++) {
-        lists.questionnaire.items[i].labelLang = lists.questionnaire.items[i].label[infos.lang];
+    for (i = 0, len = lists.questionnaire.length; i < len; i++) {
+        lists.questionnaire[i].labelLang = lists.questionnaire[i].label[infos.lang];
     }
 }
 
@@ -271,15 +240,15 @@ function initParams() {
             categoryContainer = lines[i].querySelector('.item-category');
 
         var type = lines[i].querySelector('.type').textContent,
-            item = findInObject(getCategoryParam(category), 'ref', type),
+            item = utils.findInObject(getCategoryParam(category), 'ref', type),
             modelDataSelect = {
                 lists: getCategoryParam(category),
                 selection: function () {
                     return function(val, render) {
                         if(item.ref === render(val)) {
                             return 'selected';
-                        }getCategoryParam
-                    }
+                        }
+                    };
                 },
                 id: _id
             },
@@ -320,7 +289,7 @@ var updateParam = function(element, directValue) {
 
     //get chosen param
     var category = container.parentNode.parentNode.querySelector('.category').textContent;
-    var param = findInObject(getCategoryParam(category), 'ref', elt);
+    var param = utils.findInObject(getCategoryParam(category), 'ref', elt);
 
     //for create
     var newItemCategory = container.querySelector('#new-item-category');
