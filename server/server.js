@@ -434,6 +434,12 @@ server.get( '/prescription/hdim', IPage.prescriptionDataHDIM);
 server.get( '/prescription/symptom', IPage.prescriptionDataSymptom);
 server.get( '/prescription/questionnaire', IPage.prescriptionQuestionnaire);
 
+
+server.get( '/dietary-plan', IPage.dietaryPlan);
+server.get( '/physical-plan', IPage.physicalPlan);
+
+
+
 server.get(/\/[^api|components\/]?$/, function(req, res, next) {
 	logger.trace("index");
 	if( req.session ) {
