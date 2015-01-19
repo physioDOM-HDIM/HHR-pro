@@ -95,6 +95,17 @@ function addLine(category) {
         newLine.querySelector('.questionnaire-button-container a.button').addEventListener('click', onQuestionnaireButtonClick);
     }
 
+    var options = container.parentNode.parentNode.querySelectorAll('.item-text select option');
+
+    for (var i = 0; i < options.length; i++) {
+        if (options[i].parentNode !== select && options[i].value === select.value) {
+            options[i].disabled = true;
+        }
+        else {
+            options[i].disabled = false;
+        }
+    }
+
     container.appendChild(newLine);
 }
 
@@ -353,6 +364,18 @@ var updateParam = function(element, directValue) {
         minContainer.innerHTML = '-';
         maxContainer.innerHTML = '-';
         unityContainer.innerHTML = '';
+    }
+
+    // Disable the selected option on other rows
+    var options = container.parentNode.parentNode.querySelectorAll('.item-text select option');
+
+    for (var i = 0; i < options.length; i++) {
+        if (options[i].parentNode !== select && options[i].value === select.value) {
+            options[i].disabled = true;
+        }
+        else {
+            options[i].disabled = false;
+        }
     }
 }
 
