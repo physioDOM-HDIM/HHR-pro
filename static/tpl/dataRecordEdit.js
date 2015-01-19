@@ -356,8 +356,8 @@ var updateParam = function(element, directValue) {
 
     // Disable the selected option on other rows
 
-    var allSelectedOptions = container.parentNode.parentNode.querySelectorAll('.item-text select option:checked');
-    var allOptions = container.parentNode.parentNode.querySelectorAll('.item-text select option');
+    var allSelectedOptions = container.parentNode.parentNode.parentNode.querySelectorAll('.item-text select option:checked');
+    var allOptions = container.parentNode.parentNode.parentNode.querySelectorAll('.item-text select option');
 
     var i, j;
     for (i = 0; i < allOptions.length; i++) {
