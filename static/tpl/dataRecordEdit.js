@@ -60,14 +60,15 @@ function addLine(category) {
         newLine.querySelector('.questionnaire-button-container a.button').addEventListener('click', onQuestionnaireButtonClick);
     }
 
-    var options = container.parentNode.parentNode.querySelectorAll('.item-text select option');
+    var allSelectedOptions = container.parentNode.parentNode.querySelectorAll('.item-text select option:checked');
+    var newLineOptions = newLine.querySelectorAll('.item-text select option');
 
-    for (var i = 0; i < options.length; i++) {
-        if (options[i].parentNode !== select && options[i].value === select.value) {
-            options[i].disabled = true;
-        }
-        else {
-            options[i].disabled = false;
+    var i, j;
+    for (i = 0; i < allSelectedOptions.length; i++) {
+        for (j = 0; j < newLineOptions.length; j++) {
+            if (allSelectedOptions[i].value === newLineOptions[j].value && newLineOptions[j].value !== '') {
+                newLineOptions[j].disabled= true;
+            }
         }
     }
 
@@ -79,6 +80,24 @@ function removeLine(element) {
         container = line.parentNode;
 
     container.removeChild(line);
+
+    // Enable the selected option on other rows
+
+    var allSelectedOptions = container.parentNode.parentNode.querySelectorAll('.item-text select option:checked');
+    var allOptions = container.parentNode.parentNode.querySelectorAll('.item-text select option');
+
+    var i, j;
+    for (i = 0; i < allOptions.length; i++) {
+        allOptions[i].disabled = false;
+        for (j = 0; j < allSelectedOptions.length; j++) {
+            if (allOptions[i] !== allSelectedOptions[j] &&
+                allSelectedOptions[j].value === allOptions[i].value &&
+                allOptions[i].value !== '') {
+                allOptions[i].disabled = true;
+                break;
+            }
+        }
+    }
 }
 
 function removeItem(id) {
@@ -336,17 +355,23 @@ var updateParam = function(element, directValue) {
     }
 
     // Disable the selected option on other rows
-    var options = container.parentNode.parentNode.querySelectorAll('.item-text select option');
 
-    for (var i = 0; i < options.length; i++) {
-        if (options[i].parentNode !== select && options[i].value === select.value) {
-            options[i].disabled = true;
-        }
-        else {
-            options[i].disabled = false;
+    var allSelectedOptions = container.parentNode.parentNode.querySelectorAll('.item-text select option:checked');
+    var allOptions = container.parentNode.parentNode.querySelectorAll('.item-text select option');
+
+    var i, j;
+    for (i = 0; i < allOptions.length; i++) {
+        allOptions[i].disabled = false;
+        for (j = 0; j < allSelectedOptions.length; j++) {
+            if (allOptions[i] !== allSelectedOptions[j] &&
+                allSelectedOptions[j].value === allOptions[i].value &&
+                allOptions[i].value !== '') {
+                allOptions[i].disabled = true;
+                break;
+            }
         }
     }
-}
+};
 
 function toggleEditMode(id) {
     var line = document.getElementById('ID' + id),
