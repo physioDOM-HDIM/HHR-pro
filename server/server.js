@@ -370,6 +370,11 @@ server.put( '/api/beneficiary/current/:name', ICurrentStatus.put);
 server.post('/api/beneficiary/questionnaires/:entryID/answers', IBeneficiary.createQuestionnaireAnswers);
 
 
+//Dietary Plan
+server.get('/api/beneficiary/dietary-plan', IBeneficiary.getDietaryPlan);
+server.post('/api/beneficiary/dietary-plan', IBeneficiary.createDietaryPlan);
+
+
 server.get( '/api/beneficiary/questprog', IBeneficiary.getQuestProg );
 server.get( '/api/beneficiaries/:entryID/questprog', IBeneficiary.getQuestProg );
 server.post('/api/beneficiary/questprog/:ref', IBeneficiary.addQuestProg );

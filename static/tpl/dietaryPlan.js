@@ -1,22 +1,9 @@
 var Utils = new Utils(),
 	contentLimit = 240;
 
-window.addEventListener('DOMContentLoaded', function() {
-
-	initData();
-
-	//Limit the content length of the message
-	var contentField = document.querySelector('#content');
-
-	contentField.onkeyup = updateLimitInfo; //Update the count/decount of limit characters
-	contentField.onkeypress = limitInputCheck; //Limit the characters
-	contentField.onpaste = limitPasteCheck; //Limit the characters
-
-	setLimitInfo(contentField.value.length); //Init the limit
-
-}, false);
-
-
+/**
+ * Limit Char Count Methods
+ */
 var setLimitInfo = function(count) {
 	var limitInfo = document.querySelector('.limitInfo');
 
@@ -46,16 +33,43 @@ var limitPasteCheck = function(e) {
 	setLimitInfo(this.value.length);
 };
 
-var initData = function() {
-	var container = document.querySelector('#recommendation'),
-		dataTpl = document.querySelector('#dataTpl'),
-		modelData = {
-			special: true,
-			content: 'blabla blablabla bla'
-		};
+/**
+ * Init Data and listeners
+ */
 
-	container.innerHTML = Mustache.render(dataTpl.innerHTML, modelData);
+window.addEventListener('DOMContentLoaded', function() {
+	initData();
+}, false);
+
+var initData = function(callback) {
+	Utils.promiseXHR("GET", "/api/beneficiary/dietary-plan", 200).then(function(dietaryPlan) {
+		dietaryPlan = JSON.parse(dietaryPlan);
+        var container = document.querySelector('#recommendation'),
+			dataTpl = document.querySelector('#dataTpl'),
+			modelData = {
+				special: dietaryPlan.special,
+				content: dietaryPlan.content
+			};
+
+		container.innerHTML = Mustache.render(dataTpl.innerHTML, modelData);
+
+		//Limit the content length of the message
+		var contentField = document.querySelector('#content');
+
+		contentField.onkeyup = updateLimitInfo; //Update the count/decount of limit characters
+		contentField.onkeypress = limitInputCheck; //Limit the characters
+		contentField.onpaste = limitPasteCheck; //Limit the characters
+
+		setLimitInfo(contentField.value.length); //Init the limit
+
+    }, function(error) {
+        new Modal('errorOccured');
+    });
 };
+
+/**
+ * UI Methods
+ */
 
 var toggleMode = function() {
 	var modeUpdate = document.querySelectorAll('.mode-update'),
@@ -79,6 +93,10 @@ var toggleMode = function() {
 	contentField.value = contentSaved.innerText;
 	setLimitInfo(contentField.value.length);
 };
+
+/**
+ * Actions
+ */
 
 var saveRecommendation = function() {
 	var obj = form2js(document.forms.recommendation),
