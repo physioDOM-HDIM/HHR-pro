@@ -26,11 +26,9 @@ var getParameterList = function() {
 
     	for(var y in parameterList) {
 
-    		parameterList[y].firstMeasureDatetime= moment(parameterList[y].lastReport).format("YYYY-MM-DD");//remplace lastReport by firstReport
+    		parameterList[y].firstMeasureDatetime= moment(parameterList[y].firstReport).format("YYYY-MM-DD");
     		parameterList[y].lastMeasureDatetime= moment(parameterList[y].lastReport).format("YYYY-MM-DD");
-    		parameterList[y].firstMeasure = 5;//MOCK
-    		parameterList[y].lastMeasure = 30;//MOCK
-    		parameterList[y].delta = parameterList[y].lastMeasure - parameterList[y].firstMeasure;
+    		parameterList[y].delta = parameterList[y].lastValue - parameterList[y].firstValue;
 
 			var row = document.createElement('div'),
 				model = {
