@@ -1,0 +1,61 @@
+{% extends './page.htm' %}
+
+{% block title %}Physical Plan{% endblock %}
+
+{% block head %}
+{% parent %}
+
+<link rel="stylesheet" href="/styles/dietaryPlan.css">
+
+<script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
+<script src="/tpl/physicalPlan.js"></script>
+
+<script src="/bower_components/mustache/mustache.js"></script>
+<script src="/bower_components/zdk-calendar/form2js.js"></script>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="row title">
+	<label class="title">
+		{{ "Physical activities recommendation"|i18n }}
+	</label>
+</div>
+
+<form name="recommendation" id="recommendation"></form>
+
+<div class="row control actions">
+	<span class="spacer"></span>
+	<div class="mode-update hidden">
+		<button type="button" class="red big" onclick="toggleMode()">{{ "Cancel"|i18n }}</button>
+		<button type="button" class="blue big" onclick="saveRecommendation()">{{ "Save"|i18n }}</button>
+	</div>
+
+	<div class="mode-read">
+		<button type="button" class="blue big" onclick="toggleMode()">{{ "Edit"|i18n }}</button>
+	</div>
+</div>
+
+<script type="template" id="dataTpl">
+	{% raw %}
+	<div class="mode-update hidden">
+		<div class="row spaced-side">
+			<div class="spacer limitInfo"></div>
+		</div>
+	</div>
+	<div class="row spaced-down">
+		<div class="mode-update hidden">
+			<textarea name="content" id="content">{{content}}</textarea>
+		</div>
+		<div class="mode-read">
+			<div id="content-saved">{{content}}</div>
+		</div>
+	</div>
+	{% endraw %}
+</script>
+
+{% include 'modal.htm' %}
+
+{% endblock %}

@@ -837,6 +837,52 @@ var IBeneficiary = {
 				next(false);
 			});
 	},
+
+	/**
+	 * Adding a new physical plan to replace the old one
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+
+	createPhysicalPlan: function(req,res, next) {
+		logger.trace("newPhysicalPlan");
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then(function (beneficiary) {
+				var physicalPlan = JSON.parse( req.body );
+				return beneficiary.createPhysicalPlan( physicalPlan, req.session.person.id );
+			})
+			.then( function( physicalPlan) {
+				res.send( physicalPlan );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	getPhysicalPlan: function(req,res,next) {
+		logger.trace("physicalPlan");
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then(function (beneficiary) {
+				return beneficiary.getPhysicalPlan();
+			})
+			.then( function (physicalPlan) {
+				res.send( physicalPlan );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	}
 };
 
 module.exports = IBeneficiary;

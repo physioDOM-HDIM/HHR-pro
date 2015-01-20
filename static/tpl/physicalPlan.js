@@ -42,11 +42,12 @@ window.addEventListener('DOMContentLoaded', function() {
 }, false);
 
 var initData = function(callback) {
-	Utils.promiseXHR("GET", "/api/beneficiary/dietary-plan", 200).then(function(dietaryPlan) {
-		dietaryPlan = JSON.parse(dietaryPlan);
-		return {special: dietaryPlan.special, content: dietaryPlan.content};
+
+	Utils.promiseXHR("GET", "/api/beneficiary/physical-plan", 200).then(function(physicalPlan) {
+		physicalPlan = JSON.parse(physicalPlan);
+		return {content: physicalPlan.content};
     }, function() {
-        return {special: false, content: ''};
+        return {content: ''};
     }).then(function(model) {
     	var container = document.querySelector('#recommendation'),
 			dataTpl = document.querySelector('#dataTpl');
@@ -98,13 +99,12 @@ var toggleMode = function() {
 var saveRecommendation = function() {
 	var obj = form2js(document.forms.recommendation),
 		recommendation = {
-			special: (!!obj.special && obj.special === 'on'),
 			content: obj.content
 		};
 
-	Utils.promiseXHR("POST", "/api/beneficiary/dietary-plan", 200, JSON.stringify(recommendation)).then(function(response) {
+	Utils.promiseXHR("POST", "/api/beneficiary/physical-plan", 200, JSON.stringify(recommendation)).then(function(response) {
         new Modal('saveSuccess', function() {
-        	window.location.href = "/dietary-plan";
+        	window.location.href = "/physical-plan";
         });
     }, function(error) {
         new Modal('errorOccured');

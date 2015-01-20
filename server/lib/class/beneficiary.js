@@ -18,6 +18,7 @@ var RSVP = require("rsvp"),
 	DataProgItem = require("./dataProgItem"),
 	QuestionnairePlan = require("./questionnairePlan"),
 	DietaryPlan = require("./dietaryPlan"),
+	PhysicalPlan = require("./physicalPlan"),
 	dbPromise = require("./database"),
 	moment = require("moment");
 
@@ -964,7 +965,7 @@ function Beneficiary( ) {
 	};
 
 	this.getDietaryPlan = function() {
-		var that = this
+		var that = this;
 
 		return new promise( function(resolve, reject) {
 			logger.trace("getDietaryPlan");
@@ -976,7 +977,37 @@ function Beneficiary( ) {
 					reject(err);
 				});
 		});
-	}
+	};
+
+	/**
+	 * Physical Plan
+	 */
+
+	this.createPhysicalPlan = function( physicalPlanObj, professionalID ) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("createPhysicalPlan");
+			var physicalPlan = new PhysicalPlan(new ObjectID(that._id));
+			physicalPlan.setup(that._id, physicalPlanObj, professionalID)
+				.then(resolve)
+				.catch(reject);
+		});
+	};
+
+	this.getPhysicalPlan = function() {
+		var that = this;
+
+		return new promise( function(resolve, reject) {
+			logger.trace("getPhysicalPlan");
+			var physicalPlan = new PhysicalPlan(new ObjectID(that._id));
+			physicalPlan.getLastOne()
+				.then( resolve )
+				.catch( function(err) {
+					logger.error("error ", err);
+					reject(err);
+				});
+		});
+	};
 
 }
 

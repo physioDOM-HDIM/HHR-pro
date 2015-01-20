@@ -1,5 +1,5 @@
 /**
- * @file dietaryPlan.js
+ * @file physicalPlan.js
  */
 
 /* jslint node:true */
@@ -11,9 +11,9 @@ var promise = require("rsvp").Promise,
 	ObjectID = require("mongodb").ObjectID,
 	moment = require("moment");
 
-var logger = new Logger("DietaryPlan");
+var logger = new Logger("PhysicalPlan");
 
-function dietaryPlan(beneficiaryID) {
+function physicalPlan(beneficiaryID) {
 	this.subject = beneficiaryID;
 
 	this.getLastOne = function() {
@@ -22,7 +22,7 @@ function dietaryPlan(beneficiaryID) {
 			logger.trace("getLastOne", that.subject);
 			var search = { beneficiary: that.subject };
 
-			physioDOM.db.collection("dietaryPlan").find(search).sort({datetime:-1}).limit(1).toArray( function (err, doc) {
+			physioDOM.db.collection("physicalPlan").find(search).sort({datetime:-1}).limit(1).toArray( function (err, doc) {
 				if (err) {
 					logger.alert("Error");
 					throw err;
@@ -46,7 +46,7 @@ function dietaryPlan(beneficiaryID) {
 		return new promise( function(resolve, reject) {
 			logger.trace("save");
 
-			physioDOM.db.collection("dietaryPlan").save( that, function(err, result) {
+			physioDOM.db.collection("physicalPlan").save( that, function(err, result) {
 				if(err) {
 					throw err;
 				}
@@ -58,12 +58,12 @@ function dietaryPlan(beneficiaryID) {
 		});
 	};
 
-	this.setup = function( beneficiaryID, dietaryPlanObj, professionalID ) {
+	this.setup = function( beneficiaryID, physicalPlanObj, professionalID ) {
 		logger.trace("setup");
 
-		for (var prop in dietaryPlanObj) {
-			if (dietaryPlanObj.hasOwnProperty(prop)) {
-				this[prop] = dietaryPlanObj[prop];
+		for (var prop in physicalPlanObj) {
+			if (physicalPlanObj.hasOwnProperty(prop)) {
+				this[prop] = physicalPlanObj[prop];
 			}
 		}
 
@@ -75,4 +75,4 @@ function dietaryPlan(beneficiaryID) {
 	};
 }
 
-module.exports = dietaryPlan;
+module.exports = physicalPlan;
