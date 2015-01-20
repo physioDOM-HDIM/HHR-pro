@@ -14,7 +14,9 @@ function checkForm(validate) {
 					inputs[i].setAttribute('disabled', true);
 				}
 			}
+			new Modal('saveSuccess');
 		}, function(error) {
+			new Modal('errorOccured');
 			console.log(error);
 		});
 }

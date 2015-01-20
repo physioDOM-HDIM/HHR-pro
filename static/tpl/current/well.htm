@@ -6,6 +6,8 @@
 {% parent %}
 <script src="/bower_components/form2js/src/form2js.js"></script>
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
+<script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
 
 <link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
 <link rel="import" href="/bower_components/zdk-panel/zdk-panel.html">
@@ -21,7 +23,7 @@
 			<div class="row value-row questionnaire-row" data-name="SF12">
 				<div flex class="value-name">SF 12 score</div>
 				<div class="questionnaire-date">{% if status.sf12Date %}{{status.sf12Date | date('Y-m-d')}}{% endif %}</div>
-				<input type="text" class="questionnaire-score" value="{{status.sf12Score}}" disabled />
+				<input type="text" class="questionnaire-score" value="{{status.sf12Score}}" readonly />
 				<input type="hidden" class="questionnaire-answer" name="sf12Answer" value="{{status.sf12Answer}}" />
 				<div class="questionnaire-button-container">
 					<a class="button small blue" href={% if status.sf12Answer %}"/answers/{{status.sf12Answer}}"{% else %}"/questionnaire/SF12"{% endif %}>Questionnaire</a>
@@ -36,6 +38,8 @@
 		</form>
 	</zdk-panel>
 </div>
+
+{% include "../modal.htm" %}
 
 <zdk-modal id="confirmModal" closebutton="false">
 	<div class="modalContainer">

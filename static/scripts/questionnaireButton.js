@@ -31,6 +31,7 @@ function onQuestionnaireValidate(name, date, score, answerID) {
 	if (eltScore.length) {
 		[].slice.call(eltScore).forEach( function(elt) {
 			elt.value = score;
+			elt.readonly = true;
 		});
 	}
 

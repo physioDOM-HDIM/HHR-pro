@@ -76,7 +76,7 @@
 				<div class="col bold" style="flex:2">{% raw %}{{ labelLang }}{% endraw %}</div>
 				<div class="col item-value" style="max-width:150px">{{ item.value }}</div>
 				{% if cat !== 'questionnaire' %}
-				<div class="col" style="max-width:150px">{{ unityLabel }}</div>
+				<div class="col" style="max-width:150px">{% raw %}{{ unityLabel }}{% endraw %}</div>
 				{% else %}
 				<div class="col" style="max-width:150px">
 				<button type="button" class="blue small answer" data-answer="{{item.ref}}" onclick="showAnswer('{{item.ref}}')">{{"Questionnaire"|i18n}}</button>

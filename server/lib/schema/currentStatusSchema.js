@@ -12,7 +12,7 @@ var currentWellBeingSchema = {
 					required: true
 				},
 				"sf12Score": {
-					type: "integer",
+					type: "number",
 					default: 0,
 					description: "SF12 questionnaire score"
 				},
@@ -56,7 +56,7 @@ var currentNutritionSchema = {
 					description: "BMI"
 				},
 				"mnaScore": {
-					type: "integer",
+					type: "number",
 					default: 0,
 					description: "MNA questionnaire score"
 				},
@@ -69,7 +69,7 @@ var currentNutritionSchema = {
 					description: "MNA questionnaire answer ID"
 				},
 				"mnaSfScore": {
-					type: "integer",
+					type: "number",
 					default: 0,
 					description: "MNA SF questionnaire score"
 				},
@@ -82,7 +82,7 @@ var currentNutritionSchema = {
 					description: "MNA SF questionnaire answer ID"
 				},
 				"snaqScore": {
-					type: "integer",
+					type: "number",
 					default: 0,
 					description: "SNAQ questionnaire score"
 				},
@@ -95,7 +95,7 @@ var currentNutritionSchema = {
 					description: "SNAQ questionnaire answer ID"
 				},
 				"dhdScore": {
-					type: "integer",
+					type: "number",
 					default: 0,
 					description: "DHD-FFQ questionnaire score"
 				},
