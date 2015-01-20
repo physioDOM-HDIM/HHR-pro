@@ -237,5 +237,6 @@
 	"Frailty status": "Frailty status",
 	"Confirmation": "Confirmation",
 	"Are you sure?": "Are you sure?",
-	"Questionnaire answers": "Questionnaire answers"
+	"Questionnaire answers": "Questionnaire answers",
+	"Result synthesis": "Result synthesis"
 }
