@@ -1202,24 +1202,31 @@ function IPage() {
 			return next();
 		}
 		else {
-			new CurrentStatus().get(req.session.beneficiary, name)
-				.then( function(status) {
-					data.status = status;
+			physioDOM.Beneficiaries()
+			.then(function(beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+			})
+			.then(function(beneficiary) {
+				data.beneficiary = beneficiary;
+				return new CurrentStatus().get(beneficiary._id, name);
+			})
+			.then( function(status) {
+				data.status = status;
 
+				render('/static/tpl/current/' + name + '.htm', data, res, next);
+			})
+			.catch(function(err) {
+				if (err.code && err.code === 404) {
+					data.status = {};
 					render('/static/tpl/current/' + name + '.htm', data, res, next);
-				})
-				.catch(function(err) {
-					if (err.code && err.code === 404) {
-						data.status = {};
-						render('/static/tpl/current/' + name + '.htm', data, res, next);
-					}
-					else {
-						logger.error(err);
-						res.write(err);
-						res.end();
-						next();
-					}
-				});
+				}
+				else {
+					logger.error(err);
+					res.write(err);
+					res.end();
+					next();
+				}
+			});
 		}
 	};
 
