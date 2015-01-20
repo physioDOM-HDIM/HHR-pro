@@ -118,6 +118,14 @@
 		width: 100%;
 		overflow: hidden;
 	}
+	div.professional {
+		width: 100px;
+		text-align: right;
+		font-size: 70%;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		overflow: hidden;
+	}
 </style>
 <style shim-shadowdom>
 
@@ -135,7 +143,7 @@
 	<div class="beneficiary">beneficiary<br>
 		<label id="beneficiary"><a href="/beneficiary/overview" target="main">-</a></label>
 	</div>
-	<div style="width:100px;text-align:right;font-size: 70%;">{{account.firstname}}. {{account.lastname}}<br/><a href="/logout">Disconnect</a></div>
+	<div class="professional">{{account.firstname}}. {{account.lastname}}<br/><a href="/logout">Disconnect</a></div>
 </core-toolbar>
 
 <core-drawer-panel responsiveWidth="992px">
