@@ -17,9 +17,10 @@ function checkForm(validate) {
 				for (var i = 0; i < inputs.length; ++i) {
 					inputs[i].setAttribute('disabled', true);
 				}
-
 			}
+			new Modal('saveSuccess');
 		}, function(error) {
+			new Modal('errorOccured');
 			console.log(error);
 		});
 }

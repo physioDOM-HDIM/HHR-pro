@@ -32,11 +32,13 @@ function checkForm(validate) {
 				}
 
 				var textareas = document.querySelectorAll('textarea');
-				for (var i = 0; i < textareas.length; ++i) {
+				for (i = 0; i < textareas.length; ++i) {
 					textareas[i].setAttribute('disabled', true);
 				}
 			}
+			new Modal('saveSuccess');
 		}, function(error) {
+			new Modal('errorOccured');
 			console.log(error);
 		});
 }

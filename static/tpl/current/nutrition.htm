@@ -6,6 +6,8 @@
 {% parent %}
 <script src="/bower_components/form2js/src/form2js.js"></script>
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
+<script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
 
 <link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
 <link rel="import" href="/bower_components/zdk-panel/zdk-panel.html">
@@ -28,7 +30,7 @@
 						name="size"
 						class="value-input"
 						value="{{beneficiary.size}}"
-						disabled />
+						{% if status.validated %}disabled{% else %}readonly{% endif %} />
 					<div class="value-unit">meter</div>
 				</div>
 				<div class="row value-row">
@@ -122,6 +124,8 @@
 		</form>
 	</zdk-panel>
 </div>
+
+{% include "../modal.htm" %}
 
 <zdk-modal id="confirmModal" closebutton="false">
 	<div class="modalContainer">
