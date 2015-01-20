@@ -1397,6 +1397,89 @@ function IPage() {
 	};
 
 	/**
+	 * Dietary & Physical Plan
+	 * @param  req
+	 * @param  res
+	 * @param  next
+	 */
+	
+	this.dietaryPlan = function(req, res, next) {
+		logger.trace("dietaryPlan");
+		var html;
+
+		init(req);
+		var data = {
+			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
+		};
+
+		physioDOM.Beneficiaries()
+			.then(function(beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+			})
+			.then(function(beneficiary) {
+				data.beneficiary = beneficiary;
+
+				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/dietaryPlan.htm', data, function(err, output) {
+					if (err) {
+						console.log("error", err);
+						console.log("output", output);
+						res.write(err);
+						res.end();
+						next();
+					} else {
+						sendPage(output, res, next);
+					}
+				});
+
+			})
+			.catch(function(err) {
+				logger.error(err);
+				res.write(err);
+				res.end();
+				next();
+			});
+	};
+
+	this.physicalPlan = function(req, res, next) {
+		logger.trace("physicalPlan");
+		var html;
+
+		init(req);
+		var data = {
+			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
+		};
+
+		physioDOM.Beneficiaries()
+			.then(function(beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+			})
+			.then(function(beneficiary) {
+				data.beneficiary = beneficiary;
+
+				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/physicalPlan.htm', data, function(err, output) {
+					if (err) {
+						console.log("error", err);
+						console.log("output", output);
+						res.write(err);
+						res.end();
+						next();
+					} else {
+						sendPage(output, res, next);
+					}
+				});
+
+			})
+			.catch(function(err) {
+				logger.error(err);
+				res.write(err);
+				res.end();
+				next();
+			});
+	};
+
+
+
+	/**
 	 * Render a page using a template and given data.
 	 * 
 	 * @param  {String}   tpl  Path of the template (relative to DOCUMENT ROOT)

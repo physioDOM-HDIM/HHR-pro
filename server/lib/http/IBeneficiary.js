@@ -790,6 +790,98 @@ var IBeneficiary = {
 				res.send(err.code || 400, err);
 				next(false);
 			});
+	},
+
+	/**
+	 * Adding a new dietary plan to replace the old one
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+
+	createDietaryPlan: function(req,res, next) {
+		logger.trace("newDietaryPlan");
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then(function (beneficiary) {
+				var dietaryPlan = JSON.parse( req.body );
+				return beneficiary.createDietaryPlan( dietaryPlan, req.session.person.id );
+			})
+			.then( function( dietaryPlan) {
+				res.send( dietaryPlan );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	getDietaryPlan: function(req,res,next) {
+		logger.trace("dietaryPlan");
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then(function (beneficiary) {
+				return beneficiary.getDietaryPlan();
+			})
+			.then( function (dietaryPlan) {
+				res.send( dietaryPlan );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	/**
+	 * Adding a new physical plan to replace the old one
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+
+	createPhysicalPlan: function(req,res, next) {
+		logger.trace("newPhysicalPlan");
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then(function (beneficiary) {
+				var physicalPlan = JSON.parse( req.body );
+				return beneficiary.createPhysicalPlan( physicalPlan, req.session.person.id );
+			})
+			.then( function( physicalPlan) {
+				res.send( physicalPlan );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	getPhysicalPlan: function(req,res,next) {
+		logger.trace("physicalPlan");
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then(function (beneficiary) {
+				return beneficiary.getPhysicalPlan();
+			})
+			.then( function (physicalPlan) {
+				res.send( physicalPlan );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
 	}
 };
 

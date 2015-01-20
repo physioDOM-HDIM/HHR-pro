@@ -237,5 +237,7 @@
 	"Frailty status": "Frailty status",
 	"Confirmation": "Confirmation",
 	"Are you sure?": "Are you sure?",
-	"Questionnaire answers": "Questionnaire answers"
+	"Questionnaire answers": "Questionnaire answers",
+	"Diet recommendation": "Diet recommendation",
+	"Physical activities recommendation": "Physical activities recommendation"
 }
