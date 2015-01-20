@@ -373,9 +373,11 @@ server.post('/api/beneficiary/questionnaires/:entryID/answers', IBeneficiary.cre
 //Dietary Plan
 server.get('/api/beneficiary/dietary-plan', IBeneficiary.getDietaryPlan);
 server.post('/api/beneficiary/dietary-plan', IBeneficiary.createDietaryPlan);
+server.get('/api/beneficiary/dietary-plans', IBeneficiary.getDietaryPlanList);
 //Physical Plan
 server.get('/api/beneficiary/physical-plan', IBeneficiary.getPhysicalPlan);
 server.post('/api/beneficiary/physical-plan', IBeneficiary.createPhysicalPlan);
+server.get('/api/beneficiary/physical-plans', IBeneficiary.getPhysicalPlanList);
 
 
 server.get( '/api/beneficiary/questprog', IBeneficiary.getQuestProg );

@@ -838,6 +838,31 @@ var IBeneficiary = {
 			});
 	},
 
+	getDietaryPlanList: function(req,res, next) {
+		logger.trace("dietaryPlanList");
+		var pg = parseInt(req.params.pg,10) || 1;
+		var offset = parseInt(req.params.offset,10) || 20;
+		var sort = req.params.sort || null;
+		var sortDir = parseInt(req.params.dir,10) || 1;
+		var filter = req.params.filter || null;
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then(function (beneficiary) {
+				return beneficiary.getDietaryPlanList(pg, offset, sort, sortDir, filter);
+			})
+			.then( function (dietaryPlanList) {
+				res.send( dietaryPlanList );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
 	/**
 	 * Adding a new physical plan to replace the old one
 	 * @param req
@@ -876,6 +901,31 @@ var IBeneficiary = {
 			})
 			.then( function (physicalPlan) {
 				res.send( physicalPlan );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	getPhysicalPlanList: function(req,res, next) {
+		logger.trace("physicalPlanList");
+		var pg = parseInt(req.params.pg,10) || 1;
+		var offset = parseInt(req.params.offset,10) || 20;
+		var sort = req.params.sort || null;
+		var sortDir = parseInt(req.params.dir,10) || 1;
+		var filter = req.params.filter || null;
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then(function (beneficiary) {
+				return beneficiary.getPhysicalPlanList(pg, offset, sort, sortDir, filter);
+			})
+			.then( function (physicalPlanList) {
+				res.send( physicalPlanList );
 				next();
 			})
 			.catch( function(err) {

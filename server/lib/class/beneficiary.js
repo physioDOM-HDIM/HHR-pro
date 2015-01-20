@@ -979,6 +979,15 @@ function Beneficiary( ) {
 		});
 	};
 
+	this.getDietaryPlanList = function(pg, offset, sort, sortDir, filter) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("getDietaryPlanList");
+			var dietaryPlan = new DietaryPlan(new ObjectID(that._id));
+			resolve(dietaryPlan.getItems(pg, offset, sort, sortDir, filter));
+		});
+	};
+
 	/**
 	 * Physical Plan
 	 */
@@ -1006,6 +1015,15 @@ function Beneficiary( ) {
 					logger.error("error ", err);
 					reject(err);
 				});
+		});
+	};
+
+	this.getPhysicalPlanList = function(pg, offset, sort, sortDir, filter) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("getPhysicalPlanList");
+			var physicalPlan = new PhysicalPlan(new ObjectID(that._id));
+			resolve(physicalPlan.getItems(pg, offset, sort, sortDir, filter));
 		});
 	};
 

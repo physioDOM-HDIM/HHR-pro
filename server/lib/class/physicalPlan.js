@@ -7,6 +7,7 @@
 "use strict";
 
 var promise = require("rsvp").Promise,
+	dbPromise = require("./database.js"),
 	Logger = require("logger"),
 	ObjectID = require("mongodb").ObjectID,
 	moment = require("moment");
@@ -15,6 +16,21 @@ var logger = new Logger("PhysicalPlan");
 
 function physicalPlan(beneficiaryID) {
 	this.subject = beneficiaryID;
+
+	this.getItems = function( pg, offset, sort, sortDir, filter) {
+		pg = pg || 1;
+		offset = offset || 50;
+
+		var cursor = physioDOM.db.collection("physicalPlan").find();
+		var cursorSort = {};
+		if(sort) {
+			cursorSort[sort] = [-1,1].indexOf(sortDir)!==-1?sortDir:1;
+		} else {
+			cursorSort.datetime = -1;
+		}
+		cursor = cursor.sort( cursorSort );
+		return dbPromise.getList(cursor, pg, offset);
+	};
 
 	this.getLastOne = function() {
 		var that = this;
