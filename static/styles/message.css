@@ -1,5 +1,6 @@
 .message-detail {
 	margin:15px 10px;
+	display:block;
 }
 
 div.row.actions {
@@ -18,7 +19,4 @@ div.row.spaced-side {
 	text-align: right;
 }
 
-textarea#content {
-	width: 100%;
-	height: 75px;
-}
+textarea { margin-left:150px; }

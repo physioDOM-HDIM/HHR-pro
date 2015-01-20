@@ -2,38 +2,29 @@ var Utils = new Utils(),
 	contentLimit = 200;
 
 window.addEventListener('DOMContentLoaded', function() {
-
 	//Limit the content length of the message
-	var contentField = document.querySelector('#content'),
-		limitInfo = document.querySelector('.limitInfo'),
-		setLimitInfo = function(count) {
-			if(!count) {
-				limitInfo.innerText = contentLimit;
-			} else {
-				limitInfo.innerText = contentLimit - count;
-			}
-		},
-		updateLimitInfo = function() {
-			if (this.value.length <= contentLimit) {
-				setLimitInfo(this.value.length);
-			}
-		},
-		limitInputCheck = function () {
-			if (this.value.length >= contentLimit) {
-				return false;
-			}
-		},
-		limitPasteCheck = function(e) {
+	var contentField = document.querySelector('#content');
+	var limitPasteCheck = function(e) {
 			if (e.clipboardData.getData('text/plain').length + this.value.length >= contentLimit) {
 				return false;
 			}
-			setLimitInfo(this.value.length);
 		};
-
-	contentField.onkeyup = updateLimitInfo; //Update the count/decount of limit characters
-	contentField.onkeypress = limitInputCheck; //Limit the characters
+	function limitText() {
+		var lines = contentField.value.split("\n");
+		for (var i = 0; i < lines.length; i++) {
+			if (lines[i].length <= 60) continue;
+			var j = 0, space = 60;
+			while (j++ <= 60) {
+				if (lines[i].charAt(j) === " ") { space = j; }
+			}
+			lines[i + 1] = lines[i].substring(space + 1) + (lines[i + 1] || "");
+			lines[i] = lines[i].substring(0, space);
+		}
+		contentField.value = lines.slice(0, 9).join("\n");
+		
+	}
+	contentField.onkeyup = limitText; //Update the count/decount of limit characters
 	contentField.onpaste = limitPasteCheck; //Limit the characters
-	setLimitInfo(); //Init the limit
 
 }, false);
 

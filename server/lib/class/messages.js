@@ -184,7 +184,7 @@ function Messages( beneficiaryID ) {
 			}
 			cursor = cursor.sort( cursorSort );
 			
-			function replaceAuthor( item ) {
+			function replaceAuthorAndCRLF( item ) {
 				return new promise(function (resolve, reject) {
 					Directory.getEntryByID(item.author)
 						.then(function (professional) {
@@ -192,6 +192,7 @@ function Messages( beneficiaryID ) {
 								id: item.author,
 								name: professional.name
 							};
+							item.content = item.content.split("\n");
 							resolve(item);
 						});
 				});
@@ -203,7 +204,7 @@ function Messages( beneficiaryID ) {
 					return dbPromise.getList(cursor, pg, offset);
 				})
 				.then( function( list ) {
-					RSVP.all( list.items.map( replaceAuthor ))
+					RSVP.all( list.items.map( replaceAuthorAndCRLF ))
 						.then(function( result ) {
 							list.items = result;
 							resolve( list );

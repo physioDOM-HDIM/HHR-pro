@@ -239,5 +239,9 @@
 	"Are you sure?": "Are you sure?",
 	"Questionnaire answers": "Questionnaire answers",
 	"Diet recommendation": "Diet recommendation",
-	"Physical activities recommendation": "Physical activities recommendation"
+	"Physical activities recommendation": "Physical activities recommendation",
+	"Show Detail": "Show Detail",
+	"Hide Detail": "Hide Detail",
+	"send by": "send by",
+	"status": "status"
 }
