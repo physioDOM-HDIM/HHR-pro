@@ -32,7 +32,7 @@ var IMenu = {
 				menu.href = menus[i].link;
 				menu.disabled = menus[i].disabled;
 				menu.ico = menus[i].icon;
-				menu.menu = IMenu._getSubMenu(menus, menus[i]._id.toString());
+				menu.menu = IMenu._getSubMenu(menus, menus[i]._id.toString(), role);
 
 				subMenu.push(menu);
 			}
