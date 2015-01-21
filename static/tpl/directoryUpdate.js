@@ -444,13 +444,14 @@ function deleteItem() {
 function checkPassword () {
     var password = document.querySelector('.account-password'),
         checkPassword = document.querySelector('.account-check-password'),
-        accountActivation = document.querySelector('.account-activation');
+        accountActivation = document.querySelector('.account-activation'),
+        regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=])[a-zA-Z0-9!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=]{8,}$/;
 
     if(accountActivation === null) {
         return;
     }
 
-    accountActivation.checked = (password.value === checkPassword.value);
+    accountActivation.checked = (password.value === checkPassword.value && regex.test(checkPassword.value));
 
 }
 

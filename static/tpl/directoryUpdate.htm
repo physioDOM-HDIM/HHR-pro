@@ -197,6 +197,9 @@
                     <label>Confirm password:</label>
                     <input type="password" name="checkAccountPassword" class="account-check-password" onkeyup="checkPassword(this)" />
                 </div>
+                <div class="row tip">
+                    Info: The password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters
+                </div>
                 {% if professional.hasPassword %}
                 <div class="row">
                     <label>Active:</label>

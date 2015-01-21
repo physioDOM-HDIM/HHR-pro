@@ -388,6 +388,12 @@ div[drawer] ul.menu {
 	font-weight: bold;
 }
 
+.tip{
+	font-size: 11px;
+	color: #313131;
+	margin-left: 150px;
+}
+
 .right {
 	text-align: right;
 }
