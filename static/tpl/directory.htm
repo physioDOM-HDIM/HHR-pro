@@ -7,7 +7,7 @@
 <script src="/bower_components/rsvp/rsvp.min.js"></script>
 <script src="tpl/directory.js"></script>
 <style>
-    .item.disabled div:first-child { opacity:0.7 }
+    .disabled { opacity:0.5 }
 </style>
 {% endblock %}
 
@@ -63,9 +63,9 @@
 
     <tsante-list url="/api/directory" offset="20" auto="false" autoRender="false" unresolved id="tsanteList">
         <template is="auto-binding" repeat="{% raw %}{{item, i in list.items}}{% endraw %}">
-            <div class="item {% raw %}{{!item.active ? 'disabled' : ''}}{% endraw %}">
+            <div class="item">
                 <div class="row">
-                    <div style="-webkit-flex:1; -ms-flex:1; flex:1">
+                    <div style="-webkit-flex:1; -ms-flex:1; flex:1" class="{% raw %}{{!item.active ? 'disabled' : ''}}{% endraw %}">
                         <div class="row">
                             <div class="col">
                                 <span class="name" style="-webkit-flex:2; -ms-flex:2; flex:2;font-weight:bold">
@@ -109,12 +109,12 @@
                             <button type="button" class="green small" onclick="toggleHiddenNode(this, '.address')">detail</button><br/>
                         </template>
                         {% if admin %}
-                        <a href="/directory/{% raw %}{{item._id}}{% endraw %}"><button class="blue small" type="button" onclick="/* updateDirectory({% raw %}{{i}}{% endraw %}) */">edit</button></a>
+                        <a href="/directory/{% raw %}{{item._id}}{% endraw %}" class="button blue small">edit</a>
                         {% endif %}
                     </div>
                 </div>
                 <template if="{% raw %}{{item.address}}{% endraw %}">
-                    <div class="address hidden" style="margin-left:50px;border-top:1px solid black">
+                    <div class="address hidden {% raw %}{{!item.active ? 'disabled' : ''}}{% endraw %}" style="margin-left:50px;border-top:1px solid black">
                         <template repeat="{% raw %}{{lineItem in item.address.line}}{% endraw %}">
                             <div class="row">{% raw %}{{lineItem}}{% endraw %}</div>
                         </template>
