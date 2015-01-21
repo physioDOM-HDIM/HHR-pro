@@ -120,8 +120,25 @@ function checkOrganization() {
     var elt = document.querySelector("#nonOrgContainer"),
         isOrganization = document.querySelector("form[name=directoryForm] input[name='organization']").checked;
 
+    var inputList = elt.querySelectorAll('input[type="radio"]'),
+        inputListLength = inputList.length;
+
     //Show/Hide relative information to a none organization
-    elt.className = isOrganization ? elt.className + " hidden" : elt.className.replace("hidden", "");
+    if(isOrganization) {
+
+        for(var i = 0; i<inputListLength; i++) {
+            inputList[i].disabled = true;
+        }
+
+        elt.className = elt.className + " hidden";
+    } else {
+
+        for(var i = 0; i<inputListLength; i++) {
+            inputList[i].disabled = false;
+        }
+
+        elt.className = "";
+    }
 
     //Firefox fix: set default value for this required input due to validation form even if the node is hidden or the required attribute removed
     elt = document.querySelector("form[name=directoryForm] input[name='name.given']");
@@ -422,6 +439,20 @@ function deleteItem() {
             console.log("deleteItem - error: ", error);
         });
     }
+}
+
+function checkPassword () {
+    var password = document.querySelector('.account-password'),
+        checkPassword = document.querySelector('.account-check-password'),
+        accountActivation = document.querySelector('.account-activation'),
+        regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=])[a-zA-Z0-9!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=]{8,}$/;
+
+    if(accountActivation === null) {
+        return;
+    }
+
+    accountActivation.checked = (password.value === checkPassword.value && regex.test(checkPassword.value));
+
 }
 
 function init() {

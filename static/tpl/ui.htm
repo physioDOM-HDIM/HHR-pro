@@ -45,10 +45,12 @@
 		color: white;
 		margin: 0px 5px 0px -5px;
 		padding-left: 5px;
+		/*
 		background-image: -webkit-linear-gradient(top,#868686 0,#313131 100%);
 		background-image: linear-gradient(to bottom,#868686 0,#313131 100%);
 		background-repeat: repeat-x;
 		filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff868686', endColorstr='#ff313131', GradientType=0);
+		*/
 		text-shadow: 1px 1px 0px black;
 	}
 
@@ -117,6 +119,14 @@
 		width: 100%;
 		overflow: hidden;
 	}
+	div.professional {
+		width: 100px;
+		text-align: right;
+		font-size: 70%;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		overflow: hidden;
+	}
 </style>
 <style shim-shadowdom>
 
@@ -134,7 +144,7 @@
 	<div class="beneficiary">beneficiary<br>
 		<label id="beneficiary"><a href="/beneficiary/overview" target="main">-</a></label>
 	</div>
-	<div style="width:100px;text-align:right;font-size: 70%;">{{account.firstname}}. {{account.lastname}}<br/><a href="/logout">Disconnect</a></div>
+	<div class="professional">{{account.firstname}}. {{account.lastname}}<br/><a href="/logout">Disconnect</a></div>
 </core-toolbar>
 
 <core-drawer-panel responsiveWidth="992px">
@@ -165,6 +175,13 @@
 					<!-- <li class="menuitem">Care plan</li> -->
 					<!-- <li class="menuitem">Enclosed documents</li> -->
 					<!-- <li class="menuitem">Professionals report</li> -->
+				</ul>
+			</li>
+			<li class="collapsed">
+				<div>Dietary & Physical activity</div>
+				<ul class="tree">
+					<li class="menuitem"><a href="/dietary-plan" target="main">Dietary Plan</a></li>
+					<li class="menuitem"><a href="/physical-plan" target="main">Physical Plan</a></li>
 				</ul>
 			</li>
 			<!--<li class="collapsed">-->

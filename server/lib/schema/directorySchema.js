@@ -23,6 +23,7 @@ var practitionerSchema = {
 		"address": {"$ref": "/SimpleAddress"},
 		"gender": { type:"string", "enum": [ "F" , "M" ] , "required":true},
 		"job": { type:"string"},
+		"organization": { type:"boolean",  "enum": [ false ], required:true},
 		"role": { type:"string", required:true },
 		"communication": { type:"string", "enum": [ "fr", "es", "nl", "en" ] },
 		"active": { type:"boolean", required:true },

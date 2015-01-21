@@ -77,6 +77,7 @@ function Professional() {
 				})
 				.then( function(account) {
 					result.account = account;
+					result.hasPassword = (account.password !== undefined && account.password !== "");
 					resolve(result);
 				})
 				.catch( function( err ) {

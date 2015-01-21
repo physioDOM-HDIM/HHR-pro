@@ -376,6 +376,15 @@ server.put( '/api/beneficiary/current/:name', ICurrentStatus.put);
 // Questionnaire answers for the current beneficiary
 server.post('/api/beneficiary/questionnaires/:entryID/answers', IBeneficiary.createQuestionnaireAnswers);
 
+//Dietary Plan
+server.get('/api/beneficiary/dietary-plan', IBeneficiary.getDietaryPlan);
+server.post('/api/beneficiary/dietary-plan', IBeneficiary.createDietaryPlan);
+server.get('/api/beneficiary/dietary-plans', IBeneficiary.getDietaryPlanList);
+//Physical Plan
+server.get('/api/beneficiary/physical-plan', IBeneficiary.getPhysicalPlan);
+server.post('/api/beneficiary/physical-plan', IBeneficiary.createPhysicalPlan);
+server.get('/api/beneficiary/physical-plans', IBeneficiary.getPhysicalPlanList);
+
 server.get( '/api/beneficiary/questprog', IBeneficiary.getQuestProg );
 server.get( '/api/beneficiaries/:entryID/questprog', IBeneficiary.getQuestProg );
 server.post('/api/beneficiary/questprog/:ref', IBeneficiary.addQuestProg );
@@ -442,6 +451,9 @@ server.get( '/prescription/symptom', IPage.prescriptionDataSymptom);
 server.get( '/prescription/questionnaire', IPage.prescriptionQuestionnaire);
 
 server.get( '/admin/rights', IPage.rights);
+
+server.get( '/dietary-plan', IPage.dietaryPlan);
+server.get( '/physical-plan', IPage.physicalPlan);
 
 server.get(/\/[^api|components\/]?$/, function(req, res, next) {
 	logger.trace("index");

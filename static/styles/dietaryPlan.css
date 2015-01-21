@@ -1,8 +1,3 @@
-.message-detail {
-	margin:15px 10px;
-	display:block;
-}
-
 div.row.actions {
 	margin-top: 40px;
 }
@@ -17,6 +12,18 @@ div.row.spaced-side {
 
 .limitInfo {
 	text-align: right;
+	width: 100%;
 }
 
-textarea { margin-left:150px; }
+textarea#content {
+	width: 100%;
+}
+
+label {
+	font-weight: bold;
+}
+
+.row.spaced-down .mode-update,
+.row.spaced-down .mode-read {
+	width: 100%;
+}

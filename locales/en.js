@@ -240,5 +240,16 @@
 	"Questionnaire answers": "Questionnaire answers",
 	"Rights": "Rights",
 	"Select role :": "Select role :",
-	"Write": "Write"
+	"Write": "Write",
+	"Diet recommendation": "Diet recommendation",
+	"Physical activities recommendation": "Physical activities recommendation",
+	"Show Detail": "Show Detail",
+	"Hide Detail": "Hide Detail",
+	"send by": "send by",
+	"status": "status",
+	"Professional directory": "Professional directory",
+	"Identity": "Identity",
+	"Telecom": "Telecom",
+	"Address": "Address",
+	"Account": "Account"
 }
