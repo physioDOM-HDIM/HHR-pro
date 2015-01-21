@@ -29,16 +29,6 @@
 <script type="template" id="tplTelecomContainer">
     <div class="row">
         <input type="hidden" name="telecom[{%raw%}{{indx}}{%endraw%}].use" value="work">
-        <!--
-        <div class="col">
-            <label>Use:</label>
-            <select name="telecom[{%raw%}{{indx}}{%endraw%}].use"  style="min-width: 150px;">
-                {% for item in use.items %}
-                <option value="{{item.value}}" {{telecom_use_selected}}>{{item.label}}</option>
-                {% endfor %}
-            </select>
-        </div>
-        -->
         <div class="col">
             <label>System:</label>
             <select name="telecom[{%raw%}{{indx}}{%endraw%}].system" style="min-width: 150px;" onchange="checkEmailTypeValidation(this)">
@@ -118,34 +108,11 @@
                     </select>
                 </div>
             </zdk-panel>
-            <!--
-            <fieldset>
-                <legend>Status</legend>
-                <div class="row">
-                    <label {%raw%}{{organization_disabled}}{%endraw%}>Organization:</label>
-                    <input type="checkbox" name="organization" onchange="checkOrganization()" {%raw%}{{organization_disabled}} {{organization_checked}}{%endraw%}/>
-                </div>
-                <div class="row">
-                    <label>Active:</label>
-                    <input type="checkbox" name="active" {% if professional && professional.active===true %}checked{% endif %}/>
-                </div>
-            </fieldset>
-            -->
             <zdk-panel heading="{{'Telecom' |i18n}}" collapsable="false" collapsed="false">
                 {% if !professional.telecom %}
                 <div class="telecomContainer">
                     <div class="row">
                         <input type="hidden" name="telecom[0].use" value="work">
-                        <!--
-                        <div class="col">
-                            <label>Use:</label>
-                            <select name="telecom[0].use" required>
-                                {% for item in use.items %}
-                                <option value="{{item.value}}" {% if (!entry.use && item.value=='work')||entry.use==item.value %}selected{% endif %}>{{item.label}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        -->
                         <div class="col">
                             <label>System:</label>
                             <select name="telecom[0].system" onchange="checkEmailTypeValidation(this)" required>
@@ -163,7 +130,7 @@
                         <div class="col">
                             <span class="spacer"></span>
                             <button type="button" class="red small" onclick="deleteTelecom(this)">delete</button>
-                        </div>>
+                        </div>
                     </div>
                 </div>
                 {% else %}
@@ -171,16 +138,6 @@
                 <div class="telecomContainer">
                     <div class="row">
                         <input type="hidden" name="telecom[{{loop.index}}].use" value="work">
-                        <!--
-                        <div class="col">
-                            <label>Use:</label>
-                            <select name="telecom[{{loop.index}}].use" style="min-width: 150px;" required>
-                                {% for item in use.items %}
-                                <option value="{{item.value}}" {% if (!entry.use && item.value=='work')||entry.use==item.value %}selected{% endif %}>{{item.label}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        -->
                         <div class="col">
                             <label>System:</label>
                             <select name="telecom[{{loop.index}}].system" style="min-width: 150px;" onchange="checkEmailTypeValidation(this)" required>
@@ -210,22 +167,6 @@
             </zdk-panel>
             <zdk-panel heading="{{'Address' |i18n}}" collapsable="false" collapsed="false">
                 <input type="hidden" name="address.use" value="work">
-                <!--
-                <div class="row">
-                    <label>Use:</label>
-                    <select name="address.use" required>
-                        {% for item in use.items %}
-                        <option value="{{item.value}}" {% if (!professional.address && item.value=='work')||professional.address.use==item.value %}selected{% endif %}>{{item.label}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                -->
-                <!--
-                <div class="row">
-                    <label>Text:</label>
-                    <input type="text" name="address.text" value="{{professional.address.text}}" />
-                </div>
-                -->
                 <div class="row">
                     <label>Street :</label>
                     <!-- Line break is needed to place each line -->
@@ -267,7 +208,7 @@
             <div class="buttonContainer">
                 {% if professional._id %}
                 <button id="deleteItem" class="red" type="button" onclick="confirmDelete()">delete</button>
-                {% endif %}   
+                {% endif %}
                 <button type="button" class="blue" onclick="window.history.back()">cancel</button>
                 {% if professional._id %}
                 <button id="saveItemBtn" class="green">save</button>
