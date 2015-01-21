@@ -144,6 +144,46 @@ function Menu() {
 				.catch(reject);
 		});
 	};
+
+	this.canRead = function(role, url) {
+		var that = this;
+		return new RSVP.Promise(function(resolve, reject) {
+			logger.trace('canRead', id);
+
+			physioDOM.db.collection('menus').findOne({link: url}, function (err, doc) {
+				if (err) {
+					logger.alert('Database error');
+					reject(err);
+				}
+				if (doc && doc.rights[role] && doc.rights[role] > 0) {
+					resolve(true);
+				}
+				else {
+					resolve(false);
+				}
+			});
+		});
+	};
+
+	this.canWrite = function(role, url) {
+		var that = this;
+		return new RSVP.Promise(function(resolve, reject) {
+			logger.trace('canWrite', id);
+
+			physioDOM.db.collection('menus').findOne({link: url}, function (err, doc) {
+				if (err) {
+					logger.alert('Database error');
+					reject(err);
+				}
+				if (doc && doc.rights[role] && doc.rights[role] === 2) {
+					resolve(true);
+				}
+				else {
+					resolve(false);
+				}
+			});
+		});
+	};
 }
 
 module.exports = Menu;
