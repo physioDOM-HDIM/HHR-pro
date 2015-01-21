@@ -248,5 +248,10 @@
 	"Identity": "Identity",
 	"Telecom": "Telecom",
 	"Address": "Address",
-	"Account": "Account"
+	"Account": "Account",
+	"Are you sure you want to update this item ?": "Are you sure you want to update this item ?",
+	"Are you sure you want to create this item ?": "Are you sure you want to create this item ?",
+	"The password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters": "The password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters",
+	"You must add an email in telecom field": "You must add an email in telecom field",
+	"Address is incomplete": "Address is incomplete"
 }
