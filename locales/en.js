@@ -243,5 +243,10 @@
 	"Show Detail": "Show Detail",
 	"Hide Detail": "Hide Detail",
 	"send by": "send by",
-	"status": "status"
+	"status": "status",
+	"Professional directory": "Professional directory",
+	"Identity": "Identity",
+	"Telecom": "Telecom",
+	"Address": "Address",
+	"Account": "Account"
 }

@@ -62,8 +62,7 @@
     <core-ajax url="/api/directory/" handleAs="json"></core-ajax>
     <div class="mainContainer">
         <form name="directoryForm" onsubmit="checkForm(); return false;" autocomplete="off">
-            <fieldset>
-                <legend>Identity</legend>
+            <zdk-panel heading="{{'Identity' |i18n}}" collapsable="false" collapsed="false">
                 <input type="hidden" name="_id" value="{{professional._id.toString()}}">
                 <div class="row">
                     <label {%raw%}{{organization_disabled}}{%endraw%}>Organization:</label>
@@ -118,7 +117,7 @@
                         {% endfor %}
                     </select>
                 </div>
-            </fieldset>
+            </zdk-panel>
             <!--
             <fieldset>
                 <legend>Status</legend>
@@ -132,8 +131,7 @@
                 </div>
             </fieldset>
             -->
-            <fieldset>
-                <legend>Telecom</legend>
+            <zdk-panel heading="{{'Telecom' |i18n}}" collapsable="false" collapsed="false">
                 {% if !professional.telecom %}
                 <div class="telecomContainer">
                     <div class="row">
@@ -209,9 +207,8 @@
                     <span class="spacer"></span>
                     <button class="blue small" type="button" onclick="addTelecom()">Add</button>
                 </div>
-            </fieldset>
-            <fieldset>
-                <legend>Address</legend>
+            </zdk-panel>
+            <zdk-panel heading="{{'Address' |i18n}}" collapsable="false" collapsed="false">
                 <input type="hidden" name="address.use" value="work">
                 <!--
                 <div class="row">
@@ -245,10 +242,8 @@
                         <input type="text" name="address.city" value="{{professional.address.city}}" />
                     </div>
                 </div>
-            </fieldset>
-            <br />
-            <fieldset>
-                <legend>Account</legend>
+            </zdk-panel>
+            <zdk-panel heading="{{'Account' |i18n}}" collapsable="false" collapsed="false">
                 <div class="row">
                     <label>Login:</label>
                     <input type="text" name="account.login" value="{{professional.account.login}}" />
@@ -265,7 +260,7 @@
                     <label>Active:</label>
                     <input type="checkbox" name="active" {% if professional && professional.active===true %}checked{% endif %}/>
                 </div>
-            </fieldset>
+            </zdk-panel>
             <br />
             <div class="row">
                 <span class="spacer"></span>
