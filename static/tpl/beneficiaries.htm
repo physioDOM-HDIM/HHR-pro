@@ -7,6 +7,7 @@
   
 <script src="/bower_components/form2js/src/form2js.js"></script>
 <script src="/tpl/beneficiaries.js"></script>
+
 {% endblock %}
 
 {% block content %}
@@ -81,7 +82,7 @@
 					<div style="-webkit-flex:1; -ms-flex:1; flex:1">
 						<div class="row">
 							<span style="-webkit-flex:2; -ms-flex:2; flex:2;font-weight:bold">{% raw %}{{item.name.family}} {{item.name.given}}{% endraw %}</span>
-							<span style="-webkit-flex:1; -ms-flex:1; flex:1">{{ "Perimeter"|i18n }} : {% raw %}{{item.perimeter?item.perimeter:"-"}}{% endraw %}</span>
+							<span style="-webkit-flex:1; -ms-flex:1; flex:1">{{ "Perimeter"|i18n }} : {% raw %}{{item.perimeter | labelPerimeter}}{% endraw %}</span>
 						</div>
 						<div class="row">
 							<span style="padding-left:50px;-webkit-flex:1; -ms-flex:1; flex:1">{{ "Birth date"|i18n }} : {% raw %}{{item.birthdate}}{% endraw %}</span>
@@ -109,4 +110,20 @@
 		parent.document.querySelector("#beneficiary a").innerHTML = '{{ beneficiary.name.family }} {{ beneficiary.name.given }}';
 	</script>
 	{% endif %}
+
+	<script>
+	document.addEventListener('polymer-ready', function() {
+		var perimeters = {
+			{% for p in perimeter.items %}
+			{{p.value}}: "{{p.label}}",
+			{% endfor %}
+		};
+
+		PolymerExpressions.prototype.labelPerimeter = function(p) {
+			return perimeters[p] || '-';
+		};
+	});
+	
+	</script>
+
 {% endblock %}
