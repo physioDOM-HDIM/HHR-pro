@@ -21,6 +21,7 @@ var swig = require("swig"),
 	ObjectID = require("mongodb").ObjectID;
 
 var CurrentStatus = require('../class/currentStatus.js');
+var Menu = require('../class/menu.js');
 // var DOCUMENTROOT= "/home/http/physiodom";
 var DOCUMENTROOT=require("path").join(__dirname,"../../../");
 
@@ -1394,6 +1395,51 @@ function IPage() {
 				res.end();
 				next();
 			});
+	};
+
+	function _getSubMenuRights(menus, parentId) {
+		logger.trace('_getSubMenu', parentId);
+
+		var subMenu = [];
+		var menu;
+		for (var i = 0; i < menus.length; i++) {
+			if (menus[i].parent === parentId) {
+				menu = menus[i];
+				menu.items = _getSubMenuRights(menus, menus[i]._id.toString());
+				subMenu.push(menu);
+			}
+		}
+
+		return subMenu;
+	}
+
+	this.rights = function(req, res, next) {
+		logger.trace('page');
+
+		var html;
+		init(req);
+		var data = {
+			admin: ['coordinator', 'administrator'].indexOf(req.session.role) !== -1 ? true : false
+		};
+
+		physioDOM.Lists.getList('role')
+		.then(function(list) {
+			data.roles = list.items;
+			return new Menu().getAll();
+		})
+		.then(function(menus) {
+			logger.trace(menus);
+
+			data.items = _getSubMenuRights(menus, '');
+
+			render('/static/tpl/rights.htm', data, res, next);
+		})
+		.catch(function(err) {
+			logger.error(err);
+			res.write(err);
+			res.end();
+			next();
+		});
 	};
 
 	/**

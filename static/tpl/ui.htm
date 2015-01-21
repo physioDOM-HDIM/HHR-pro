@@ -23,7 +23,9 @@
 	<link rel="stylesheet" href="styles/layout.css">
 	<link rel="stylesheet" href="styles/ui.css">
 
+	<script src="/bower_components/rsvp/rsvp.min.js"></script>
 	<script src="scripts/ui.js" type="text/javascript"></script>
+	<script src="scripts/utils.js" type="text/javascript"></script>
 	<script>
 		if(window.location !== window.parent.location ) {
 			console.info("load in iframe");
@@ -32,7 +34,6 @@
 	</script>
 </head>
 <body unresolved>
-
 <style>
 	@font-face {
 		font-family: 'Glyphicons Halflings';
@@ -138,7 +139,7 @@
 
 <core-drawer-panel responsiveWidth="992px">
 	<div drawer>
-		<ul class="tree menu">
+		<ul id="mainMenu" class="tree menu">
 			<li class="menuitem"><a href="/beneficiaries" target="main">Select beneficiary</a></li>
 			<li class="menuitem"><a href="/beneficiary/overview" target="main">Beneficiary overview</a></li>
 			<li class="collapsed">
@@ -201,6 +202,7 @@
 			<li class="menuitem"><a href="/settings/lists" target="main">Lists management</a></li>
 			<li class="menuitem"><a href="/questionnaires" target="main">Questionnaires</a></li>
 			<li class="menuitem"><a href="/services/health/create" target="main">Healthcare: add a basic health service</a></li>
+			<li class="menuitem"><a href="/admin/rights" target="main">Rights</a></li>
 		</ul>
 		{% endif %}
 	</div>
@@ -210,10 +212,56 @@
 </core-drawer-panel>
 
 <script>
+function buildMenu(obj, element) {
 
-	document.addEventListener("DOMContentLoaded", function(event) {
+	var item, li, a;
+	var df = document.createDocumentFragment();
 
-		// if(window.navigator.standalone) {
+	for (var i = 0; i < obj.length; i++) {
+		item = obj[i];
+		console.log(item);
+
+		if (item.href) {
+			li = document.createElement('li');
+			li.classList.add('menuitem');
+
+			a = document.createElement('a');
+			a.setAttribute('href', item.href);
+			a.setAttribute('target', 'main');
+			a.textContent = item.title[document.documentElement.lang] || item.title.en;
+
+			li.appendChild(a);
+			df.appendChild(li);
+		}
+		else if (item.menu && item.menu.length > 0) {
+			li = document.createElement('li');
+			li.classList.add('collapsed');
+
+			div = document.createElement('div');
+			div.textContent = item.title[document.documentElement.lang] || item.title.en;
+			li.appendChild(div);
+
+			ul = document.createElement('ul');
+			ul.classList.add('tree');
+			buildMenu(item.menu, ul);
+			li.appendChild(ul);
+			df.appendChild(li);
+		}
+	}
+
+	element.appendChild(df);
+}
+
+document.addEventListener("DOMContentLoaded", function(event) {
+
+	var utils = new Utils();
+
+	utils.promiseXHR('GET', '/api/menu', 200)
+	.then(function(response) {
+		console.log(response);
+
+		buildMenu(JSON.parse(response), document.getElementById('mainMenu'));
+
 		var menuEntries = document.querySelectorAll("ul.tree li");
 		[].slice.call(menuEntries).forEach( function(entry) {
 			switch( entry.className ) {
@@ -239,31 +287,38 @@
 					break;
 			}
 		});
+	},
+	function(error) {
+		console.log(error);
 	});
 
-	function toggleDrawer() {
-		var drawer = document.querySelector("core-drawer-panel");
-		drawer.togglePanel();
-	}
+	// if(window.navigator.standalone) {
 	
-	function closeDrawer() {
-		var drawer = document.querySelector("core-drawer-panel");
-		if (drawer) {
-			drawer.closeDrawer();
-		}
+});
+
+function toggleDrawer() {
+	var drawer = document.querySelector("core-drawer-panel");
+	drawer.togglePanel();
+}
+
+function closeDrawer() {
+	var drawer = document.querySelector("core-drawer-panel");
+	if (drawer) {
+		drawer.closeDrawer();
 	}
-	
-	function highlight(pathname) {
-		var selected = document.querySelector("li.selected");
-		if( selected ) {
-			selected.classList.remove("selected");
-		}
-		var link = document.querySelector("[drawer] a[href='"+pathname+"']");
-		if( link ) {
-			link = link.parentNode;
-			link.classList.add("selected");
-		}
+}
+
+function highlight(pathname) {
+	var selected = document.querySelector("li.selected");
+	if( selected ) {
+		selected.classList.remove("selected");
 	}
+	var link = document.querySelector("[drawer] a[href='"+pathname+"']");
+	if( link ) {
+		link = link.parentNode;
+		link.classList.add("selected");
+	}
+}
 </script>
 </body>
 </html>

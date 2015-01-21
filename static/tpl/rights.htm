@@ -1,0 +1,90 @@
+{% extends './page.htm' %}
+
+{% block title %}{{ 'Rights' | i18n }}{% endblock %}
+
+{% block head %}
+{% parent %}
+<script src="/bower_components/form2js/src/form2js.js"></script>
+<script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
+
+<link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
+<link rel="import" href="/bower_components/zdk-panel/zdk-panel.html">
+
+<link rel="stylesheet" href="../styles/current.css">
+
+{% endblock %}
+
+{% block content %}
+<style>
+.item-name {
+	width: 300px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.row.item0,
+.row.item1 {
+	margin: 0;
+	padding: 5px;
+}
+
+.row.item1 {
+	background-color: #eee;
+}
+</style>
+
+<form id="form" onsubmit="checkForm(); return false;">
+
+	<div class="row">
+		<label for="roleSelect">{{'Select role :' | i18n}}</label>
+		<select id="roleSelect" name="role">
+		{% for role in roles %}
+			<option value="{{role.ref}}">{{role.label.en}}</option>
+		{% endfor %}
+		</select>
+	</div>
+
+	{% set i = -1 %}
+
+	{% macro displayItem(item, ind) %}
+
+	<div class="row item{{i % 2}}">
+		<div class="item-name">{{ind}} {{item.label.en}}</div>
+
+		<input type="hidden" name="rights[{{i}}][id]" value="{{item._id.toString()}}" />
+
+		{% for role in roles %}
+		<div class="roles hidden" data-role="{{role.ref}}">
+			<input type="checkbox" name="rights[{{i}}][{{role.ref}}][read]" value="1" {% if item.rights[role.ref] > 0 %}checked{% endif %} /> {{'Read' | i18n}}
+		</div>
+		<div class="roles hidden" data-role="{{role.ref}}">
+			<input type="checkbox" name="rights[{{i}}][{{role.ref}}][write]" value="1" {% if item.rights[role.ref] === 2 %}checked{% endif %} /> {{'Write' | i18n}}
+		</div>
+		{% endfor %}
+	</div>
+
+	{% for child in item.items %}
+	{% set i += 1 %}
+	{{ displayItem(child, ind + '--') }}
+	{% endfor %}
+
+	{% endmacro %}
+
+	{% for item in items %}
+	{% set i += 1 %}
+	{{ displayItem(item, '') }}
+	{% endfor %}
+
+	<div id="buttons" class="row control">
+		<span class="spacer"></span>
+		<button type="button" class="red" onclick="cancel();">{{'Cancel' | i18n}}</button>
+		<button class="green">{{'Save' | i18n}}</button>
+	</div>
+</form>
+
+{% include "./modal.htm" %}
+
+<script src="/tpl/rights.js"></script>
+{% endblock %}
