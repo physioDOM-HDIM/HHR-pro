@@ -21,16 +21,15 @@ var logger = new Logger('IMenu');
  */
 var IMenu = {
 
-	_getSubMenu: function(menus, parentId) {
+	_getSubMenu: function(menus, parentId, role) {
 		logger.trace('_getSubMenu', parentId);
 
 		var subMenu = [];
 		for (var i = 0; i < menus.length; i++) {
-			if (menus[i].parent === parentId) {
+			if (menus[i].parent === parentId && menus[i].rights[role]) {
 				var menu = {};
 				menu.title = menus[i].label;
 				menu.href = menus[i].link;
-				menu.rights = menus[i].rights;
 				menu.disabled = menus[i].disabled;
 				menu.ico = menus[i].icon;
 				menu.menu = IMenu._getSubMenu(menus, menus[i]._id.toString());
@@ -59,7 +58,7 @@ var IMenu = {
 		.then(function(menus) {
 			logger.trace(menus);
 
-			var menu = IMenu._getSubMenu(menus, "");
+			var menu = IMenu._getSubMenu(menus, "", req.session.role);
 
 			if (menu) {
 				logger.trace(menu);
