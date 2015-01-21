@@ -441,6 +441,19 @@ function deleteItem() {
     }
 }
 
+function checkPassword () {
+    var password = document.querySelector('.account-password'),
+        checkPassword = document.querySelector('.account-check-password'),
+        accountActivation = document.querySelector('.account-activation');
+
+    if(accountActivation === null) {
+        return;
+    }
+
+    accountActivation.checked = (password.value === checkPassword.value);
+
+}
+
 function init() {
     console.log("init");
     _idxNbTelecom = document.querySelectorAll(".telecomContainer").length;

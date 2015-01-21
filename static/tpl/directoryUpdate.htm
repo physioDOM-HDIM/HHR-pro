@@ -191,16 +191,20 @@
                 </div>
                 <div class="row">
                     <label>Change password:</label>
-                    <input type="password" name="account.password" />
+                    <input type="password" name="account.password" class="account-password" onkeyup="checkPassword(this)" />
                 </div>
                 <div class="row">
                     <label>Confirm password:</label>
-                    <input type="password" name="checkAccountPassword" />
+                    <input type="password" name="checkAccountPassword" class="account-check-password" onkeyup="checkPassword(this)" />
                 </div>
+                {% if professional.hasPassword %}
                 <div class="row">
                     <label>Active:</label>
-                    <input type="checkbox" name="active" {% if professional && professional.active===true %}checked{% endif %}/>
+                    <input type="checkbox" name="active" class="account-activation" {% if professional && professional.active===true %}checked{% endif %}/>
                 </div>
+                {% else %}
+                    <input type="checkbox" name="active" class="hidden" checked />
+                {% endif %}
             </zdk-panel>
             <br />
             <div class="row">
