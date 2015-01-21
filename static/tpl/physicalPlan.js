@@ -1,37 +1,4 @@
-var Utils = new Utils(),
-	contentLimit = 240;
-
-/**
- * Limit Char Count Methods
- */
-var setLimitInfo = function(count) {
-	var limitInfo = document.querySelector('.limitInfo');
-
-	if(!count) {
-		limitInfo.innerText = contentLimit;
-	} else {
-		limitInfo.innerText = contentLimit - count;
-	}
-};
-
-var updateLimitInfo = function() {
-	if (this.value.length <= contentLimit) {
-		setLimitInfo(this.value.length);
-	}
-};
-
-var limitInputCheck = function () {
-	if (this.value.length >= contentLimit) {
-		return false;
-	}
-};
-
-var limitPasteCheck = function(e) {
-	if (e.clipboardData.getData('text/plain').length + this.value.length >= contentLimit) {
-		return false;
-	}
-	setLimitInfo(this.value.length);
-};
+var Utils = new Utils();
 
 /**
  * Init Data and listeners
@@ -45,23 +12,32 @@ var initData = function(callback) {
 
 	Utils.promiseXHR("GET", "/api/beneficiary/physical-plan", 200).then(function(physicalPlan) {
 		physicalPlan = JSON.parse(physicalPlan);
-		return {content: physicalPlan.content};
+		return {content: physicalPlan.content, contentLined: physicalPlan.content.replace(/(\r\n|\n|\r)/gm, "<br>")};
     }, function() {
-        return {content: ''};
+        return {content: '', contentLined: ''};
     }).then(function(model) {
     	var container = document.querySelector('#recommendation'),
 			dataTpl = document.querySelector('#dataTpl');
 
     	container.innerHTML = Mustache.render(dataTpl.innerHTML, model);
 
-		//Limit the content length of the message
 		var contentField = document.querySelector('#content');
 
-		contentField.onkeyup = updateLimitInfo; //Update the count/decount of limit characters
-		contentField.onkeypress = limitInputCheck; //Limit the characters
-		contentField.onpaste = limitPasteCheck; //Limit the characters
+		function limitText() {
+			var lines = contentField.value.split("\n");
+			for (var i = 0; i < lines.length; i++) {
+				if (lines[i].length <= 60) continue;
+				var j = 0, space = 60;
+				while (j++ <= 60) {
+					if (lines[i].charAt(j) === " ") { space = j; }
+				}
+				lines[i + 1] = lines[i].substring(space + 1) + (lines[i + 1] || "");
+				lines[i] = lines[i].substring(0, space);
+			}
+			contentField.value = lines.slice(0, 9).join("\n");
+		}
 
-		setLimitInfo(contentField.value.length); //Init the limit
+		contentField.onkeyup = limitText; //Update the count/decount of limit characters
     });
 };
 
@@ -89,7 +65,6 @@ var toggleMode = function() {
 
 	//clear any change
 	contentField.value = contentSaved.innerText;
-	setLimitInfo(contentField.value.length);
 };
 
 /**

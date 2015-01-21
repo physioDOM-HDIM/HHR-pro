@@ -51,17 +51,13 @@
 			</div>
 		</div>
 	</div>
-	<div class="mode-update hidden">
-		<div class="row spaced-side">
-			<div class="spacer limitInfo"></div>
-		</div>
-	</div>
 	<div class="row spaced-down">
 		<div class="mode-update hidden">
-			<textarea name="content" id="content">{{content}}</textarea>
+			<textarea name="content" id="content" rows="10">{{content}}</textarea>
 		</div>
 		<div class="mode-read">
-			<div id="content-saved">{{content}}</div>
+			<div>{{{contentLined}}}</div>
+			<div class="hidden" id="content-saved">{{content}}</div>
 		</div>
 	</div>
 	{% endraw %}
