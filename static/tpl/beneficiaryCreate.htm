@@ -340,16 +340,19 @@
 <zdk-panel  heading="Access to HHR-Pro" collapsable="true" collapsed="true">
     <form name="account" autocomplete="off" onsubmit="return false;">
         <div class="row">
-            <label>{{ "Login"|i18n }}</label>
+            <label>{{ "Login" | i18n }}</label>
             <input type="text" name="account.login" value="{{beneficiary.account.login}}" />
         </div>
         <div class="row">
-            <label>{{ "Password"|i18n }}</label>
+            <label>{{ "Password" | i18n }}</label>
             <input type="password" name="account.password" />
         </div>
         <div class="row">
-            <label>{{ "Confirm password"|i18n }}</label>
-            <input type="password" name="checkAccountPassword"/>
+            <label>{{ "Confirm password" | i18n }}</label>
+            <input type="password" name="checkAccountPassword" />
+        </div>
+        <div class="row tip">
+            {{'Info: the password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters' | i18n}}
         </div>
         <div class="row">
             <label>{{ "Email"|i18n }}</label>
@@ -360,7 +363,6 @@
                         {% endif %}
                     {% endfor %}"/>
         </div>
-        <button id="accountSubmitBtn" class="hidden"></button>
     </form>
 </zdk-panel>
 

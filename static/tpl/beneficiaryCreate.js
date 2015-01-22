@@ -9,7 +9,8 @@ var _dataObj = null,
     _langCookie = null,
     _momentFormat = null,
     _currentNodeCalendar = null,
-    tsanteListProfessionalElt = null;
+    tsanteListProfessionalElt = null,
+    passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=])[a-zA-Z0-9!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=]{8,}$/;
 
 var promiseXHR = function(method, url, statusOK, data) {
     var promise = new RSVP.Promise(function(resolve, reject) {
@@ -377,7 +378,8 @@ function checkAccountForm() {
 
     //Check if password are equals
     if ((formObj.checkAccountPassword && !formObj.account) ||
-        (formObj.account && formObj.account.password !== formObj.checkAccountPassword)) {
+        (formObj.account && formObj.account.password !== formObj.checkAccountPassword) ||
+        (formObj.account && passwordRegex.test(formObj.account.password))) {
         modalObj = {
             title: "trad_errorFormValidation",
             content: "trad_error_password",
