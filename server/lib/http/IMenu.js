@@ -21,26 +21,6 @@ var logger = new Logger('IMenu');
  */
 var IMenu = {
 
-	_getSubMenu: function(menus, parentId, role) {
-		logger.trace('_getSubMenu', parentId);
-
-		var subMenu = [];
-		for (var i = 0; i < menus.length; i++) {
-			if (menus[i].parent === parentId && menus[i].rights[role]) {
-				var menu = {};
-				menu.title = menus[i].label;
-				menu.href = menus[i].link;
-				menu.disabled = menus[i].disabled;
-				menu.ico = menus[i].icon;
-				menu.menu = IMenu._getSubMenu(menus, menus[i]._id.toString(), role);
-
-				subMenu.push(menu);
-			}
-		}
-
-		return subMenu;
-	},
-
 	/**
 	 * Send all the menu.
 	 * 
@@ -53,26 +33,16 @@ var IMenu = {
 		logger.trace('getMenu');
 
 		var that = this;
-
-		new Menu().getAll()
-		.then(function(menus) {
-			logger.trace(menus);
-
-			var menu = IMenu._getSubMenu(menus, "", req.session.role);
-
-			if (menu) {
-				logger.trace(menu);
+		
+		new Menu().getMenu( req.session.role )
+		.then(function(menu) {
 				res.send(200, menu);
-			}
-			else {
-				res.send(404);
-			}
-			next();
-		});
+				next();
+			});
 	},
 
 	putRights: function(req, res, next) {
-		logger.trace('putRights', req.body);
+		logger.trace('putRights');
 
 		var body = JSON.parse(req.body);
 
@@ -104,8 +74,6 @@ var IMenu = {
 				});
 			});
 		});
-
-		logger.trace('putRights2');
 
 		RSVP.all(promises).then(function(items) {
 			logger.trace('ok', items);

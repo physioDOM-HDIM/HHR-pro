@@ -58,18 +58,80 @@ function Menu() {
 			});
 		});
 	};
-
+	
 	/**
 	 * Get the list of all menus.
 	 */
 	this.getAll = function() {
-		
 		logger.trace('getAll');
-
-		var cursor = physioDOM.db.collection("menus").find({}, {});
-		return database.getArray(cursor);
+		
+		function getMenu( menu, parent ) {
+			return new RSVP.Promise( function( resolve, reject ) {
+				var cursor = physioDOM.db.collection("menus").find( { parent: parent }).sort({index:1});
+				database.getArray(cursor)
+					.then( function(items) {
+						var count = items.length;
+						menu = items;
+						menu.forEach( function(item, i) {
+							if( item.type === "submenu" ) {
+								getMenu( [], item._id )
+									.then( function( submenu ) {
+										items[i].items = submenu;
+										if( --count === 0 ) { resolve(menu); }
+									});
+							} else {
+								if( --count === 0 ) { resolve(menu); }
+							}
+						});
+					});
+			});
+		}
+		
+		return getMenu( [], null );
 	};
+	
+	this.getMenu = function( role ) {
+		logger.trace('getMenu', role);
+		
+		function getRightMenu( menu, parent ) {
+			return new RSVP.Promise( function( resolve, reject ) {
+				var search = { parent: parent };
+				if( role ) { 
+					search['rights.'+role] = { '$gt':0 };
+				}
+				logger.debug( 'search', search );
+				var cursor = physioDOM.db.collection("menus").find( search ).sort({index:1});
+				database.getArray(cursor)
+					.then( function(items) {
+						var count = items.length;
+						menu = items;
+						logger.debug("count", count );
+						if( count === 0 ) {
+							resolve(menu);
+						} else {
+							menu.forEach(function (item, i) {
+								if (item.type === "submenu") {
+									getRightMenu([], item._id)
+										.then(function (submenu) {
+											items[i].items = submenu;
+											if (--count === 0) {
+												resolve(menu);
+											}
+										});
+								} else {
+									if (--count === 0) {
+										resolve(menu);
+									}
+								}
+							});
+						}
+					});
+			});
+		}
 
+		return getRightMenu( [], null );
+	};
+	
 	/**
 	 * Save the menu item in the database.
 	 * 

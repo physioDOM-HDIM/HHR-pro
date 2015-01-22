@@ -1,6 +1,6 @@
 {% extends './page.htm' %}
 
-{% block title %}{{ 'Rights' | i18n }}{% endblock %}
+{% block title %}{{ 'Access management' | i18n }}{% endblock %}
 
 {% block head %}
 {% parent %}
@@ -24,15 +24,19 @@
 	white-space: nowrap;
 }
 
-.row.item0,
-.row.item1 {
+div.row.items {
 	margin: 0;
 	padding: 5px;
 }
 
-.row.item1 {
+div.row.items:nth-child(even) {
 	background-color: #eee;
 }
+
+.space0 { padding-left:5px }
+.space1 { padding-left:25px }
+.space2 { padding-left:50px }
+.space3 { padding-left:75px }
 </style>
 
 <form id="form" onsubmit="checkForm(); return false;">
@@ -41,41 +45,40 @@
 		<label for="roleSelect">{{'Select role :' | i18n}}</label>
 		<select id="roleSelect" name="role">
 		{% for role in roles %}
-			<option value="{{role.ref}}">{{role.label.en}}</option>
+			<option value="{{role.ref}}">{{role.label.en || role.ref}}</option>
 		{% endfor %}
 		</select>
 		<input id="roleInput" type="hidden" name="role" value="NONE" />
 	</div>
 
-	{% set i = -1 %}
-
 	{% macro displayItem(item, ind) %}
 
-	<div class="row item{{i % 2}}">
-		<div class="item-name">{{ind}} {{item.label.en}}</div>
-
-		<input type="hidden" name="rights[{{i}}][id]" value="{{item._id.toString()}}" />
-
-		{% for role in roles %}
-		<div class="roles hidden" data-role="{{role.ref}}">
-			<input type="checkbox" name="rights[{{i}}][{{role.ref}}][read]" value="1" {% if item.rights[role.ref] > 0 %}checked{% endif %} /> {{'Read' | i18n}}
+		<div class="row items space{{ind}}">
+			
+			<div class="item-name"><div class="space{{ind}}">{{item.label | i18n }}</div></div>
+	
+			<input type="hidden" name="rights[{{item._id.toString()}}][id]" value="{{item._id.toString()}}" />
+	
+			{% for role in roles %}
+			<div class="roles hidden" data-role="{{role.ref}}">
+				<input type="checkbox" name="rights[{{item._id.toString()}}][{{role.ref}}][read]" value="1" {% if item.rights[role.ref] > 0 %}checked{% endif %} /> {{'Read' | i18n}}
+			</div>
+			<div class="roles hidden" data-role="{{role.ref}}">
+				<input type="checkbox" name="rights[{{item._id.toString()}}][{{role.ref}}][write]" value="1" {% if item.rights[role.ref] === 2 %}checked{% endif %} /> {{'Write' | i18n}}
+			</div>
+			{% endfor %}
 		</div>
-		<div class="roles hidden" data-role="{{role.ref}}">
-			<input type="checkbox" name="rights[{{i}}][{{role.ref}}][write]" value="1" {% if item.rights[role.ref] === 2 %}checked{% endif %} /> {{'Write' | i18n}}
-		</div>
+	
+		
+		{% for child in item.items %}
+			{{ displayItem(child, ind+1 ) }}
 		{% endfor %}
-	</div>
-
-	{% for child in item.items %}
-	{% set i += 1 %}
-	{{ displayItem(child, ind + '--') }}
-	{% endfor %}
 
 	{% endmacro %}
-
+	
+	{% set ind = 0 %}
 	{% for item in items %}
-	{% set i += 1 %}
-	{{ displayItem(item, '') }}
+		{{ displayItem(item, 0) }}
 	{% endfor %}
 
 	<div id="buttons" class="row control">
