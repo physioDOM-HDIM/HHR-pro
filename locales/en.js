@@ -248,5 +248,9 @@
 	"Identity": "Identity",
 	"Telecom": "Telecom",
 	"Address": "Address",
-	"Account": "Account"
+	"Account": "Account",
+	"Perimeter:": "Perimeter:",
+	"Zip code:": "Zip code:",
+	"City:": "City:",
+	"Birth date:": "Birth date:"
 }
