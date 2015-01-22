@@ -154,7 +154,9 @@ function update() {
                     case "ref":
                         break;
                     case "label":
-                        listItem.label[lang] = item.label[lang];
+                        if(item.label[lang]) {
+                            listItem.label[lang] = item.label[lang];
+                        }
                         break;
                     case "threshold":
                     case "range":
