@@ -102,3 +102,18 @@ span.mandatory {
     font-weight: bold;
     font-size: 18px;
 }
+
+div.refProLabelBox {
+    margin-left: 40px;
+    width: 80px;
+    text-align: center;
+}
+
+div.selectProBox {
+    width: 35px;
+}
+
+div.refProBox {
+    width: 80px;
+    text-align: center;
+}

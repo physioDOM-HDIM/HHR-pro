@@ -358,10 +358,10 @@
             <label>{{ "Email"|i18n }}</label>
             <input type="email" name="telecom.value"
              value="{% for telecom in beneficiary.telecom %}
-                            {% if telecom.system === 'email' %}
-                                {{telecom.value}}
-                            {% endif %}
-                        {% endfor %}"/>
+                        {% if telecom.system === 'email' %}
+                            {{telecom.value}}
+                        {% endif %}
+                    {% endfor %}"/>
         </div>
         <button id="accountSubmitBtn" class="hidden"></button>
     </form>
@@ -393,17 +393,14 @@
                         {% endif %}
                     {% endfor %}
                 </div>
-                <div class="col buttonContainer">
-                   <button type="button" class="small red" onclick="deleteProfessional(this)">{{ "delete"|i18n }}</button>
-                </div>
                 <input type="hidden" name="professional_id" value="{{professional._id.toString()}}">
             </div>
         </div>
         {% endfor %}
         <div class="row control">
             <span class="spacer"></span>
-            <button type="button" class="waitForId blue" onclick="showProfessionals()">{{ "Add"|i18n }}</button>
-            <button id="professionalsSubmitBtn" class="waitForId blue">{{ "Save"|i18n }}</button>
+            <button type="button" class="waitForId blue" onclick="showProfessionals()">{{ "Edit" | i18n }}</button>
+            <button id="professionalsSubmitBtn" class="waitForId blue">{{ "Save" | i18n }}</button>
         </div>
     </form>
 </zdk-panel>
@@ -459,7 +456,7 @@
     <button class="red big" onclick="window.history.back();">{{ "Cancel"|i18n }}</button>
     <button class="waitForId blue big" onclick="checkAllForms()">{{ "Save"|i18n }}</button>
 </div>
-<zdk-modal width="450" id="addProfessionalsModal" closebutton="false">
+<zdk-modal width="550" id="addProfessionalsModal" closebutton="false">
     <div class="modalContainer">
         <div class="modalTitleContainer">{{ "Add professionals"|i18n }}</div>
         <div class="modalContentContainer">
@@ -467,11 +464,18 @@
                 <div class="row">
                     <p>{{ "Choose your referent and check professionals you want to add"|i18n }}</p>
                 </div>
+                <div class="row refProLabelBox">
+                    <label for="referent">{{'Referent' | i18n}}</label>
+                </div>
                 <template is="auto-binding" repeat="{% raw %}{{item, i in list.items}}{% endraw %}">
                     <div class="item">
                         <div class="row">
-                            <div><input type="checkbox" name="selected" checked?="{% raw %}{{item._tmpData.selected}}{% endraw %}" onchange="updateProfessionalSelection(this, {% raw %}'{{i}}'{% endraw %})"/></div>
-                            <div style="margin-right:10px"><input type="radio" name="referent" checked?="{% raw %}{{item._tmpData.referent}}{% endraw %}" onchange="updateProfessionalReferent(this, {% raw %}'{{i}}'{% endraw %})"/></div>
+                            <div class="selectProBox">
+                                <input type="checkbox" name="selected" checked?="{% raw %}{{item._tmpData.selected}}{% endraw %}" onchange="updateProfessionalSelection(this, {% raw %}'{{i}}'{% endraw %})"/>
+                            </div>
+                            <div class="refProBox">
+                                <input type="radio" name="referent" checked?="{% raw %}{{item._tmpData.referent}}{% endraw %}" onchange="updateProfessionalReferent(this, {% raw %}'{{i}}'{% endraw %})"/>
+                            </div>
                             <div class="col bold" >{% raw %}{{item.name.family}} {{item.name.given}}{% endraw %}</div>
                             <div class="col">{% raw %}{{list.dataLists.job.items[item.job][list.lang] || item.job}}{% endraw %}</div>
                         </div>
