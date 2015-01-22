@@ -480,60 +480,6 @@ function IPage() {
 	// -------------- Lists pages ---------------------
 
 	/**
-	 * Lists manager
-	 *
-	 * @param req
-	 * @param res
-	 * @param next
-	 */
-	this.listsManager = function(req, res, next) {
-		logger.trace("listsManager");
-		var html;
-
-		init(req);
-		var data = {
-			admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false
-		};
-		
-		// nested lists
-		var promises = [
-			"unity",
-			"job"
-		].map(promiseList);
-
-		RSVP.all(promises)
-			.then(function(lists) {
-				lists.forEach(function(list) {
-					data[Object.keys(list)] = list[Object.keys(list)];
-				});
-				
-				physioDOM.Lists.getLists(1, 100, true)
-					.then(function(lists) {
-						data.lists = lists;
-						data.lang = lang;
-						// logger.debug("DATA", data);
-
-						html = swig.renderFile(DOCUMENTROOT+'/static/tpl/listsManager.htm', data, function(err, output) {
-							if (err) {
-								console.log("error", err);
-								console.log("output", output);
-								res.write(err);
-								res.end();
-								next();
-							} else {
-								sendPage(output, res, next);
-							}
-						});
-					});
-			}).catch(function(err) {
-				logger.error(err);
-				res.write(err);
-				res.end();
-				next();
-			});
-	};
-
-	/**
 	 * return the lists page
 	 *
 	 * @param req
