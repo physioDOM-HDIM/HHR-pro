@@ -105,7 +105,7 @@
 </script>
 
 <zdk-panel  heading="Beneficiary">
-    <form name="beneficiary" autocomplete="off" onsubmit="checkBeneficiaryForm(); return false;">
+    <form name="beneficiary" autocomplete="off" onsubmit="checkAllForms(); return false;">
         <input type="hidden" name="_id" value="{{beneficiary._id.toString()}}">
         <input type="hidden" name="validate" value="{% if beneficiary.validate %}{{beneficiary.validate}}{% else %}false{% endif %}">
         <div class="row">
