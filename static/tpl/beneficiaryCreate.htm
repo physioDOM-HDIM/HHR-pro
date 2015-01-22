@@ -109,14 +109,14 @@
         <input type="hidden" name="_id" value="{{beneficiary._id.toString()}}">
         <input type="hidden" name="validate" value="{% if beneficiary.validate %}{{beneficiary.validate}}{% else %}false{% endif %}">
         <div class="row">
-            <label>{{ "Gender"|i18n }}</label>
+            <label>{{ "Gender"|i18n }} <span class="mandatory">*</span></label>
             <input name="gender" type="radio" value="M" {% if beneficiary.gender=='M' %}checked{% endif %} required>
             <label for="Male">{{ "Male"|i18n }}</label>
             <input name="gender" type="radio" value="F" {% if beneficiary.gender=='F' %}checked{% endif %} required>
             <label for="Female">{{ "Female"|i18n }}</label>
         </div>
         <div class="row">
-            <label>{{ "Last name"|i18n }}</label>
+            <label>{{ "Last name"|i18n }} <span class="mandatory">*</span></label>
             <input type="text" name="name.family" value="{{beneficiary.name.family}}" required placeholder="{{ 'Mandatory field'|i18n }}"/>
         </div>
         <div class="row">
@@ -124,7 +124,7 @@
             <input type="text" name="name.given" value="{{beneficiary.name.given}}" />
         </div>
         <div class="row">
-            <label>{{ "Birth date"|i18n }}</label>
+            <label>{{ "Birth date"|i18n }} <span class="mandatory">*</span></label>
             <input type="text" name="birthdate" required class="date" value="{{beneficiary.birthdate}}" />
         </div>
         <div class="row">
@@ -137,7 +137,7 @@
         </div>
         <div class="row">
             <div class="col">
-                <label>{{ "Height (meters)"|i18n }}</label>
+                <label>{{ "Height (meters)"|i18n }} <span class="mandatory">*</span></label>
                 <input type="text" name="size" value="{{beneficiary.size}}" required/>
             </div>
             <div class="col">
@@ -154,7 +154,7 @@
                 <div>
                     <div class="row">
                         <div class="col">
-                            <label>{{ "Use"|i18n }}</label>
+                            <label>{{ "Use"|i18n }} </label>
                             <select name="telecom[{{loop.index}}].use" required>
                                 {% for item in use.items %}
                                     <option value="{{item.value}}" {% if (!telecom.use && item.value=='home')||telecom.use===item.value %}selected{% endif %}>{{item.label}}</option>
@@ -196,7 +196,7 @@
             {% for addressItem in beneficiary.address %}
             <div class="addressContainer">
                 <div class="row">
-                    <label>{{ "Use"|i18n }}</label>
+                    <label>{{ "Use"|i18n }} <span class="mandatory">*</span></label>
                     <select name="address[{{loop.index}}].use" required>
                     {% for item in use.items %}
                     <option value="{{item.value}}" {% if addressItem.use == item.value %}selected{% endif %} >{{item.label}}</option>
@@ -208,16 +208,16 @@
                     </div>
                 </div>
                 <div class="row">
-                    <label>{{ "Street"|i18n }}</label>
+                    <label>{{ "Street"|i18n }} <span class="mandatory">*</span></label>
                     <textarea name="address[{{loop.index}}].line" required>{{addressItem.line}}</textarea>
                 </div>
                 <div class="row">
                     <div class="col">
-                        <label>{{ "Zip code"|i18n }}</label>
+                        <label>{{ "Zip code"|i18n }} <span class="mandatory">*</span></label>
                         <input type="text" name="address[{{loop.index}}].zip" class="zipCode" value="{{addressItem.zip}}" required/>
                     </div>
                     <div class="col">
-                        <label class="city">{{ "City"|i18n }}</label>
+                        <label class="city">{{ "City"|i18n }} <span class="mandatory">*</span></label>
                         <input type="text" name="address[{{loop.index}}].city" value="{{addressItem.city}}" required/>
                     </div>
                 </div>
@@ -246,9 +246,19 @@
             <textarea name="entry.demand" >{{beneficiary.entry.demand}}</textarea>
         </div>
         <div class="row">
-            <label>{{ "Start date"|i18n }}</label>
-            <zdk-input-date name="entry.startDate" value="{{beneficiary.entry.startDate}}" style="z-index:100"></zdk-input-date>
-            <!--<input type="text" name="entry.startDate" value="{{beneficiary.entry.startDate}}" required class="date" onclick="showCalendar(this)" />-->
+            <div class="col">
+                <label>{{ "Start date"|i18n }} <span class="mandatory">*</span></label>
+                <zdk-input-date name="entry.startDate" value="{{beneficiary.entry.startDate}}" style="z-index:100" required></zdk-input-date>
+                <!--<input type="text" name="entry.startDate" value="{{beneficiary.entry.startDate}}" required class="date" onclick="showCalendar(this)" />-->
+            </div>
+            <div class="col">
+                <label>{{ "Come from"|i18n }}</label>
+                <select name="entry.comeFrom">
+                    {% for item in comeFrom.items %}
+                    <option value="{{item.value}}">{{item.label}}</option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
         <div class="row">
             <label>{{ "Planned end"|i18n }}</label>
@@ -256,17 +266,22 @@
             <!-- <input type="text" name="entry.plannedEnd" value="{{beneficiary.entry.plannedEnd}}" class="date" onclick="showCalendar(this)" />-->
         </div>
         <div class="row">
-            <label>{{ "End date"|i18n }}</label>
-            <zdk-input-date name="entry.endDate" value="{{beneficiary.entry.endDate}}" style="z-index:100"></zdk-input-date>
-            <!--<input type="text" name="entry.endDate" value="{{beneficiary.entry.endDate}}" class="date" onclick="showCalendar(this)" />-->
+            <div class="col">
+                <label>{{ "End date"|i18n }}</label>
+                <zdk-input-date name="entry.endDate" value="{{beneficiary.entry.endDate}}" style="z-index:100"></zdk-input-date>
+                <!--<input type="text" name="entry.endDate" value="{{beneficiary.entry.endDate}}" class="date" onclick="showCalendar(this)" />-->
+            </div>
+            <div class="col">
+                <label>{{ "Destination"|i18n }}</label>
+                <select name="entry.destination">
+                    {% for item in destination.items %}
+                    <option value="{{item.value}}">{{item.label}}</option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
         <div class="row">
-            <label>{{ "Come from"|i18n }}</label>
-            <select name="entry.comeFrom">
-                {% for item in comeFrom.items %}
-                <option value="{{item.value}}">{{item.label}}</option>
-                {% endfor %}
-            </select>
+            
         </div>
         <div class="row">
             <label>{{ "PhysioDom-Box"|i18n }}</label>
@@ -283,7 +298,7 @@
             <input type="checkbox" name="deceased" value="true" {% if beneficiary.deceased %}checked{% endif %}/>
         </div>
         <div class="row">
-            <label>{{ "Marital status"|i18n }}</label>
+            <label>{{ "Marital status"|i18n }} <span class="mandatory">*</span></label>
             <select name="maritalStatus" required>
                 {% for item in maritalStatus.items %}
                 <option value="{{item.value}}" {% if item.value == beneficiary.maritalStatus %}selected{% endif %}>{{item.label}}</option>
@@ -306,7 +321,7 @@
             </div>
         </fieldset>
         <div class="row">
-            <label>{{ "Way of life"|i18n }}</label>
+            <label>{{ "Way of life"|i18n }} <span class="mandatory">*</span></label>
             <select name="lifeCond.wayOfLife" required>
                 {% for item in wayOfLife.items %}
                 <option value="{{item.value}}" {% if item.value == beneficiary.lifeCond.wayOfLife %}selected{% endif %}>{{item.label}}</option>
@@ -314,7 +329,7 @@
             </select>
         </div>
         <div class="row">
-            <label>{{ "Profession"|i18n }}</label>
+            <label>{{ "Profession"|i18n }} <span class="mandatory">*</span></label>
             <select name="lifeCond.profession" required>
                 {% for item in profession.items %}
                 <option value="{{item.value}}" {% if item.value == beneficiary.lifeCond.profession %}selected{% endif %}>{{item.label}}</option>
@@ -416,7 +431,7 @@
         <p class="head">{{ "Chronic pathologies"|i18n }}</p>
         <div class="row diagnosis" style="align-items: inherit;">
             <div class="col diagnosis" style="flex: none; width: 250px;">
-                <div>{{ "Main diagnosis"|i18n }}</div>
+                <div>{{ "Main diagnosis"|i18n }} <span class="mandatory">*</span></div>
                 <select name="diagnosis.chronic.main" required>
                     {% for item in disability.items %}
                         <option value="{{item.value}}" {% if beneficiary.diagnosis.chronic.main==item.value %}selected{% endif %}>{{item.label}}</option>

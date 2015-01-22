@@ -96,3 +96,9 @@ input[name="biomaster"] {
     flex: 0;
     min-width: 200px;
 }
+
+span.mandatory {
+    color: red;
+    font-weight: bold;
+    font-size: 18px;
+}

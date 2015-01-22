@@ -252,5 +252,6 @@
 	"Perimeter:": "Perimeter:",
 	"Zip code:": "Zip code:",
 	"City:": "City:",
-	"Birth date:": "Birth date:"
+	"Birth date:": "Birth date:",
+	"Destination": "Destination"
 }
