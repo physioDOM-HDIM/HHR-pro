@@ -238,6 +238,10 @@
 <zdk-panel  heading="Entry" collapsable="true" collapsed="false">
     <form name="entry" autocomplete="off" onsubmit="return false;">
         <div class="row">
+            <label>{{ "Active"|i18n }}</label>
+            <input type="checkbox" name="active" value="true" {% if beneficiary.active %}checked{% endif %}/>
+        </div>
+        <div class="row">
             <label>{{ "Demand"|i18n }}</label>
             <textarea name="entry.demand" >{{beneficiary.entry.demand}}</textarea>
         </div>
@@ -277,10 +281,6 @@
         <div class="row">
             <label>{{ "Deceased"|i18n }}</label>
             <input type="checkbox" name="deceased" value="true" {% if beneficiary.deceased %}checked{% endif %}/>
-        </div>
-        <div class="row">
-            <label>{{ "Active"|i18n }}</label>
-            <input type="checkbox" name="active" value="true" {% if beneficiary.active %}checked{% endif %}/>
         </div>
         <div class="row">
             <label>{{ "Marital status"|i18n }}</label>
