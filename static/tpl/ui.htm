@@ -150,76 +150,37 @@
 <core-drawer-panel responsiveWidth="992px">
 	<div drawer>
 		<ul id="mainMenu" class="tree menu">
-			<li class="menuitem"><a href="/beneficiaries" target="main">Select beneficiary</a></li>
-			<li class="menuitem"><a href="/beneficiary/overview" target="main">Beneficiary overview</a></li>
-			<li class="collapsed">
-				<div>Quick look on HHR</div>
-				<ul class="tree">
-					<li class="menuitem"><a href="/message" target="main">Messages to Home</a></li>
-					<li class="menuitem"><a href="tpl/agenda.htm" target="main">Agenda</a></li>
-					<li class="menuitem"><a href="/physiological-data" target="main">Physiological data</a></li>
-				</ul>
-			</li>
-			<li class="collapsed">
-				<div>Healthcare</div>
-				<ul class="tree">
-					<li class="collapsed">
-						<div>Current health status</div>
-						<ul class="tree">
-							<li class="menuitem"><a href="/current/well" target="main">Well being</a></li>
-							<li class="menuitem"><a href="/current/nutrition" target="main">Nutritional status</a></li>
-							<li class="menuitem"><a href="/current/activity" target="main">Activity/Motricity status</a></li>
-							<li class="menuitem"><a href="/current/frailty" target="main">Frailty status</a></li>
-						</ul>
-					</li>
-					<!-- <li class="menuitem">Care plan</li> -->
-					<!-- <li class="menuitem">Enclosed documents</li> -->
-					<!-- <li class="menuitem">Professionals report</li> -->
-				</ul>
-			</li>
-			<li class="collapsed">
-				<div>Dietary & Physical activity</div>
-				<ul class="tree">
-					<li class="menuitem"><a href="/dietary-plan" target="main">Dietary Plan</a></li>
-					<li class="menuitem"><a href="/physical-plan" target="main">Physical Plan</a></li>
-				</ul>
-			</li>
-			<!--<li class="collapsed">-->
-				<!-- <div>Social</div> -->
-				<!-- <ul class="tree"> -->
-					<!-- <li class="menuitem"><a href="maquette/socialPlan.htm" target="main">Social care plan</a></li> -->
-					<!-- <li class="menuitem">Basic social services</li> -->
-					<!-- <li class="menuitem">Professionals report</li> -->
-				<!-- </ul> -->
-			<!-- </li> -->
-
-			<li class="collapsed">
-				<div>Physiological Data</div>
-				<ul class="tree">
-					<li class="collapsed">
-						<div style="white-space:nowrap; text-overflow: ellipsis">Prescritption of data monitoring</div>
-						<ul class="tree">
-							<li class="menuitem"><a href="/prescription/general" target="main">General Data</a></li>
-							<li class="menuitem"><a href="/prescription/hdim" target="main">HDIM Data</a></li>
-							<li class="menuitem"><a href="/prescription/symptom" target="main">Symptom assessments</a></li>
-							<li class="menuitem"><a href="/prescription/questionnaire" target="main">Questionnaires</a></li>
-						</ul>
-					</li>
-					<li class="menuitem"><a href="/datarecord" target="main">Results from Data Recording</a></li>
-					<li class="menuitem"><a href="/datarecord/create" target="main">Data Recording</a></li>
-					<!-- <li class="menuitem" style="DarkGray">Specific data for evaluation</li> -->
-				</ul>
-			</li>
+			{% macro displayItem(item) %}
+			
+			{% if item.type == "submenu" && item.items.length > 0 %}
+				<li class="collapsed">
+					<div>{{item.label | i18n }}</div>
+					<ul class="tree">
+						{% for child in item.items %}
+							{{ displayItem(child) }}
+						{% endfor %}
+					</ul>
+				</li>
+			{% endif %}
+			{% if item.type == "item" %}
+			<li class="menuitem {% if item.disabled %}disabled{% endif %}" data-link="{{item.link}}" >{{item.label | i18n }}</li>
+			{% endif %}
 			
 			
-			<li class="menuitem"><a href="/directory" target="main">Directory</a></li>
+			
+			{% endmacro %}
+			
+			{% for item in items %}
+				{{ displayItem(item, '') }}
+			{% endfor %}
 		</ul>
+		
 		{% if admin %}
 		<ul class="admin tree">
-			<li class="menuitem"><a href="/settings/lists" target="main">Lists management</a></li>
-			<li class="menuitem"><a href="/questionnaires" target="main">Questionnaires</a></li>
-			<li class="menuitem"><a href="/services/health/create" target="main">Healthcare: add a basic health service</a></li>
-			<li class="menuitem"><a href="/admin/rights" target="main">Rights</a></li>
+			<li class="menuitem" data-link="/settings/lists">Lists management</li>
+			<li class="menuitem" data-link="/questionnaires">Questionnaires</li>
+			<!-- <li class="menuitem"><a href="/services/health/create" target="main">Healthcare: add a basic health service</a></li> -->
+			<li class="menuitem" data-link="/admin/rights">Rights</li>
 		</ul>
 		{% endif %}
 	</div>
@@ -229,87 +190,34 @@
 </core-drawer-panel>
 
 <script>
-function buildMenu(obj, element) {
-
-	var item, li, a;
-	var df = document.createDocumentFragment();
-
-	for (var i = 0; i < obj.length; i++) {
-		item = obj[i];
-		console.log(item);
-
-		if (item.href) {
-			li = document.createElement('li');
-			li.classList.add('menuitem');
-
-			a = document.createElement('a');
-			a.setAttribute('href', item.href);
-			a.setAttribute('target', 'main');
-			a.textContent = item.title[document.documentElement.lang] || item.title.en;
-
-			li.appendChild(a);
-			df.appendChild(li);
-		}
-		else if (item.menu && item.menu.length > 0) {
-			li = document.createElement('li');
-			li.classList.add('collapsed');
-
-			div = document.createElement('div');
-			div.textContent = item.title[document.documentElement.lang] || item.title.en;
-			li.appendChild(div);
-
-			ul = document.createElement('ul');
-			ul.classList.add('tree');
-			buildMenu(item.menu, ul);
-			li.appendChild(ul);
-			df.appendChild(li);
-		}
-	}
-
-	element.appendChild(df);
-}
 
 document.addEventListener("DOMContentLoaded", function(event) {
 
 	var utils = new Utils();
+		
 
-	utils.promiseXHR('GET', '/api/menu', 200)
-	.then(function(response) {
-		console.log(response);
-
-		buildMenu(JSON.parse(response), document.getElementById('mainMenu'));
-
-		var menuEntries = document.querySelectorAll("ul.tree li");
-		[].slice.call(menuEntries).forEach( function(entry) {
-			switch( entry.className ) {
-				case "menuitem" :
-					entry.addEventListener("click", function(event) {
-						event.preventDefault();
-
-						var aurl = event.currentTarget.querySelector("a").getAttribute("href");
-						if (aurl) {
-							var selected = document.querySelector("[drawer] ul.tree li.selected");
-							if(selected) selected.classList.remove("selected");
-							event.currentTarget.classList.add("selected");
-							show(aurl);
-						}
-					},false);
-					break;
-				default:
-					entry.addEventListener("click", function(e) {
-						e.stopPropagation();
-						var parent = e.target.parentNode;
-						parent.classList.toggle("collapsed");
-					}, false);
-					break;
-			}
-		});
-	},
-	function(error) {
-		console.log(error);
+	var menuEntries = document.querySelectorAll("ul.tree li");
+	[].slice.call(menuEntries).forEach( function(entry) {
+		if( entry.classList.contains("menuitem")) {
+			entry.addEventListener("click", function (event) {
+				event.preventDefault();
+				
+				var aurl = this.getAttribute("data-link");
+				if (aurl && !this.classList.contains("disabled")) {
+					var selected = document.querySelector("[drawer] ul.tree li.selected");
+					if (selected) selected.classList.remove("selected");
+					event.currentTarget.classList.add("selected");
+					show(aurl);
+				}
+			}, false);
+		} else {
+			entry.addEventListener("click", function (e) {
+				e.stopPropagation();
+				var parent = e.target.parentNode;
+				parent.classList.toggle("collapsed");
+			}, false);
+		}
 	});
-
-	// if(window.navigator.standalone) {
 	
 });
 
@@ -330,9 +238,14 @@ function highlight(pathname) {
 	if( selected ) {
 		selected.classList.remove("selected");
 	}
-	var link = document.querySelector("[drawer] a[href='"+pathname+"']");
+	if( document.querySelector("#beneficiary a").innerHTML !== '-' ) {
+		var menuEntries = document.querySelectorAll("ul.tree li");
+		[].slice.call(menuEntries).forEach(function (entry) {
+			entry.classList.remove("disabled");
+		});
+	}
+	var link = document.querySelector("[drawer] li[data-link='"+pathname+"']");
 	if( link ) {
-		link = link.parentNode;
 		link.classList.add("selected");
 	}
 }

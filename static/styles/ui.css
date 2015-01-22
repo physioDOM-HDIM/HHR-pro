@@ -155,15 +155,19 @@ ul.tree li {
 	padding-left:5px;
 }
 
-ul.tree li a {
+ul.tree li {
 	color: white;
 }
-ul.tree li.selected a {
+ul.tree li.selected {
 	color:black;
 }
 
 ul.tree li.select {
 	background: cadetblue;
+}
+
+ul.tree li.disabled {
+	color: #666;
 }
 
 ul.dropdown-menu {
@@ -366,6 +370,7 @@ ul.admin {
 	background: orangered;
 	margin:0px;
 	height: 150px;
+	padding-top: 10px;
 }
 
 div[drawer] {
