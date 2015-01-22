@@ -220,7 +220,7 @@
             <div class="row">
                 <span class="spacer"></span>
             <div class="buttonContainer">
-                {% if professional._id %}
+                {% if professional._id && sessionID.toString() !== professional._id.toString() %}
                 <button id="deleteItem" class="red" type="button" onclick="confirmDelete()">delete</button>
                 {% endif %}
                 <button type="button" class="blue" onclick="window.history.back()">cancel</button>

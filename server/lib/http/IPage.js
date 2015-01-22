@@ -219,6 +219,7 @@ function IPage() {
 				if (professional) {
 					data.professional = professional;
 				}
+				data.sessionID = req.session.person.id;
 				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/directoryUpdate.htm', data, function(err, output) {
 					if (err) {
 						console.log("error", err);
