@@ -8,6 +8,27 @@ var list,            // the list to edit
 
 var Utils = new Utils();
 
+window.addEventListener('DOMContentLoaded', function() {
+
+    Utils.promiseXHR("GET","/api/lists/unity")
+        .then( function(response) {
+            units = JSON.parse(response);
+        })
+        .then( function() {
+            return promiseXHR("GET", "/api/lists/job");
+        })
+        .then( function(response) {
+            var listName = document.querySelector('#list-name').innerText;
+            jobs = JSON.parse(response);
+            return promiseXHR("GET", "/api/lists/"+listName);
+        })
+        .then( function(response) {
+            list = JSON.parse(response);
+            showLang();
+        });
+
+}, false);
+
 function showLang() {
     var tpl, prop;
 
@@ -170,10 +191,15 @@ function update() {
 
 function addRoles() {
     update();
-    var form = document.forms["providers"];
-    var obj = form2js(form);
-    var item;
-    item = obj.itemnew?newItems[obj.itemref - list.items.length]:list.items[obj.itemref];
+    var form = document.forms["providers"],
+        item,
+        obj = form2js(form);
+
+    //transform type (fix of form2js)
+    obj.itemnew = (obj.itemnew === 'true');
+    obj.itemref = parseInt(obj.itemref);
+
+    item = obj.itemnew ? newItems[obj.itemref - list.items.length] : list.items[obj.itemref];
     item.roleTypeCode = obj.items;
     closeRoles();
     showLang();

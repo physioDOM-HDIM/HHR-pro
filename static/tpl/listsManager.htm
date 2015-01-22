@@ -1,16 +1,23 @@
 {% extends './page.htm' %}
-  
+
 {% block title %}{{ "Lists management"|i18n }}{% endblock %}
 
 {% block head %}
 {% parent %}
+
 <script src="/bower_components/mustache/mustache.js"></script>
 <script src="/bower_components/form2js/src/form2js.js"></script>
 <script src="/bower_components/rsvp/rsvp.min.js"></script>
-<link rel="stylesheet" href="/styles/listsManager.css" charset="UTF-8" />
+
+<script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
+
 <script src="/tpl/listsManager.js"></script>
+
+<link rel="stylesheet" href="/styles/listsManager.css" charset="UTF-8" />
+
 {% endblock %}
-  
+
 {% block content %}
 <script type="template" id="tplItemBasicContainer">
     <div class="row">
@@ -209,23 +216,7 @@
         {% endfor%}
     </div>
 </div>
-<zdk-modal id="statusModal" closebutton="false">
-    <div class="modalContainer">
-        <div class="modalTitleContainer"></div>
-        <div class="modalContentContainer"></div>
-        <div class="modalButtonContainer"></div>
-    </div>
-</zdk-modal>
-<div class="hidden">
-    <div id="trad_save">{{ "Save"|i18n }}</div>
-    <div id="trad_success">{{ "Success"|i18n }}</div>
-    <div id="trad_error">{{ "Error"|i18n }}</div>
-    <div id="trad_confirm_save">{{ "Are you sure you want to save this part ?"|i18n }}</div>
-    <div id="trad_success_update">{{ "Item successfully updated"|i18n }}</div>
-    <div id="trad_error_occured">{{ "An error occured"|i18n }}</div>
-    <div id="trad_error_ref">{{ "Some values already exists"|i18n }}</div>
-    <div id="trad_yes">{{ "Yes"|i18n }}</div>
-    <div id="trad_no">{{ "No"|i18n }}</div>
-    <div id="trad_ok">{{ "OK"|i18n }}</div>
-</div>
+
+{% include 'modal.htm' %}
+
 {% endblock %}

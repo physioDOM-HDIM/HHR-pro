@@ -11,6 +11,20 @@ function Modal (type, callback) {
         buttons: [{
             id: "trad_ok",
             action: function() {
+                if(callback) {
+                    callback();
+                }
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.errorRef = {
+        title: "trad_error",
+        content: "trad_error_ref",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
                 self.closeModal();
             }
         }]
@@ -41,6 +55,17 @@ function Modal (type, callback) {
     content.errorMatchRegexPassword = {
         title: "trad_errorFormValidation",
         content: "trad_error_match_regex_password",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.errorMatchRegexRef = {
+        title: "trad_errorFormValidation",
+        content: "trad_error_match_regex_ref",
         buttons: [{
             id: "trad_ok",
             action: function() {
@@ -167,6 +192,23 @@ function Modal (type, callback) {
     content.confirmCreateItem = {
         title  : "trad_create",
         content: "trad_confirm_create",
+        buttons: [{
+            id: "trad_yes",
+            action: function() {
+                callback();
+                self.closeModal();
+            }
+        }, {
+            id: "trad_no",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.confirmSaveItem = {
+        title  : "trad_save",
+        content: "trad_confirm_save",
         buttons: [{
             id: "trad_yes",
             action: function() {
