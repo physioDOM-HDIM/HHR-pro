@@ -154,7 +154,7 @@
                 <div>
                     <div class="row">
                         <div class="col">
-                            <label>{{ "Use"|i18n }} </label>
+                            <label>{{ "Use"|i18n }} <span class="mandatory">*</span></label>
                             <select name="telecom[{{loop.index}}].use" required>
                                 {% for item in use.items %}
                                     <option value="{{item.value}}" {% if (!telecom.use && item.value=='home')||telecom.use===item.value %}selected{% endif %}>{{item.label}}</option>
@@ -162,7 +162,7 @@
                             </select>
                         </div>
                         <div class="col">
-                            <label>{{ "Type"|i18n }}</label>
+                            <label>{{ "Type"|i18n }} <span class="mandatory">*</span></label>
                             <select name="telecom[{{loop.index}}].system" required>
                                 {% for item in system.items %}
                                     {% if item.value !== "email" %}
@@ -174,7 +174,7 @@
                     </div>
                     <div class="row">
                         <div class="col">
-                            <label>Number</label>
+                            <label>Number <span class="mandatory">*</span></label>
                             <input type="text" name="telecom[{{loop.index}}].value" value="{{telecom.value}}" required/>
                         </div>
                         <div class="col buttonContainer">
