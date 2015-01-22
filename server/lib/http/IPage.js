@@ -18,9 +18,11 @@ var swig = require("swig"),
 	RSVP = require("rsvp"),
 	promise = RSVP.Promise,
 	moment = require("moment"),
+	Menu     = require('../class/menu'),
 	ObjectID = require("mongodb").ObjectID;
 
 var CurrentStatus = require('../class/currentStatus.js');
+var Menu = require('../class/menu.js');
 // var DOCUMENTROOT= "/home/http/physiodom";
 var DOCUMENTROOT=require("path").join(__dirname,"../../../");
 
@@ -104,28 +106,34 @@ function IPage() {
 		var html;
 
 		init(req);
-		var data = {
-			admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false
-		};
 		
-		req.session.getPerson()
-			.then(function(session) {
-				logger.debug("person", session.person);
-				data.account = {
-						firstname: session.person.item.name.given.slice(0, 1).toUpperCase(),
-						lastname: session.person.item.name.family
-					};
-				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/ui.htm', data, function(err, output) {
-					if (err) {
-						console.log("error", err);
-						console.log("output", output);
-						res.write(err);
-						res.end();
-						next();
-					} else {
-						sendPage(output, res, next);
-					}
-				});
+		new Menu().getMenu( req.session.role )
+			.then( function( menu ) {
+				logger.debug("menu",req.session.role, menu);
+				var data = {
+					admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
+					items: menu
+				};
+
+				req.session.getPerson()
+					.then(function(session) {
+						logger.debug("person", session.person);
+						data.account = {
+								firstname: session.person.item.name.given.slice(0, 1).toUpperCase(),
+								lastname: session.person.item.name.family
+							};
+						html = swig.renderFile(DOCUMENTROOT+'/static/tpl/ui.htm', data, function(err, output) {
+							if (err) {
+								console.log("error", err);
+								console.log("output", output);
+								res.write(err);
+								res.end();
+								next();
+							} else {
+								sendPage(output, res, next);
+							}
+						});
+					});
 			});
 	};
 
@@ -1336,6 +1344,53 @@ function IPage() {
 
 			})
 			.catch(function(err) {
+				logger.error(err);
+				res.write(err);
+				res.end();
+				next();
+			});
+	};
+
+	function _getSubMenuRights(menus, parentId) {
+		logger.trace('_getSubMenu', parentId);
+
+		var subMenu = [];
+		var menu;
+		for (var i = 0; i < menus.length; i++) {
+			if ( parentId ) {
+				if( menus[i].parent.toString() === parentId.toString() ) {
+					menu = menus[i];
+					menu.items = _getSubMenuRights(menus, menus[i]._id);
+					subMenu.push(menu);
+				}
+			} else {
+				menu = menus[i];
+				subMenu.push(menu);
+			}
+		}
+		logger.debug('_getSubMenu', parentId);
+		return subMenu;
+	}
+
+	this.rights = function(req, res, next) {
+		logger.trace('page');
+
+		var html;
+		init(req);
+		var data = {
+			admin: ['coordinator', 'administrator'].indexOf(req.session.role) !== -1 ? true : false
+		};
+
+		physioDOM.Lists.getList('role')
+		.then(function(list) {
+				data.roles = list.items;
+				return new Menu().getAll();
+			})
+		.then( function(menu) {
+				data.items = menu;
+				render('/static/tpl/rights.htm', data, res, next);
+			})
+		.catch(function(err) {
 				logger.error(err);
 				res.write(err);
 				res.end();

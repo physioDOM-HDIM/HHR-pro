@@ -107,6 +107,7 @@
 	{% if beneficiary && beneficiary.name %}
 	<script>
 		parent.document.querySelector("#beneficiary a").innerHTML = '{{ beneficiary.name.family }} {{ beneficiary.name.given }}';
+		parent.highlight("/beneficiaries");
 	</script>
 	{% endif %}
 {% endblock %}
