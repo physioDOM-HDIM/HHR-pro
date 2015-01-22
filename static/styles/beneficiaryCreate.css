@@ -91,3 +91,8 @@ div.diagnosis div.col {
 div.row.referent {
     background: LightYellow ;
 }
+
+input[name="biomaster"] {
+    flex: 0;
+    min-width: 200px;
+}
