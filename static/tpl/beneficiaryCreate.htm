@@ -109,7 +109,7 @@
         <input type="hidden" name="_id" value="{{beneficiary._id.toString()}}">
         <input type="hidden" name="validate" value="{% if beneficiary.validate %}{{beneficiary.validate}}{% else %}false{% endif %}">
         <div class="row">
-            <label>{{ "Gender"|i18n }} <span class="mandatory">*</span></label>
+            <label>{{ "Civility" | i18n }} <span class="mandatory">*</span></label>
             <input name="gender" type="radio" value="M" {% if beneficiary.gender=='M' %}checked{% endif %} required>
             <label for="Male">{{ "Male"|i18n }}</label>
             <input name="gender" type="radio" value="F" {% if beneficiary.gender=='F' %}checked{% endif %} required>
