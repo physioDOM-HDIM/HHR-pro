@@ -44,7 +44,7 @@
     <div>
         <div class="row">
             <div class="col">
-                <label>{{ "Use"|i18n }}</label>
+                <label>{{ "Use"|i18n }} <span class="mandatory">*</span></label>
                 <select name="telecom[{{loop.index}}].use" required>
                     {% for item in use.items %}
                     <option value="{{item.value}}" {% if (!telecom.use && item.value=='home')||telecom.use===item.value %}selected{% endif %}>{{item.label}}</option>
@@ -52,7 +52,7 @@
                 </select>
             </div>
             <div class="col">
-                <label>{{ "Type"|i18n }}</label>
+                <label>{{ "Type"|i18n }} <span class="mandatory">*</span></label>
                 <select name="telecom[{{loop.index}}].system" required>
                     {% for item in system.items %}
                     {% if item.value !== "email" %}
@@ -64,7 +64,7 @@
         </div>
         <div class="row">
             <div class="col">
-                <label>Number</label>
+                <label>Number <span class="mandatory">*</span></label>
                 <input type="text" name="telecom[{{loop.index}}].value" value="{{telecom.value}}" required/>
             </div>
             <div class="col buttonContainer">
@@ -77,7 +77,7 @@
 
 <script type="template" id="tplAddressContainer">
     <div class="row">
-        <label>{{ "Use"|i18n }}</label>
+        <label>{{ "Use"|i18n }} <span class="mandatory">*</span></label>
         <select name="address[{%raw%}{{idx}}{%endraw%}].use" required>
         {% for item in use.items %}
         <option value="{{item.value}}">{{item.label}}</option>
@@ -89,16 +89,16 @@
         </div>
     </div>
     <div class="row">
-        <label>{{ "Street"|i18n }}</label>
+        <label>{{ "Street"|i18n }} <span class="mandatory">*</span></label>
         <textarea name="address[{%raw%}{{idx}}{%endraw%}].line" required>{{addressItem.line}}</textarea>
     </div>
     <div class="row">
         <div class="col">
-            <label>{{ "Zip code"|i18n }}</label>
+            <label>{{ "Zip code"|i18n }} <span class="mandatory">*</span></label>
             <input type="text" name="address[{%raw%}{{idx}}{%endraw%}].zip" class="zipCode" value="{{addressItem.zip}}" required/>
         </div>
         <div class="col">
-            <label class="city">{{ "City"|i18n }}</label>
+            <label class="city">{{ "City"|i18n }} <span class="mandatory">*</span></label>
             <input type="text" name="address[{%raw%}{{idx}}{%endraw%}].city" value="{{addressItem.city}}" required/>
         </div>
     </div>
