@@ -33,9 +33,6 @@
                 {{&display_email}}
             {{/item.telecom}}{%endraw%}
         </div>
-        <div class="col buttonContainer">
-           <button type="button" class="small red" onclick="deleteProfessional(this)">{{ "delete"|i18n }}</button>
-        </div>
         <input type="hidden" name="professional_id" value="{%raw%}{{item._id}}{%endraw%}">
     </div>
 </script>
