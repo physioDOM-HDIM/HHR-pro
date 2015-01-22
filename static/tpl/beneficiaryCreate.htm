@@ -137,8 +137,8 @@
         </div>
         <div class="row">
             <div class="col">
-                <label>{{ "Height (meters)"|i18n }} <span class="mandatory">*</span></label>
-                <input type="text" name="size" value="{{beneficiary.size}}" required/>
+                <label>{{ "Height (centimeters)"|i18n }} <span class="mandatory">*</span></label>
+                <input type="text" name="size" value="{{beneficiary.size * 100}}" required/>
             </div>
             <div class="col">
                 <label>{{ "Social ID"|i18n }}</label>

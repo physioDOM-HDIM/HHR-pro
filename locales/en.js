@@ -253,5 +253,7 @@
 	"Zip code:": "Zip code:",
 	"City:": "City:",
 	"Birth date:": "Birth date:",
-	"Destination": "Destination"
+	"Destination": "Destination",
+	"Civility": "Civility",
+	"Height (centimeters)": "Height (centimeters)"
 }

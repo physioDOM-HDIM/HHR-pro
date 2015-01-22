@@ -848,7 +848,7 @@ function checkBeneficiaryForm(backgroundTask) {
             addr.line = addr.line.split("\n");
         }
     });
-    obj.size = parseFloat(obj.size);
+    obj.size = parseFloat(obj.size) / 100;
     obj.validate = obj.validate === "true" ? true : false;
 
     if (!backgroundTask) {
