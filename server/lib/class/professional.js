@@ -331,7 +331,7 @@ function Professional() {
 					var newAccount = {
 						login   : accountData.login,
 						password: md5(accountData.password),
-						active  : true,
+						active  : that.active,
 						role    : that.role,
 						person  : {
 							id        : that._id,

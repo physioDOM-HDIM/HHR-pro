@@ -4,33 +4,20 @@
 
 {% block head %}
 {% parent %}
+
 <script src="/bower_components/mustache/mustache.js"></script>
 <script src="/bower_components/form2js/src/form2js.js"></script>
-<script src="/bower_components/rsvp/rsvp.min.js"></script>
-<link rel="stylesheet" href="/styles/listsManager.css" charset="UTF-8" />
-<script src="/tpl/listsManager.js"></script>
+
+<script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
+
+<script src="/tpl/list.js"></script>
+
 {% endblock %}
 
 {% block content %}
-<style>
-	div.row { height:30px; }
-	div.row.title { height:40px; background:rgb(80, 80, 80); color:white; padding:0px 10px; margin-bottom:20px; }
-	label.title { font-size:1.3em; width:initial !important }
-	zdk-modal footer {
-		height: 50px;
-		display: flex;
-		align-items: center;
-	}
-	zdk-modal .content {
-		flex: 1;
-		overflow: auto;
-	}
-	zdk-modal#debug .modalContainer {
-		height: 500px;
-		display: flex;
-		flex-direction: column;
-	}
-</style>
+<div class="hidden" id="list-name">{{list.name}}</div>
+
 <div class="row title">
 	<label class="title">{{list.name}}</label>
 	<span class="spacer"></span>
@@ -217,7 +204,7 @@
 		<button class="blue" onclick="save()">{{ "Save"|i18n }}</button>
 	</div>
 </footer>
-	
+
 <zdk-modal width="450" id="editRole" closebutton="false">
 	<div class="modalContainer">
 		<div class="modalTitleContainer">{{ "providers role"|i18n }}</div>
@@ -226,55 +213,7 @@
 		</div>
 	</div>
 </zdk-modal>
-	
-<zdk-modal id="statusModal" closebutton="false">
-	<div class="modalContainer">
-		<div class="modalTitleContainer"></div>
-		<div class="modalContentContainer"></div>
-		<div class="modalButtonContainer"></div>
-	</div>
-</zdk-modal>
 
-<zdk-modal id="debug" closebutton="false">
-	<div class="modalContainer">
-		<div class="content">
-			
-		</div>
-		<footer>
-			<span class="spacer"></span>
-			<button class="green" onclick="document.querySelector('zdk-modal#debug').hide()">Close</button>
-		</footer>
-	</div>
-</zdk-modal>
-	
-<div class="hidden">
-	<div id="trad_save">{{ "Save"|i18n }}</div>
-	<div id="trad_success">{{ "Success"|i18n }}</div>
-	<div id="trad_error">{{ "Error"|i18n }}</div>
-	<div id="trad_confirm_save">{{ "Are you sure you want to save this part ?"|i18n }}</div>
-	<div id="trad_success_update">{{ "Item successfully updated"|i18n }}</div>
-	<div id="trad_error_occured">{{ "An error occured"|i18n }}</div>
-	<div id="trad_error_ref">{{ "Some values already exists"|i18n }}</div>
-	<div id="trad_yes">{{ "Yes"|i18n }}</div>
-	<div id="trad_no">{{ "No"|i18n }}</div>
-	<div id="trad_ok">{{ "OK"|i18n }}</div>
-</div>
+{% include 'modal.htm' %}
 
-<script>
-	promiseXHR("GET","/api/lists/unity")
-		.then( function(response) {
-			units = JSON.parse(response);
-		})
-		.then( function() {
-			return promiseXHR("GET", "/api/lists/job");
-		})
-		.then( function(response) {
-			jobs = JSON.parse(response);
-			return promiseXHR("GET", "/api/lists/{{list.name}}");
-		})
-		.then( function(response) {
-			list = JSON.parse(response);
-			showLang();
-		});
-</script>
 {% endblock %}

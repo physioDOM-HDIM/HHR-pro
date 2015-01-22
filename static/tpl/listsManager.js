@@ -3,27 +3,10 @@
 var list,            // the list to edit
     newItems= [],    // new items
     units,           // units list
-    jobs;            // job list
+    jobs,            // job list
+    regexRef = /^(?=.*[a-zA-Z])[a-zA-Z0-9!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=]{1,}$/;
 
-var promiseXHR = function(method, url, statusOK, data) {
-    var promise = new RSVP.Promise(function(resolve, reject) {
-        var client = new XMLHttpRequest();
-        statusOK = statusOK ? statusOK : 200;
-        client.open(method, url);
-        client.onreadystatechange = function handler() {
-            if (this.readyState === this.DONE) {
-                if (this.status === statusOK) {
-                    resolve(this.response);
-                } else {
-                    reject(this);
-                }
-            }
-        };
-        client.send(data ? data : null);
-    });
-
-    return promise;
-};
+var Utils = new Utils();
 
 function showLang() {
     var tpl, prop;
@@ -154,7 +137,9 @@ function update() {
                     case "ref":
                         break;
                     case "label":
-                        listItem.label[lang] = item.label[lang];
+                        if(item.label[lang]) {
+                            listItem.label[lang] = item.label[lang];
+                        }
                         break;
                     case "threshold":
                     case "range":
@@ -187,7 +172,6 @@ function addRoles() {
     update();
     var form = document.forms["providers"];
     var obj = form2js(form);
-    // {"itemref":"0","items":["111N00000N","203BD0300N","HOMESERV"]}
     var item;
     item = obj.itemnew?newItems[obj.itemref - list.items.length]:list.items[obj.itemref];
     item.roleTypeCode = obj.items;
@@ -202,7 +186,7 @@ function closeRoles() {
 function editRole(itemref, roles, newItem) {
     var tpl, modal, html,
         lang, modelData;
-    
+
     modal = document.getElementById("editRole");
     modal.show();
     tpl = document.querySelector("#tplJobs").innerHTML;
@@ -233,91 +217,46 @@ function checkForm(form) {
     console.log("checkForm", arguments);
 
     var form = document.querySelector("form[name=items]");
-    var modalObj;
+
     //check the ref value not already exists
     if (valueExists(form.getAttribute("name"))) {
-        modalObj = {
-            title: "trad_error",
-            content: "trad_error_ref",
-            buttons: [{
-                id: "trad_ok",
-                action: function() {
-                    closeModal();
-                }
-            }]
-        };
-        showModal(modalObj);
+        new Modal('errorRef');
         return false;
     }
 
-    modalObj = {
-        title: "trad_save",
-        content: "trad_confirm_save",
-        buttons: [{
-            id: "trad_yes",
-            action: function() {
-                updateForm(form);
-                closeModal();
-            }
-        }, {
-            id: "trad_no",
-            action: function() {
-                closeModal();
-            }
-        }]
-    };
-    showModal(modalObj);
+    new Modal('confirmSaveItem', function() {
+        updateForm(form);
+    });
     return true;
 }
 
 function save() {
     console.log("save");
     update();
-    
+
+    var error = {};
+
     newItems.forEach( function(item, i) {
-        if( item.ref ) {
+        if( item.ref && regexRef.test(item.ref)) {
             delete item.new;
             delete item.units;
             list.items.push( item );
+        } else {
+            new Modal('errorMatchRegexRef');
+            error.ref = true;
         }
     });
-    
+
+    if(error.ref) {
+        return;
+    }
+
     newItems = [];
 
-    /* // for debug 
-    var modal = document.querySelector("zdk-modal#debug");
-    modal.querySelector(".content").innerHTML = "<pre>"+JSON.stringify(list,null,4)+"</pre>" + "<pre>"+JSON.stringify(newItems,null,4)+"</pre>";
-    modal.show();
-    return;
-    */
-    
-    var modalObj;
-    promiseXHR("PUT", "/api/lists/" + list.name, 200, JSON.stringify(list)).then(function(response) {
-        modalObj = {
-            title: "trad_success",
-            content: "trad_success_update",
-            buttons: [{
-                id: "trad_ok",
-                action: function() {
-                    showLang();
-                    closeModal();
-                }
-            }]
-        };
-        showModal(modalObj);
+    Utils.promiseXHR("PUT", "/api/lists/" + list.name, 200, JSON.stringify(list)).then(function(response) {
+        new Modal('updateSuccess', showLang);
     }, function(error) {
-        modalObj = {
-            title: "trad_error",
-            content: "trad_error_occured",
-            buttons: [{
-                id: "trad_ok",
-                action: function() {
-                    showLang();
-                    closeModal();
-                }
-            }]
-        };
-        showModal(modalObj);
+        new Modal('errorOccured', showLang);
         console.log("updateItem - error: ", error);
     });
 }
@@ -442,74 +381,4 @@ function addItem(node) {
     div = div.querySelector("div");
     document.getElementById("newItems").appendChild(div);
     // div.scrollIntoView();
-}
-
-function closeModal() {
-    console.log("closeModal", arguments);
-    document.querySelector("#statusModal").hide();
-
-    var elt = document.querySelector("#statusModal"),
-        subElt, child;
-    subElt = elt.querySelector(".modalTitleContainer");
-    subElt.innerHTML = "";
-    subElt.classList.add("hidden");
-    subElt = elt.querySelector(".modalContentContainer");
-    subElt.innerHTML = "";
-    subElt.classList.add("hidden");
-    subElt = elt.querySelector(".modalButtonContainer");
-    for (var i = subElt.childNodes.length - 1; i >= 0; i--) {
-        child = subElt.childNodes[i];
-        subElt.removeChild(child);
-    }
-    subElt.classList.add("hidden");
-}
-
-function showModal(modalObj) {
-    console.log("showModal", arguments);
-
-    var elt = document.querySelector("#statusModal"),
-        subElt;
-    if (modalObj.title) {
-        subElt = elt.querySelector(".modalTitleContainer");
-        subElt.innerHTML = document.querySelector("#" + modalObj.title).innerHTML;
-        subElt.classList.remove("hidden");
-    }
-    if (modalObj.content) {
-        subElt = elt.querySelector(".modalContentContainer");
-        subElt.innerHTML = document.querySelector("#" + modalObj.content).innerHTML;
-        subElt.classList.remove("hidden");
-    }
-
-    if (modalObj.buttons) {
-        var btn, obj, color;
-        subElt = elt.querySelector(".modalButtonContainer");
-        for (var i = 0; i < modalObj.buttons.length; i++) {
-            obj = modalObj.buttons[i];
-            btn = document.createElement("button");
-            btn.innerHTML = document.querySelector("#" + obj.id).innerHTML;
-            btn.onclick = obj.action;
-            switch (obj.id) {
-                case "trad_ok":
-                    {
-                        color = "green";
-                    }
-                    break;
-                case "trad_yes":
-                    {
-                        color = "green";
-                    }
-                    break;
-                case "trad_no":
-                    {
-                        color = "blue";
-                    }
-                    break;
-            }
-            btn.classList.add(color);
-            subElt.appendChild(btn);
-        }
-        subElt.classList.remove("hidden");
-    }
-
-    document.querySelector("#statusModal").show();
 }

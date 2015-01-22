@@ -1,46 +1,45 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8"/>
-	<title>Agenda</title>
+{% extends './page.htm' %}
 
-	<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-	<meta name="apple-mobile-web-app-capable" content="yes"/>
-	<meta name="apple-touch-fullscreen" content="yes">
-	<meta name="mobile-web-app-capable" content="yes">
+{% block title %}{{ "Agenda"|i18n }}{% endblock %}
 
-	<link rel="shortcut icon" sizes="196x196" href="/img/physiodom_favico.png">
-	<link rel="icon" href="/img/physiodom_favico.png">
-	<link rel="apple-touch-icon" href="/img/physiodom_favico.png">
+{% block head %}
+{% parent %}
 
-	<script src="/bower_components/rsvp/rsvp.min.js"></script>
-	<script src="/bower_components/mustache/mustache.js"></script>
-	<script src="/bower_components/webcomponentsjs/webcomponents.min.js"></script>
-	<link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
-	<link rel="import" href="/bower_components/zdk-agenda/zdk-agenda.html">
+<script src="/scripts/utils.js"></script>
 
-	<link rel="stylesheet" href="/styles/iframe.css" charset="UTF-8">
-	<link rel="stylesheet" href="/styles/theme.css" charset="UTF-8">
-	<script src="/scripts/common.js" type="text/javascript"></script>
+<link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
+<link rel="import" href="/bower_components/zdk-agenda/zdk-agenda.html">
 
-	<style shim-shadowdom>
-		html, body {
-			height: 100%;
-			margin: 0;
-			padding: 0;
-		}
+<style type="text/css">
+	div.main {
+		margin: 0;
+		padding: 0;
+	}
+</style>
 
-		zdk-agenda {
-			height: 100%;
-		}
+<style shim-shadowdom>
 
-		zdk-agenda::shadow .day-button{
-			display: none;
-		}
-	</style>
 
-</head>
-<body unresolved>
+	html, body {
+		height: 100%;
+		margin: 0;
+		padding: 0;
+	}
+
+	zdk-agenda {
+		height: 100%;
+	}
+
+	zdk-agenda::shadow .day-button{
+		display: none;
+	}
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+	{% raw %}
 	<zdk-agenda id="agenda" lang="en-gb" hourHeight="40" hourShow="8" view="week" editable="false"></zdk-agenda>
 
 	<zdk-modal id="dialog-event"></zdk-modal>
@@ -72,6 +71,7 @@
 			<div class="modalButtonContainer"></div>
 		</div>
 	</script>
-	<script src="agenda.js"></script>
-</body>
-</html>
+	{% endraw %}
+	<script src="/tpl/agenda.js"></script>
+
+{% endblock %}

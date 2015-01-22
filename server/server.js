@@ -413,6 +413,8 @@ server.get( '/beneficiary/edit/:beneficiaryID', IPage.beneficiaryCreate );
 server.get( '/beneficiary/update', IPage.beneficiaryCreate );
 server.get( '/beneficiary/:beneficiaryID', IPage.beneficiaryOverview );
 
+server.get( '/agenda', IPage.agenda);
+
 server.get( '/directory', IPage.directoryList);
 server.get( '/directory/create', IPage.directoryUpdate);
 server.get( '/directory/:professionalID', IPage.directoryUpdate);

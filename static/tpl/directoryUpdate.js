@@ -7,7 +7,8 @@ var _dataObj = null,
     _roleEnum = null,
     _jobEnum = null,
     _communicationEnum = null,
-    _idxNbTelecom = 0;
+    _idxNbTelecom = 0,
+    passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=])[a-zA-Z0-9!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=]{8,}$/;
 
 var promiseXHR = function(method, url, statusOK, data) {
     var promise = new RSVP.Promise(function(resolve, reject) {
@@ -28,76 +29,6 @@ var promiseXHR = function(method, url, statusOK, data) {
 
     return promise;
 };
-
-function closeModal() {
-    console.log("closeModal", arguments);
-    document.querySelector("zdk-modal").hide();
-
-    var elt = document.querySelector("zdk-modal"),
-        subElt, child;
-    subElt = elt.querySelector(".modalTitleContainer");
-    subElt.innerHTML = "";
-    subElt.className += "hidden";
-    subElt = elt.querySelector(".modalContentContainer");
-    subElt.innerHTML = "";
-    subElt.className += "hidden";
-    subElt = elt.querySelector(".modalButtonContainer");
-    for (var i = subElt.childNodes.length - 1; i >= 0; i--) {
-        child = subElt.childNodes[i];
-        subElt.removeChild(child);
-    }
-    subElt.className += "hidden";
-}
-
-function showModal(modalObj) {
-    console.log("showModal", arguments);
-
-    var elt = document.querySelector("zdk-modal"),
-        subElt;
-    if (modalObj.title) {
-        subElt = elt.querySelector(".modalTitleContainer");
-        subElt.innerHTML = document.querySelector("#" + modalObj.title).innerHTML;
-        subElt.className = subElt.className.replace("hidden", "");
-    }
-    if (modalObj.content) {
-        subElt = elt.querySelector(".modalContentContainer");
-        subElt.innerHTML = document.querySelector("#" + modalObj.content).innerHTML;
-        subElt.className = subElt.className.replace("hidden", "");
-    }
-
-    if (modalObj.buttons) {
-        var btn, obj, color;
-        subElt = elt.querySelector(".modalButtonContainer");
-        for (var i = 0; i < modalObj.buttons.length; i++) {
-            obj = modalObj.buttons[i];
-            btn = document.createElement("button");
-            btn.innerHTML = document.querySelector("#" + obj.id).innerHTML;
-            btn.onclick = obj.action;
-            switch (obj.id) {
-                case "trad_ok":
-                    {
-                        color = "green";
-                    }
-                    break;
-                case "trad_yes":
-                    {
-                        color = "green";
-                    }
-                    break;
-                case "trad_no":
-                    {
-                        color = "blue";
-                    }
-                    break;
-            }
-            btn.className += color;
-            subElt.appendChild(btn);
-        }
-        subElt.className = subElt.className.replace("hidden", "");
-    }
-
-    document.querySelector("zdk-modal").show();
-}
 
 function checkDefaultGender() {
     var elt,
@@ -160,107 +91,57 @@ function checkEmailTypeValidation(node) {
 }
 
 function checkForm() {
-    var modalObj, obj;
-    
+    var obj;
+
     function isEmailSet() {
         var isEmail = false,
             systemElt, valueElt;
-         
+
+        if(!obj.telecom) {
+            return false;
+        }
+
         obj.telecom.forEach( function( item ) {
             if( item.system === "email" && item.value !== "") {
                 isEmail = true;
             }
         });
         return isEmail;
-    };
-    
+    }
+
     obj = form2js(document.forms["directoryForm"]);
     console.log(obj);
-    //Check if password are equals
-    if( obj.account && obj.account.password !== obj.checkAccountPassword ) {
-        modalObj = {
-            title: "trad_errorFormValidation",
-            content: "trad_error_password",
-            buttons: [{
-                id: "trad_ok",
-                action: function() {
-                    closeModal();
-                }
-            }]
-        };
-    } 
-    if ( !modalObj && !isEmailSet()) {
-        //Check if an email is set
-        modalObj = {
-            title: "trad_errorFormValidation",
-            content: "trad_error_email_required",
-            buttons: [{
-                id: "trad_ok",
-                action: function() {
-                    closeModal();
-                }
-            }]
-        };
-    } 
-    if( !modalObj &&  (obj.address.line || obj.address.city || obj.address.zip) ) {
-        if( !(obj.address.line && obj.address.city && obj.address.zip )) {
-            console.log("address is incomplete");
-            modalObj = {
-                title: "trad_errorFormValidation",
-                content: "trad_incomplete_address",
-                buttons: [{
-                    id: "trad_ok",
-                    action: function() {
-                        closeModal();
-                    }
-                }]
-            };
-        }
-    } 
-    if( !modalObj ) {
-        if (obj._id) {
-            modalObj = {
-                title  : "trad_update",
-                content: "trad_confirm_update",
-                buttons: [
-                    {
-                        id    : "trad_no",
-                        action: function () {
-                            closeModal();
-                        }
-                    },
-                    {
-                        id    : "trad_yes",
-                        action: function () {
-                            updateItem(obj);
-                        }
-                    }
-                ]
-            };
-        } else {
-            modalObj = {
-                title  : "trad_create",
-                content: "trad_confirm_create",
-                buttons: [
-                    {
-                        id    : "trad_no",
-                        action: function () {
-                            closeModal();
-                        }
-                    },
-                    {
-                        id    : "trad_yes",
-                        action: function () {
-                            updateItem(obj);
-                        }
-                    }
-                ]
-            };
+
+    if( obj.account && obj.account.password !== obj.checkAccountPassword) {
+        new Modal('errorConfirmPassword');
+        return;
+    }
+
+    if(!passwordRegex.test(obj.account.password)) {
+        new Modal('errorMatchRegexPassword');
+        return;
+    }
+
+    if (!isEmailSet()) {
+        new Modal('errorEmailRequired');
+        return;
+    }
+
+    if(obj.address.line || obj.address.city || obj.address.zip) {
+        if(!(obj.address.line && obj.address.city && obj.address.zip)) {
+            new Modal('errorIncompleteAddress');
+            return;
         }
     }
-    
-    if( modalObj) {
-        showModal(modalObj);
+
+    if (obj._id) {
+        new Modal('confirmUpdateItem', function() {
+            updateItem(obj);
+        });
+    } else {
+        new Modal('confirmCreateItem', function() {
+            updateItem(obj);
+        });
     }
 }
 
@@ -287,8 +168,7 @@ function addTelecom() {
 function updateItem(obj) {
     console.log("updateItem");
 
-    closeModal();
-    var modalObj, data, accountData;
+    var data, accountData;
     // remove uneeded fields
     delete obj.checkAccountPassword;  // move to check
     accountData = obj.account?obj.account:null;
@@ -316,46 +196,18 @@ function updateItem(obj) {
         }
 
         RSVP.all(tabPromises).then(function() {
-            modalObj = {
-                title: "trad_success",
-                content: "trad_success_update",
-                buttons: [{
-                    id: "trad_ok",
-                    action: function() {
-                        closeModal();
-                        window.history.back();
-                    }
-                }]
-            };
-            showModal(modalObj);
+            new Modal('updateSuccess', function() {
+                window.history.back();
+            });
         }).catch(function(error) {
-            modalObj = {
-                title: "trad_error",
-                content: "trad_error_occured",
-                buttons: [{
-                    id: "trad_ok",
-                    action: function() {
-                        closeModal();
-                    }
-                }]
-            };
-            showModal(modalObj);
+            new Modal('errorOccured');
             console.log("updateItem - error: ", error);
         });
     } else {
         var callSuccess = function() {
-            var modalObj = {
-                title: "trad_success",
-                content: "trad_success_create",
-                buttons: [{
-                    id: "trad_ok",
-                    action: function() {
-                        closeModal();
-                        window.history.back();
-                    }
-                }]
-            };
-            showModal(modalObj);
+            new Modal('createSuccess', function() {
+                window.history.back();
+            });
         };
 
         promiseXHR("POST", "/api/directory", 200, JSON.stringify(data)).then(function(response) {
@@ -370,72 +222,27 @@ function updateItem(obj) {
                 callSuccess();
             }
         }).catch(function(error) {
-            modalObj = {
-                title: "trad_error",
-                content: "trad_error_occured",
-                buttons: [{
-                    id: "trad_ok",
-                    action: function() {
-                        closeModal();
-                    }
-                }]
-            };
-            showModal(modalObj);
+            new Modal('errorOccured');
             console.log("updateItem - error: ", error);
         });
     }
 }
 
 function confirmDelete() {
-    var modalObj = {
-        title: "trad_delete",
-        content: "trad_confirm_delete",
-        buttons: [{
-            id: "trad_yes",
-            action: function() {
-                deleteItem();
-            }
-        }, {
-            id: "trad_no",
-            action: function() {
-                closeModal();
-            }
-        }]
-    };
-    showModal(modalObj);
+    new Modal('confirmDeleteItem', deleteItem);
 }
 
 function deleteItem() {
-    console.log("deleteItem", arguments);
-    var modalObj;
-    closeModal();
+    console.log("deleteItem");
+
     var obj = form2js(document.forms["directoryForm"]);
     if (obj._id) {
         promiseXHR("DELETE", "/api/directory/" + obj._id, 410).then(function(response) {
-            modalObj = {
-                title: "trad_success",
-                content: "trad_success_delete",
-                buttons: [{
-                    id: "trad_ok",
-                    action: function() {
-                        closeModal();
-                        window.history.back();
-                    }
-                }]
-            };
-            showModal(modalObj);
+            new Modal('deleteSuccess', function() {
+                window.history.back();
+            });
         }, function(error) {
-            modalObj = {
-                title: "trad_error",
-                content: "trad_error_occured",
-                buttons: [{
-                    id: "trad_ok",
-                    action: function() {
-                        closeModal();
-                    }
-                }]
-            };
-            showModal(modalObj);
+            new Modal('errorOccured');
             console.log("deleteItem - error: ", error);
         });
     }
@@ -444,15 +251,13 @@ function deleteItem() {
 function checkPassword () {
     var password = document.querySelector('.account-password'),
         checkPassword = document.querySelector('.account-check-password'),
-        accountActivation = document.querySelector('.account-activation'),
-        regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=])[a-zA-Z0-9!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=]{8,}$/;
+        accountActivation = document.querySelector('.account-activation');
 
     if(accountActivation === null) {
         return;
     }
 
-    accountActivation.checked = (password.value === checkPassword.value && regex.test(checkPassword.value));
-
+    accountActivation.checked = (password.value === checkPassword.value && passwordRegex.test(checkPassword.value));
 }
 
 function init() {
@@ -460,4 +265,5 @@ function init() {
     _idxNbTelecom = document.querySelectorAll(".telecomContainer").length;
     checkOrganization();
 }
+
 window.addEventListener("DOMContentLoaded", init, false);

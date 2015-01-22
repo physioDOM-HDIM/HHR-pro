@@ -4,12 +4,19 @@
 
 {% block head %}
 {% parent %}
+
+<script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
+
 <script src="/bower_components/mustache/mustache.js"></script>
 <script src="/bower_components/rsvp/rsvp.min.js"></script>
 <script src="/bower_components/form2js/src/form2js.js"></script>
+
+<script src="/tpl/directoryUpdate.js"></script>
+
 <link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
 <link rel="import" href="/bower_components/core-ajax/core-ajax.html">
-<script src="/tpl/directoryUpdate.js"></script>
+
 {% endblock %}
 
 {% block content %}
@@ -213,7 +220,7 @@
             <div class="row">
                 <span class="spacer"></span>
             <div class="buttonContainer">
-                {% if professional._id %}
+                {% if professional._id && sessionID.toString() !== professional._id.toString() %}
                 <button id="deleteItem" class="red" type="button" onclick="confirmDelete()">delete</button>
                 {% endif %}
                 <button type="button" class="blue" onclick="window.history.back()">cancel</button>
@@ -226,32 +233,7 @@
             </div>
         </form>
     </div>
-    <zdk-modal closebutton="false">
-        <div class="modalContainer">
-            <div class="modalTitleContainer hidden"></div>
-            <div class="modalContentContainer hidden"></div>
-            <div class="modalButtonContainer hidden"></div>
-        </div>
-    </zdk-modal>
-    <div class="hidden">
-        <div id="trad_update">Update</div>
-        <div id="trad_create">Create</div>
-        <div id="trad_delete">Delete</div>
-        <div id="trad_success">Success</div>
-        <div id="trad_error">Error</div>
-        <div id="trad_errorFormValidation">Error in form validation</div>
-        <div id="trad_confirm_update">Are you sure you want to update this item ?</div>
-        <div id="trad_confirm_create">Are you sure you want to create this item ?</div>
-        <div id="trad_confirm_delete">Are you sure you want to delete this item ?</div>
-        <div id="trad_success_update">Item successfully updated</div>
-        <div id="trad_success_create">Item successfully created</div>
-        <div id="trad_success_delete">Item successfully deleted</div>
-        <div id="trad_error_occured">An error occured</div>
-        <div id="trad_error_password">Passwords are not equal</div>
-        <div id="trad_error_email_required">You must add an email in telecom field</div>
-        <div id="trad_incomplete_address">Address is incomplete</div>
-        <div id="trad_yes">Yes</div>
-        <div id="trad_no">No</div>
-        <div id="trad_ok">OK</div>
-    </div>
+
+{% include 'modal.htm' %}
+
 {% endblock %}

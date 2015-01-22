@@ -219,6 +219,7 @@ function IPage() {
 				if (professional) {
 					data.professional = professional;
 				}
+				data.sessionID = req.session.person.id;
 				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/directoryUpdate.htm', data, function(err, output) {
 					if (err) {
 						console.log("error", err);
@@ -1376,6 +1377,47 @@ function IPage() {
 				// jsut for test, otherwise read locale from session
 
 				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/prescriptionQuestionnaire.htm', data, function(err, output) {
+					if (err) {
+						console.log("error", err);
+						console.log("output", output);
+						res.write(err);
+						res.end();
+						next();
+					} else {
+						sendPage(output, res, next);
+					}
+				});
+
+			})
+			.catch(function(err) {
+				logger.error(err);
+				res.write(err);
+				res.end();
+				next();
+			});
+	};
+
+	/**
+	 * Agenda
+	 */
+	
+	this.agenda = function(req, res, next) {
+		logger.trace("agenda");
+		var html;
+
+		init(req);
+		var data = {
+			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false
+		};
+
+		physioDOM.Beneficiaries()
+			.then(function(beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+			})
+			.then(function(beneficiary) {
+				data.beneficiary = beneficiary;
+
+				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/agenda.htm', data, function(err, output) {
 					if (err) {
 						console.log("error", err);
 						console.log("output", output);
