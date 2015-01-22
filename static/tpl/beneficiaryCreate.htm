@@ -20,15 +20,15 @@
   
 {% block content %}
 <script type="template" id="tplProfessionnalContainer">
-    <div class="row {%raw%}{{#item.referent}}referent{{/item.referent}}{%endraw%}">
-        <div class="col bold">{%raw%}{{item.name.family}} {{item.name.given}}{%endraw%}</div>
+    <div class="row {%raw%}{{#item.referent}}referent{{/item.referent}}{%endraw%}" horizontal layout start>
+        <div class="col bold proName">{%raw%}{{item.name.family}} {{item.name.given}}{%endraw%}</div>
         <div class="col">{%raw%}{{display_job}}{%endraw%}</div>
-        <div class="col">
+        <div class="col" vertical layout>
             {%raw%}{{#item.telecom}}
-                {{display_phone}}
+                <div>{{display_phone}}</div>
             {{/item.telecom}}{%endraw%}
         </div>
-        <div class="col">
+        <div>
             {%raw%}{{#item.telecom}}
                 {{&display_email}}
             {{/item.telecom}}{%endraw%}
@@ -368,18 +368,13 @@
     <form name="professionals" autocomplete="off" onsubmit="checkProfessionalsForm(); return false;">
         {% for professional in beneficiary.professionals %}
         <div class="proItemContainer">
-            <div class="row {% if professional.referent %} referent {% endif %}">
-                <div class="col bold">{{professional.name.family}} {{professional.name.given}}</div>
+            <div class="row {% if professional.referent %} referent {% endif %}" horizontal layout start>
+                <div class="col bold proName">{{professional.name.family}} {{professional.name.given}}</div>
                 <div class="col">{% if jobArray.items[professional.job] %} {{jobArray.items[professional.job]}} {% else %} {{ professional.job}} {% endif %}</div>
-                <div class="col">
-                    {% set first = true %}
+                <div class="col" vertical layout>
                     {% for telecom in professional.telecom %}
                         {% if telecom.system !== "email" %}
-                            {% if !first %}
-                                /
-                            {% endif %}
-                            {{telecom.value}}
-                            {% set first = false %}
+                            <div>{{telecom.value}} ({{telecom.use}})</div>
                         {% endif %}
                     {% endfor %}
                 </div>

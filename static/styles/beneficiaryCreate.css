@@ -117,3 +117,9 @@ div.refProBox {
     width: 80px;
     text-align: center;
 }
+
+div.proName {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}

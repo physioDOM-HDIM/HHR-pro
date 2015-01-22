@@ -158,12 +158,7 @@ function _addProfessional(professionalItem) {
             display_phone: function() {
                 var res = "";
                 if (this.system !== "email") {
-                    if (isFirstItem) {
-                        isFirstItem = false;
-                    } else {
-                        res = " / ";
-                    }
-                    return res + this.value;
+                    return this.value + ' (' + this.use + ')';
                 }
                 return "";
             },
