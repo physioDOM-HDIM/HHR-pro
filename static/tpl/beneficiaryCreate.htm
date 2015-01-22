@@ -428,7 +428,7 @@
                 <div class="dblcol">
                 {% for item in disability.items %}
                     <div class="row" style="display:block">
-                    <input type="checkbox" value="{{item.value}}" {% if beneficiary.diagnosis.chronic.associated && beneficiary.diagnosis.chronic.associated.indexOf(item.value)!==-1 %}checked{% endif %}> {{item.label}}
+                    <input type="checkbox" name="diagnosis.chronic.associated[{{item.value}}]" value="{{item.value}}" {% if beneficiary.diagnosis.chronic.associated && beneficiary.diagnosis.chronic.associated.indexOf(item.value)!==-1 %}checked{% endif %}> {{item.label}}
                     </div>
                 {%endfor%}
                 </div>
