@@ -21,19 +21,19 @@
 	<zdk-panel heading="{{ 'Distance travelled' | i18n }}">
 		<form name="form" id="form" autocomplete="off" onsubmit="checkForm(); return false;">
 			<div class="row value-row">
-				<div flex class="value-name">Number of steps (optional)</div>
+				<div flex class="value-name">{{'Number of steps (optional)'|i18n}}</div>
 				<input type="checkbox" name="stepsCheck" class="value-checkbox" {% if status.stepsCheck %}checked{% endif %} {% if status.validated %}disabled{% endif %} />
 				<input type="text" name="stepsNumber" class="value-input" value="{{status.stepsNumber}}" {% if status.validated %}disabled{% endif %} />
-				<div class="value-unit">steps per week</div>
+				<div class="value-unit">{{'steps per week'|i18n}}</div>
 			</div>
 
 			{% if rights.write %}
 				{% if !status.validated %}
 				<div id="buttons" class="row control">
 					<span class="spacer"></span>
-					<button type="button" class="blue" onclick="showConfirm();">Validate</button>
-					<button type="button" class="red" onclick="location.reload();">Cancel</button>
-					<button class="green">Save</button>
+					<button type="button" class="blue" onclick="showConfirm();">{{'Validate'|i18n}}</button>
+					<button type="button" class="red" onclick="location.reload();">{{'Cancel'|i18n}}</button>
+					<button class="green">{{'Save'|i18n}}</button>
 				</div>
 				{% endif %}
 			{% endif %}
