@@ -33,8 +33,7 @@ var beneficiarySchema = {
 						"percent": {type: "integer"}
 					}
 				},
-				"wayOfLife" : {type: "string"},
-				"profession": {type: "string"}
+				"wayOfLife" : {type: "string"}
 			},
 			"additionalProperties": false
 		},

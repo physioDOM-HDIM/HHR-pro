@@ -8,7 +8,11 @@
 <script src="/bower_components/rsvp/rsvp.min.js"></script>
 <script src="/bower_components/mustache/mustache.js"></script>
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
+
+<script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
 <script src="/tpl/beneficiaryCreate.js"></script>
+
 <link rel="import" href="/bower_components/zdk-calendar/zdk-calendar.html">
 <link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
   
@@ -246,7 +250,6 @@
             <div class="col">
                 <label>{{ "Start date"|i18n }} <span class="mandatory">*</span></label>
                 <zdk-input-date name="entry.startDate" value="{{beneficiary.entry.startDate}}" style="z-index:100" required></zdk-input-date>
-                <!--<input type="text" name="entry.startDate" value="{{beneficiary.entry.startDate}}" required class="date" onclick="showCalendar(this)" />-->
             </div>
             <div class="col">
                 <label>{{ "Come from"|i18n }}</label>
@@ -260,13 +263,11 @@
         <div class="row">
             <label>{{ "Planned end"|i18n }}</label>
             <zdk-input-date name="entry.plannedEnd" value="{{beneficiary.entry.plannedEnd}}" style="z-index:100"></zdk-input-date>
-            <!-- <input type="text" name="entry.plannedEnd" value="{{beneficiary.entry.plannedEnd}}" class="date" onclick="showCalendar(this)" />-->
         </div>
         <div class="row">
             <div class="col">
                 <label>{{ "End date"|i18n }}</label>
                 <zdk-input-date name="entry.endDate" value="{{beneficiary.entry.endDate}}" style="z-index:100"></zdk-input-date>
-                <!--<input type="text" name="entry.endDate" value="{{beneficiary.entry.endDate}}" class="date" onclick="showCalendar(this)" />-->
             </div>
             <div class="col">
                 <label>{{ "Destination"|i18n }}</label>
@@ -318,18 +319,10 @@
             </div>
         </fieldset>
         <div class="row">
-            <label>{{ "Way of life"|i18n }} <span class="mandatory">*</span></label>
+            <label>{{ "Way of life"|i18n }}</label>
             <select name="lifeCond.wayOfLife" required>
                 {% for item in wayOfLife.items %}
                 <option value="{{item.value}}" {% if item.value == beneficiary.lifeCond.wayOfLife %}selected{% endif %}>{{item.label}}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="row">
-            <label>{{ "Profession"|i18n }} <span class="mandatory">*</span></label>
-            <select name="lifeCond.profession" required>
-                {% for item in profession.items %}
-                <option value="{{item.value}}" {% if item.value == beneficiary.lifeCond.profession %}selected{% endif %}>{{item.label}}</option>
                 {% endfor %}
             </select>
         </div>
@@ -486,35 +479,7 @@
 <zdk-modal id="calendarModal">
     <zdk-calendar></zdk-calendar>
 </zdk-modal>
-<zdk-modal id="statusModal" closebutton="false">
-    <div class="modalContainer">
-        <div class="modalTitleContainer"></div>
-        <div class="modalContentContainer"></div>
-        <div class="modalButtonContainer"></div>
-    </div>
-</zdk-modal>
-<div class="hidden">
-    <div id="trad_save">{{ "Save"|i18n }}</div>
-    <div id="trad_delete">{{ "Delete"|i18n }}</div>
-    <div id="trad_create">{{ "Create"|i18n }}</div>
-    <div id="trad_success">{{ "Success"|i18n }}</div>
-    <div id="trad_error">{{ "Error"|i18n }}</div>
-    <div id="trad_errorFormValidation">{{ "Error in form validation"|i18n }}</div>
-    <div id="trad_confirm_save">{{ "Are you sure you want to save this part ?"|i18n }}</div>
-    <div id="trad_confirm_delete">{{ "Are you sure you want to delete this item ?"|i18n }}</div>
-    <div id="trad_success_update">{{ "Item successfully updated"|i18n }}</div>
-    <div id="trad_success_delete">{{ "Item successfully deleted"|i18n }}</div>
-    <div id="trad_success_create">{{ "Item successfully created"|i18n }}</div>
-    <div id="trad_error_occured">{{ "An error occured"|i18n }}</div>
-    <div id="trad_error_size">{{ "Size must be a number"|i18n }}</div>
-    <div id="trad_error_noAddress">{{ "You must fill at least one address data"|i18n }}</div>
-    <div id="trad_error_noTelecom">{{ "You must fill at least one telecom data"|i18n }}</div>
-    <div id="trad_error_date_before">{{ "Start date must be before end or planned end date"|i18n }}</div>
-    <div id="trad_error_date">{{ "Date format is incorrect"|i18n }}</div>
-    <div id="trad_error_password">{{ "Passwords are not equal"|i18n }}</div>
-    <div id="trad_error_passwordNoLogin">{{ "Can't have password with empty login"|i18n }}</div>
-    <div id="trad_yes">{{ "Yes"|i18n }}</div>
-    <div id="trad_no">{{ "No"|i18n }}</div>
-    <div id="trad_ok">{{ "OK"|i18n }}</div>
-</div>
+
+{% include 'modal.htm' %}
+
 {% endblock %}

@@ -97,5 +97,18 @@
 	"Some values already exists": "Some values already exists",
 	"Address is incomplete": "Address is incomplete",
 	"Ok": "Ok",
-	"Info: the password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters": "Info: the password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters"
+	"Info: the password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters": "Info: the password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters",
+	"Beneficiary overview": "Beneficiary overview",
+	"Personnal": "Personnal",
+	"Size": "Size",
+	"m": "m",
+	"Social id": "Social id",
+	"Addresses": "Addresses",
+	"Events log": "Events log",
+	"Active services": "Active services",
+	"Professional contacts": "Professional contacts",
+	"Phone": "Phone",
+	"Details": "Details",
+	"Marital Status must be filled": "Marital Status must be filled",
+	"You must fill telecom type": "You must fill telecom type"
 }
