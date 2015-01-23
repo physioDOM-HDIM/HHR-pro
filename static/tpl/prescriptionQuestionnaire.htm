@@ -33,7 +33,9 @@
 
 <div class="row control">
 	<span class="spacer"></span>
+	{% if rights.write %}
 	<button type="button" class="green" onclick="saveData()">{{"Save"|i18n}}</button>
+	{% endif %}
 </div>
 
 <script type="template" id="tpl-questionnaire-prog">
@@ -73,31 +75,31 @@
 			</ul>
 		</div>
 	</div>
-
+	{% if rights.write %}
 	<div class="row">
 		<div class="col vert" style="padding-left:50px">
 			<label></label>
 			<zdk-input-date id="date" name="newDate" value="" style="z-index:100"></zdk-input-date>
-			{% raw %}
-			<button type="button" class="small blue" onclick="addDate(this, {{idx}})">Add</button>
-			{% endraw %}
+			<button type="button" class="small blue" onclick="addDate(this, {% raw %}{{idx}}{% endraw %})">{{'Add'|i18n}}</button>
 		</div>
 	</div>
-	</div>
+	{% endif %}
 	<hr>
 	{% raw %}{{/data}}{% endraw %}
 </script>
 
 <script type="template" id="dateAddedTpl">
-	{% raw %}
 	<li>
+		{% if rights.write %}
 		<button type="button" class="btn btn-delete" onclick="removeDate(this)">
 			<i class="icon icon-delete-circle"></i>
 		</button>
+		{% endif %}
+		{% raw %}
 		{{dateValue}}
 		<input type="hidden" name="questionnaire[{{idx}}].date[{{dateIdx}}]" value="{{dateValue}}">
+		{% endraw %}
 	</li>
-	{% endraw %}
 </script>
 
 {% include "./modal.htm" %}

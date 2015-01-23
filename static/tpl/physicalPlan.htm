@@ -26,6 +26,7 @@
 
 <form name="recommendation" id="recommendation"></form>
 
+{% if rights.write %}
 <div class="row control actions">
 	<span class="spacer"></span>
 	<div class="mode-update hidden">
@@ -37,6 +38,7 @@
 		<button type="button" class="blue big" onclick="toggleMode()">{{ "Edit"|i18n }}</button>
 	</div>
 </div>
+{% endif %}
 
 <script type="template" id="dataTpl">
 	{% raw %}

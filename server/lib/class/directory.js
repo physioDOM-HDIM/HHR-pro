@@ -67,13 +67,22 @@ function Directory( ) {
 		var search = {};
 		if(filter) {
 			try {
-				search = JSON.parse(filter);
-				for( var prop in search) {
-					if(search.hasOwnProperty(prop)) {
-						if( ["true","false"].indexOf(search[prop]) !== -1) {
-							search[prop] = (search[prop]==="true"?true:false);
-						} else {
-							search[prop] = new RegExp("^"+search[prop],'i');
+				var tmp = JSON.parse(filter);
+				for( var prop in tmp) {
+					if(tmp.hasOwnProperty(prop)) {
+						switch(prop) {
+							case "name":
+								search["name.family"] = new RegExp("^"+tmp.name,"i");
+								break;
+							case "perimeter":
+								if( tmp.perimeter !== 'NONE') {
+									search.perimeter = tmp.perimeter;
+								}
+								break;
+							default:
+								if( ["true","false"].indexOf(search[prop]) !== -1) {
+									search[prop] = (search[prop]==="true"?true:false);
+								}
 						}
 					}
 				}

@@ -98,7 +98,6 @@
 			</div>
 			<div class="row control">
 				<span class="spacer"></span>
-
 				<button type="button" class="red" onclick="resetOrder()">{{ "Reset"|i18n }}</button>
 				<button class="green">{{ "Sort"|i18n }}</button>
 			</div>
@@ -140,10 +139,12 @@
 </template>
 </tsante-list>
 
+{% if rights.write %}
 <div class="row control actions">
 	<span class="spacer"></span>
 	<a href="/message/create"><button class="blue big">{{ "New message"|i18n }}</button></a>
 </div>
+{% endif %}
 
 {% include 'modal.htm' %}
 

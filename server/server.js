@@ -431,7 +431,7 @@ server.get( '/questionnaire/:questionnaireName', IPage.questionnaireOverview);
 
 server.get( '/answers/:entryID', IPage.questionnaireAnswers);
 
-server.get( '/datarecord/', IPage.dataRecord);
+server.get( '/datarecord', IPage.dataRecord);
 server.get( '/datarecord/create', IPage.dataRecordCreate);
 server.get( '/datarecord/synthesis', IPage.dataRecordSynthesis);
 server.get( '/datarecord/:dataRecordID', IPage.dataRecordDetail);

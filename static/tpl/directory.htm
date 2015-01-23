@@ -6,6 +6,8 @@
 {% parent %}
 <script src="/bower_components/rsvp/rsvp.min.js"></script>
 <script src="tpl/directory.js"></script>
+<script src="/bower_components/zdk-calendar/form2js.js"></script>
+
 <style>
     .disabled { opacity:0.5 }
 </style>
@@ -13,10 +15,11 @@
 
 {% block content %}
     <zdk-panel heading='{{"Filter"|i18n}} / {{"Sort"|i18n}}' collapsable="true" collapsed="true">
+	    <div>
         <form class="filter" name="filter" onsubmit="validFilter(); return false;">
             <div class="row">
                 <label>{{"Name"|i18n}}:</label>
-                <input type="text" name="nameTxt" />
+                <input type="text" name="name" />
             </div>
             <div class="row ">
                 <div class="col">
@@ -28,40 +31,51 @@
                 </select>
                 </div>
                 <div class="col">
-                    <label>Active status:</label>
+                    <label>{{'Active status'|i18n}}:</label>
                     <select name="active">
-                        <option value="activeAllData">all</option>
-                        <option value="activeTrueData">active</option>
-                        <option value="activeFalseData">not active</option>
+                        <option value="all">{{'all'|i18n}}</option>
+                        <option value="true">{{'active'|i18n}}</option>
+                        <option value="false">{{'not active'|i18n}}</option>
                     </select>
                 </div>
             </div>
-            <hr>
+	        <div class="row control">
+		        <span class="spacer"></span>
+		        <button type="button" class="red" onclick="resetFilter()">{{ "Reset"|i18n }}</button>
+		        <button class="green">{{ "Filter"|i18n }}</button>
+	        </div>
+        </form>
+	
+	    <div style="height:10px">&nbsp;</div>
+	    <hr/>
+	
+	    <form class="order" name="order" autocomplete="off" onsubmit="validFilter(); return false;">
             <div class="row">
                 <div class="col">
-                    <label>Sort:</label>
-                    <select name="sortSelection">
-                        <option value="nameData">name</option>
-                        <option value="perimeterData">perimeter</option>
+                    <label>{{'Sort'|i18n}}:</label>
+                    <select name="sort">
+                        <option value="name.family">{{'name'|i18n}}</option>
+                        <option value="perimeter">{{'perimeter'|i18n}}</option>
                     </select>
                 </div>
                 <div class="col">
-                    <label>Direction:</label>
-                    <select name="sortDirection">
-                        <option value="ascData">ascending</option>
-                        <option value="descData">descending</option>
+                    <label>{{'Direction'|i18n}}:</label>
+                    <select name="dir">
+                        <option value="1">{{'ascending'|i18n}}</option>
+                        <option value="-1">{{'descending'|i18n}}</option>
                     </select>
                 </div>
             </div>
-            <div class="row control">
-                <span class="spacer"></span>
-                <button type="button" class="red" onclick="resetFilter()">Reset</button>
-                <button class="green">Valid</button>
-            </div>
+		    <div class="row control">
+			    <span class="spacer"></span>
+			    <button type="button" class="red" onclick="resetOrder()">{{ "Reset"|i18n }}</button>
+			    <button class="green">{{ "Sort"|i18n }}</button>
+		    </div>
         </form>
+	    </div>
     </zdk-panel>
 
-    <tsante-list url="/api/directory" offset="20" auto="false" autoRender="false" unresolved id="tsanteList">
+    <tsante-list url="/api/directory" pg="1" offset="25" auto="true" autoRender="false" unresolved id="tsanteList">
         <template is="auto-binding" repeat="{% raw %}{{item, i in list.items}}{% endraw %}">
             <div class="item">
                 <div class="row">
@@ -104,11 +118,11 @@
                             </div>
                         </div>
                     </div>
-                    <div>
+                    <div style="width:60px">
                         <template if="{% raw %}{{item.address && item.address.line && item.address.line.length > 0 || item.address.zip || item.address.city}}{% endraw %}">
-                            <button type="button" class="green small" onclick="toggleHiddenNode(this, '.address')">detail</button><br/>
+                            <button type="button" class="green small" onclick="toggleHiddenNode(this, '.address')">{{'detail'|i18n}}</button><br/>
                         </template>
-                        {% if admin %}
+                        {% if rights.write %}
                         <a href="/directory/{% raw %}{{item._id}}{% endraw %}" class="button blue small">edit</a>
                         {% endif %}
                     </div>
@@ -125,7 +139,7 @@
         </template>
     </tsante-list>
 
-    {% if admin %}
+    {% if rights.write %}
     <div class="row control">
         <span class="spacer"></span>
         <a href="/directory/create"><button id="addEntry" class="blue" type="button">Add entry</button></a>

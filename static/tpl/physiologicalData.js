@@ -380,8 +380,8 @@ var renderGraph = function(dataRecords) {
 				zIndex: 0,
 				lineWidth: 0,
 				data: [
-					[dataRecords.yellow.data[0][0], thresholdYellow.min, thresholdYellow.max],
-					[dataRecords.yellow.data[dataRecords.yellow.data.length-1][0], thresholdYellow.min, thresholdYellow.max]
+					[dateFrom, thresholdYellow.min, thresholdYellow.max],
+					[dateTo, thresholdYellow.min, thresholdYellow.max]
 				]
 			};
 			datas.push(areaYellow);

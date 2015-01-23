@@ -66,51 +66,62 @@ function getBaseURL(url) {
     return url.slice(0, idx !== -1 ? idx : url.length);
 }
 
+function paginate(init, params) {
+	var listPagerElt = document.querySelector("tsante-list");
+
+	if (params) {
+		listPagerElt.url = getBaseURL(listPagerElt.url) + params;
+	} else {
+		listPagerElt.url = getBaseURL(listPagerElt.url);
+	}
+	if (init) {
+		listPagerElt.pg = 1;
+	}
+
+	listPagerElt.go();
+}
+
+function getParams() {
+	var filterForm = document.forms.filter,
+		orderForm = document.forms.order,
+		objFilter = form2js(filterForm),
+		objOrder = form2js(orderForm),
+		params = "";
+
+	if( objFilter.perimeter === "NONE" ) {
+		delete objFilter.perimeter;
+	}
+	if( objFilter.active === "all" ) {
+		delete objFilter.active;
+	}
+	
+	if (JSON.stringify(objFilter) !== "{}") {
+		params += "?filter=" + JSON.stringify(objFilter);
+	}
+	if (objOrder.sort) {
+		params += (params ? "&" : "?") + "sort=" + objOrder.sort;
+	}
+	if (objOrder.dir) {
+		params += (params ? "&" : "?") + "dir=" + objOrder.dir;
+	}
+	return params;
+}
+
+function resetOrder() {
+	document.forms.order.reset();
+	var params = getParams();
+	paginate(false, params);
+}
+
 function resetFilter() {
-	console.log("resetFilter", arguments);
-    document.forms.filter.reset();
-    var listPagerElt = document.querySelector("tsante-list");
-    listPagerElt.url = getBaseURL(listPagerElt.url);
-    listPagerElt.go();
+	document.forms.filter.reset();
+	var params = getParams();
+	paginate(false, params);
 }
 
 function validFilter() {
-	console.log("validFilter", arguments);
-    var filterForm = document.forms.filter,
-        listPagerElt = document.querySelector("tsante-list"),
-        params = "",
-        nameValue = "",
-        perimeterValue = "",
-        filterObj = {};
-
-    params += "?sort=" + dataFormat[filterForm.sortSelection.options[filterForm.sortSelection.selectedIndex].value];
-    //ASC/DESC
-    params += "&dir=" + dataFormat[filterForm.sortDirection.options[filterForm.sortDirection.selectedIndex].value];
-
-    //TODO Perimeter
-    //active
-    var activeStatus = filterForm.active.options[filterForm.active.selectedIndex].value;
-    if(activeStatus !== "activeAllData"){
-    	filterObj.active = dataFormat[activeStatus];
-    }
-    //name
-    nameValue = filterForm.querySelector("input[name=nameTxt]").value;
-    if (nameValue) {
-        filterObj[dataFormat.nameData] = nameValue;
-    }
-    perimeterValue = filterForm.querySelector("select[name=perimeter]").value;
-    if (perimeterValue) {
-        filterObj.perimeter = perimeterValue;
-    }
-    if(JSON.stringify(filterObj) !== "{}"){
-    	params += "&filter=" + JSON.stringify(filterObj);
-    }
-    listPagerElt.url = getBaseURL(listPagerElt.url) + params;
-
-    console.log("validFilter - url: ", listPagerElt.url);
-
-    listPagerElt.pg = 1;
-    listPagerElt.go();
+	var params = getParams();
+	paginate(true, params);
 }
 
 function updateDirectory(idx){
@@ -210,8 +221,6 @@ function showModal(modalObj) {
 }
 
 function init() {
-	console.log("init");
-
     var promises = {
         job: promiseXHR("GET", "/api/lists/job/array", 200),
         role: promiseXHR("GET", "/api/lists/role/array", 200),

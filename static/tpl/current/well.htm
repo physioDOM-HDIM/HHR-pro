@@ -21,19 +21,21 @@
 	<zdk-panel heading="{{ 'Well being' | i18n }}">
 		<form name="form" id="form" autocomplete="off" onsubmit="checkForm(); return false;">
 			<div class="row value-row questionnaire-row" data-name="SF12">
-				<div flex class="value-name">SF 12 score</div>
+				<div flex class="value-name">{{'SF 12 score'|i18n}}</div>
 				<div class="questionnaire-date">{% if status.sf12Date %}{{status.sf12Date | date('Y-m-d')}}{% endif %}</div>
 				<input type="text" class="questionnaire-score" value="{{status.sf12Score}}" readonly />
 				<input type="hidden" class="questionnaire-answer" name="sf12Answer" value="{{status.sf12Answer}}" />
 				<div class="questionnaire-button-container">
-					<a class="button small blue" href={% if status.sf12Answer %}"/answers/{{status.sf12Answer}}"{% else %}"/questionnaire/SF12"{% endif %}>Questionnaire</a>
+					<a class="button small blue" href={% if status.sf12Answer %}"/answers/{{status.sf12Answer}}"{% else %}"/questionnaire/SF12"{% endif %}>{{'Questionnaire'|i18n}}</a>
 				</div>
 			</div>
-			{% if !status.validated %}
-			<div id="buttons" class="row control">
-				<span class="spacer"></span>
-				<button type="button" class="blue" onclick="showConfirm();">Validate</button>
-			</div>
+			{% if rights.write %}
+				{% if !status.validated %}
+				<div id="buttons" class="row control">
+					<span class="spacer"></span>
+					<button type="button" class="blue" onclick="showConfirm();">{{'Validate'|i18n}}</button>
+				</div>
+				{% endif %}
 			{% endif %}
 		</form>
 	</zdk-panel>

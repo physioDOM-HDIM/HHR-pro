@@ -18,7 +18,10 @@
 	}
 	h2 {
 		margin: 0;
-		font-size: 1.2em;
+		color: white;
+		background: gray;
+		padding: 5px;
+		font-size: 1em;
 	}
 
 	#questionnaireIframe {
@@ -99,15 +102,15 @@
 				
 				{% raw %}{{/item}}{% endraw %}
 
-				{% if admin %}
+				{% if rights.write %}
 				<div style="width:100px; text-align:right">
 					{% if cat !== 'questionnaire' %}
 					<div>
-						<button type="button" class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">Edit</button>
+						<button type="button" class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">{{'Edit'|i18n}}</button>
 					</div>
 					{% endif %}
 					<div>
-						<button type="button" class="red small" onclick="confirmDeleteItem('{{item._id.toString()}}')">Delete</button>
+						<button type="button" class="red small" onclick="confirmDeleteItem('{{item._id.toString()}}')">{{'Delete'|i18n}}</button>
 					</div>
 				</div>
 				{% else %}
@@ -143,12 +146,14 @@
 				<input name="items[{{item._id.toString()}}].dataRecordID" type="hidden" value="{{item.dataRecordID.toString()}}">
 		
 				<div style="width:100px; text-align:right">
+					{% if rights.write %}
 					<div>
-						<button type="button" class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">Back</button>
+						<button type="button" class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">{{'Back'|i18n}}</button>
 					</div>
 					<div>
-						<button type="button" class="red small" onclick="confirmDeleteItem('{{item._id.toString()}}')">Delete</button>
+						<button type="button" class="red small" onclick="confirmDeleteItem('{{item._id.toString()}}')">{{'Delete'|i18n}}</button>
 					</div>
+					{% endif %}
 				</div>
 			</div>
 
@@ -165,7 +170,9 @@
 		</div>
 		<div class="row control">
 			<span class="spacer"></span>
-			<button type="button" class="green small" onclick="addLine('{{category}}')">Add Item</button>
+			{% if rights.write %}
+			<button type="button" class="green small" onclick="addLine('{{category}}')">{{'Add'|i18n}}</button>
+			{% endif %}
 		</div>
 	</div>
 	{% endmacro %}
@@ -182,7 +189,7 @@
 		<input type="hidden" class="questionnaire-answer" name="items[{% raw %}{{idx}}{% endraw %}].ref" value="" />
 		<div class="col questionnaire-button-container" style="max-width:150px">
 			<span></span>
-			<a class="button small blue disabled" href="">Questionnaire</a>
+			<a class="button small blue disabled" href="">{{'Questionnaire'|i18n}}</a>
 		</div>
 		<div class="col" style="max-width:150px"></div>
 		<div class="col" style="max-width:150px"></div>
@@ -201,7 +208,7 @@
 
 		<input name="items[{% raw %}{{idx}}{% endraw %}].category" id="new-item-category" type="hidden">
 		<div style="width:100px; text-align:right">
-			<button type="button" class="blue small" onclick="removeLine(this)">Annuler</button>
+			<button type="button" class="blue small" onclick="removeLine(this)">{{'Cancel'|i18n}}</button>
 		</div>
 	</script>
 
@@ -229,7 +236,7 @@
 			<div class="row">
 				<div class="col bold" style="flex:2">{{ 'Parameter'|i18n }}</div>
 				<div class="col bold" style="max-width:150px">{{ 'Value'|i18n }}</div>
-				<div class="col bold" style="max-width:150px">{{ 'Unity'|i18n }}</div>
+				<div class="col bold" style="max-width:150px">{{ 'Unit'|i18n }}</div>
 				<div class="col bold" style="max-width:150px">{{ 'Min threshold' | i18n }}</div>
 				<div class="col bold" style="max-width:150px">{{ 'Max threshold' | i18n }}</div>
 				<div style="width:70px; text-align:right"></div>
@@ -237,13 +244,13 @@
 			{% if view === 'create'%}
 				{{ addItem('General') }}
 			{% else %}
-				<h2 class="bold">Général</h1>
+				<h2 class="bold">{{'Général'|i18n}}</h1>
 				{% for item in dataRecordItems.items.items %}
 					{% if item.category === 'General' %}
 						{{ line('General') }}
 					{% endif %}
 				{% endfor %}
-				<h2 class="bold">HDIM</h1>
+				<h2 class="bold">{{'HDIM'|i18n}}</h1>
 				{% for item in dataRecordItems.items.items %}
 					{% if item.category === 'HDIM' %}
 						{{ line('HDIM') }}
@@ -297,10 +304,14 @@
 	<div class="row control" style="height:60px; align-content: center">
 		<span class="spacer"></span>
 		{% if view === 'create'%}
-		<button class="green" onclick="create()">save</button>
+			{% if rights.write %}
+			<button class="green" onclick="create()">{{'save'|i18n}}</button>
+			{% endif %}
 		{% else %}
-		<a href="/datarecord"><button class="blue big">back</button></a>
-		<button class="green" onclick="update('{{dataRecordItems._id.toString()}}')">save</button>
+		<a href="/datarecord"><button class="blue big">{{'back'|i18n}}</button></a>
+		{% if rights.write %}
+			<button class="green" onclick="update('{{dataRecordItems._id.toString()}}')">{{'save'|i18n}}</button>
+		{% endif %}
 		{% endif %}
 	</div>
 </div>

@@ -26,6 +26,7 @@
 
 <form name="recommendation" id="recommendation"></form>
 
+{% if rights.write %}
 <div class="row control actions">
 	<span class="spacer"></span>
 	<div class="mode-update hidden">
@@ -37,29 +38,37 @@
 		<button type="button" class="blue big" onclick="toggleMode()">{{ "Edit"|i18n }}</button>
 	</div>
 </div>
+{% endif %}
 
 <script type="template" id="dataTpl">
-	{% raw %}
 	<div class="row spaced-down">
 		<div class="col">
-			<label for="special">Special diet: </label>
+			<label for="special">{{ "Special diet" | i18n }}: </label>
 			<div class="mode-update hidden">
+				{% raw %}
 				<input type="checkbox" id="special" name="special" {{#special}}checked{{/special}}>
+				{% endraw %}
 			</div>
 			<div class="mode-read">
+				{% raw %}
 				<input type="checkbox" {{#special}}checked{{/special}} disabled>
+				{% endraw %}
 			</div>
 		</div>
 	</div>
 	<div class="row spaced-down">
 		<div class="mode-update hidden">
+			{% raw %}
 			<textarea name="content" id="content" rows="10">{{content}}</textarea>
+			{% endraw %}
 		</div>
 		<div class="mode-read">
+			{% raw %}
 			<textarea name="content" id="content-saved" rows="10" disabled>{{content}}</textarea>
+			{% endraw %}
 		</div>
 	</div>
-	{% endraw %}
+	
 </script>
 
 {% include 'modal.htm' %}
