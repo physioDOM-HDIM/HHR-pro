@@ -207,10 +207,34 @@ function Menu() {
 		});
 	};
 
-	this.canRead = function(role, url) {
-		var that = this;
+	this.rights = function(role, url) {
 		return new RSVP.Promise(function(resolve, reject) {
-			logger.trace('canRead', id);
+			logger.trace('rights', role, url);
+
+			physioDOM.db.collection('menus').findOne({link: url}, function (err, doc) {
+				if (err) {
+					logger.alert('Database error');
+					reject(err);
+				}
+				if ( doc && doc.rights[role] ) {
+					resolve( { 
+						read:  (doc.rights[role] > 0),
+						write: (doc.rights[role] === 2),
+						url: url
+					});
+				}
+				else {
+					resolve(
+						{ read:false, write:false, url: url }
+					);
+				}
+			});
+		});
+	};
+	
+	this.canRead = function(role, url) {
+		return new RSVP.Promise(function(resolve, reject) {
+			logger.trace('canRead', role, url);
 
 			physioDOM.db.collection('menus').findOne({link: url}, function (err, doc) {
 				if (err) {
@@ -228,9 +252,8 @@ function Menu() {
 	};
 
 	this.canWrite = function(role, url) {
-		var that = this;
 		return new RSVP.Promise(function(resolve, reject) {
-			logger.trace('canWrite', id);
+			logger.trace('canWrite', role, url);
 
 			physioDOM.db.collection('menus').findOne({link: url}, function (err, doc) {
 				if (err) {
