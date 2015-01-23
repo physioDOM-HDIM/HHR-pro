@@ -36,7 +36,6 @@ function Beneficiaries( ) {
 		
 		var search = {}, address = {};
 		if(filter) {
-			console.log("filter", filter);
 			try {
 				var tmp  = JSON.parse(filter);
 				for( var prop in tmp) {
