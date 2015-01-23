@@ -12,9 +12,9 @@ var initData = function(callback) {
 
 	Utils.promiseXHR("GET", "/api/beneficiary/physical-plan", 200).then(function(physicalPlan) {
 		physicalPlan = JSON.parse(physicalPlan);
-		return {content: physicalPlan.content, contentLined: physicalPlan.content.replace(/(\r\n|\n|\r)/gm, "<br>")};
+		return { content: '' || physicalPlan.content };
     }, function() {
-        return {content: '', contentLined: ''};
+        return {content: ''};
     }).then(function(model) {
     	var container = document.querySelector('#recommendation'),
 			dataTpl = document.querySelector('#dataTpl');
@@ -26,7 +26,7 @@ var initData = function(callback) {
 		function limitText() {
 			var lines = contentField.value.split("\n");
 			for (var i = 0; i < lines.length; i++) {
-				if (lines[i].length <= 60) continue;
+				if (lines[i].length <= 60) { continue; }
 				var j = 0, space = 60;
 				while (j++ <= 60) {
 					if (lines[i].charAt(j) === " ") { space = j; }
@@ -54,9 +54,12 @@ var toggleMode = function() {
 		leni = modeUpdate.length,
 		y = 0,
 		leny = modeRead.length;
-
+	
 	for(i; i<leni; i++) {
 		Utils.showHideElt(modeUpdate[i], 'mode-update');
+	}
+	if( !modeUpdate[0].classList.contains("hidden") ) {
+		contentField.focus();
 	}
 
 	for(y; y<leny; y++) {
@@ -64,7 +67,7 @@ var toggleMode = function() {
 	}
 
 	//clear any change
-	contentField.value = contentSaved.innerText;
+	contentField.value = contentSaved.value;
 };
 
 /**

@@ -12,7 +12,10 @@ var initData = function(callback) {
 
 	Utils.promiseXHR("GET", "/api/beneficiary/dietary-plan", 200).then(function(dietaryPlan) {
 		dietaryPlan = JSON.parse(dietaryPlan);
-		return {special: dietaryPlan.special, content: dietaryPlan.content, contentLined: dietaryPlan.content.replace(/(\r\n|\n|\r)/gm, "<br>")};
+		return { 
+			special:false || dietaryPlan.special, 
+			content:'' || dietaryPlan.content 
+		};
     }, function() {
         return {special: false, content: '', contentLined: ''};
     }).then(function(model) {
@@ -46,8 +49,8 @@ var initData = function(callback) {
  */
 
 var toggleMode = function() {
-	var modeUpdate = document.querySelectorAll('.mode-update'),
-		modeRead = document.querySelectorAll('.mode-read'),
+	var modeUpdate   = document.querySelectorAll('.mode-update'),
+		modeRead     = document.querySelectorAll('.mode-read'),
 		contentField = document.querySelector('#content'),
 		contentSaved = document.querySelector('#content-saved'),
 		i = 0,
@@ -58,13 +61,16 @@ var toggleMode = function() {
 	for(i; i<leni; i++) {
 		Utils.showHideElt(modeUpdate[i], 'mode-update');
 	}
+	if( !modeUpdate[0].classList.contains("hidden") ) {
+		contentField.focus();
+	}
 
 	for(y; y<leny; y++) {
 		Utils.showHideElt(modeRead[y], 'mode-read');
 	}
 
 	//clear any change
-	contentField.value = contentSaved.innerText;
+	contentField.value = contentSaved.value;
 };
 
 /**
