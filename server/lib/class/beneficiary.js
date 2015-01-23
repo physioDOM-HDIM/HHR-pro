@@ -19,6 +19,7 @@ var RSVP = require("rsvp"),
 	QuestionnairePlan = require("./questionnairePlan"),
 	DietaryPlan = require("./dietaryPlan"),
 	PhysicalPlan = require("./physicalPlan"),
+	Events = require("./events"),
 	dbPromise = require("./database"),
 	moment = require("moment");
 
@@ -704,8 +705,23 @@ function Beneficiary( ) {
 	this.createMessage = function( session, professionalID, msg ) {
 		logger.trace("setMessage");
 
-		var messages = new Messages( this._id );
-		return messages.create( session, professionalID, msg );
+		var messages = new Messages( this._id ),
+			that = this;
+
+		return messages.create( session, professionalID, msg ).then(function() {
+			that.createEvent('Message', 'create');
+		})
+	};
+
+	this.createEvent = function(service, operation) {
+		var events = new Events(this._id);
+		var that = this;
+
+		return events.setup(service, operation)
+			.then(function(eventObj) {
+				that.lastEvent = eventObj.datetime;
+				that.save();
+			});
 	};
 
 	this.getGraphDataList = function() {
@@ -1035,6 +1051,15 @@ function Beneficiary( ) {
 			logger.trace("getPhysicalPlanList");
 			var physicalPlan = new PhysicalPlan(new ObjectID(that._id));
 			resolve(physicalPlan.getItems(pg, offset, sort, sortDir, filter));
+		});
+	};
+
+	this.getEventList = function(pg, offset, sort, sortDir, filter) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("getEventList");
+			var events = new Events(new ObjectID(that._id));
+			resolve(events.getItems(pg, offset, sort, sortDir, filter));
 		});
 	};
 

@@ -120,15 +120,26 @@
 	</zdk-panel>
 </div>
 
+
+
 <zdk-panel heading="{{ 'Events log'|i18n }}" collapsable="true" collapsed="false">
-	<div class="event">Not yet implemented</div>
-	<!--
-	<div class="event"></div>
-	<div class="event"></div>
-	<div class="event"></div>
-	<div class="event"></div>
-	<div class="event"></div>
-	-->
+	<tsante-list url="/api/beneficiary/events" pg="1" auto="true" unresolved id="tsanteList" style="margin-top: 0;">
+		<template is="auto-binding" repeat="{% raw %}{{item in list.items}}{% endraw %}">
+			<div class="item">
+				<div class="row">
+					<div style="-webkit-flex:1; -ms-flex:1; flex:1">
+						<div class="row">
+						{% raw %}
+							<span style="-webkit-flex:2; -ms-flex:2; flex:2;font-weight:bold">{{item.datetime}}</span>
+							<span style="-webkit-flex:2; -ms-flex:2; flex:2;font-weight:bold">{{item.service}} </span>
+							<span style="-webkit-flex:1; -ms-flex:1; flex:1">{{item.operation}}</span>
+						{% endraw %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</template>
+	</tsante-list>
 </zdk-panel>
 
 <zdk-panel heading="{{ 'Active services'|i18n }}" collapsable="true" collapsed="false">

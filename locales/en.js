@@ -276,5 +276,6 @@
 	"The password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters": "The password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters",
 	"You must add an email in telecom field": "You must add an email in telecom field",
 	"Address is incomplete": "Address is incomplete",
-	"The reference must have at least 1 uppercase or 1 lowercase": "The reference must have at least 1 uppercase or 1 lowercase"
+	"The reference must have at least 1 uppercase or 1 lowercase": "The reference must have at least 1 uppercase or 1 lowercase",
+	"Last Event": "Last Event"
 }

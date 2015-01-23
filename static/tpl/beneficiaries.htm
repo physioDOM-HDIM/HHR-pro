@@ -6,6 +6,7 @@
 {% parent %}
   
 <script src="/bower_components/form2js/src/form2js.js"></script>
+<script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
 <script src="/tpl/beneficiaries.js"></script>
 {% endblock %}
 
@@ -85,6 +86,9 @@
 						</div>
 						<div class="row">
 							<span style="padding-left:50px;-webkit-flex:1; -ms-flex:1; flex:1">{{ "Birth date"|i18n }} : {% raw %}{{item.birthdate}}{% endraw %}</span>
+						</div>
+						<div class="row">
+							<span style="padding-left:50px;-webkit-flex:1; -ms-flex:1; flex:1">{{ "Last Event"|i18n }} : <b>{% raw %}{{ item.date }}{% endraw %}</b> {% raw %}{{item.dateFrom}}{% endraw %}</span>
 						</div>
 					</div>
 					<div>
