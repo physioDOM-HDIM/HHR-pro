@@ -1,13 +1,8 @@
+"use strict";
+
 var Utils = new Utils(),
 	parameterList = [];
 
-/**
- * INIT
- */
-
-window.addEventListener("DOMContentLoaded", function() {
-    getParameterList();
-}, false);
 
 var getParameterList = function() {
    	Utils.promiseXHR("GET", "/api/beneficiary/graph", 200).then(function(results) {
@@ -28,7 +23,7 @@ var getParameterList = function() {
 
     		parameterList[y].firstMeasureDatetime= moment(parameterList[y].firstReport).format("YYYY-MM-DD");
     		parameterList[y].lastMeasureDatetime= moment(parameterList[y].lastReport).format("YYYY-MM-DD");
-    		parameterList[y].delta = parameterList[y].lastValue - parameterList[y].firstValue;
+    		parameterList[y].delta = (parameterList[y].lastValue - parameterList[y].firstValue).toFixed(2);
 
 			var row = document.createElement('div'),
 				model = {
@@ -43,3 +38,11 @@ var getParameterList = function() {
 
    	});
 };
+
+/**
+ * INIT
+ */
+
+window.addEventListener("DOMContentLoaded", function() {
+	getParameterList();
+}, false);

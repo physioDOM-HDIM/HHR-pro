@@ -10,7 +10,12 @@
 <link rel="stylesheet" href="/styles/dataRecordSynthesis.css">
 
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
-
+<style>
+	div.result {
+		min-width: 50px;
+		text-align: right;
+	}
+</style>
 {% endblock %}
 
 {% block content %}
@@ -34,9 +39,9 @@
 <script type="template" id="tpl-line">
 {{#parameter}}
 	<div class="col">{{name}}</div>
-	<div class="col"><span class="bold spacing-around">{{firstValue}}</span> ({{firstMeasureDatetime}})</div>
-	<div class="col"><span class="bold spacing-around">{{lastValue}}</span> ({{lastMeasureDatetime}})</div>
-	<div class="col">{{delta}}</div>
+	<div class="col"><div class="bold spacing-around result">{{firstValue}}</div> ({{firstMeasureDatetime}})</div>
+	<div class="col"><div class="bold spacing-around result">{{lastValue}}</div> ({{lastMeasureDatetime}})</div>
+	<div class="col"><div class="bold spacing-around result">{{delta}}</div></div>
 {{/parameter}}
 </script>
 {% endraw %}
