@@ -51,6 +51,22 @@
 			}
 		}
 	</script>
+	
+	{% if !rights.read %}
+	<script>
+		if( window.parent.closeQuestionnaire ) {
+			window.parent.closeQuestionnaire();
+		} else {
+			window.history.back();
+		}
+	</script>
+	{% else %}
+	<script>
+		if( window.parent.highlight) {
+			parent.highlight('{{rights.url}}');
+		}
+	</script>
+	{% endif %}
 
 	{% block head %}
 	<link rel="import" href="/bower_components/tsante-listpager/tsante-listpager.html">
