@@ -34,14 +34,16 @@
 				Normal <input type="checkbox" name="normal" flex class="value-checkbox" {% if status.normal %}checked{% endif %} {% if status.validated %}disabled{% endif %} />
 				Risk of fail <input type="checkbox" name="risk" flex class="value-checkbox" {% if status.risk %}checked{% endif %} {% if status.validated %}disabled{% endif %} />
 			</div>
-
-			{% if !status.validated %}
-			<div id="buttons" class="row control">
-				<span class="spacer"></span>
-				<button type="button" class="blue" onclick="showConfirm();">Validate</button>
-				<button type="button" class="red" onclick="location.reload();">Cancel</button>
-				<button class="green">Save</button>
-			</div>
+			
+			{% if rights.write %}
+				{% if !status.validated %}
+				<div id="buttons" class="row control">
+					<span class="spacer"></span>
+					<button type="button" class="blue" onclick="showConfirm();">Validate</button>
+					<button type="button" class="red" onclick="location.reload();">Cancel</button>
+					<button class="green">Save</button>
+				</div>
+				{% endif %}
 			{% endif %}
 		</form>
 	</zdk-panel>

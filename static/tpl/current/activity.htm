@@ -27,13 +27,15 @@
 				<div class="value-unit">steps per week</div>
 			</div>
 
-			{% if !status.validated %}
-			<div id="buttons" class="row control">
-				<span class="spacer"></span>
-				<button type="button" class="blue" onclick="showConfirm();">Validate</button>
-				<button type="button" class="red" onclick="location.reload();">Cancel</button>
-				<button class="green">Save</button>
-			</div>
+			{% if rights.write %}
+				{% if !status.validated %}
+				<div id="buttons" class="row control">
+					<span class="spacer"></span>
+					<button type="button" class="blue" onclick="showConfirm();">Validate</button>
+					<button type="button" class="red" onclick="location.reload();">Cancel</button>
+					<button class="green">Save</button>
+				</div>
+				{% endif %}
 			{% endif %}
 		</form>
 	</zdk-panel>

@@ -29,11 +29,13 @@
 					<a class="button small blue" href={% if status.sf12Answer %}"/answers/{{status.sf12Answer}}"{% else %}"/questionnaire/SF12"{% endif %}>Questionnaire</a>
 				</div>
 			</div>
-			{% if !status.validated %}
-			<div id="buttons" class="row control">
-				<span class="spacer"></span>
-				<button type="button" class="blue" onclick="showConfirm();">Validate</button>
-			</div>
+			{% if rights.write %}
+				{% if !status.validated %}
+				<div id="buttons" class="row control">
+					<span class="spacer"></span>
+					<button type="button" class="blue" onclick="showConfirm();">Validate</button>
+				</div>
+				{% endif %}
 			{% endif %}
 		</form>
 	</zdk-panel>
