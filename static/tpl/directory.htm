@@ -108,7 +108,7 @@
                         <template if="{% raw %}{{item.address && item.address.line && item.address.line.length > 0 || item.address.zip || item.address.city}}{% endraw %}">
                             <button type="button" class="green small" onclick="toggleHiddenNode(this, '.address')">detail</button><br/>
                         </template>
-                        {% if admin %}
+                        {% if rights.write %}
                         <a href="/directory/{% raw %}{{item._id}}{% endraw %}" class="button blue small">edit</a>
                         {% endif %}
                     </div>
@@ -125,7 +125,7 @@
         </template>
     </tsante-list>
 
-    {% if admin %}
+    {% if rights.write %}
     <div class="row control">
         <span class="spacer"></span>
         <a href="/directory/create"><button id="addEntry" class="blue" type="button">Add entry</button></a>
