@@ -11,67 +11,77 @@
 
 {% block content %}
 	<zdk-panel heading="{{'Filter'|i18n}} / {{'Sort'|i18n}}" collapsable="true" collapsed={% if admin %}"false"{% else %}"true"{% endif %}>
-		<form class="filter" name="filter" autocomplete="off" onsubmit="validFilter(); return false;">
 			<div>
-				<div class="row">
-					<div class="col">
-						<label class="collabel" for="lastname">{{ "Last name"|i18n }} : </label>
-						<div class="colcontent">
-							<input type="text" name="name" id="lastname">
+				<form class="filter" name="filter" autocomplete="off" onsubmit="validFilter(); return false;">
+					<div class="row">
+						<div class="col">
+							<label class="collabel" for="lastname">{{ "Last name"|i18n }} : </label>
+							<div class="colcontent">
+								<input type="text" name="name" id="lastname">
+							</div>
+						</div>
+						<div class="col">
+							<label class="collabel" for="Perimeter">{{ "Perimeter"|i18n }} : </label>
+							<div class="colcontent">
+							<select name="perimeter" id="Perimeter">
+								{% for item in perimeter.items %}
+								<option value="{{item.value}}" >{{item.label}}</option>
+								{% endfor %}
+							</select>
+							</div>
 						</div>
 					</div>
-					<div class="col">
-						<label class="collabel" for="Perimeter">{{ "Perimeter"|i18n }} : </label>
-						<div class="colcontent">
-						<select name="perimeter" id="Perimeter">
-							{% for item in perimeter.items %}
-							<option value="{{item.value}}" >{{item.label}}</option>
-							{% endfor %}
-						</select>
+					<div class="row">
+						<div class="col">
+							<label class="collabel" for="zipcode">{{ "Zip code"|i18n }} : </label>
+							<div class="colcontent">
+								<input type="text" name="zip" id="zipcode">
+							</div>
+						</div>
+						<div class="col">
+							<label class="collabel" for="city">{{ "City"|i18n }} : </label>
+							<div class="colcontent">
+								<input type="text" name="city" id="city">
+							</div>
 						</div>
 					</div>
-				</div>
-				<div class="row">
-					<div class="col">
-						<label class="collabel" for="zipcode">{{ "Zip code"|i18n }} : </label>
-						<div class="colcontent">
-							<input type="text" name="zip" id="zipcode">
-						</div>
+					
+					<div class="row control">
+						<span class="spacer"></span>
+						<button type="button" class="red" onclick="resetFilter()">{{ "Reset"|i18n }}</button>
+						<button class="green">{{ "Filter"|i18n }}</button>
 					</div>
-					<div class="col">
-						<label class="collabel" for="city">{{ "City"|i18n }} : </label>
-						<div class="colcontent">
-							<input type="text" name="city" id="city">
-						</div>
-					</div>
-				</div>
+				</form>
+				
 				<div style="height:10px">&nbsp;</div>
 				<hr/>
-				<div class="row">
-					<div class="col">
-						<label>Sort:</label>
-						<select name="sort">
-							<option value="name.family">name</option>
-							<option value="perimeter">perimeter</option>
-							<option value="address.zip">zip code</option>
-							<option value="address.city">city</option>
-						</select>
+				
+				<form class="order" name="order" autocomplete="off" onsubmit="validFilter(); return false;">
+					<div class="row">
+						<div class="col">
+							<label>Sort:</label>
+							<select name="sort">
+								<option value="name.family">{{'Name'|i18n}}</option>
+								<option value="perimeter">{{'Perimeter'|i18n}}</option>
+								<option value="address.zip">{{'Zip code'|i18n}}</option>
+								<option value="address.city">{{'City'|i18n}}</option>
+							</select>
+						</div>
+						<div class="col">
+							<label>Direction:</label>
+							<select name="dir">
+								<option value="1">{{'ascending'|i18n}}</option>
+								<option value="-1">{{'descending'|i18n}}</option>
+							</select>
+						</div>
 					</div>
-					<div class="col">
-						<label>Direction:</label>
-						<select name="dir">
-							<option value="1">ascending</option>
-							<option value="-1">descending</option>
-						</select>
+					<div class="row control">
+						<span class="spacer"></span>
+						<button type="button" class="red" onclick="resetOrder()">Reset</button>
+						<button class="green">{{'Sort'|i18n}}</button>
 					</div>
-				</div>
-				<div class="row control">
-					<span class="spacer"></span>
-					<button type="button" class="red" onclick="resetFilter()">Reset</button>
-					<button class="green">Valid</button>
-				</div>
+				</form>
 			</div>
-		</form>
 	</zdk-panel>
 	
 	<tsante-list url="/api/beneficiaries" pg="1" auto="true" unresolved id="tsanteList">
