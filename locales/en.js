@@ -238,6 +238,7 @@
 	"Confirmation": "Confirmation",
 	"Are you sure?": "Are you sure?",
 	"Questionnaire answers": "Questionnaire answers",
+	"Result synthesis": "Result synthesis",
 	"Rights": "Rights",
 	"Select role :": "Select role :",
 	"Write": "Write",

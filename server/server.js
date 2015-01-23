@@ -433,7 +433,9 @@ server.get( '/answers/:entryID', IPage.questionnaireAnswers);
 
 server.get( '/datarecord/', IPage.dataRecord);
 server.get( '/datarecord/create', IPage.dataRecordCreate);
+server.get( '/datarecord/synthesis', IPage.dataRecordSynthesis);
 server.get( '/datarecord/:dataRecordID', IPage.dataRecordDetail);
+
 
 server.get( '/physiological-data', IPage.physiologicalData);
 server.get( '/message', IPage.messageList);

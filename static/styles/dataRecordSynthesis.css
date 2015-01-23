@@ -1,0 +1,7 @@
+.line-parameter {
+	padding: 5px 0;
+}
+
+.line-parameter:nth-child(even) {
+    background-color: #DFDFDF;
+}

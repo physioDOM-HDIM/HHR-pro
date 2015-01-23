@@ -720,11 +720,22 @@ function Beneficiary( ) {
 				"questionnaire": []
 			};
 
+			var reduceFunction = function ( curr, result ) {
+				if(result.lastReport < curr.datetime) {
+					result.lastReport = curr.datetime;
+					result.lastValue = curr.value;
+				}
+				if(!result.firstReport || result.firstReport > curr.datetime) {
+					result.firstReport = curr.datetime;
+					result.firstValue = curr.value;
+				}
+			};
+
 			var groupRequest = {
 				key    : {text: 1, category: 1},
 				cond   : {subject: that._id},
-				reduce : "function ( curr, result ) { if( result.lastReport < curr.datetime) { result.lastReport = curr.datetime; } }",
-				initial: {lastReport: ""}
+				reduce : reduceFunction.toString(),
+				initial: {lastReport: "", firstReport: "", lastValue: 0, firstValue: 0}
 			};
 
 			function compareItems(a, b) {
