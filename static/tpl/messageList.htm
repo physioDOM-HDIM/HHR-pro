@@ -140,10 +140,12 @@
 </template>
 </tsante-list>
 
+{% if rights.write %}
 <div class="row control actions">
 	<span class="spacer"></span>
 	<a href="/message/create"><button class="blue big">{{ "New message"|i18n }}</button></a>
 </div>
+{% endif %}
 
 {% include 'modal.htm' %}
 
