@@ -6,6 +6,8 @@
 {% parent %}
 <script src="/bower_components/form2js/src/form2js.js"></script>
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
+<script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
 
 <link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
 <link rel="import" href="/bower_components/zdk-panel/zdk-panel.html">
@@ -16,36 +18,38 @@
 
 {% block content %}
 
-<iframe name="questionnaireIframe" id="questionnaireIframe"></iframe>
-
 <div id="content">
 	<zdk-panel heading="{{ 'Frailty status' | i18n }}">
 		<form name="form" id="form" autocomplete="off" onsubmit="checkForm(); return false;">
 			<div class="row value-row questionnaire-row" data-name="CHAIR_TEST">
-				<div flex class="value-name">Chair stand results</div>
+				<div flex class="value-name">{{'Chair stand results' | i18n }}</div>
 				<div class="questionnaire-date">{% if status.chairStandDate %}{{status.chairStandDate | date('Y-m-d')}}{% endif %}</div>
 				<input type="text" class="questionnaire-score" value="{{status.chairStandScore}}" disabled />
 				<input type="hidden" class="questionnaire-answer" name="chairStandAnswer" value="{{status.chairStandAnswer}}" />
 				<div class="questionnaire-button-container">
-					<a class="button small blue" href={% if status.chairStandAnswer %}"/answers/{{status.chairStandAnswer}}"{% else %}"/questionnaire/CHAIR_TEST"{% endif %}>Questionnaire</a>
+					<a class="button small blue" href={% if status.chairStandAnswer %}"/answers/{{status.chairStandAnswer}}"{% else %}"/questionnaire/CHAIR_TEST"{% endif %}>{{'Questionnaire'|i18n}}</a>
 				</div>
 			</div>
 			<div class="row value-row">
-				Normal <input type="checkbox" name="normal" flex class="value-checkbox" {% if status.normal %}checked{% endif %} {% if status.validated %}disabled{% endif %} />
-				Risk of fail <input type="checkbox" name="risk" flex class="value-checkbox" {% if status.risk %}checked{% endif %} {% if status.validated %}disabled{% endif %} />
+				{{'Normal'|i18n}} <input type="checkbox" name="normal" flex class="value-checkbox" {% if status.normal %}checked{% endif %} {% if status.validated %}disabled{% endif %} />
+				{{'Risk of fail'|i18n}} <input type="checkbox" name="risk" flex class="value-checkbox" {% if status.risk %}checked{% endif %} {% if status.validated %}disabled{% endif %} />
 			</div>
-
-			{% if !status.validated %}
-			<div id="buttons" class="row control">
-				<span class="spacer"></span>
-				<button type="button" class="blue" onclick="showConfirm();">Validate</button>
-				<button type="button" class="red" onclick="location.reload();">Cancel</button>
-				<button class="green">Save</button>
-			</div>
+			
+			{% if rights.write %}
+				{% if !status.validated %}
+				<div id="buttons" class="row control">
+					<span class="spacer"></span>
+					<button type="button" class="blue" onclick="showConfirm();">{{'Validate'|i18n}}</button>
+					<button type="button" class="red" onclick="location.reload();">{{'Cancel'|i18n}}</button>
+					<button class="green">{{'Save'|i18n}}</button>
+				</div>
+				{% endif %}
 			{% endif %}
 		</form>
 	</zdk-panel>
 </div>
+
+{% include "../modal.htm" %}
 
 <zdk-modal id="confirmModal" closebutton="false">
 	<div class="modalContainer">

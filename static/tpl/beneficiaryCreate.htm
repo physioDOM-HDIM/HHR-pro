@@ -8,7 +8,11 @@
 <script src="/bower_components/rsvp/rsvp.min.js"></script>
 <script src="/bower_components/mustache/mustache.js"></script>
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
+
+<script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
 <script src="/tpl/beneficiaryCreate.js"></script>
+
 <link rel="import" href="/bower_components/zdk-calendar/zdk-calendar.html">
 <link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
   
@@ -20,21 +24,18 @@
   
 {% block content %}
 <script type="template" id="tplProfessionnalContainer">
-    <div class="row {%raw%}{{#item.referent}}referent{{/item.referent}}{%endraw%}">
-        <div class="col bold">{%raw%}{{item.name.family}} {{item.name.given}}{%endraw%}</div>
+    <div class="row {%raw%}{{#item.referent}}referent{{/item.referent}}{%endraw%}" horizontal layout start>
+        <div class="col bold proName">{%raw%}{{item.name.family}} {{item.name.given}}{%endraw%}</div>
         <div class="col">{%raw%}{{display_job}}{%endraw%}</div>
-        <div class="col">
+        <div class="col" vertical layout>
             {%raw%}{{#item.telecom}}
-                {{display_phone}}
+                <div>{{display_phone}}</div>
             {{/item.telecom}}{%endraw%}
         </div>
-        <div class="col">
+        <div>
             {%raw%}{{#item.telecom}}
                 {{&display_email}}
             {{/item.telecom}}{%endraw%}
-        </div>
-        <div class="col buttonContainer">
-           <button type="button" class="small red" onclick="deleteProfessional(this)">{{ "delete"|i18n }}</button>
         </div>
         <input type="hidden" name="professional_id" value="{%raw%}{{item._id}}{%endraw%}">
     </div>
@@ -44,7 +45,7 @@
     <div>
         <div class="row">
             <div class="col">
-                <label>{{ "Use"|i18n }}</label>
+                <label>{{ "Use"|i18n }} <span class="mandatory">*</span></label>
                 <select name="telecom[{{loop.index}}].use" required>
                     {% for item in use.items %}
                     <option value="{{item.value}}" {% if (!telecom.use && item.value=='home')||telecom.use===item.value %}selected{% endif %}>{{item.label}}</option>
@@ -52,7 +53,7 @@
                 </select>
             </div>
             <div class="col">
-                <label>{{ "Type"|i18n }}</label>
+                <label>{{ "Type"|i18n }} <span class="mandatory">*</span></label>
                 <select name="telecom[{{loop.index}}].system" required>
                     {% for item in system.items %}
                     {% if item.value !== "email" %}
@@ -64,7 +65,7 @@
         </div>
         <div class="row">
             <div class="col">
-                <label>Number</label>
+                <label>Number <span class="mandatory">*</span></label>
                 <input type="text" name="telecom[{{loop.index}}].value" value="{{telecom.value}}" required/>
             </div>
             <div class="col buttonContainer">
@@ -77,7 +78,7 @@
 
 <script type="template" id="tplAddressContainer">
     <div class="row">
-        <label>{{ "Use"|i18n }}</label>
+        <label>{{ "Use"|i18n }} <span class="mandatory">*</span></label>
         <select name="address[{%raw%}{{idx}}{%endraw%}].use" required>
         {% for item in use.items %}
         <option value="{{item.value}}">{{item.label}}</option>
@@ -89,34 +90,34 @@
         </div>
     </div>
     <div class="row">
-        <label>{{ "Street"|i18n }}</label>
+        <label>{{ "Street"|i18n }} <span class="mandatory">*</span></label>
         <textarea name="address[{%raw%}{{idx}}{%endraw%}].line" required>{{addressItem.line}}</textarea>
     </div>
     <div class="row">
         <div class="col">
-            <label>{{ "Zip code"|i18n }}</label>
+            <label>{{ "Zip code"|i18n }} <span class="mandatory">*</span></label>
             <input type="text" name="address[{%raw%}{{idx}}{%endraw%}].zip" class="zipCode" value="{{addressItem.zip}}" required/>
         </div>
         <div class="col">
-            <label class="city">{{ "City"|i18n }}</label>
+            <label class="city">{{ "City"|i18n }} <span class="mandatory">*</span></label>
             <input type="text" name="address[{%raw%}{{idx}}{%endraw%}].city" value="{{addressItem.city}}" required/>
         </div>
     </div>
 </script>
 
 <zdk-panel  heading="Beneficiary">
-    <form name="beneficiary" autocomplete="off" onsubmit="checkBeneficiaryForm(); return false;">
+    <form name="beneficiary" autocomplete="off" onsubmit="checkAllForms(); return false;">
         <input type="hidden" name="_id" value="{{beneficiary._id.toString()}}">
         <input type="hidden" name="validate" value="{% if beneficiary.validate %}{{beneficiary.validate}}{% else %}false{% endif %}">
         <div class="row">
-            <label>{{ "Gender"|i18n }}</label>
+            <label>{{ "Civility" | i18n }} <span class="mandatory">*</span></label>
             <input name="gender" type="radio" value="M" {% if beneficiary.gender=='M' %}checked{% endif %} required>
             <label for="Male">{{ "Male"|i18n }}</label>
             <input name="gender" type="radio" value="F" {% if beneficiary.gender=='F' %}checked{% endif %} required>
             <label for="Female">{{ "Female"|i18n }}</label>
         </div>
         <div class="row">
-            <label>{{ "Last name"|i18n }}</label>
+            <label>{{ "Last name"|i18n }} <span class="mandatory">*</span></label>
             <input type="text" name="name.family" value="{{beneficiary.name.family}}" required placeholder="{{ 'Mandatory field'|i18n }}"/>
         </div>
         <div class="row">
@@ -124,7 +125,7 @@
             <input type="text" name="name.given" value="{{beneficiary.name.given}}" />
         </div>
         <div class="row">
-            <label>{{ "Birth date"|i18n }}</label>
+            <label>{{ "Birth date"|i18n }} <span class="mandatory">*</span></label>
             <input type="text" name="birthdate" required class="date" value="{{beneficiary.birthdate}}" />
         </div>
         <div class="row">
@@ -137,8 +138,8 @@
         </div>
         <div class="row">
             <div class="col">
-                <label>{{ "Height (meters)"|i18n }}</label>
-                <input type="text" name="size" value="{{beneficiary.size}}" required/>
+                <label>{{ "Height (centimeters)"|i18n }} <span class="mandatory">*</span></label>
+                <input type="text" name="size" value="{{beneficiary.size * 100}}" required/>
             </div>
             <div class="col">
                 <label>{{ "Social ID"|i18n }}</label>
@@ -154,7 +155,7 @@
                 <div>
                     <div class="row">
                         <div class="col">
-                            <label>{{ "Use"|i18n }}</label>
+                            <label>{{ "Use"|i18n }} <span class="mandatory">*</span></label>
                             <select name="telecom[{{loop.index}}].use" required>
                                 {% for item in use.items %}
                                     <option value="{{item.value}}" {% if (!telecom.use && item.value=='home')||telecom.use===item.value %}selected{% endif %}>{{item.label}}</option>
@@ -162,7 +163,7 @@
                             </select>
                         </div>
                         <div class="col">
-                            <label>{{ "Type"|i18n }}</label>
+                            <label>{{ "Type"|i18n }} <span class="mandatory">*</span></label>
                             <select name="telecom[{{loop.index}}].system" required>
                                 {% for item in system.items %}
                                     {% if item.value !== "email" %}
@@ -174,7 +175,7 @@
                     </div>
                     <div class="row">
                         <div class="col">
-                            <label>Number</label>
+                            <label>Number <span class="mandatory">*</span></label>
                             <input type="text" name="telecom[{{loop.index}}].value" value="{{telecom.value}}" required/>
                         </div>
                         <div class="col buttonContainer">
@@ -196,7 +197,7 @@
             {% for addressItem in beneficiary.address %}
             <div class="addressContainer">
                 <div class="row">
-                    <label>{{ "Use"|i18n }}</label>
+                    <label>{{ "Use"|i18n }} <span class="mandatory">*</span></label>
                     <select name="address[{{loop.index}}].use" required>
                     {% for item in use.items %}
                     <option value="{{item.value}}" {% if addressItem.use == item.value %}selected{% endif %} >{{item.label}}</option>
@@ -208,16 +209,16 @@
                     </div>
                 </div>
                 <div class="row">
-                    <label>{{ "Street"|i18n }}</label>
+                    <label>{{ "Street"|i18n }} <span class="mandatory">*</span></label>
                     <textarea name="address[{{loop.index}}].line" required>{{addressItem.line}}</textarea>
                 </div>
                 <div class="row">
                     <div class="col">
-                        <label>{{ "Zip code"|i18n }}</label>
+                        <label>{{ "Zip code"|i18n }} <span class="mandatory">*</span></label>
                         <input type="text" name="address[{{loop.index}}].zip" class="zipCode" value="{{addressItem.zip}}" required/>
                     </div>
                     <div class="col">
-                        <label class="city">{{ "City"|i18n }}</label>
+                        <label class="city">{{ "City"|i18n }} <span class="mandatory">*</span></label>
                         <input type="text" name="address[{{loop.index}}].city" value="{{addressItem.city}}" required/>
                     </div>
                 </div>
@@ -230,7 +231,7 @@
         </fieldset>
         <div class="row control">
             <span class="spacer"></span>
-            <button id="beneficiarySubmitBtn" class="blue">{{ "Save"|i18n }}</button>
+            <button id="beneficiarySubmitBtn" class="green">{{ "Save"|i18n }}</button>
         </div>
     </form>
 </zdk-panel>
@@ -238,31 +239,47 @@
 <zdk-panel  heading="Entry" collapsable="true" collapsed="false">
     <form name="entry" autocomplete="off" onsubmit="return false;">
         <div class="row">
+            <label>{{ "Active"|i18n }}</label>
+            <input type="checkbox" name="active" value="true" {% if beneficiary.active %}checked{% endif %}/>
+        </div>
+        <div class="row">
             <label>{{ "Demand"|i18n }}</label>
             <textarea name="entry.demand" >{{beneficiary.entry.demand}}</textarea>
         </div>
         <div class="row">
-            <label>{{ "Start date"|i18n }}</label>
-            <zdk-input-date name="entry.startDate" value="{{beneficiary.entry.startDate}}" style="z-index:100"></zdk-input-date>
-            <!--<input type="text" name="entry.startDate" value="{{beneficiary.entry.startDate}}" required class="date" onclick="showCalendar(this)" />-->
+            <div class="col">
+                <label>{{ "Start date"|i18n }} <span class="mandatory">*</span></label>
+                <zdk-input-date name="entry.startDate" value="{{beneficiary.entry.startDate}}" style="z-index:100" required></zdk-input-date>
+            </div>
+            <div class="col">
+                <label>{{ "Come from"|i18n }}</label>
+                <select name="entry.comeFrom">
+                    {% for item in comeFrom.items %}
+                    <option value="{{item.value}}">{{item.label}}</option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
         <div class="row">
             <label>{{ "Planned end"|i18n }}</label>
             <zdk-input-date name="entry.plannedEnd" value="{{beneficiary.entry.plannedEnd}}" style="z-index:100"></zdk-input-date>
-            <!-- <input type="text" name="entry.plannedEnd" value="{{beneficiary.entry.plannedEnd}}" class="date" onclick="showCalendar(this)" />-->
         </div>
         <div class="row">
-            <label>{{ "End date"|i18n }}</label>
-            <zdk-input-date name="entry.endDate" value="{{beneficiary.entry.endDate}}" style="z-index:100"></zdk-input-date>
-            <!--<input type="text" name="entry.endDate" value="{{beneficiary.entry.endDate}}" class="date" onclick="showCalendar(this)" />-->
+            <div class="col">
+                <label>{{ "End date"|i18n }}</label>
+                <zdk-input-date name="entry.endDate" value="{{beneficiary.entry.endDate}}" style="z-index:100"></zdk-input-date>
+            </div>
+            <div class="col">
+                <label>{{ "Destination"|i18n }}</label>
+                <select name="entry.destination">
+                    {% for item in destination.items %}
+                    <option value="{{item.value}}">{{item.label}}</option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
         <div class="row">
-            <label>{{ "Come from"|i18n }}</label>
-            <select name="entry.comeFrom">
-                {% for item in comeFrom.items %}
-                <option value="{{item.value}}">{{item.label}}</option>
-                {% endfor %}
-            </select>
+            
         </div>
         <div class="row">
             <label>{{ "PhysioDom-Box"|i18n }}</label>
@@ -279,11 +296,7 @@
             <input type="checkbox" name="deceased" value="true" {% if beneficiary.deceased %}checked{% endif %}/>
         </div>
         <div class="row">
-            <label>{{ "Active"|i18n }}</label>
-            <input type="checkbox" name="active" value="true" {% if beneficiary.active %}checked{% endif %}/>
-        </div>
-        <div class="row">
-            <label>{{ "Marital status"|i18n }}</label>
+            <label>{{ "Marital status"|i18n }} <span class="mandatory">*</span></label>
             <select name="maritalStatus" required>
                 {% for item in maritalStatus.items %}
                 <option value="{{item.value}}" {% if item.value == beneficiary.maritalStatus %}selected{% endif %}>{{item.label}}</option>
@@ -313,14 +326,6 @@
                 {% endfor %}
             </select>
         </div>
-        <div class="row">
-            <label>{{ "Profession"|i18n }}</label>
-            <select name="lifeCond.profession" required>
-                {% for item in profession.items %}
-                <option value="{{item.value}}" {% if item.value == beneficiary.lifeCond.profession %}selected{% endif %}>{{item.label}}</option>
-                {% endfor %}
-            </select>
-        </div>
         <button id="life_conditionSubmitBtn" class="hidden"></button>
     </form>
 </zdk-panel>
@@ -328,27 +333,29 @@
 <zdk-panel  heading="Access to HHR-Pro" collapsable="true" collapsed="true">
     <form name="account" autocomplete="off" onsubmit="return false;">
         <div class="row">
-            <label>{{ "Login"|i18n }}</label>
+            <label>{{ "Login" | i18n }}</label>
             <input type="text" name="account.login" value="{{beneficiary.account.login}}" />
         </div>
         <div class="row">
-            <label>{{ "Password"|i18n }}</label>
+            <label>{{ "Password" | i18n }}</label>
             <input type="password" name="account.password" />
         </div>
         <div class="row">
-            <label>{{ "Confirm password"|i18n }}</label>
-            <input type="password" name="checkAccountPassword"/>
+            <label>{{ "Confirm password" | i18n }}</label>
+            <input type="password" name="checkAccountPassword" />
+        </div>
+        <div class="row tip">
+            {{'Info: the password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters' | i18n}}
         </div>
         <div class="row">
             <label>{{ "Email"|i18n }}</label>
             <input type="email" name="telecom.value"
              value="{% for telecom in beneficiary.telecom %}
-                            {% if telecom.system === 'email' %}
-                                {{telecom.value}}
-                            {% endif %}
-                        {% endfor %}"/>
+                        {% if telecom.system === 'email' %}
+                            {{telecom.value}}
+                        {% endif %}
+                    {% endfor %}"/>
         </div>
-        <button id="accountSubmitBtn" class="hidden"></button>
     </form>
 </zdk-panel>
 
@@ -356,18 +363,13 @@
     <form name="professionals" autocomplete="off" onsubmit="checkProfessionalsForm(); return false;">
         {% for professional in beneficiary.professionals %}
         <div class="proItemContainer">
-            <div class="row {% if professional.referent %} referent {% endif %}">
-                <div class="col bold">{{professional.name.family}} {{professional.name.given}}</div>
+            <div class="row {% if professional.referent %} referent {% endif %}" horizontal layout start>
+                <div class="col bold proName">{{professional.name.family}} {{professional.name.given}}</div>
                 <div class="col">{% if jobArray.items[professional.job] %} {{jobArray.items[professional.job]}} {% else %} {{ professional.job}} {% endif %}</div>
-                <div class="col">
-                    {% set first = true %}
+                <div class="col" vertical layout>
                     {% for telecom in professional.telecom %}
                         {% if telecom.system !== "email" %}
-                            {% if !first %}
-                                /
-                            {% endif %}
-                            {{telecom.value}}
-                            {% set first = false %}
+                            <div>{{telecom.value}} ({{telecom.use}})</div>
                         {% endif %}
                     {% endfor %}
                 </div>
@@ -378,17 +380,14 @@
                         {% endif %}
                     {% endfor %}
                 </div>
-                <div class="col buttonContainer">
-                   <button type="button" class="small red" onclick="deleteProfessional(this)">{{ "delete"|i18n }}</button>
-                </div>
                 <input type="hidden" name="professional_id" value="{{professional._id.toString()}}">
             </div>
         </div>
         {% endfor %}
         <div class="row control">
             <span class="spacer"></span>
-            <button type="button" class="waitForId blue" onclick="showProfessionals()">{{ "Add"|i18n }}</button>
-            <button id="professionalsSubmitBtn" class="waitForId blue">{{ "Save"|i18n }}</button>
+            <button type="button" class="waitForId blue" onclick="showProfessionals()">{{ "Edit" | i18n }}</button>
+            <!-- <button id="professionalsSubmitBtn" class="waitForId blue">{{ "Save" | i18n }}</button> -->
         </div>
     </form>
 </zdk-panel>
@@ -416,7 +415,7 @@
         <p class="head">{{ "Chronic pathologies"|i18n }}</p>
         <div class="row diagnosis" style="align-items: inherit;">
             <div class="col diagnosis" style="flex: none; width: 250px;">
-                <div>{{ "Main diagnosis"|i18n }}</div>
+                <div>{{ "Main diagnosis"|i18n }} <span class="mandatory">*</span></div>
                 <select name="diagnosis.chronic.main" required>
                     {% for item in disability.items %}
                         <option value="{{item.value}}" {% if beneficiary.diagnosis.chronic.main==item.value %}selected{% endif %}>{{item.label}}</option>
@@ -428,7 +427,7 @@
                 <div class="dblcol">
                 {% for item in disability.items %}
                     <div class="row" style="display:block">
-                    <input type="checkbox" value="{{item.value}}" {% if beneficiary.diagnosis.chronic.associated && beneficiary.diagnosis.chronic.associated.indexOf(item.value)!==-1 %}checked{% endif %}> {{item.label}}
+                    <input type="checkbox" name="diagnosis.chronic.associated[{{item.value}}]" value="{{item.value}}" {% if beneficiary.diagnosis.chronic.associated && beneficiary.diagnosis.chronic.associated.indexOf(item.value)!==-1 %}checked{% endif %}> {{item.label}}
                     </div>
                 {%endfor%}
                 </div>
@@ -442,10 +441,10 @@
     <span class="spacer"></span>
     <button id="deleteBeneficiary" class="red big" onclick="confirmDeleteBeneficiary()">{{ "Delete"|i18n }}</button>
     <button class="red big" onclick="window.history.back();">{{ "Cancel"|i18n }}</button>
-    <button class="waitForId blue big" onclick="checkAllForms()">{{ "Save"|i18n }}</button>
-    <button class="waitForId green big" onclick="checkAllForms(true)">{{ "Validate"|i18n }}</button>
+    <button class="waitForId green big" onclick="checkAllForms()">{{ "Save"|i18n }}</button>
 </div>
-<zdk-modal width="450" id="addProfessionalsModal" closebutton="false">
+
+<zdk-modal width="550" id="addProfessionalsModal" closebutton="false">
     <div class="modalContainer">
         <div class="modalTitleContainer">{{ "Add professionals"|i18n }}</div>
         <div class="modalContentContainer">
@@ -453,11 +452,18 @@
                 <div class="row">
                     <p>{{ "Choose your referent and check professionals you want to add"|i18n }}</p>
                 </div>
+                <div class="row refProLabelBox">
+                    <label for="referent">{{'Referent' | i18n}}</label>
+                </div>
                 <template is="auto-binding" repeat="{% raw %}{{item, i in list.items}}{% endraw %}">
                     <div class="item">
                         <div class="row">
-                            <div><input type="checkbox" name="selected" checked?="{% raw %}{{item._tmpData.selected}}{% endraw %}" onchange="updateProfessionalSelection(this, {% raw %}'{{i}}'{% endraw %})"/></div>
-                            <div style="margin-right:10px"><input type="radio" name="referent" checked?="{% raw %}{{item._tmpData.referent}}{% endraw %}" onchange="updateProfessionalReferent(this, {% raw %}'{{i}}'{% endraw %})"/></div>
+                            <div class="selectProBox">
+                                <input type="checkbox" name="selected" checked?="{% raw %}{{item._tmpData.selected}}{% endraw %}" onchange="updateProfessionalSelection(this, {% raw %}'{{i}}'{% endraw %})"/>
+                            </div>
+                            <div class="refProBox">
+                                <input type="radio" name="referent" checked?="{% raw %}{{item._tmpData.referent}}{% endraw %}" onchange="updateProfessionalReferent(this, {% raw %}'{{i}}'{% endraw %})"/>
+                            </div>
                             <div class="col bold" >{% raw %}{{item.name.family}} {{item.name.given}}{% endraw %}</div>
                             <div class="col">{% raw %}{{list.dataLists.job.items[item.job][list.lang] || item.job}}{% endraw %}</div>
                         </div>
@@ -467,42 +473,15 @@
         </div>
         <div class="modalButtonContainer">
             <button class="red" onclick="closeProfessionals()">{{ "Cancel"|i18n }}</button>
-            <button class="blue" onclick="addProfessionals()">{{ "Add"|i18n }}</button>
+            <button class="green" onclick="addProfessionals()">{{ "Back"|i18n }}</button>
         </div>
     </div>
 </zdk-modal>
+
 <zdk-modal id="calendarModal">
     <zdk-calendar></zdk-calendar>
 </zdk-modal>
-<zdk-modal id="statusModal" closebutton="false">
-    <div class="modalContainer">
-        <div class="modalTitleContainer"></div>
-        <div class="modalContentContainer"></div>
-        <div class="modalButtonContainer"></div>
-    </div>
-</zdk-modal>
-<div class="hidden">
-    <div id="trad_save">{{ "Save"|i18n }}</div>
-    <div id="trad_delete">{{ "Delete"|i18n }}</div>
-    <div id="trad_create">{{ "Create"|i18n }}</div>
-    <div id="trad_success">{{ "Success"|i18n }}</div>
-    <div id="trad_error">{{ "Error"|i18n }}</div>
-    <div id="trad_errorFormValidation">{{ "Error in form validation"|i18n }}</div>
-    <div id="trad_confirm_save">{{ "Are you sure you want to save this part ?"|i18n }}</div>
-    <div id="trad_confirm_delete">{{ "Are you sure you want to delete this item ?"|i18n }}</div>
-    <div id="trad_success_update">{{ "Item successfully updated"|i18n }}</div>
-    <div id="trad_success_delete">{{ "Item successfully deleted"|i18n }}</div>
-    <div id="trad_success_create">{{ "Item successfully created"|i18n }}</div>
-    <div id="trad_error_occured">{{ "An error occured"|i18n }}</div>
-    <div id="trad_error_size">{{ "Size must be a number"|i18n }}</div>
-    <div id="trad_error_noAddress">{{ "You must fill at least one address data"|i18n }}</div>
-    <div id="trad_error_noTelecom">{{ "You must fill at least one telecom data"|i18n }}</div>
-    <div id="trad_error_date_before">{{ "Start date must be before end or planned end date"|i18n }}</div>
-    <div id="trad_error_date">{{ "Date format is incorrect"|i18n }}</div>
-    <div id="trad_error_password">{{ "Passwords are not equal"|i18n }}</div>
-    <div id="trad_error_passwordNoLogin">{{ "Can't have password with empty login"|i18n }}</div>
-    <div id="trad_yes">{{ "Yes"|i18n }}</div>
-    <div id="trad_no">{{ "No"|i18n }}</div>
-    <div id="trad_ok">{{ "OK"|i18n }}</div>
-</div>
+
+{% include 'modal.htm' %}
+
 {% endblock %}

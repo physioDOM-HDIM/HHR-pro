@@ -17,6 +17,9 @@ var RSVP = require("rsvp"),
 	DataProg = require("./dataProg"),
 	DataProgItem = require("./dataProgItem"),
 	QuestionnairePlan = require("./questionnairePlan"),
+	DietaryPlan = require("./dietaryPlan"),
+	PhysicalPlan = require("./physicalPlan"),
+	Events = require("./events"),
 	dbPromise = require("./database"),
 	moment = require("moment");
 
@@ -277,6 +280,9 @@ function Beneficiary( ) {
 						}
 					}
 					return that.save();
+				})
+				.then( function() {
+					that.createEvent("Beneficiary","update");
 				})
 				.then(resolve)
 				.catch(reject);
@@ -612,7 +618,10 @@ function Beneficiary( ) {
 			var dataRecord = new DataRecord();
 			dataRecord.setup(that._id, dataRecordObj, professionalID)
 				.then(function (dataRecord) {
-					return that.getCompleteDataRecordByID(dataRecord._id);
+					return that.createEvent('Data record', 'create')
+						.then( function() {
+							return that.getCompleteDataRecordByID(dataRecord._id);
+						});
 				})
 				.then(resolve)
 				.catch(reject);
@@ -700,10 +709,26 @@ function Beneficiary( ) {
 	 * @param msg
 	 */
 	this.createMessage = function( session, professionalID, msg ) {
-		logger.trace("setMessage");
+		logger.trace("createMessage");
 
-		var messages = new Messages( this._id );
-		return messages.create( session, professionalID, msg );
+		var messages = new Messages( this._id ),
+			that = this;
+
+		return messages.create( session, professionalID, msg ).then(function() {
+			that.createEvent('Message', 'create');
+		})
+	};
+
+	this.createEvent = function(service, operation) {
+		logger.trace("create event", service);
+		var events = new Events(this._id);
+		var that = this;
+
+		return events.setup(service, operation)
+			.then(function(eventObj) {
+				that.lastEvent = eventObj.datetime;
+				that.save();
+			});
 	};
 
 	this.getGraphDataList = function() {
@@ -718,11 +743,22 @@ function Beneficiary( ) {
 				"questionnaire": []
 			};
 
+			var reduceFunction = function ( curr, result ) {
+				if(result.lastReport < curr.datetime) {
+					result.lastReport = curr.datetime;
+					result.lastValue = curr.value;
+				}
+				if(!result.firstReport || result.firstReport > curr.datetime) {
+					result.firstReport = curr.datetime;
+					result.firstValue = curr.value;
+				}
+			};
+
 			var groupRequest = {
 				key    : {text: 1, category: 1},
 				cond   : {subject: that._id},
-				reduce : "function ( curr, result ) { if( result.lastReport < curr.datetime) { result.lastReport = curr.datetime; } }",
-				initial: {lastReport: ""}
+				reduce : reduceFunction.toString(),
+				initial: {lastReport: "", firstReport: "", lastValue: 0, firstValue: 0}
 			};
 
 			function compareItems(a, b) {
@@ -946,6 +982,94 @@ function Beneficiary( ) {
 		logger.trace("questionnairePlan", this._id );
 		return  new QuestionnairePlan( this._id );
 	};
+
+	/**
+	 * Dietary Plan
+	 */
+
+	this.createDietaryPlan = function( dietaryPlanObj, professionalID ) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("createDietaryPlan");
+			var dietaryPlan = new DietaryPlan(new ObjectID(that._id));
+			dietaryPlan.setup(that._id, dietaryPlanObj, professionalID)
+				.then(resolve)
+				.catch(reject);
+		});
+	};
+
+	this.getDietaryPlan = function() {
+		var that = this;
+
+		return new promise( function(resolve, reject) {
+			logger.trace("getDietaryPlan");
+			var dietaryPlan = new DietaryPlan(new ObjectID(that._id));
+			dietaryPlan.getLastOne()
+				.then( resolve )
+				.catch( function(err) {
+					logger.error("error ", err);
+					reject(err);
+				});
+		});
+	};
+
+	this.getDietaryPlanList = function(pg, offset, sort, sortDir, filter) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("getDietaryPlanList");
+			var dietaryPlan = new DietaryPlan(new ObjectID(that._id));
+			resolve(dietaryPlan.getItems(pg, offset, sort, sortDir, filter));
+		});
+	};
+
+	/**
+	 * Physical Plan
+	 */
+
+	this.createPhysicalPlan = function( physicalPlanObj, professionalID ) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("createPhysicalPlan");
+			var physicalPlan = new PhysicalPlan(new ObjectID(that._id));
+			physicalPlan.setup(that._id, physicalPlanObj, professionalID)
+				.then(resolve)
+				.catch(reject);
+		});
+	};
+
+	this.getPhysicalPlan = function() {
+		var that = this;
+
+		return new promise( function(resolve, reject) {
+			logger.trace("getPhysicalPlan");
+			var physicalPlan = new PhysicalPlan(new ObjectID(that._id));
+			physicalPlan.getLastOne()
+				.then( resolve )
+				.catch( function(err) {
+					logger.error("error ", err);
+					reject(err);
+				});
+		});
+	};
+
+	this.getPhysicalPlanList = function(pg, offset, sort, sortDir, filter) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("getPhysicalPlanList");
+			var physicalPlan = new PhysicalPlan(new ObjectID(that._id));
+			resolve(physicalPlan.getItems(pg, offset, sort, sortDir, filter));
+		});
+	};
+
+	this.getEventList = function(pg, offset, sort, sortDir, filter) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("getEventList");
+			var events = new Events(new ObjectID(that._id));
+			resolve(events.getItems(pg, offset, sort, sortDir, filter));
+		});
+	};
+
 }
 
 module.exports = Beneficiary;

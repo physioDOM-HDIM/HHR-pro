@@ -6,72 +6,85 @@
 {% parent %}
   
 <script src="/bower_components/form2js/src/form2js.js"></script>
+<script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
 <script src="/tpl/beneficiaries.js"></script>
+
 {% endblock %}
 
 {% block content %}
 	<zdk-panel heading="{{'Filter'|i18n}} / {{'Sort'|i18n}}" collapsable="true" collapsed={% if admin %}"false"{% else %}"true"{% endif %}>
-		<form class="filter" name="filter" autocomplete="off" onsubmit="validFilter(); return false;">
 			<div>
-				<div class="row">
-					<div class="col">
-						<label class="collabel" for="lastname">{{ "Last name"|i18n }} : </label>
-						<div class="colcontent">
-							<input type="text" name="name" id="lastname">
+				<form class="filter" name="filter" autocomplete="off" onsubmit="validFilter(); return false;">
+					<div class="row">
+						<div class="col">
+							<label class="collabel" for="lastname">{{ "Last name"|i18n }} : </label>
+							<div class="colcontent">
+								<input type="text" name="name" id="lastname">
+							</div>
+						</div>
+						<div class="col">
+							<label class="collabel" for="Perimeter">{{ "Perimeter"|i18n }} : </label>
+							<div class="colcontent">
+							<select name="perimeter" id="Perimeter">
+								{% for item in perimeter.items %}
+								<option value="{{item.value}}" >{{item.label}}</option>
+								{% endfor %}
+							</select>
+							</div>
 						</div>
 					</div>
-					<div class="col">
-						<label class="collabel" for="Perimeter">{{ "Perimeter"|i18n }} : </label>
-						<div class="colcontent">
-						<select name="perimeter" id="Perimeter">
-							{% for item in perimeter.items %}
-							<option value="{{item.value}}" >{{item.label}}</option>
-							{% endfor %}
-						</select>
+					<div class="row">
+						<div class="col">
+							<label class="collabel" for="zipcode">{{ "Zip code"|i18n }} : </label>
+							<div class="colcontent">
+								<input type="text" name="zip" id="zipcode">
+							</div>
+						</div>
+						<div class="col">
+							<label class="collabel" for="city">{{ "City"|i18n }} : </label>
+							<div class="colcontent">
+								<input type="text" name="city" id="city">
+							</div>
 						</div>
 					</div>
-				</div>
-				<div class="row">
-					<div class="col">
-						<label class="collabel" for="zipcode">{{ "Zip code"|i18n }} : </label>
-						<div class="colcontent">
-							<input type="text" name="zip" id="zipcode">
-						</div>
+					
+					<div class="row control">
+						<span class="spacer"></span>
+						<button type="button" class="red" onclick="resetFilter()">{{ "Reset"|i18n }}</button>
+						<button class="green">{{ "Filter"|i18n }}</button>
 					</div>
-					<div class="col">
-						<label class="collabel" for="city">{{ "City"|i18n }} : </label>
-						<div class="colcontent">
-							<input type="text" name="city" id="city">
-						</div>
-					</div>
-				</div>
+				</form>
+				
 				<div style="height:10px">&nbsp;</div>
 				<hr/>
-				<div class="row">
-					<div class="col">
-						<label>Sort:</label>
-						<select name="sort">
-							<option value="name.family">name</option>
-							<option value="perimeter">perimeter</option>
-							<option value="address.zip">zip code</option>
-							<option value="address.city">city</option>
-						</select>
+				
+				<form class="order" name="order" autocomplete="off" onsubmit="validFilter(); return false;">
+					<div class="row">
+						<div class="col">
+							<label>Sort:</label>
+							<select name="sort">
+								<option value="name.family">{{'Name'|i18n}}</option>
+								<option value="lastEvent">{{'Last event'|i18n}}</option>
+								<option value="perimeter">{{'Perimeter'|i18n}}</option>
+								<option value="address.zip">{{'Zip code'|i18n}}</option>
+								<option value="address.city">{{'City'|i18n}}</option>
+							</select>
+						</div>
+						<div class="col">
+							<label>Direction:</label>
+							<select name="dir">
+								<option value="1">{{'ascending'|i18n}}</option>
+								<option value="-1">{{'descending'|i18n}}</option>
+							</select>
+						</div>
 					</div>
-					<div class="col">
-						<label>Direction:</label>
-						<select name="dir">
-							<option value="1">ascending</option>
-							<option value="-1">descending</option>
-						</select>
+					<div class="row control">
+						<span class="spacer"></span>
+						<button type="button" class="red" onclick="resetOrder()">Reset</button>
+						<button class="green">{{'Sort'|i18n}}</button>
 					</div>
-				</div>
-				<div class="row control">
-					<span class="spacer"></span>
-					<button type="button" class="red" onclick="resetFilter()">Reset</button>
-					<button class="green">Valid</button>
-				</div>
+				</form>
 			</div>
-		</form>
 	</zdk-panel>
 	
 	<tsante-list url="/api/beneficiaries" pg="1" auto="true" unresolved id="tsanteList">
@@ -79,16 +92,25 @@
 			<div class="item">
 				<div class="row">
 					<div style="-webkit-flex:1; -ms-flex:1; flex:1">
-						<div class="row">
-							<span style="-webkit-flex:2; -ms-flex:2; flex:2;font-weight:bold">{% raw %}{{item.name.family}} {{item.name.given}}{% endraw %}</span>
-							<span style="-webkit-flex:1; -ms-flex:1; flex:1">{{ "Perimeter"|i18n }} : {% raw %}{{item.perimeter?item.perimeter:"-"}}{% endraw %}</span>
-						</div>
-						<div class="row">
-							<span style="padding-left:50px;-webkit-flex:1; -ms-flex:1; flex:1">{{ "Birth date"|i18n }} : {% raw %}{{item.birthdate}}{% endraw %}</span>
+						<div>
+							<div flex>
+								<div style="font-weight:bold">{% raw %}{{item.name.family}} {{item.name.given}}{% endraw %}</div>
+							</div>
+							<div flex style="padding-left:50px;">
+								<div class="col"><span style="-webkit-flex:1; -ms-flex:1; flex:1">{{ "Last Event"|i18n }} : <b>{% raw %}{{ item.date }}{% endraw %}</b> {% raw %}{{item.dateFrom}}{% endraw %}</span></div>
+							</div>
+							<div class="row" style="padding-left:50px;">
+								<div class="col">{{ "Birth date:"| i18n }} {% raw %}{{item.birthdate}}{% endraw %}</div>
+								<div class="col">{{ "Perimeter:" | i18n }} {% raw %}{{item.perimeter | labelPerimeter}}{% endraw %}</div>
+							</div>
+							<div class="row" style="padding-left:50px;">
+								<div class="col">{{ "Zip code:"  | i18n }} {% raw %}{{item.address | zipcode}}{% endraw %}</div>
+								<div class="col">{{ "City:"      | i18n }} {% raw %}{{item.address | city}}{% endraw %}</div>
+							</div>
 						</div>
 					</div>
 					<div>
-						{% if admin %}
+						{% if rights.write %}
 						<a href="/beneficiary/edit/{%raw%}{{item._id}}{% endraw %}"><button class="blue small" style="margin:5px">edit</button></a>
 						{% endif %}
 						<a href="/beneficiary/{%raw%}{{item._id}}{% endraw %}"><button class="blue small" style="margin:5px">select</button></a>
@@ -98,7 +120,7 @@
 		</template>
 	</tsante-list>
 	
-	{% if admin %}
+	{% if rights.write %}
 	<div class="row control" style="height:60px; align-content: center">
 		<span class="spacer"></span>
 		<a href="/beneficiary/create"><button class="blue big">{{ "Add"|i18n }}</button></a>
@@ -107,6 +129,47 @@
 	{% if beneficiary && beneficiary.name %}
 	<script>
 		parent.document.querySelector("#beneficiary a").innerHTML = '{{ beneficiary.name.family }} {{ beneficiary.name.given }}';
+		parent.highlight("/beneficiaries");
 	</script>
 	{% endif %}
+
+	<script>
+	document.addEventListener('polymer-ready', function() {
+		var perimeters = {
+			{% for p in perimeter.items %}
+			{{p.value}}: "{{p.label}}",
+			{% endfor %}
+		};
+
+		PolymerExpressions.prototype.labelPerimeter = function(p) {
+			return perimeters[p] || '-';
+		};
+
+		PolymerExpressions.prototype.zipcode = function(address) {
+			if (address) {
+				for (var a = 0; a < address.length; a++) {
+					if (address[a].use === 'home') {
+						return address[a].zip || '-';
+					}
+				}
+			}
+
+			return '-';
+		};
+
+		PolymerExpressions.prototype.city = function(address) {
+			if (address) {
+				for (var a = 0; a < address.length; a++) {
+					if (address[a].use === 'home') {
+						return address[a].city || '-';
+					}
+				}
+			}
+
+			return '-';
+		};
+	});
+
+	</script>
+
 {% endblock %}

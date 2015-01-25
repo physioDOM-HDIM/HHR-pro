@@ -36,7 +36,6 @@ function Beneficiaries( ) {
 		
 		var search = {}, address = {};
 		if(filter) {
-			console.log("filter", filter);
 			try {
 				var tmp  = JSON.parse(filter);
 				for( var prop in tmp) {
@@ -109,6 +108,9 @@ function Beneficiaries( ) {
 				if (newBeneficiary) {
 					var entry = new Beneficiary();
 					return entry.setup(newBeneficiary)
+						.then( function() {
+							entry.createEvent("Beneficiary","create");
+						})
 						.then(resolve)
 						.catch(function (err) {
 							logger.alert("error ", err);

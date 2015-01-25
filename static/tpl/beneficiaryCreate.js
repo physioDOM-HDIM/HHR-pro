@@ -1,5 +1,7 @@
 "use strict";
 
+var Utils = new Utils();
+
 var _dataObj = null,
     _dataObjTmp = null,
     _dataLists = null,
@@ -9,27 +11,8 @@ var _dataObj = null,
     _langCookie = null,
     _momentFormat = null,
     _currentNodeCalendar = null,
-    tsanteListProfessionalElt = null;
-
-var promiseXHR = function(method, url, statusOK, data) {
-    var promise = new RSVP.Promise(function(resolve, reject) {
-        var client = new XMLHttpRequest();
-        statusOK = statusOK ? statusOK : 200;
-        client.open(method, url);
-        client.onreadystatechange = function handler() {
-            if (this.readyState === this.DONE) {
-                if (this.status === statusOK) {
-                    resolve(this.response);
-                } else {
-                    reject(this);
-                }
-            }
-        };
-        client.send(data ? data : null);
-    });
-
-    return promise;
-};
+    tsanteListProfessionalElt = null,
+    passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=])[a-zA-Z0-9!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=]{8,}$/;
 
 function _findProfessionalInBeneficiary(id, obj) {
     console.log("_findProfessionalInBeneficiary", arguments);
@@ -158,12 +141,7 @@ function _addProfessional(professionalItem) {
             display_phone: function() {
                 var res = "";
                 if (this.system !== "email") {
-                    if (isFirstItem) {
-                        isFirstItem = false;
-                    } else {
-                        res = " / ";
-                    }
-                    return res + this.value;
+                    return this.value + ' (' + this.use + ')';
                 }
                 return "";
             },
@@ -283,132 +261,86 @@ function deleteProfessional(node) {
 
 function updateProfessionals(obj) {
     console.log("updateProfessionals", obj);
-    var modalObj;
+
     if (obj && _dataObj && _dataObj._id) {
-        promiseXHR("POST", "/api/beneficiaries/" + _dataObj._id + "/professionals", 200, JSON.stringify(obj)).then(function() {
-            modalObj = {
-                title: "trad_success",
-                content: "trad_success_update",
-                buttons: [{
-                    id: "trad_ok",
-                    action: function() {
-                        closeModal();
-                    }
-                }]
-            };
-            showModal(modalObj);
+        Utils.promiseXHR("POST", "/api/beneficiaries/" + _dataObj._id + "/professionals", 200, JSON.stringify(obj)).then(function() {
+            new Modal('updateSuccess');
         }, function(error) {
-            modalObj = {
-                title: "trad_error",
-                content: "trad_error_occured",
-                buttons: [{
-                    id: "trad_ok",
-                    action: function() {
-                        closeModal();
-                    }
-                }]
-            };
-            showModal(modalObj);
+            new Modal('errorOccured');
             console.log("updateProfessionals - update error: ", error);
         });
     }
+
 }
 
 function checkEntryForm() {
-    console.log("checkEntryForm");
-    var modalObj,
-        formObj = form2js(document.querySelector("form[name='entry']"));
+    var formObj = form2js(document.querySelector("form[name='entry']"));
 
-    //Check date format
-    /*
-    if (!_checkDateFormat(formObj.entry.startDate) || !_checkDateFormat(formObj.entry.plannedEnd) || !_checkDateFormat(formObj.entry.endDate)) {
-        modalObj = {
-            title: "trad_errorFormValidation",
-            content: "trad_error_date",
-            buttons: [{
-                id: "trad_ok",
-                action: function() {
-                    closeModal();
-                }
-            }]
-        };
-        showModal(modalObj);
-        return false;
-    }
-    */
-    //Check date before/after
-    if (formObj.entry.startDate && formObj.entry.plannedEnd && !_checkIsBeforeDate(formObj.entry.startDate, formObj.entry.plannedEnd)) {
-        modalObj = {
-            title: "trad_errorFormValidation",
-            content: "trad_error_date_before",
-            buttons: [{
-                id: "trad_ok",
-                action: function() {
-                    closeModal();
-                }
-            }]
-        };
-        showModal(modalObj);
+    console.log('AAAAAAAAAA', formObj.entry);
+
+    if (!formObj.entry || !Utils.parseDate(formObj.entry.startDate)) {
+        new Modal('errorDateRequired');
         return false;
     }
 
-    if( formObj.entry.startDate &&  formObj.entry.endDate && !_checkIsBeforeDate(formObj.entry.startDate, formObj.entry.endDate)) {
-        modalObj = {
-            title: "trad_errorFormValidation",
-            content: "trad_error_date_before",
-            buttons: [{
-                id: "trad_ok",
-                action: function() {
-                    closeModal();
-                }
-            }]
-        };
-        showModal(modalObj);
-        return false;
+    if(formObj.entry.plannedEnd) {
+        if(!Utils.parseDate(formObj.entry.plannedEnd)) {
+            new Modal('errorDateRequired');
+            return false;
+        }
+
+        if (!formObj.entry || formObj.entry.startDate && formObj.entry.plannedEnd && !_checkIsBeforeDate(formObj.entry.startDate, formObj.entry.plannedEnd)) {
+            new Modal('errorDateBefore');
+            return false;
+        }
     }
+    
+    if(formObj.entry.endDate) {
+        if(!Utils.parseDate(formObj.entry.endDate)) {
+            new Modal('errorDateRequired');
+            return false;
+        }
+
+        if(!formObj.entry || formObj.entry.startDate &&  formObj.entry.endDate && !_checkIsBeforeDate(formObj.entry.startDate, formObj.entry.endDate)) {
+            new Modal('errorDateBefore');
+            return false;
+        }
+    }
+
     return formObj;
 }
 
 function checkLifeCondForm() {
     console.log("checkLifeCondForm");
-    //Nothing to check
-    return form2js(document.querySelector("form[name='life_condition']"));
+    var formObj = form2js(document.querySelector("form[name='life_condition']"));
+
+    if(!formObj.maritalStatus || formObj.maritalStatus === 'NONE') {
+        new Modal('errorNoMaritalStatus');
+        return false;
+    }
+
+    return formObj;
 }
 
 function checkAccountForm() {
     console.log("checkAccountForm");
-    var modalObj,
-        formObj = form2js(document.querySelector("form[name='account']"));
+    var formObj = form2js(document.querySelector("form[name='account']"));
 
     //Check if password are equals
     if ((formObj.checkAccountPassword && !formObj.account) ||
         (formObj.account && formObj.account.password !== formObj.checkAccountPassword)) {
-        modalObj = {
-            title: "trad_errorFormValidation",
-            content: "trad_error_password",
-            buttons: [{
-                id: "trad_ok",
-                action: function() {
-                    closeModal();
-                }
-            }]
-        };
-        showModal(modalObj);
+
+        new Modal('errorConfirmPassword');
+        return false;
+    }
+
+    if(formObj.account && !passwordRegex.test(formObj.account.password)) {
+        new Modal('errorMatchRegexPassword');
         return false;
     }
 
     if (formObj.account && !formObj.account.login && formObj.account.password) {
-        modalObj = {
-            title: "trad_errorFormValidation",
-            content: "trad_error_passwordNoLogin",
-            buttons: [{
-                id: "trad_ok",
-                action: function() {
-                    closeModal();
-                }
-            }]
-        };
-        showModal(modalObj);
+        new Modal('errorPasswordNoLogin');
         return false;
     }
 
@@ -423,8 +355,8 @@ function checkAccountForm() {
 function checkProfessionalsForm(backgroundTask) {
     console.log("checkProfessionalsForm");
 
-    var modalObj,
-        obj = [];
+    var obj = [];
+
     if (_dataObj.professionals) {
         _dataObj.professionals.map(function(item) {
             obj.push({
@@ -435,23 +367,9 @@ function checkProfessionalsForm(backgroundTask) {
     }
 
     if (!backgroundTask) {
-        var modalObj = {
-            title: "trad_save",
-            content: "trad_confirm_save",
-            buttons: [{
-                id: "trad_no",
-                action: function() {
-                    closeModal();
-                }
-            }, {
-                id: "trad_yes",
-                action: function() {
-                    updateProfessionals(obj);
-                    closeModal();
-                }
-            }]
-        };
-        showModal(modalObj);
+        new Modal('confirmSaveItem', function() {
+            updateProfessionals(obj);
+        });
     }
 
     return obj;
@@ -465,32 +383,12 @@ function checkDiagnosisForm() {
 
 function updateAll(obj) {
     console.log("updateAll", obj);
-    var modalObj;
+
     if (_dataObj && _dataObj._id) {
-        promiseXHR("PUT", "/api/beneficiaries/" + _dataObj._id, 200, JSON.stringify(obj)).then(function() {
-            modalObj = {
-                title: "trad_success",
-                content: "trad_success_update",
-                buttons: [{
-                    id: "trad_ok",
-                    action: function() {
-                        closeModal();
-                    }
-                }]
-            };
-            showModal(modalObj);
+        Utils.promiseXHR("PUT", "/api/beneficiaries/" + _dataObj._id, 200, JSON.stringify(obj)).then(function() {
+            new Modal('updateSuccess');
         }, function(error) {
-            modalObj = {
-                title: "trad_error",
-                content: "trad_error_occured",
-                buttons: [{
-                    id: "trad_ok",
-                    action: function() {
-                        closeModal();
-                    }
-                }]
-            };
-            showModal(modalObj);
+            new Modal('errorOccured');
             console.log("updateAll - update error: ", error);
         });
     }
@@ -501,7 +399,7 @@ function checkAllForms(isValidate) {
     var forms = document.querySelectorAll("form"),
         formsObj = {},
         obj, invalid = false,
-        btn, modalObj;
+        btn;
     //To force the HTML5 form validation on each form if needed, set click on hidden submit button
     //form.submit() doesn't call the HTML5 form validation on elements
     [].map.call(forms, function(form) {
@@ -583,23 +481,9 @@ function checkAllForms(isValidate) {
         formsObj.validate = true;
     }
 
-    modalObj = {
-        title: "trad_save",
-        content: "trad_confirm_save",
-        buttons: [{
-            id: "trad_no",
-            action: function() {
-                closeModal();
-            }
-        }, {
-            id: "trad_yes",
-            action: function() {
-                updateAll(formsObj);
-                closeModal();
-            }
-        }]
-    };
-    showModal(modalObj);
+    new Modal('confirmSaveItem', function() {
+        updateAll(formsObj);
+    });
 
     return true;
 }
@@ -650,40 +534,22 @@ function addAddress() {
 
 function updateBeneficiary(obj) {
     console.log("updateBeneficiary", obj);
-    var modalObj;
 
     if (obj._id) {
-        //Update
-        promiseXHR("PUT", "/api/beneficiaries/" + obj._id, 200, JSON.stringify(obj)).then(function() {
-            modalObj = {
-                title: "trad_success",
-                content: "trad_success_update",
-                buttons: [{
-                    id: "trad_ok",
-                    action: function() {
-                        window.location.href = "/beneficiary/overview";
-                        closeModal();
-                    }
-                }]
-            };
-            showModal(modalObj);
+
+        Utils.promiseXHR("PUT", "/api/beneficiaries/" + obj._id, 200, JSON.stringify(obj)).then(function() {
+            new Modal('updateSuccess', function() {
+                window.location.href = "/beneficiary/overview";
+            });
         }, function(error) {
-            modalObj = {
-                title: "trad_error",
-                content: "trad_error_occured",
-                buttons: [{
-                    id: "trad_ok",
-                    action: function() {
-                        closeModal();
-                    }
-                }]
-            };
-            showModal(modalObj);
+            new Modal('errorOccured');
             console.log("updateBeneficiary - update error: ", error);
         });
+
     } else {
-        //Creation
-        promiseXHR("POST", "/api/beneficiaries", 200, JSON.stringify(obj)).then(function(response) {
+
+        Utils.promiseXHR("POST", "/api/beneficiaries", 200, JSON.stringify(obj)).then(function(response) {
+
             _dataObj = JSON.parse(response);
             document.querySelector("form[name='beneficiary'] input[name='_id']").value = _dataObj._id;
             //Enable others panel
@@ -693,152 +559,72 @@ function updateBeneficiary(obj) {
             });
             //Display the delete button
             document.querySelector("#deleteBeneficiary").classList.remove("hidden");
+            new Modal('createSuccess');
 
-            modalObj = {
-                title: "trad_create",
-                content: "trad_success_create",
-                buttons: [{
-                    id: "trad_ok",
-                    action: function() {
-                        closeModal();
-                    }
-                }]
-            };
-            showModal(modalObj);
         }, function(error) {
-            modalObj = {
-                title: "trad_error",
-                content: "trad_error_occured",
-                buttons: [{
-                    id: "trad_ok",
-                    action: function() {
-                        closeModal();
-                    }
-                }]
-            };
-            showModal(modalObj);
+            new Modal('errorOccured');
             console.log("updateBeneficiary - create error: ", error);
         });
     }
 }
 
 function confirmDeleteBeneficiary() {
-    var modalObj = {
-        title: "trad_delete",
-        content: "trad_confirm_delete",
-        buttons: [{
-            id: "trad_yes",
-            action: function() {
-                deleteBeneficiary();
-                closeModal();
-            }
-        }, {
-            id: "trad_no",
-            action: function() {
-                closeModal();
-            }
-        }]
-    };
-    showModal(modalObj);
+    new Modal('confirmDeleteItem', deleteBeneficiary);
 }
 
 function deleteBeneficiary() {
     console.log("deleteBeneficiary");
-    var modalObj;
+
     if (_dataObj && _dataObj._id) {
-        promiseXHR("DELETE", "/api/beneficiaries/" + _dataObj._id, 410).then(function(response) {
-            modalObj = {
-                title: "trad_success",
-                content: "trad_success_delete",
-                buttons: [{
-                    id: "trad_ok",
-                    action: function() {
-                        closeModal();
-                        window.history.back();
-                    }
-                }]
-            };
-            showModal(modalObj);
+        Utils.promiseXHR("DELETE", "/api/beneficiaries/" + _dataObj._id, 410).then(function(response) {
+            new Modal('deleteSuccess', function() {
+                window.history.back();
+            });
         }, function(error) {
-            modalObj = {
-                title: "trad_error",
-                content: "trad_error_occured",
-                buttons: [{
-                    id: "trad_ok",
-                    action: function() {
-                        closeModal();
-                    }
-                }]
-            };
-            showModal(modalObj);
+            new Modal('errorOccured');
             console.log("deleteBeneficiary - error: ", error);
         });
     }
 }
 
 function checkBeneficiaryForm(backgroundTask) {
-    var modalObj,
-        obj = form2js(document.querySelector("form[name='beneficiary']"));
+    var obj = form2js(document.querySelector("form[name='beneficiary']"));
+
     console.log("checkBeneficiaryForm", obj);
 
     if (!_checkDateFormat(obj.birthdate)) {
-        modalObj = {
-            title: "trad_errorFormValidation",
-            content: "trad_error_date",
-            buttons: [{
-                id: "trad_ok",
-                action: function() {
-                    closeModal();
-                }
-            }]
-        };
-        showModal(modalObj);
+        new Modal('errorDateRequired');
         return false;
     }
 
     if (isNaN(parseFloat(obj.size))) {
-        modalObj = {
-            title: "trad_errorFormValidation",
-            content: "trad_error_size",
-            buttons: [{
-                id: "trad_ok",
-                action: function() {
-                    closeModal();
-                }
-            }]
-        };
-        showModal(modalObj);
+        new Modal('errorSizeNumber');
         return false;
     }
 
     if (!obj.address) {
-        modalObj = {
-            title: "trad_errorFormValidation",
-            content: "trad_error_noAddress",
-            buttons: [{
-                id: "trad_ok",
-                action: function() {
-                    closeModal();
-                }
-            }]
-        };
-        showModal(modalObj);
+        new Modal('errorNoAddress');
         return false;
     }
 
     if (!obj.telecom) {
-        modalObj = {
-            title: "trad_errorFormValidation",
-            content: "trad_error_noTelecom",
-            buttons: [{
-                id: "trad_ok",
-                action: function() {
-                    closeModal();
-                }
-            }]
-        };
-        showModal(modalObj);
+        new Modal('errorNoTelecom');
         return false;
+    }
+
+    if(obj.telecom) {
+        var telecomSystemError = false;
+
+        for(var i in obj.telecom) {
+            if(!obj.telecom[i].system || obj.telecom[i].system === 'NONE') {
+                telecomSystemError = true;
+            }
+        }
+
+        if(telecomSystemError) {
+            new Modal('errorNoTelecomType');
+            return;
+        }
     }
 
     //Adjust data before sending
@@ -848,99 +634,16 @@ function checkBeneficiaryForm(backgroundTask) {
             addr.line = addr.line.split("\n");
         }
     });
-    obj.size = parseFloat(obj.size);
+    obj.size = parseFloat(obj.size) / 100;
     obj.validate = obj.validate === "true" ? true : false;
 
     if (!backgroundTask) {
-        modalObj = {
-            title: "trad_save",
-            content: "trad_confirm_save",
-            buttons: [{
-                id: "trad_no",
-                action: function() {
-                    closeModal();
-                }
-            }, {
-                id: "trad_yes",
-                action: function() {
-                    updateBeneficiary(obj);
-                    closeModal();
-                }
-            }]
-        };
-        showModal(modalObj);
+        new Modal('confirmSaveItem', function() {
+            updateBeneficiary(obj);
+        });
     }
+
     return obj;
-}
-
-function closeModal() {
-    console.log("closeModal", arguments);
-    document.querySelector("#statusModal").hide();
-
-    var elt = document.querySelector("#statusModal"),
-        subElt, child;
-    subElt = elt.querySelector(".modalTitleContainer");
-    subElt.innerHTML = "";
-    subElt.classList.add("hidden");
-    subElt = elt.querySelector(".modalContentContainer");
-    subElt.innerHTML = "";
-    subElt.classList.add("hidden");
-    subElt = elt.querySelector(".modalButtonContainer");
-    for (var i = subElt.childNodes.length - 1; i >= 0; i--) {
-        child = subElt.childNodes[i];
-        subElt.removeChild(child);
-    }
-    subElt.classList.add("hidden");
-}
-
-function showModal(modalObj) {
-    console.log("showModal", arguments);
-
-    var elt = document.querySelector("#statusModal"),
-        subElt;
-    if (modalObj.title) {
-        subElt = elt.querySelector(".modalTitleContainer");
-        subElt.innerHTML = document.querySelector("#" + modalObj.title).innerHTML;
-        subElt.classList.remove("hidden");
-    }
-    if (modalObj.content) {
-        subElt = elt.querySelector(".modalContentContainer");
-        subElt.innerHTML = document.querySelector("#" + modalObj.content).innerHTML;
-        subElt.classList.remove("hidden");
-    }
-
-    if (modalObj.buttons) {
-        var btn, obj, color;
-        subElt = elt.querySelector(".modalButtonContainer");
-        for (var i = 0; i < modalObj.buttons.length; i++) {
-            obj = modalObj.buttons[i];
-            btn = document.createElement("button");
-            btn.innerHTML = document.querySelector("#" + obj.id).innerHTML;
-            btn.onclick = obj.action;
-            switch (obj.id) {
-                case "trad_ok":
-                    {
-                        color = "green";
-                    }
-                    break;
-                case "trad_yes":
-                    {
-                        color = "green";
-                    }
-                    break;
-                case "trad_no":
-                    {
-                        color = "blue";
-                    }
-                    break;
-            }
-            btn.classList.add(color);
-            subElt.appendChild(btn);
-        }
-        subElt.classList.remove("hidden");
-    }
-
-    document.querySelector("#statusModal").show();
 }
 
 function showCalendar(node) {
@@ -966,10 +669,12 @@ function init() {
 
     var promises,
         id = document.querySelector("form[name='beneficiary'] input[name='_id']").value;
+
     if (id) {
+
         promises = {
-            beneficiary: promiseXHR("GET", "/api/beneficiaries/" + id, 200),
-            professionals: promiseXHR("GET", "/api/beneficiaries/" + id + "/professionals", 200)
+            beneficiary: Utils.promiseXHR("GET", "/api/beneficiaries/" + id, 200),
+            professionals: Utils.promiseXHR("GET", "/api/beneficiaries/" + id + "/professionals", 200)
         };
 
         RSVP.hash(promises).then(function(results) {
@@ -981,19 +686,10 @@ function init() {
                 _dataObj.professionals = JSON.parse(results.professionals);
             }
         }).catch(function(error) {
+            new Modal('errorOccured');
             console.log("Init error", error);
-            var modalObj = {
-                title: "trad_error",
-                content: "trad_error_occured",
-                buttons: [{
-                    id: "trad_ok",
-                    action: function() {
-                        closeModal();
-                    }
-                }]
-            };
-            showModal(modalObj);
         });
+
     } else {
         //Disable panels except the first until the user save the first one (beneficiary) to get an ID
         var items = document.querySelectorAll(".waitForId");
@@ -1005,23 +701,14 @@ function init() {
     }
 
     promises = {
-        job: promiseXHR("GET", "/api/lists/job/array", 200)/*,
-        role: promiseXHR("GET", "/api/lists/role/array", 200)*/
+        job: Utils.promiseXHR("GET", "/api/lists/job/array", 200)/*,
+        role: Utils.promiseXHR("GET", "/api/lists/role/array", 200)*/
     };
+
     var errorCB = function(error){
+        new Modal('errorOccured');
         console.log("Init error", error);
-        var modalObj = {
-            title: "trad_error",
-            content: "trad_error_occured",
-            buttons: [{
-                id: "trad_ok",
-                action: function() {
-                    closeModal();
-                }
-            }]
-        };
-        showModal(modalObj);
-    }
+    };
 
     //Used to match the job reference to a friendly user display
     RSVP.hash(promises).then(function(results) {

@@ -30,7 +30,9 @@
 
 <div class="row control">
 	<span class="spacer"></span>
+	{% if rights.write %}
 	<button type="button" class="blue" onclick="showForm()">Add</button>
+	{% endif %}
 </div>
 
 <zdk-modal id="editModal" closebutton="false">
@@ -44,14 +46,6 @@
 	{{#param}}
 	<div class="row">
 		<div class="col05 bold data-text">{{labelLang}}</div>
-		<!--
-		<div class="col">
-			<label>Min Threshold</label><span class="data-min">{{#threshold}}{{min}}{{/threshold}}</span>
-		</div>
-		<div class="col">
-			<label>Max Threshold</label><span class="data-max">{{#threshold}}{{max}}{{/threshold}}</span>
-		</div>
-		-->
 	</div>
 	{{/param}}
 	{% endraw %}
@@ -103,7 +97,9 @@
 	
 	<div class="row control">
 		<span class="spacer"></span>
+		{% if rights.write %}
 		<button type="button" onclick="showForm('{% raw %}{{data.ref}}{% endraw %}')" class="small blue">{{"Edit"|i18n}}</button>
+		{% endif %}
 	</div>
 
 	<hr>

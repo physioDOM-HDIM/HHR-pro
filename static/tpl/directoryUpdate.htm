@@ -4,12 +4,19 @@
 
 {% block head %}
 {% parent %}
+
+<script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
+
 <script src="/bower_components/mustache/mustache.js"></script>
 <script src="/bower_components/rsvp/rsvp.min.js"></script>
 <script src="/bower_components/form2js/src/form2js.js"></script>
+
+<script src="/tpl/directoryUpdate.js"></script>
+
 <link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
 <link rel="import" href="/bower_components/core-ajax/core-ajax.html">
-<script src="/tpl/directoryUpdate.js"></script>
+
 {% endblock %}
 
 {% block content %}
@@ -29,16 +36,6 @@
 <script type="template" id="tplTelecomContainer">
     <div class="row">
         <input type="hidden" name="telecom[{%raw%}{{indx}}{%endraw%}].use" value="work">
-        <!--
-        <div class="col">
-            <label>Use:</label>
-            <select name="telecom[{%raw%}{{indx}}{%endraw%}].use"  style="min-width: 150px;">
-                {% for item in use.items %}
-                <option value="{{item.value}}" {{telecom_use_selected}}>{{item.label}}</option>
-                {% endfor %}
-            </select>
-        </div>
-        -->
         <div class="col">
             <label>System:</label>
             <select name="telecom[{%raw%}{{indx}}{%endraw%}].system" style="min-width: 150px;" onchange="checkEmailTypeValidation(this)">
@@ -62,8 +59,7 @@
     <core-ajax url="/api/directory/" handleAs="json"></core-ajax>
     <div class="mainContainer">
         <form name="directoryForm" onsubmit="checkForm(); return false;" autocomplete="off">
-            <fieldset>
-                <legend>Identity</legend>
+            <zdk-panel heading="{{'Identity' |i18n}}" collapsable="false" collapsed="false">
                 <input type="hidden" name="_id" value="{{professional._id.toString()}}">
                 <div class="row">
                     <label {%raw%}{{organization_disabled}}{%endraw%}>Organization:</label>
@@ -118,36 +114,12 @@
                         {% endfor %}
                     </select>
                 </div>
-            </fieldset>
-            <!--
-            <fieldset>
-                <legend>Status</legend>
-                <div class="row">
-                    <label {%raw%}{{organization_disabled}}{%endraw%}>Organization:</label>
-                    <input type="checkbox" name="organization" onchange="checkOrganization()" {%raw%}{{organization_disabled}} {{organization_checked}}{%endraw%}/>
-                </div>
-                <div class="row">
-                    <label>Active:</label>
-                    <input type="checkbox" name="active" {% if professional && professional.active===true %}checked{% endif %}/>
-                </div>
-            </fieldset>
-            -->
-            <fieldset>
-                <legend>Telecom</legend>
+            </zdk-panel>
+            <zdk-panel heading="{{'Telecom' |i18n}}" collapsable="false" collapsed="false">
                 {% if !professional.telecom %}
                 <div class="telecomContainer">
                     <div class="row">
                         <input type="hidden" name="telecom[0].use" value="work">
-                        <!--
-                        <div class="col">
-                            <label>Use:</label>
-                            <select name="telecom[0].use" required>
-                                {% for item in use.items %}
-                                <option value="{{item.value}}" {% if (!entry.use && item.value=='work')||entry.use==item.value %}selected{% endif %}>{{item.label}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        -->
                         <div class="col">
                             <label>System:</label>
                             <select name="telecom[0].system" onchange="checkEmailTypeValidation(this)" required>
@@ -165,7 +137,7 @@
                         <div class="col">
                             <span class="spacer"></span>
                             <button type="button" class="red small" onclick="deleteTelecom(this)">delete</button>
-                        </div>>
+                        </div>
                     </div>
                 </div>
                 {% else %}
@@ -173,16 +145,6 @@
                 <div class="telecomContainer">
                     <div class="row">
                         <input type="hidden" name="telecom[{{loop.index}}].use" value="work">
-                        <!--
-                        <div class="col">
-                            <label>Use:</label>
-                            <select name="telecom[{{loop.index}}].use" style="min-width: 150px;" required>
-                                {% for item in use.items %}
-                                <option value="{{item.value}}" {% if (!entry.use && item.value=='work')||entry.use==item.value %}selected{% endif %}>{{item.label}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        -->
                         <div class="col">
                             <label>System:</label>
                             <select name="telecom[{{loop.index}}].system" style="min-width: 150px;" onchange="checkEmailTypeValidation(this)" required>
@@ -209,26 +171,9 @@
                     <span class="spacer"></span>
                     <button class="blue small" type="button" onclick="addTelecom()">Add</button>
                 </div>
-            </fieldset>
-            <fieldset>
-                <legend>Address</legend>
+            </zdk-panel>
+            <zdk-panel heading="{{'Address' |i18n}}" collapsable="false" collapsed="false">
                 <input type="hidden" name="address.use" value="work">
-                <!--
-                <div class="row">
-                    <label>Use:</label>
-                    <select name="address.use" required>
-                        {% for item in use.items %}
-                        <option value="{{item.value}}" {% if (!professional.address && item.value=='work')||professional.address.use==item.value %}selected{% endif %}>{{item.label}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                -->
-                <!--
-                <div class="row">
-                    <label>Text:</label>
-                    <input type="text" name="address.text" value="{{professional.address.text}}" />
-                </div>
-                -->
                 <div class="row">
                     <label>Street :</label>
                     <!-- Line break is needed to place each line -->
@@ -245,34 +190,39 @@
                         <input type="text" name="address.city" value="{{professional.address.city}}" />
                     </div>
                 </div>
-            </fieldset>
-            <br />
-            <fieldset>
-                <legend>Account</legend>
+            </zdk-panel>
+            <zdk-panel heading="{{'Account' |i18n}}" collapsable="false" collapsed="false">
                 <div class="row">
                     <label>Login:</label>
                     <input type="text" name="account.login" value="{{professional.account.login}}" />
                 </div>
                 <div class="row">
                     <label>Change password:</label>
-                    <input type="password" name="account.password" />
+                    <input type="password" name="account.password" class="account-password" onkeyup="checkPassword(this)" />
                 </div>
                 <div class="row">
                     <label>Confirm password:</label>
-                    <input type="password" name="checkAccountPassword" />
+                    <input type="password" name="checkAccountPassword" class="account-check-password" onkeyup="checkPassword(this)" />
                 </div>
+                <div class="row tip">
+                    Info: The password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters
+                </div>
+                {% if professional.hasPassword %}
                 <div class="row">
                     <label>Active:</label>
-                    <input type="checkbox" name="active" {% if professional && professional.active===true %}checked{% endif %}/>
+                    <input type="checkbox" name="active" class="account-activation" {% if professional && professional.active===true %}checked{% endif %}/>
                 </div>
-            </fieldset>
+                {% else %}
+                    <input type="checkbox" name="active" class="hidden" checked />
+                {% endif %}
+            </zdk-panel>
             <br />
             <div class="row">
                 <span class="spacer"></span>
             <div class="buttonContainer">
-                {% if professional._id %}
+                {% if professional._id && sessionID.toString() !== professional._id.toString() %}
                 <button id="deleteItem" class="red" type="button" onclick="confirmDelete()">delete</button>
-                {% endif %}   
+                {% endif %}
                 <button type="button" class="blue" onclick="window.history.back()">cancel</button>
                 {% if professional._id %}
                 <button id="saveItemBtn" class="green">save</button>
@@ -283,32 +233,7 @@
             </div>
         </form>
     </div>
-    <zdk-modal closebutton="false">
-        <div class="modalContainer">
-            <div class="modalTitleContainer hidden"></div>
-            <div class="modalContentContainer hidden"></div>
-            <div class="modalButtonContainer hidden"></div>
-        </div>
-    </zdk-modal>
-    <div class="hidden">
-        <div id="trad_update">Update</div>
-        <div id="trad_create">Create</div>
-        <div id="trad_delete">Delete</div>
-        <div id="trad_success">Success</div>
-        <div id="trad_error">Error</div>
-        <div id="trad_errorFormValidation">Error in form validation</div>
-        <div id="trad_confirm_update">Are you sure you want to update this item ?</div>
-        <div id="trad_confirm_create">Are you sure you want to create this item ?</div>
-        <div id="trad_confirm_delete">Are you sure you want to delete this item ?</div>
-        <div id="trad_success_update">Item successfully updated</div>
-        <div id="trad_success_create">Item successfully created</div>
-        <div id="trad_success_delete">Item successfully deleted</div>
-        <div id="trad_error_occured">An error occured</div>
-        <div id="trad_error_password">Passwords are not equal</div>
-        <div id="trad_error_email_required">You must add an email in telecom field</div>
-        <div id="trad_incomplete_address">Address is incomplete</div>
-        <div id="trad_yes">Yes</div>
-        <div id="trad_no">No</div>
-        <div id="trad_ok">OK</div>
-    </div>
+
+{% include 'modal.htm' %}
+
 {% endblock %}

@@ -1,0 +1,76 @@
+{% extends './page.htm' %}
+
+{% block title %}Dietary Plan{% endblock %}
+
+{% block head %}
+{% parent %}
+
+<link rel="stylesheet" href="/styles/dietaryPlan.css">
+
+<script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
+<script src="/tpl/dietaryPlan.js"></script>
+
+<script src="/bower_components/mustache/mustache.js"></script>
+<script src="/bower_components/zdk-calendar/form2js.js"></script>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="row title">
+	<label class="title">
+		{{ "Diet recommendation"|i18n }}
+	</label>
+</div>
+
+<form name="recommendation" id="recommendation"></form>
+
+{% if rights.write %}
+<div class="row control actions">
+	<span class="spacer"></span>
+	<div class="mode-update hidden">
+		<button type="button" class="red big" onclick="toggleMode()">{{ "Cancel"|i18n }}</button>
+		<button type="button" class="blue big" onclick="saveRecommendation()">{{ "Save"|i18n }}</button>
+	</div>
+
+	<div class="mode-read">
+		<button type="button" class="blue big" onclick="toggleMode()">{{ "Edit"|i18n }}</button>
+	</div>
+</div>
+{% endif %}
+
+<script type="template" id="dataTpl">
+	<div class="row spaced-down">
+		<div class="col">
+			<label for="special">{{ "Special diet" | i18n }}: </label>
+			<div class="mode-update hidden">
+				{% raw %}
+				<input type="checkbox" id="special" name="special" {{#special}}checked{{/special}}>
+				{% endraw %}
+			</div>
+			<div class="mode-read">
+				{% raw %}
+				<input type="checkbox" {{#special}}checked{{/special}} disabled>
+				{% endraw %}
+			</div>
+		</div>
+	</div>
+	<div class="row spaced-down">
+		<div class="mode-update hidden">
+			{% raw %}
+			<textarea name="content" id="content" rows="10">{{content}}</textarea>
+			{% endraw %}
+		</div>
+		<div class="mode-read">
+			{% raw %}
+			<textarea name="content" id="content-saved" rows="10" disabled>{{content}}</textarea>
+			{% endraw %}
+		</div>
+	</div>
+	
+</script>
+
+{% include 'modal.htm' %}
+
+{% endblock %}

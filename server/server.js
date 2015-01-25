@@ -18,7 +18,8 @@ var IDirectory = require('./lib/http/IDirectory'),
 	IPage = require("./lib/http/IPage"),
 	IQuestionnaire = require("./lib/http/IQuestionnaire"),
 	IDataRecord = require("./lib/http/IDataRecord"),
-	ICurrentStatus = require('./lib/http/ICurrentStatus');
+	ICurrentStatus = require('./lib/http/ICurrentStatus'),
+	IMenu = require("./lib/http/IMenu");
 
 var pkg     = require('../package.json');
 var logger = new Logger( "PhysioDOM App");
@@ -185,11 +186,13 @@ server.pre(restify.pre.userAgentConnection());
 server.use(function checkAcl(req, res, next) {
 	logger.trace("checkAcl",req.url);
 
-	if( req.url === "/" || req.url.match(/^(\/api|\/logout|\/directory|\/settings|\/questionnaires)/) ) {
+	if( req.url === "/" || req.url.match(/^(\/api|\/logout|\/directory|\/settings|\/questionnaires|\/admin)/) ) {
 		return next();
 	} else {
 
-		if (!req.session.beneficiary && req.url !== "/beneficiaries" ) {
+		if (!req.session.beneficiary && req.url !== "/beneficiaries" &&
+			!req.url.match(/^\/beneficiary\/[0-9a-f]+$/) &&
+			!req.url.match(/^\/beneficiary\/edit\/[0-9a-f]+$/) ) {
 			logger.debug("no beneficiary selected");
 			res.header('Location', '/beneficiaries');
 			res.send(302);
@@ -305,6 +308,12 @@ server.on("after",function(req,res) {
 // ===================================================
 //               API requests
 
+// Menus
+server.get( '/api/menu', IMenu.getMenu);
+
+// Rights
+server.put( '/api/rights', IMenu.putRights);
+
 server.get( '/api/directory', IDirectory.getEntries);
 server.post('/api/directory', IDirectory.createEntry);
 server.get( '/api/directory/:entryID', IDirectory.getEntry );
@@ -369,6 +378,17 @@ server.put( '/api/beneficiary/current/:name', ICurrentStatus.put);
 // Questionnaire answers for the current beneficiary
 server.post('/api/beneficiary/questionnaires/:entryID/answers', IBeneficiary.createQuestionnaireAnswers);
 
+//Events
+server.get( '/api/beneficiary/events', IBeneficiary.getEventList);
+
+//Dietary Plan
+server.get( '/api/beneficiary/dietary-plan', IBeneficiary.getDietaryPlan);
+server.post('/api/beneficiary/dietary-plan', IBeneficiary.createDietaryPlan);
+server.get( '/api/beneficiary/dietary-plans', IBeneficiary.getDietaryPlanList);
+//Physical Plan
+server.get( '/api/beneficiary/physical-plan', IBeneficiary.getPhysicalPlan);
+server.post('/api/beneficiary/physical-plan', IBeneficiary.createPhysicalPlan);
+server.get( '/api/beneficiary/physical-plans', IBeneficiary.getPhysicalPlanList);
 
 server.get( '/api/beneficiary/questprog', IBeneficiary.getQuestProg );
 server.get( '/api/beneficiaries/:entryID/questprog', IBeneficiary.getQuestProg );
@@ -391,20 +411,22 @@ server.put( '/api/questionnaires/:entryID', IQuestionnaire.updateQuestionnaire);
 server.post('/api/login', apiLogin);
 server.get( '/api/logout', logout);
 
+
 // ===================================================
 //               Pages requests
 server.get( '/logout', logout);
 
 server.get( '/beneficiaries', IPage.beneficiaries);
 server.get( '/beneficiary/create', IPage.beneficiaryCreate);
-server.get( '/beneficiary/edit/:beneficiaryID', IPage.beneficiaryCreate );
-server.get( '/beneficiary/update', IPage.beneficiaryCreate );
+server.get( '/beneficiary/edit/:beneficiaryID', IPage.beneficiaryUpdate);
+server.get( '/beneficiary/update', IPage.beneficiaryUpdate );
 server.get( '/beneficiary/:beneficiaryID', IPage.beneficiaryOverview );
+
+server.get( '/agenda', IPage.agenda);
 
 server.get( '/directory', IPage.directoryList);
 server.get( '/directory/create', IPage.directoryUpdate);
 server.get( '/directory/:professionalID', IPage.directoryUpdate);
-server.get( '/settings/listsManager', IPage.listsManager);
 server.get( '/settings/lists', IPage.lists);
 server.get( '/settings/lists/:listName', IPage.list);
 server.get( '/questionnaires', IPage.questionnaires);
@@ -414,9 +436,11 @@ server.get( '/questionnaire/:questionnaireName', IPage.questionnaireOverview);
 
 server.get( '/answers/:entryID', IPage.questionnaireAnswers);
 
-server.get( '/datarecord/', IPage.dataRecord);
+server.get( '/datarecord', IPage.dataRecord);
 server.get( '/datarecord/create', IPage.dataRecordCreate);
+server.get( '/datarecord/synthesis', IPage.dataRecordSynthesis);
 server.get( '/datarecord/:dataRecordID', IPage.dataRecordDetail);
+
 
 server.get( '/physiological-data', IPage.physiologicalData);
 server.get( '/message', IPage.messageList);
@@ -433,6 +457,11 @@ server.get( '/prescription/general', IPage.prescriptionDataGeneral);
 server.get( '/prescription/hdim', IPage.prescriptionDataHDIM);
 server.get( '/prescription/symptom', IPage.prescriptionDataSymptom);
 server.get( '/prescription/questionnaire', IPage.prescriptionQuestionnaire);
+
+server.get( '/admin/rights', IPage.rights);
+
+server.get( '/dietary-plan', IPage.dietaryPlan);
+server.get( '/physical-plan', IPage.physicalPlan);
 
 server.get(/\/[^api|components\/]?$/, function(req, res, next) {
 	logger.trace("index");

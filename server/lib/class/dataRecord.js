@@ -22,7 +22,7 @@ var logger = new Logger("DataRecord");
  *
  * @constructor
  */
-function DataRecord( beneficiaryID ) {
+function DataRecord( beneficiaryID ) {                      
 	this.subject = beneficiaryID;
 
 	/**

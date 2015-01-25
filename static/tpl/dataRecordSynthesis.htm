@@ -1,0 +1,49 @@
+{% extends './page.htm' %}
+
+{% block title %}Data Record{% endblock %}
+
+{% block head %}
+{% parent %}
+
+<script src="/scripts/utils.js"></script>
+<script src="/tpl/dataRecordSynthesis.js"></script>
+<link rel="stylesheet" href="/styles/dataRecordSynthesis.css">
+
+<script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
+<style>
+	div.result {
+		min-width: 50px;
+		text-align: right;
+	}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="row title">
+	<label class="title">
+		{{ "Result synthesis"|i18n }}
+	</label>
+</div>
+
+<div id="synthesis">
+	<div class="row">
+		<div class="col"></div>
+		<div class="col bold">First Measure</div>
+		<div class="col bold">Last Measure</div>
+		<div class="col bold">Delta</div>
+	</div>
+</div>
+
+{% raw %}
+<script type="template" id="tpl-line">
+{{#parameter}}
+	<div class="col">{{name}}</div>
+	<div class="col"><div class="bold spacing-around result">{{firstValue}}</div> ({{firstMeasureDatetime}})</div>
+	<div class="col"><div class="bold spacing-around result">{{lastValue}}</div> ({{lastMeasureDatetime}})</div>
+	<div class="col"><div class="bold spacing-around result">{{delta}}</div></div>
+{{/parameter}}
+</script>
+{% endraw %}
+
+{% endblock %}

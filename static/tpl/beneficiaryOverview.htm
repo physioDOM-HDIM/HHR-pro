@@ -4,7 +4,8 @@
 
 {% block head %}
 {% parent %}
-
+<script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
+<script src="/tpl/beneficiaryOverview.js"></script>
 {% endblock %}
 {% block content %}
 <style>
@@ -98,7 +99,7 @@
 		<div class="row">
 			<label>{{ "PhysioDom-Box"|i18n }} : </label><div>{{beneficiary.biomaster}}</div>
 		</div>
-		{% if admin %}
+		{% if rights.write %}
 		<div class="row control">
             <span class="spacer"></span>
             <a href="/beneficiary/update"><button class="green small">{{ "Edit"|i18n }}</button></a>
@@ -121,14 +122,23 @@
 </div>
 
 <zdk-panel heading="{{ 'Events log'|i18n }}" collapsable="true" collapsed="false">
-	<div class="event">Not yet implemented</div>
-	<!--
-	<div class="event"></div>
-	<div class="event"></div>
-	<div class="event"></div>
-	<div class="event"></div>
-	<div class="event"></div>
-	-->
+	<tsante-list url="/api/beneficiary/events" pg="1" auto="true" autoRender="false" unresolved id="tsanteList" style="margin-top: 0;">
+		<template is="auto-binding" repeat="{% raw %}{{item in list.items}}{% endraw %}">
+			<div class="item">
+				<div class="row">
+					<div style="-webkit-flex:1; -ms-flex:1; flex:1">
+						<div class="row">
+						{% raw %}
+							<span style="-webkit-flex:2; -ms-flex:2; flex:2;font-weight:bold">{{item.date}} ( {{item.dateFrom}} )</span>
+							<span style="-webkit-flex:2; -ms-flex:2; flex:2;font-weight:bold">{{item.service}} </span>
+							<span style="-webkit-flex:1; -ms-flex:1; flex:1">{{item.operation}}</span>
+						{% endraw %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</template>
+	</tsante-list>
 </zdk-panel>
 
 <zdk-panel heading="{{ 'Active services'|i18n }}" collapsable="true" collapsed="false">
@@ -205,11 +215,16 @@
 </zdk-panel>
 
 <zdk-panel heading="{{ 'Details'|i18n }}" collapsable="true" collapsed="true">
+	<div style="display: -webkit-flex; display: -ms-flexbox; display: flex;margin-bottom: 10px;">
+		<div>
+			<label style="width: 150px;">{{ "Demand"|i18n }} : </label>
+		</div>
+		<div flex style="display: -webkit-flex; display: -ms-flexbox; display: flex;box-sizing: border-box;">
+			<textarea rows="2" disabled flex style="color:black;font-size:inherit;resize: none;">{{ beneficiary.entry.demand }}</textarea>
+		</div>
+	</div>
 	<div style="-webkit-column-count: 2; -webkit-column-gap: 10px; -webkit-column-rule: 1px solid black; box-sizing: border-box">
 	{% if beneficiary.entry %}
-		<div class="row">
-			<label>{{ "Demand"|i18n }} : </label><div>{{beneficiary.entry.demand}}</div>
-		</div>
 		<div class="row">
 			<label>{{ "Start date"|i18n }} : </label><div>{{beneficiary.entry.startDate}}</div>
 		</div>
@@ -235,9 +250,6 @@
 	{% if beneficiary.lifeCond %}
 		<div class="row">
 			<label>{{ "Way of life"|i18n }} : </label><div>{{wayOfLifeArray.items[beneficiary.lifeCond.wayOfLife]}}</div>
-		</div>
-		<div class="row">
-			<label>{{ "Profession"|i18n }} : </label><div>{{professionArray.items[beneficiary.lifeCond.profession]}}</div>
 		</div>
 		{% if beneficiary.lifeCond.disability %}
 			<div class="row">

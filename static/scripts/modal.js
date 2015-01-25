@@ -11,10 +11,169 @@ function Modal (type, callback) {
         buttons: [{
             id: "trad_ok",
             action: function() {
+                if(callback) {
+                    callback();
+                }
                 self.closeModal();
             }
         }]
     };
+
+    content.errorRef = {
+        title: "trad_error",
+        content: "trad_error_ref",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.errorConfirmPassword = {
+        title: "trad_errorFormValidation",
+        content: "trad_error_password",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.errorIncompleteAddress = {
+        title: "trad_errorFormValidation",
+        content: "trad_incomplete_address",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    }
+
+    content.errorMatchRegexPassword = {
+        title: "trad_errorFormValidation",
+        content: "trad_error_match_regex_password",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.errorMatchRegexRef = {
+        title: "trad_errorFormValidation",
+        content: "trad_error_match_regex_ref",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.errorEmailRequired = {
+        title: "trad_errorFormValidation",
+        content: "trad_error_email_required",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.errorDateRequired = {
+        title: "trad_errorFormValidation",
+        content: "trad_error_date",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.errorDateBefore = {
+        title: "trad_errorFormValidation",
+        content: "trad_error_date_before",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.errorSizeNumber = {
+        title: "trad_errorFormValidation",
+        content: "trad_error_size",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.errorNoAddress = {
+        title: "trad_errorFormValidation",
+        content: "trad_error_noAddress",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.errorNoTelecom = {
+        title: "trad_errorFormValidation",
+        content: "trad_error_noTelecom",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.errorPasswordNoLogin = {
+        title: "trad_errorFormValidation",
+        content: "trad_error_passwordNoLogin",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.errorNoMaritalStatus = {
+        title: "trad_errorFormValidation",
+        content: "trad_error_noMaritalStatus",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.errorNoTelecomType = {
+        title: "trad_errorFormValidation",
+        content: "trad_error_noTelecomType",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    
 
     content.createSuccess = {
         title: "trad_create",
@@ -50,7 +209,10 @@ function Modal (type, callback) {
         buttons: [{
             id: "trad_ok",
             action: function() {
-                callback();
+                if(callback) {
+                    callback();
+                }
+                self.closeModal();
             }
         }]
     };
@@ -61,6 +223,9 @@ function Modal (type, callback) {
         buttons: [{
             id: "trad_ok",
             action: function() {
+                if(callback) {
+                    callback();
+                }
                 self.closeModal();
             }
         }]
@@ -83,6 +248,57 @@ function Modal (type, callback) {
     content.confirmDeleteItem = {
         title: "trad_delete",
         content: "trad_confirm_delete",
+        buttons: [{
+            id: "trad_yes",
+            action: function() {
+                callback();
+                self.closeModal();
+            }
+        }, {
+            id: "trad_no",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.confirmUpdateItem = {
+        title  : "trad_update",
+        content: "trad_confirm_update",
+        buttons: [{
+            id: "trad_yes",
+            action: function() {
+                callback();
+                self.closeModal();
+            }
+        }, {
+            id: "trad_no",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.confirmCreateItem = {
+        title  : "trad_create",
+        content: "trad_confirm_create",
+        buttons: [{
+            id: "trad_yes",
+            action: function() {
+                callback();
+                self.closeModal();
+            }
+        }, {
+            id: "trad_no",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.confirmSaveItem = {
+        title  : "trad_save",
+        content: "trad_confirm_save",
         buttons: [{
             id: "trad_yes",
             action: function() {

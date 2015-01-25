@@ -98,7 +98,6 @@
 			</div>
 			<div class="row control">
 				<span class="spacer"></span>
-
 				<button type="button" class="red" onclick="resetOrder()">{{ "Reset"|i18n }}</button>
 				<button class="green">{{ "Sort"|i18n }}</button>
 			</div>
@@ -109,33 +108,43 @@
 
 <tsante-list url="/api/beneficiary/messages" pg="1" offset="25" auto="true" autoRender="false" unresolved id="tsanteList">
 <template is="auto-binding" repeat="{% raw %}{{item in list.items}}{% endraw %}">
-	{% raw %}
 	<div class="item">
 		<div class="row">
-			<h3 style="margin: 0.2em;">{{item.title}}</h3>
+			<h3 style="margin: 0.2em;">{% raw %}{{item.title}}{% endraw %}</h3>
 			<div class="spacer"></div>
 			<button type="button" class="blue small" onclick="showDetail(this)">
-				<span class="detail-show">Show Detail</span>
-				<span class="detail-hide hidden">Hide Detail</span>
+				<span class="detail-show">{{"Show Detail"|i18n}}</span>
+				<span class="detail-hide hidden">{{"Hide Detail"|i18n}}</span>
 			</button>
 		</div>
 		<div class="row spacing-around">
-			<div class="col" style="display: block;"><div class="bold">{{ item.datetime }}</div><div>&nbsp;{{ item.from }}</div></div>
-			<div class="col">send by: {{item.author.name.family}} {{item.author.name.given}}</div>
-			<div class="col">status: {{item.status}}</div>
+			<div class="col" style="display: block;">
+				<div class="bold">{% raw %}{{ item.datetime }}{% endraw %}</div>
+				<div>&nbsp;{% raw %}{{ item.from }}{% endraw %}</div>
+			</div>
+			<div class="col">{{"send by"|i18n}}: {% raw %}{{item.author.name.family}} {{item.author.name.given}}{% endraw %}</div>
+			<div class="col">{{"status"|i18n}}: {% raw %}{{item.status}}{% endraw %}</div>
 		</div>
 		<div class="row message-detail hidden">
-			{{item.content}}
+			<div style="display:block">
+			{% raw %}
+			<template repeat="{{ line in item.content }}">
+				<div>{{line}}</div>
+			</template>
+			{% endraw %}
+			</div>
 		</div>
 	</div>
-	{% endraw %}
+	
 </template>
 </tsante-list>
 
+{% if rights.write %}
 <div class="row control actions">
 	<span class="spacer"></span>
 	<a href="/message/create"><button class="blue big">{{ "New message"|i18n }}</button></a>
 </div>
+{% endif %}
 
 {% include 'modal.htm' %}
 

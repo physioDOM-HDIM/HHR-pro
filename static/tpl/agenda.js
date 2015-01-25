@@ -2,31 +2,12 @@
 
 'use strict';
 
-var promiseXHR = function(method, url, statusOK, data) {
-	var promise = new RSVP.Promise(function(resolve, reject) {
-		var client = new XMLHttpRequest();
-		statusOK = statusOK ? statusOK : 200;
-		client.open(method, url);
-		client.onreadystatechange = function handler() {
-			if (this.readyState === this.DONE) {
-				if (this.status === statusOK) {
-					resolve(this.response);
-				}
-				else {
-					reject(this);
-				}
-			}
-		};
-		client.send(data ? data : null);
-	});
-
-	return promise;
-};
+var Utils = new Utils();
 
 document.addEventListener('polymer-ready', function() {
 
 	// Load event data
-	promiseXHR('GET', '/events.json', 200)
+	Utils.promiseXHR('GET', '/events.json', 200)
 	.then(function(response) {
 			document.getElementById('agenda').events = JSON.parse(response);
 		},
@@ -102,7 +83,7 @@ document.addEventListener('polymer-ready', function() {
 		var eventDialog = document.getElementById('dialog-event');
 		eventDialog.show();
 
-		/*promiseXHR("GET", "/api/", 200)
+		/*Utils.promiseXHR("GET", "/api/", 200)
 			.then(function(response) {
 
 				var e = response;
