@@ -492,8 +492,6 @@ function IPage() {
 				if( professionals ){
 					data.beneficiary.professionals = professionals;
 				}
-				console.log("data",JSON.stringify(data,null,4));
-				
 				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/beneficiaryOverview.htm', data, function (err, output) {
 					if (err) {
 						console.log("error", err);

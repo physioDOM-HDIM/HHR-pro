@@ -205,11 +205,16 @@
 </zdk-panel>
 
 <zdk-panel heading="{{ 'Details'|i18n }}" collapsable="true" collapsed="true">
+	<div style="display: -webkit-flex; display: -ms-flexbox; display: flex;margin-bottom: 10px;">
+		<div>
+			<label style="width: 150px;">{{ "Demand"|i18n }} : </label>
+		</div>
+		<div flex style="display: -webkit-flex; display: -ms-flexbox; display: flex;box-sizing: border-box;">
+			<textarea rows="2" disabled flex style="color:black;font-size:inherit;resize: none;">{{ beneficiary.entry.demand }}</textarea>
+		</div>
+	</div>
 	<div style="-webkit-column-count: 2; -webkit-column-gap: 10px; -webkit-column-rule: 1px solid black; box-sizing: border-box">
 	{% if beneficiary.entry %}
-		<div class="row">
-			<label>{{ "Demand"|i18n }} : </label><div>{{beneficiary.entry.demand}}</div>
-		</div>
 		<div class="row">
 			<label>{{ "Start date"|i18n }} : </label><div>{{beneficiary.entry.startDate}}</div>
 		</div>
@@ -235,9 +240,6 @@
 	{% if beneficiary.lifeCond %}
 		<div class="row">
 			<label>{{ "Way of life"|i18n }} : </label><div>{{wayOfLifeArray.items[beneficiary.lifeCond.wayOfLife]}}</div>
-		</div>
-		<div class="row">
-			<label>{{ "Profession"|i18n }} : </label><div>{{professionArray.items[beneficiary.lifeCond.profession]}}</div>
 		</div>
 		{% if beneficiary.lifeCond.disability %}
 			<div class="row">
