@@ -378,6 +378,9 @@ server.put( '/api/beneficiary/current/:name', ICurrentStatus.put);
 // Questionnaire answers for the current beneficiary
 server.post('/api/beneficiary/questionnaires/:entryID/answers', IBeneficiary.createQuestionnaireAnswers);
 
+//Events
+server.get( '/api/beneficiary/events', IBeneficiary.getEventList);
+
 //Dietary Plan
 server.get( '/api/beneficiary/dietary-plan', IBeneficiary.getDietaryPlan);
 server.post('/api/beneficiary/dietary-plan', IBeneficiary.createDietaryPlan);
