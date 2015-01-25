@@ -82,15 +82,15 @@ var ICurrentStatus = {
 									];
 									break;
 							}
-
+							
 							beneficiary.createDataRecord(dataRecord, req.session.person.id)
-							.then(function() {
-								resolve(currentStatus);
-							})
-							.catch(function(err) {
-								logger.trace('Error', err);
-								reject(err);
-							});
+								.then(function() {
+									resolve(currentStatus);
+								})
+								.catch(function(err) {
+									logger.trace('Error', err);
+									reject(err);
+								});
 						}
 						else {
 							resolve(currentStatus);
@@ -99,11 +99,14 @@ var ICurrentStatus = {
 				};
 
 				new CurrentStatus().get(beneficiary._id, req.params.name)
-				.then(function (current) {
-					updateItem._id = current._id;
-					current.update(updateItem)
 					.then(function (current) {
-						return createDataRecord(current);
+						updateItem._id = current._id;
+						current.update(updateItem)
+					.then(function (current) {
+						return beneficiary.createEvent('Health status', 'update')
+							.then( function() {
+								return createDataRecord(current);
+							});
 					})
 					.then(function (current) {
 						res.send(current);
@@ -118,7 +121,10 @@ var ICurrentStatus = {
 					// Current status not found: create a new one
 					new CurrentStatus().update(updateItem)
 						.then(function (current) {
-							return createDataRecord(current);
+							return beneficiary.createEvent('Health status', 'create')
+								.then( function() {
+									return createDataRecord(current);
+								});
 						})
 						.then(function (current) {
 							res.send(current);

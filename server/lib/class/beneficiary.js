@@ -615,7 +615,10 @@ function Beneficiary( ) {
 			var dataRecord = new DataRecord();
 			dataRecord.setup(that._id, dataRecordObj, professionalID)
 				.then(function (dataRecord) {
-					return that.getCompleteDataRecordByID(dataRecord._id);
+					return that.createEvent('Data record', 'create')
+						.then( function() {
+							return that.getCompleteDataRecordByID(dataRecord._id);
+						});
 				})
 				.then(resolve)
 				.catch(reject);
@@ -703,7 +706,7 @@ function Beneficiary( ) {
 	 * @param msg
 	 */
 	this.createMessage = function( session, professionalID, msg ) {
-		logger.trace("setMessage");
+		logger.trace("createMessage");
 
 		var messages = new Messages( this._id ),
 			that = this;
@@ -714,6 +717,7 @@ function Beneficiary( ) {
 	};
 
 	this.createEvent = function(service, operation) {
+		logger.trace("create event", service);
 		var events = new Events(this._id);
 		var that = this;
 
