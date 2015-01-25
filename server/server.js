@@ -418,8 +418,8 @@ server.get( '/logout', logout);
 
 server.get( '/beneficiaries', IPage.beneficiaries);
 server.get( '/beneficiary/create', IPage.beneficiaryCreate);
-server.get( '/beneficiary/edit/:beneficiaryID', IPage.beneficiaryCreate );
-server.get( '/beneficiary/update', IPage.beneficiaryCreate );
+server.get( '/beneficiary/edit/:beneficiaryID', IPage.beneficiaryUpdate);
+server.get( '/beneficiary/update', IPage.beneficiaryUpdate );
 server.get( '/beneficiary/:beneficiaryID', IPage.beneficiaryOverview );
 
 server.get( '/agenda', IPage.agenda);

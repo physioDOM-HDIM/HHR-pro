@@ -312,6 +312,82 @@ function IPage() {
 				listsArray.forEach( function(list ) {
 					data[Object.keys(list)]=list[Object.keys(list)];
 				});
+			})
+			.then(function(professionals){
+				if( professionals ){
+					data.beneficiary.professionals = professionals;
+				}
+
+				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/beneficiaryCreate.htm', data, function(err, output) {
+					if (err) {
+						console.log("error", err);
+						console.log("output", output);
+						res.write(err);
+						res.end();
+						next();
+					} else {
+						sendPage(output, res, next);
+					}
+				});
+			})
+			.catch(function(err) {
+				logger.error(err);
+				res.write(err);
+				res.end();
+				next();
+			});
+	};
+
+	/**
+	 * Beneficiary create and update
+	 *
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	this.beneficiaryUpdate = function(req, res, next) {
+		logger.trace("beneficiaryUpdate");
+		var html;
+
+		init(req);
+
+		var data = {
+			admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
+			rights: { read:false, write:false, url: '/beneficiaries' }
+		};
+
+		var promises = [
+			"system",
+			"use",
+			"wayOfLife",
+			"maritalStatus",
+			"disability",
+			"communication",
+			"profession",
+			"perimeter",
+			"nutritionalStatus",
+			"generalStatus"
+		].map( promiseList);
+
+		var promisesArray = [
+			"job"
+		].map( promiseListArray);
+
+		new Menu().rights( req.session.role, data.rights.url )
+			.then( function( _rights ) {
+				data.rights = _rights;
+				return RSVP.all(promises);
+			})
+			.then( function(lists) {
+				lists.forEach( function(list ) {
+					data[Object.keys(list)]=list[Object.keys(list)];
+				});
+
+				return RSVP.all(promisesArray);
+			}).then (function(listsArray) {
+				listsArray.forEach( function(list ) {
+					data[Object.keys(list)]=list[Object.keys(list)];
+				});
 				return physioDOM.Beneficiaries();
 			})
 			.then(function(beneficiaries) {
@@ -342,7 +418,8 @@ function IPage() {
 				}
 
 				return beneficiary._id ? beneficiary.getProfessionals() : null;
-			}).then(function(professionals){
+			})
+			.then(function(professionals){
 				if( professionals ){
 					data.beneficiary.professionals = professionals;
 				}
@@ -366,7 +443,7 @@ function IPage() {
 				next();
 			});
 	};
-
+	
 	/**
 	 * get the beneficiaries list
 	 *
