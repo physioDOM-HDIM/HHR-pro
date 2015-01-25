@@ -190,7 +190,9 @@ server.use(function checkAcl(req, res, next) {
 		return next();
 	} else {
 
-		if (!req.session.beneficiary && req.url !== "/beneficiaries" ) {
+		if (!req.session.beneficiary && req.url !== "/beneficiaries" &&
+			!req.url.match(/^\/beneficiary\/[0-9a-f]+$/) &&
+			!req.url.match(/^\/beneficiary\/edit\/[0-9a-f]+$/) ) {
 			logger.debug("no beneficiary selected");
 			res.header('Location', '/beneficiaries');
 			res.send(302);

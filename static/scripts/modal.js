@@ -83,7 +83,97 @@ function Modal (type, callback) {
                 self.closeModal();
             }
         }]
-    }
+    };
+
+    content.errorDateRequired = {
+        title: "trad_errorFormValidation",
+        content: "trad_error_date",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.errorDateBefore = {
+        title: "trad_errorFormValidation",
+        content: "trad_error_date_before",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.errorSizeNumber = {
+        title: "trad_errorFormValidation",
+        content: "trad_error_size",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.errorNoAddress = {
+        title: "trad_errorFormValidation",
+        content: "trad_error_noAddress",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.errorNoTelecom = {
+        title: "trad_errorFormValidation",
+        content: "trad_error_noTelecom",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.errorPasswordNoLogin = {
+        title: "trad_errorFormValidation",
+        content: "trad_error_passwordNoLogin",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.errorNoMaritalStatus = {
+        title: "trad_errorFormValidation",
+        content: "trad_error_noMaritalStatus",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.errorNoTelecomType = {
+        title: "trad_errorFormValidation",
+        content: "trad_error_noTelecomType",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    
 
     content.createSuccess = {
         title: "trad_create",
@@ -122,7 +212,7 @@ function Modal (type, callback) {
                 if(callback) {
                     callback();
                 }
-                callback();
+                self.closeModal();
             }
         }]
     };
