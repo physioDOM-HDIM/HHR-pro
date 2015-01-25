@@ -1,4 +1,21 @@
-__v0.0.7__ ( 2015-01-18 )
+__v0.0.8__
+ 
+  - Events
+  - Rights management
+  - Menu
+  - Dietary and Physical plans
+  - Result synthesys
+  - Fixes 
+    - on beneficiary create : display an empty form
+    - beneficiary Edit : change professionnals edit
+    - Harmonize filter/sort boxes
+    - Area for yellow graph
+    - Beneficiary edit : enter size in cm
+    - Beneficiary edit : change "Gender" to "Civility"
+    - Beneficiary edit : Add star to required fields
+    - Data recording : display questionnaire and questionnaire answers 
+    
+__v0.0.7__
 
  - Current Health status section
  - Echanges avec HHR-Home (avec les specif d’echanges fourines le 14/1)
