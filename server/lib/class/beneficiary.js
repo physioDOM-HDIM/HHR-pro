@@ -281,6 +281,9 @@ function Beneficiary( ) {
 					}
 					return that.save();
 				})
+				.then( function() {
+					that.createEvent("Beneficiary","update");
+				})
 				.then(resolve)
 				.catch(reject);
 		});

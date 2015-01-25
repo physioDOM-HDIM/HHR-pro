@@ -9,7 +9,7 @@ var eventsSchema = {
 	properties: {
 		"_id":      { type: "object" },
 		"datetime": { type: "string", format: "date-time", required: true},
-		"service":  { type: "string", enum: ["Message", "Health status", "Data record"] , required: true },
+		"service":  { type: "string", enum: ["Message", "Health status", "Data record","Beneficiary"] , required: true },
 		"operation":{ type: "string", enum: ["create", "update", "overtake"] , required: true },
 		"subject": { type:"object", description:"beneficiary ID" }
 	},
