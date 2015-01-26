@@ -118,6 +118,9 @@
 				{% endif %}
 
 			</div>
+			{% if cat === 'questionnaire' %}
+				<div class="row">{{item.comment}}</div>
+			{% endif %}
 		</div>
 		<div class="updateMode hidden">
 			<div class="row">
@@ -179,6 +182,8 @@
 
 
 	<script type="template" id="newItem">
+	<div class="row questionnaire-row">
+
 		<div class="col item-text" style="flex:2"></div>
 
 		{% raw %}{{#questionnaire}}{% endraw %}
@@ -210,6 +215,12 @@
 		<div style="width:100px; text-align:right">
 			<button type="button" class="blue small" onclick="removeLine(this)">{{'Cancel'|i18n}}</button>
 		</div>
+	</div>
+	{% raw %}{{#questionnaire}}{% endraw %}
+	<div class="row">
+		<textarea name="items[{% raw %}{{idx}}{% endraw %}].comment" class="questionnaire-comment" rows="10"></textarea>
+	</div>
+	{% raw %}{{/questionnaire}}{% endraw %}
 	</script>
 
 

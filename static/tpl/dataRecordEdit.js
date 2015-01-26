@@ -49,7 +49,7 @@ function addLine(category) {
         };
 
     newLine.innerHTML = tpl.innerHTML;
-    newLine.className = 'row questionnaire-row';
+    newLine.className = 'questionnaire-row';
 
     newLine.querySelector('.item-text').innerHTML = selectParamTpl;
 
@@ -73,10 +73,30 @@ function addLine(category) {
     }
 
     container.appendChild(newLine);
+
+    var contentField = newLine.querySelector('.questionnaire-comment');
+
+    if(contentField) {
+        contentField.onkeyup = function () {
+            console.log('toto');
+            var lines = contentField.value.split("\n");
+            for (var i = 0; i < lines.length; i++) {
+                if (lines[i].length <= 60) { continue; }
+                var j = 0, space = 60;
+                while (j++ <= 60) {
+                    if (lines[i].charAt(j) === " ") { space = j; }
+                }
+                lines[i + 1] = lines[i].substring(space + 1) + (lines[i + 1] || "");
+                lines[i] = lines[i].substring(0, space);
+            }
+            contentField.value = lines.slice(0, 9).join("\n");
+        };
+    }
+
 }
 
 function removeLine(element) {
-    var line = element.parentNode.parentNode,
+    var line = element.parentNode.parentNode.parentNode,
         container = line.parentNode;
 
     container.removeChild(line);
@@ -290,7 +310,7 @@ function initParams() {
 }
 
 var updateParam = function(element, directValue) {
-    var container = element.parentNode.parentNode,
+    var container = element.parentNode.parentNode.parentNode,
         select = container.querySelector('select'),
         minContainer = container.querySelector('.min-treshold'),
         maxContainer = container.querySelector('.max-treshold'),

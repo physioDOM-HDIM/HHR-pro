@@ -301,5 +301,10 @@
 	"Civility": "Civility",
 	"Height (centimeters)": "Height (centimeters)",
 	"Destination": "Destination",
-	"Info: the password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters": "Info: the password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters"
+	"Info: the password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters": "Info: the password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters",
+	"save": "save",
+	"Result synthesys": "Result synthesys",
+	"view": "view",
+	"Général": "Général",
+	"back": "back"
 }
