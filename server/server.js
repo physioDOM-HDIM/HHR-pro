@@ -19,7 +19,8 @@ var IDirectory = require('./lib/http/IDirectory'),
 	IQuestionnaire = require("./lib/http/IQuestionnaire"),
 	IDataRecord = require("./lib/http/IDataRecord"),
 	ICurrentStatus = require('./lib/http/ICurrentStatus'),
-	IMenu = require("./lib/http/IMenu");
+	IMenu = require("./lib/http/IMenu"),
+	configSchema = require("./lib/schema/configSchema.js");
 
 var pkg     = require('../package.json');
 var logger = new Logger( "PhysioDOM App");
@@ -36,7 +37,33 @@ program
 	.version(pkg.version)
 	.usage('[options] [dir]')
 	.option('-p, --port <port>', 'specify the port [8001]', Number, 8001)
+	.option('-c, --config <config>', 'configuration file', String )
 	.parse(process.argv);
+
+if( program.config ) {
+	if( !program.config.match(/^\//) ) {
+		program.config = path.join(__dirname+'/..',program.config );
+	}
+	var tmp = require(program.config);
+	var check = configSchema.validator.validate( tmp, { "$ref":"/Config"} );
+	if( check.errors.length ) {
+		for( var i= 0, l=check.errors.length; i<l; i++) {
+			logger.error( "config "+ check.errors[i].stack );
+		}
+		process.exit(1);
+	} else {
+		config.port = tmp.port;
+		config.Lang = tmp.Lang;
+		config.mongouri = "mongodb://"+tmp.mongo.ip+"/"+tmp.mongo.db;
+		config.queue = tmp.queue.protocol+"://"+tmp.queue.ip+":"+tmp.queue.port;
+		config.key = tmp.key;
+		config.cache = tmp.cache;
+	}
+} else {
+	logger.error("you must provide a config file");
+	process.exit(1);
+}
+
 
 /**
  * requestLog
@@ -67,7 +94,7 @@ function responseLog(req, res) {
 	return;
 }
 
-var physioDOM = new PhysioDOM();   // PhysioDOM object is global and so shared to all modules
+var physioDOM = new PhysioDOM( config );   // PhysioDOM object is global and so shared to all modules
 // @todo move database uri to a config file
 physioDOM.connect("mongodb://127.0.0.1/physioDOM");
 global.physioDOM = physioDOM;
@@ -81,7 +108,7 @@ I18n.expressBind(server, {
 	// setup some locales - other locales default to en silently
 	locales: physioDOM.lang,
 	// change the cookie name from 'lang' to 'locale'
-	cookieName: 'locale'
+	cookieName: 'lang'
 });
 
 server.pre(function(req, res, next) {
@@ -474,7 +501,7 @@ server.get(/\/[^api|components\/]?$/, function(req, res, next) {
 
 server.get(/\/[^api\/]?.*/, serveStatic );
 
-server.listen(program.port, "127.0.0.1", function() {
+server.listen(config.port, "127.0.0.1", function() {
 	logger.info('------------------------------------------------------------------');
 	logger.info(server.name + ' listening at '+ server.url);
 });
