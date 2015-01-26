@@ -262,6 +262,7 @@ function apiLogin(req, res, next) {
 				.then( function(session) {
 					cookies.set('sessionID', session.sessionID, cookieOptions);
 					cookies.set('role', session.role, { path: '/', httpOnly : false} );
+					cookies.set('lang', session.lang || physioDOM.lang, { path: '/', httpOnly : false});
 					res.send(200, { code:200, message:"logged" } );
 					return next();
 				})
