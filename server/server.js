@@ -495,7 +495,9 @@ server.get(/\/[^api|components\/]?$/, function(req, res, next) {
 	if( req.session ) {
 		return IPage.ui( req, res, next);
 	} else {
-		return readFile(path.join(DOCUMENT_ROOT, '/index.htm'), req, res, next);
+		var cookies = new Cookies(req, res);
+		cookies.set('lang',physioDOM.lang, cookieOptions);
+		return IPage.login( req, res, next);
 	}
 });
 

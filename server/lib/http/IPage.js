@@ -96,6 +96,26 @@ function IPage() {
 			});
 	}
 	
+	this.login = function( req, res, next ) {
+		logger.trace("login page");
+		var html;
+		
+		init(req);
+		
+		logger.trace("login page 2");
+		html = swig.renderFile(DOCUMENTROOT+'/static/index.htm', [], function(err, output) {
+			if (err) {
+				console.log("error", err);
+				console.log("output", output);
+				res.write(err);
+				res.end();
+				next();
+			} else {
+				sendPage(output, res, next);
+			}
+		});
+	}
+	
 	/**
 	 * Main Layout
 	 *
