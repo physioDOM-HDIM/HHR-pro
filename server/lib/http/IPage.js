@@ -591,7 +591,9 @@ function IPage() {
 				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
 			})
 			.then( function( beneficiary ) {
+				moment.locale(req.cookies.lang);
 				data.beneficiary = beneficiary;
+				data.beneficiary.birthdate = moment(data.beneficiary.birthdate).format("L")
 				return beneficiary._id ? beneficiary.getProfessionals() : null;
 			}).then(function(professionals){
 				if( professionals ){
