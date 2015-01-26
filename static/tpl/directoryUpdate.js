@@ -8,7 +8,8 @@ var _dataObj = null,
     _jobEnum = null,
     _communicationEnum = null,
     _idxNbTelecom = 0,
-    passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=])[a-zA-Z0-9!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=]{8,}$/;
+    passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=])[a-zA-Z0-9!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=]{8,}$/,
+    passwordPlaceholder = '****';
 
 var promiseXHR = function(method, url, statusOK, data) {
     var promise = new RSVP.Promise(function(resolve, reject) {
@@ -112,14 +113,16 @@ function checkForm() {
     obj = form2js(document.forms["directoryForm"]);
     console.log(obj);
 
-    if( obj.account && obj.account.password !== obj.checkAccountPassword) {
-        new Modal('errorConfirmPassword');
-        return;
-    }
+    if(obj.account && (obj.account.password || obj.checkAccountPassword) && (obj.account.password !== passwordPlaceholder || obj.checkAccountPassword !== passwordPlaceholder)) {
+        if( obj.account && obj.account.password !== obj.checkAccountPassword) {
+            new Modal('errorConfirmPassword');
+            return;
+        }
 
-    if(!passwordRegex.test(obj.account.password)) {
-        new Modal('errorMatchRegexPassword');
-        return;
+        if(!passwordRegex.test(obj.account.password)) {
+            new Modal('errorMatchRegexPassword');
+            return;
+        }
     }
 
     if (!isEmailSet()) {
@@ -175,6 +178,11 @@ function updateItem(obj) {
     if( accountData && !( accountData.login && accountData.password )) {
         accountData = null;
     }
+
+    if(accountData && (accountData.password === passwordPlaceholder)) {
+        accountData = null;
+    }
+
     data = obj;
     delete data.account;
     data.active = data.active?true:false;
@@ -263,6 +271,13 @@ function checkPassword () {
 function init() {
     console.log("init");
     _idxNbTelecom = document.querySelectorAll(".telecomContainer").length;
+    var hasPassword = (document.querySelector('#has-password').innerHTML === 'true');
+console.log(hasPassword);
+    if(hasPassword) {
+        document.querySelector('.account-password').value = passwordPlaceholder;
+        document.querySelector('.account-check-password').value = passwordPlaceholder;
+    }
+
     checkOrganization();
 }
 
