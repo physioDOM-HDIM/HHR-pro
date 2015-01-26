@@ -46,7 +46,14 @@ function IPage() {
 	var lang;
 
 	function init(req) {
-		lang = req.session.lang || req.cookies.lang || req.params.lang || "en";
+		if(req.session) {
+			console.log("test");
+			lang = req.session.lang || req.cookies.lang || req.params.lang || physioDOM.lang;
+		} else {
+			lang = req.cookies.lang || req.params.lang || physioDOM.lang;
+		}
+		logger.info("lang", lang);
+		
 		i18n.setLocale(lang);
 
 		swig.setDefaults({cache: false});
