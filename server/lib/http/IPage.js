@@ -31,7 +31,8 @@ var logger = new Logger("IPage");
 var i18n = new(require('i18n-2'))({
 	// setup some locales - other locales default to the first locale
 	devMode: true,
-	locales: ["en", "es", "nl", "fr"]
+	locales: ["en", "es", "nl", "fr"],
+	extension:".json"
 });
 
 /**
