@@ -1,5 +1,7 @@
 "use strict";
 
+var Utils = new Utils();
+
 var _dataObj = null,
     _accountDataObj = null,
     _useEnum = null,
@@ -10,26 +12,6 @@ var _dataObj = null,
     _idxNbTelecom = 0,
     passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=])[a-zA-Z0-9!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=]{8,}$/,
     passwordPlaceholder = '****';
-
-var promiseXHR = function(method, url, statusOK, data) {
-    var promise = new RSVP.Promise(function(resolve, reject) {
-        var client = new XMLHttpRequest();
-        statusOK = statusOK ? statusOK : 200;
-        client.open(method, url);
-        client.onreadystatechange = function handler() {
-            if (this.readyState === this.DONE) {
-                if (this.status === statusOK) {
-                    resolve(this.response);
-                } else {
-                    reject(this);
-                }
-            }
-        };
-        client.send(data ? data : null);
-    });
-
-    return promise;
-};
 
 function checkDefaultGender() {
     var elt,
@@ -197,10 +179,10 @@ function updateItem(obj) {
     
     if (data._id) {
         //Update entry
-        var tabPromises = [promiseXHR("PUT", "/api/directory/" + data._id, 200, JSON.stringify(data))];
+        var tabPromises = [Utils.promiseXHR("PUT", "/api/directory/" + data._id, 200, JSON.stringify(data))];
 
         if (accountData) {
-            tabPromises.push(promiseXHR("POST", "/api/directory/" + data._id + "/account", 200, JSON.stringify(accountData)));
+            tabPromises.push(Utils.promiseXHR("POST", "/api/directory/" + data._id + "/account", 200, JSON.stringify(accountData)));
         }
 
         RSVP.all(tabPromises).then(function() {
@@ -218,12 +200,12 @@ function updateItem(obj) {
             });
         };
 
-        promiseXHR("POST", "/api/directory", 200, JSON.stringify(data)).then(function(response) {
+        Utils.promiseXHR("POST", "/api/directory", 200, JSON.stringify(data)).then(function(response) {
            	var res = JSON.parse(response);
             return res._id;
         }).then(function(userID) {
             if (accountData && userID) {
-                promiseXHR("POST", "/api/directory/" + userID + "/account", 200, JSON.stringify(accountData)).then(function() {
+                Utils.promiseXHR("POST", "/api/directory/" + userID + "/account", 200, JSON.stringify(accountData)).then(function() {
                     callSuccess();
                 });
             } else {
@@ -245,7 +227,7 @@ function deleteItem() {
 
     var obj = form2js(document.forms["directoryForm"]);
     if (obj._id) {
-        promiseXHR("DELETE", "/api/directory/" + obj._id, 410).then(function(response) {
+        Utils.promiseXHR("DELETE", "/api/directory/" + obj._id, 410).then(function(response) {
             new Modal('deleteSuccess', function() {
                 window.history.back();
             });
