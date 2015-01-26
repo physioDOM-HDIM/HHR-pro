@@ -45,6 +45,7 @@ function showLang() {
         editable: list.editable,
         service: list.service?list.service:false,
         hasRank: list.hasRank?list.hasRank:false,
+        hasTVLabel: list.hasTVLabel?list.hasTVLabel:false,
         items: []
     };
     list.items.forEach( function(item, i) {
@@ -334,6 +335,7 @@ function addItem(node) {
     modelData = {
         editable: true,
         hasRank: list.hasRank?list.hasRank:false,
+        hasTVLabel: list.hasTVLabel?list.hasTVLabel:false,
         lang    : lang,
         items   : []
     };

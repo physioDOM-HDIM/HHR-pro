@@ -69,6 +69,12 @@
 					<input type="number" name="{% raw %}items[{{idx}}].rank{% endraw %}" value="{% raw %}{{rank}}{% endraw %}" />
 				</div>
 				{% raw %}{{/hasRank}}{% endraw %}
+				{% raw %}{{#hasTVLabel}}{% endraw %}
+				<div class="col">
+					<label>{{ "TVLabel"|i18n }}:</label>
+					<input type="text" name="{% raw %}items[{{idx}}].TVLabel{% endraw %}" value="{% raw %}{{TVLabel}}{% endraw %}" />
+				</div>
+				{% raw %}{{/hasTVLabel}}{% endraw %}
 			</div>
 			{% raw %}{{#service}}{% endraw %}
 			<div class="row">Provider roles <button type="button" class="small blue" onclick="editRole({% raw %}{{idx}},{{roles}}{{#new}},true{{/new}}{% endraw %})" >Edit</button></div>

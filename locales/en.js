@@ -307,5 +307,6 @@
 	"view": "view",
 	"Général": "Général",
 	"back": "back",
-	"Rank": "Rank"
+	"Rank": "Rank",
+	"TVLabel": "TVLabel"
 }
