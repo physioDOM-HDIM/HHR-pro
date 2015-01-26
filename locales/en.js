@@ -306,5 +306,6 @@
 	"Result synthesys": "Result synthesys",
 	"view": "view",
 	"Général": "Général",
-	"back": "back"
+	"back": "back",
+	"Rank": "Rank"
 }

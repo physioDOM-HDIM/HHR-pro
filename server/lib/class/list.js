@@ -53,7 +53,12 @@ function List() {
 				if(!doc) {
 					reject( {code:404, error:"not found"});
 				} else {
+					if(doc.hasOwnProperty('hasRank')) {
+						doc.items.sort(function(a,b) { return a.rank - b.rank } );
+					}
+
 					for (var prop in doc) {
+
 						if (doc.hasOwnProperty(prop)) {
 							that[prop] = doc[prop];
 						}

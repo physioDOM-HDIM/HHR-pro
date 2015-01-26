@@ -13,6 +13,8 @@ var listSchema = {
 		"editable": { type: "boolean", required: true},
 		"measure": { type: "boolean"},
 		"service": { type: "boolean"},
+		"hasRank": { type: "boolean"},
+		"hasTVLabel": { type: "boolean"},
 		"items": {
 			type:"array",
 			"anyOf": [
@@ -37,6 +39,7 @@ var listItem_BasicSchema = {
 			]
 		},
 		"active": { type: "boolean"},
+		"rank": { type: "number"},
 		"roleTypeCode": { type:"array", item: { "enum": roleTypeCode }}
 	}
 };

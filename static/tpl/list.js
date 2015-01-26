@@ -24,6 +24,7 @@ window.addEventListener('DOMContentLoaded', function() {
         })
         .then( function(response) {
             list = JSON.parse(response);
+            console.log(list);
             showLang();
         });
 
@@ -43,6 +44,7 @@ function showLang() {
         lang: lang.value,
         editable: list.editable,
         service: list.service?list.service:false,
+        hasRank: list.hasRank?list.hasRank:false,
         items: []
     };
     list.items.forEach( function(item, i) {
@@ -331,6 +333,7 @@ function addItem(node) {
     
     modelData = {
         editable: true,
+        hasRank: list.hasRank?list.hasRank:false,
         lang    : lang,
         items   : []
     };
