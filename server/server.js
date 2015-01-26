@@ -228,40 +228,6 @@ server.use(function checkAcl(req, res, next) {
 	}
 	
 	return next();
-	/*
-	if( req.url.match(/^(\/|\/api\/login)$/) ) {
-		return next();
-	}
-	if(!req.cookies.sessionID) {
-			logger.warning("not authorized");
-			res.send(403);
-			return next(false);
-	} else {
-		physioDOM.getSession(req.cookies.sessionID)
-			.then( function(session) {
-				if( session.expire - (new Date()).getTime() < 0 ) {
-					logger.warning( "session has expired");
-					cookies.set('sessionID');
-					if( req.url.match(/^\/api/)) {
-						res.send(403, { code:"EXPIRED", msg:"session has expired"});
-						return next(false);
-					} else {
-						return readFile(path.join(DOCUMENT_ROOT, '/index.htm'), req, res, next);
-					}
-				} else {
-					
-					logger.debug("session expires at "+ moment().add( session.expire - (new Date()).getTime(), 'ms' ).format());
-					return next();
-				}
-			})
-			.catch( function(err) {
-				console.log("Error ", err);
-				cookies.set('sessionID');
-				res.send(403);
-				return next(false);
-			});
-	}
-	*/
 });
 
 function apiLogin(req, res, next) {
