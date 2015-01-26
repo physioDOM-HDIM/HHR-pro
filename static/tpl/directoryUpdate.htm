@@ -66,22 +66,22 @@
                     <input type="checkbox" name="organization" onchange="checkOrganization()" {% if professional && professional.organization===true %}checked{% endif %} />
                 </div>
                 <div class="row">
-                    <label>Name</label>
+                    <label>Name <span class="mandatory">*</span>:</label>
                     <input type="text" name="name.family" placeholder="Mandatory field" required value="{{professional.name.family}}" />
                 </div>
                 
                 <div id="nonOrgContainer">
                     <div class="row">
-                        <label>Given:</label>
+                        <label>Given <span class="mandatory">*</span>:</label>
                         <input type="text" name="name.given" placeholder="Mandatory field" required value="{{professional.name.given}}" />
                     </div>
                     <div class="row">
-                        <label>Gender:</label>
+                        <label>Gender <span class="mandatory">*</span>:</label>
                         <input type="radio" name="gender" value="M" {% if professional.gender == 'M' %}checked{% endif %} />Man
                         <input type="radio" name="gender" value="F" {% if professional.gender == 'F' %}checked{% endif %} />Woman
                     </div>
                     <div class="row">
-                        <label>{{ "Job" | i18n }}:</label>
+                        <label>{{ "Job" | i18n }} <span class="mandatory">*</span>:</label>
                         <select name="job" required>
                             {% for item in job.items %}
                             <option value="{{item.value}}" {% if  professional.job == item.value %}selected{% endif %}>{{item.label}}</option>
@@ -99,7 +99,7 @@
                     </select>
                 </div>
                 <div class="row">
-                    <label>{{ "Language" | i18n }} :</label>
+                    <label>{{ "Language" | i18n }} <span class="mandatory">*</span>:</label>
                     <select name="communication">
                         {% for item in communication.items %}
                         <option value="{{item.value}}" {% if professional.communication == item.value %}selected{% endif %}>{{item.label}}</option>
@@ -116,6 +116,7 @@
                 </div>
             </zdk-panel>
             <zdk-panel heading="{{'Telecom' |i18n}}" collapsable="false" collapsed="false">
+                <span class="mandatory">*</span> (Email system )
                 {% if !professional.telecom %}
                 <div class="telecomContainer">
                     <div class="row">

@@ -480,3 +480,9 @@ zdk-input-date {
 	font-size: 1.6em;
 	vertical-align: middle;
 }
+
+span.mandatory {
+    color: red;
+    font-weight: bold;
+    font-size: 18px;
+}
