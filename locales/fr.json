@@ -245,7 +245,6 @@
 	"name": "nom",
 	"perimeter": "périmêtre",
 	"detail": "detail",
-<<<<<<< HEAD:locales/en.js
 	"Marital Status must be filled": "Marital Status must be filled",
 	"You must fill telecom type": "You must fill telecom type",
 	"No data available": "No data available",
