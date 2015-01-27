@@ -23,10 +23,11 @@ var configSchema = {
 		},
 		"Lang" : {
 			type       : "string",
-			enum       : ["en", "nl", "es", "fr"],
+			enum       : ["en", "en_gb", "nl", "es", "fr"],
 			description: "default language of the instance",
 			required   : true
 		},
+		"languages": { type:"array", description:"array of all supported languages"},
 		"key"  : {
 			type       : "string",
 			pattern    : "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$",
