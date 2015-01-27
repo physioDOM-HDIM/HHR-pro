@@ -36,10 +36,8 @@ function PhysioDOM( config ) {
 
 	this.Lists = new Lists();
 	
-	console.log("config", config);
-	// @todo report lang into a config file.
-	this.lang = config.Lang;
-	this.mongouri = config.mongouri;
+	this.lang = config.Lang;  // the default language of the instance
+	this.config = config;
 	
 	/**
 	 * Connect to the database
@@ -50,8 +48,8 @@ function PhysioDOM( config ) {
 	this.connect = function() {
 		var that = this;
 		return new promise( function(resolve, reject) {
-			logger.trace("connect to database",that.mongouri);
-			dbPromise.connect(that.mongouri)
+			logger.trace("connect to database",that.config.mongouri);
+			dbPromise.connect(that.config.mongouri)
 				.then( function(dbClient) {
 					that.db = dbClient;
 					resolve(that);
