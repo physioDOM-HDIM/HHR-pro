@@ -216,7 +216,7 @@ function getLists() {
             parameters: utils.promiseXHR("GET", "/api/lists/parameters", 200),
             symptom: utils.promiseXHR("GET", "/api/lists/symptom", 200),
             questionnaire: utils.promiseXHR("GET", "/api/lists/questionnaire", 200),
-            unity: utils.promiseXHR("GET", "/api/lists/unity", 200)
+            units: utils.promiseXHR("GET", "/api/lists/units", 200)
         };
 
     RSVP.hash(promises).then(function(results) {
@@ -228,18 +228,18 @@ function getLists() {
         lists.symptom = JSON.parse(results.symptom).items.filter(filterActive);
         lists.questionnaire = JSON.parse(results.questionnaire).items.filter(filterActive);
 
-        var unityList = JSON.parse(results.unity).items;
+        var unitsList = JSON.parse(results.units).items;
 
         var i = 0,
             leni = lists.parameters.length;
 
         for(i; i<leni; i++) {
             var y = 0,
-                leny = unityList.length;
+                leny = unitsList.length;
 
             for(y; y<leny; y++) {
-                if(lists.parameters[i].unity === unityList[y].ref) {
-                    lists.parameters[i].unityLabel = unityList[y].label[infos.lang];
+                if(lists.parameters[i].units === unitsList[y].ref) {
+                    lists.parameters[i].unitsLabel = unitsList[y].label[infos.lang];
                     break;
                 }
             }
@@ -314,7 +314,7 @@ var updateParam = function(element, directValue) {
         select = container.querySelector('select'),
         minContainer = container.querySelector('.min-treshold'),
         maxContainer = container.querySelector('.max-treshold'),
-        unityContainer = container.querySelector('.unity'),
+        unitsContainer = container.querySelector('.units'),
         categoryContainer = container.querySelector('.item-category');
 
     if(!directValue) {
@@ -355,7 +355,7 @@ var updateParam = function(element, directValue) {
 
         minContainer.innerHTML = param.threshold.min? param.threshold.min: '-';
         maxContainer.innerHTML = param.threshold.max? param.threshold.max: '-';
-        unityContainer.innerHTML = param.unityLabel? param.unityLabel: '';
+        unitsContainer.innerHTML = param.unitsLabel? param.unitsLabel: '';
     }
     else if (category === 'questionnaire') {
         // Questionnaire item
@@ -371,7 +371,7 @@ var updateParam = function(element, directValue) {
     else {
         minContainer.innerHTML = '-';
         maxContainer.innerHTML = '-';
-        unityContainer.innerHTML = '';
+        unitsContainer.innerHTML = '';
     }
 
     // Disable the selected option on other rows

@@ -779,7 +779,7 @@ function Beneficiary( ) {
 			that.getThreshold()
 				.then( function(_thresholds) {
 					thresholds = _thresholds;
-					return physioDOM.Lists.getList("unity")
+					return physioDOM.Lists.getList("units")
 				})
 				.then(function (units) {
 					RSVP.all(promises).then(function (lists) {
@@ -876,9 +876,9 @@ function Beneficiary( ) {
 						return list.getItem(paramName);
 					})
 					.then(function(param) {
-						physioDOM.Lists.getList("unity")
-							.then(function(unity) {
-								return unity.getItem(param.unity);
+						physioDOM.Lists.getList("units")
+							.then(function(units) {
+								return units.getItem(param.units);
 							})
 							.then( function(unit) {
 								if( unit.label[session.lang || "en"] === undefined ) {

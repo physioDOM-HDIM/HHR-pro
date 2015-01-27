@@ -10,7 +10,7 @@ var Utils = new Utils();
 
 window.addEventListener('DOMContentLoaded', function() {
 
-    Utils.promiseXHR("GET","/api/lists/unity")
+    Utils.promiseXHR("GET","/api/lists/units")
         .then( function(response) {
             units = JSON.parse(response);
         })
@@ -56,11 +56,11 @@ function showLang() {
                     case "label" :
                         obj.label = item.label[lang.value];
                         break;
-                    case "unity":
+                    case "units":
                         obj.units = [];
                         units.items.forEach( function(unit) {
                             option = { value: unit.ref, label: unit.label[lang] || unit.label.en  };
-                            if( item.unity === unit.ref) {
+                            if( item.units === unit.ref) {
                                 option.selected = true;
                             } else {
                                 option.selected = false;
@@ -110,11 +110,11 @@ function showLang() {
                     case "label" :
                         obj.label = item.label[lang.value];
                         break;
-                    case "unity":
+                    case "units":
                         obj.units = [];
                         units.items.forEach( function(unit) {
                             option = { value: unit.ref, label: unit.label[lang] || unit.label.en  };
-                            if( item.unity === unit.ref) {
+                            if( item.units === unit.ref) {
                                 option.selected = true;
                             } else {
                                 option.selected = false;
@@ -349,7 +349,7 @@ function addItem(node) {
             ref:"",
             "general":true,
             label:"",
-            "unity": "",
+            "unit": "",
             "autoInput": false,
             "threshold": {
                 "min": null,
