@@ -97,15 +97,15 @@
 								<div style="font-weight:bold">{% raw %}{{item.name.family}} {{item.name.given}}{% endraw %}</div>
 							</div>
 							<div flex style="padding-left:50px;">
-								<div class="col"><span style="-webkit-flex:1; -ms-flex:1; flex:1">{{ "Last Event"|i18n }} : <b>{% raw %}{{ item.date }}{% endraw %}</b> {% raw %}{{item.dateFrom}}{% endraw %}</span></div>
+								<div class="col"><span style="-webkit-flex:1; -ms-flex:1; flex:1">{{ "Last event"|i18n }} : <b>{% raw %}{{ item.date }}{% endraw %}</b> {% raw %}{{item.dateFrom}}{% endraw %}</span></div>
 							</div>
 							<div class="row" style="padding-left:50px;">
-								<div class="col">{{ "Birth date:"| i18n }} {% raw %}{{item.birthdate}}{% endraw %}</div>
-								<div class="col">{{ "Perimeter:" | i18n }} {% raw %}{{item.perimeter | labelPerimeter}}{% endraw %}</div>
+								<div class="col">{{ "Birth date"| i18n }} : {% raw %}{{item.birthdate}}{% endraw %}</div>
+								<div class="col">{{ "Perimeter" | i18n }} : {% raw %}{{item.perimeter | labelPerimeter}}{% endraw %}</div>
 							</div>
 							<div class="row" style="padding-left:50px;">
-								<div class="col">{{ "Zip code:"  | i18n }} {% raw %}{{item.address | zipcode}}{% endraw %}</div>
-								<div class="col">{{ "City:"      | i18n }} {% raw %}{{item.address | city}}{% endraw %}</div>
+								<div class="col">{{ "Zip code"  | i18n }} : {% raw %}{{item.address | zipcode}}{% endraw %}</div>
+								<div class="col">{{ "City"      | i18n }} : {% raw %}{{item.address | city}}{% endraw %}</div>
 							</div>
 						</div>
 					</div>

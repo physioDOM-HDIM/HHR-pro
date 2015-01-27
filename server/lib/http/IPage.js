@@ -31,7 +31,8 @@ var logger = new Logger("IPage");
 var i18n = new(require('i18n-2'))({
 	// setup some locales - other locales default to the first locale
 	devMode: true,
-	locales: ["en", "es", "nl", "fr"]
+	locales: ["en", "es", "nl", "fr"],
+	extension:".json"
 });
 
 /**
@@ -45,7 +46,14 @@ function IPage() {
 	var lang;
 
 	function init(req) {
-		lang = req.session.lang || req.cookies.lang || req.params.lang || "en";
+		if(req.session) {
+			console.log("test");
+			lang = req.session.lang || req.cookies.lang || req.params.lang || physioDOM.lang;
+		} else {
+			lang = req.cookies.lang || req.params.lang || physioDOM.lang;
+		}
+		logger.info("lang", lang);
+		
 		i18n.setLocale(lang);
 
 		swig.setDefaults({cache: false});
@@ -93,6 +101,26 @@ function IPage() {
 				result[listName+"Array"] = {};
 				return result;
 			});
+	}
+	
+	this.login = function( req, res, next ) {
+		logger.trace("login page");
+		var html;
+		
+		init(req);
+		
+		logger.trace("login page 2");
+		html = swig.renderFile(DOCUMENTROOT+'/static/index.htm', [], function(err, output) {
+			if (err) {
+				console.log("error", err);
+				console.log("output", output);
+				res.write(err);
+				res.end();
+				next();
+			} else {
+				sendPage(output, res, next);
+			}
+		});
 	}
 	
 	/**
@@ -563,7 +591,9 @@ function IPage() {
 				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
 			})
 			.then( function( beneficiary ) {
+				moment.locale(req.cookies.lang);
 				data.beneficiary = beneficiary;
+				data.beneficiary.birthdate = moment(data.beneficiary.birthdate).format("L")
 				return beneficiary._id ? beneficiary.getProfessionals() : null;
 			}).then(function(professionals){
 				if( professionals ){

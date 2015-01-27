@@ -74,12 +74,16 @@ function validFilter() {
 	paginate(true, params);
 }
 function init() {
+	moment.locale(Cookies.get("lang"));
     var listPager = document.querySelector('tsante-list');
     listPager.addEventListener('tsante-response', function(data) {
         var list = data.detail.list;
         var i = 0,
             len = list.items.length;
         for (i; i < len; i++) {
+			if(list.items[i].birthdate) {
+				list.items[i].birthdate = moment(list.items[i].birthdate).format("L");
+			}
         	if(list.items[i].lastEvent) {
         		// the date is displayed in local time
             	list.items[i].date = moment(list.items[i].lastEvent).format("L LT") ;

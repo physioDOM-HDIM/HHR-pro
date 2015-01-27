@@ -13,7 +13,7 @@
   "scripts": {
     "preinstall":"npm install ./install/logger-v1.1.0.tar.gz",
     "install": "cd static; bower install; cd ..; node install/install.js",
-    "start": "supervisor -w package.json,server/ -- server/server.js -p 8001 2>&1 > log/app.log",
+    "start": "supervisor -w package.json,server/ -- server/server.js -c config.json 2>&1 > log/app.log",
     "test": "node ./test/index.js"
   },
   "main": "./server/server.js",

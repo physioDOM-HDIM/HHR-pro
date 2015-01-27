@@ -31,13 +31,15 @@ var Account = require("./account"),
  * 
  * @constructor
  */
-function PhysioDOM( ) {
+function PhysioDOM( config ) {
 	this.db = null;
 
 	this.Lists = new Lists();
 	
+	console.log("config", config);
 	// @todo report lang into a config file.
-	this.lang = ["en","es","nl","fr"];
+	this.lang = config.Lang;
+	this.mongouri = config.mongouri;
 	
 	/**
 	 * Connect to the database
@@ -45,13 +47,18 @@ function PhysioDOM( ) {
 	 * @param uri
 	 * @returns {promise}
 	 */
-	this.connect = function(uri) {
+	this.connect = function() {
 		var that = this;
 		return new promise( function(resolve, reject) {
-			dbPromise.connect(uri)
+			logger.trace("connect to database",that.mongouri);
+			dbPromise.connect(that.mongouri)
 				.then( function(dbClient) {
 					that.db = dbClient;
 					resolve(that);
+				})
+				.catch( function(err) {
+					logger.error(err);
+					reject(err);
 				});
 		});
 	};
