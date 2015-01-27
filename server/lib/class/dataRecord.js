@@ -183,7 +183,7 @@ function DataRecord( beneficiaryID ) {
 					// set the beneficiary id
 					that.subject = beneficiaryID;
 					that.datetime = moment().toISOString();
-					if (that.home === false) {
+					if (!that.home || that.home === false) {
 						if (!that.source) {
 							that.source = professionalID;
 						} else {
