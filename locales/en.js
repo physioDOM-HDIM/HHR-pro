@@ -308,5 +308,21 @@
 	"Général": "Général",
 	"back": "back",
 	"Rank": "Rank",
-	"TVLabel": "TVLabel"
+	"TVLabel": "TVLabel",
+	"SF 12 score": "SF 12 score",
+	"Diet values": "Diet values",
+	"meter": "meter",
+	"Weight": "Weight",
+	"kilogram": "kilogram",
+	"Lean/fat ratio": "Lean/fat ratio",
+	"BMI": "BMI",
+	"MNA score": "MNA score",
+	"MNA SF score": "MNA SF score",
+	"SNAQ score": "SNAQ score",
+	"Eetscore": "Eetscore",
+	"Special diet prescriptions": "Special diet prescriptions",
+	"Assistance services": "Assistance services",
+	"Delivery assistance": "Delivery assistance",
+	"Number of steps (optional)": "Number of steps (optional)",
+	"steps per week": "steps per week"
 }

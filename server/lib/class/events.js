@@ -63,9 +63,10 @@ function events(beneficiaryID) {
 		});
 	};
 
-	this.setup = function(service, operation) {
+	this.setup = function(service, operation, elementID) {
 		var that = this,
 			eventObj = {
+				ref: elementID,
 				datetime: moment().toISOString(),
 				subject: this.subject,
 				service: service,

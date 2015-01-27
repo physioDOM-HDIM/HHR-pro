@@ -282,7 +282,7 @@ function Beneficiary( ) {
 					return that.save();
 				})
 				.then( function() {
-					that.createEvent("Beneficiary","update");
+					that.createEvent("Beneficiary","update", updatedEntry._id);
 				})
 				.then(resolve)
 				.catch(reject);
@@ -618,7 +618,7 @@ function Beneficiary( ) {
 			var dataRecord = new DataRecord();
 			dataRecord.setup(that._id, dataRecordObj, professionalID)
 				.then(function (dataRecord) {
-					return that.createEvent('Data record', 'create')
+					return that.createEvent('Data record', 'create', dataRecord._id)
 						.then( function() {
 							return that.getCompleteDataRecordByID(dataRecord._id);
 						});
@@ -714,17 +714,17 @@ function Beneficiary( ) {
 		var messages = new Messages( this._id ),
 			that = this;
 
-		return messages.create( session, professionalID, msg ).then(function() {
-			that.createEvent('Message', 'create');
-		})
+		return messages.create( session, professionalID, msg ).then(function(message) {
+			that.createEvent('Message', 'create', message._id);
+		});
 	};
 
-	this.createEvent = function(service, operation) {
+	this.createEvent = function(service, operation, elementID) {
 		logger.trace("create event", service);
 		var events = new Events(this._id);
 		var that = this;
 
-		return events.setup(service, operation)
+		return events.setup(service, operation, elementID)
 			.then(function(eventObj) {
 				that.lastEvent = eventObj.datetime;
 				that.save();
