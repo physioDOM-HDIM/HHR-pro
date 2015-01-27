@@ -109,7 +109,7 @@ var IBeneficiary = {
 					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID);
 				})
 				.then(function (beneficiary) {
-					return beneficiary.update(updateItem);
+					return beneficiary.update(updateItem, req.session.person.id);
 				})
 				.then( function (beneficiary ) {
 					res.send( beneficiary );
@@ -341,8 +341,12 @@ var IBeneficiary = {
 			.then( function( dataRecord ) {
 				return dataRecord.getComplete();
 			})
-			.then( function( completeDataRecord ) {
-				res.send( completeDataRecord );
+			.then(function(completeDataRecord) {
+				res.send(completeDataRecord);
+				logger.trace(completeDataRecord._id, req.session.person.id);
+				return beneficiary.createEvent('Data record', 'update', new ObjectID(completeDataRecord._id), req.session.person.id);
+			})
+			.then(function() {
 				next();
 			})
 			.catch( function(err) {

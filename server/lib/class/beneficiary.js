@@ -254,7 +254,7 @@ function Beneficiary( ) {
 	 * @param updatedEntry
 	 * @returns {promise}
 	 */
-	this.update = function( updatedEntry ) {
+	this.update = function( updatedEntry, professionalID) {
 		var that = this;
 		return new promise( function(resolve, reject) {
 			logger.trace("update");
@@ -282,7 +282,7 @@ function Beneficiary( ) {
 					return that.save();
 				})
 				.then( function() {
-					that.createEvent("Beneficiary","update", updatedEntry._id);
+					that.createEvent("Beneficiary","update", updatedEntry._id, professionalID);
 				})
 				.then(resolve)
 				.catch(reject);
@@ -611,14 +611,14 @@ function Beneficiary( ) {
 	 * @param dataRecordObj
 	 * @returns {promise}
 	 */
-	this.createDataRecord = function( dataRecordObj, professionalID ) {
+	this.createDataRecord = function( dataRecordObj, professionalID) {
 		var that = this;
 		return new promise( function(resolve, reject) {
 			logger.trace("createDataRecord");
 			var dataRecord = new DataRecord();
 			dataRecord.setup(that._id, dataRecordObj, professionalID)
 				.then(function (dataRecord) {
-					return that.createEvent('Data record', 'create', dataRecord._id)
+					return that.createEvent('Data record', 'create', dataRecord._id, professionalID)
 						.then( function() {
 							return that.getCompleteDataRecordByID(dataRecord._id);
 						});
@@ -715,16 +715,16 @@ function Beneficiary( ) {
 			that = this;
 
 		return messages.create( session, professionalID, msg ).then(function(message) {
-			that.createEvent('Message', 'create', message._id);
+			that.createEvent('Message', 'create', message._id, professionalID);
 		});
 	};
 
-	this.createEvent = function(service, operation, elementID) {
+	this.createEvent = function(service, operation, elementID, senderID) {
 		logger.trace("create event", service);
 		var events = new Events(this._id);
 		var that = this;
 
-		return events.setup(service, operation, elementID)
+		return events.setup(service, operation, elementID, senderID)
 			.then(function(eventObj) {
 				that.lastEvent = eventObj.datetime;
 				that.save();

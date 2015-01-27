@@ -48,6 +48,31 @@ function events(beneficiaryID) {
 		return dbPromise.getList(cursor, pg, offset);
 	};
 
+	this.getLastOne = function() {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("getLastOne", that.subject);
+			var search = { subject: that.subject };
+
+			physioDOM.db.collection("events").find(search).sort({datetime:-1}).limit(1).toArray( function (err, doc) {
+				if (err) {
+					logger.alert("Error");
+					throw err;
+				}
+				if(!doc && doc[0]) {
+					reject( {code:404, error:"not found"});
+				} else {
+					for (var prop in doc[0]) {
+						if (doc[0].hasOwnProperty(prop)) {
+							that[prop] = doc[0][prop];
+						}
+					}
+					resolve(that);
+				}
+			});
+		});
+	};
+
 	this.save = function(eventObj) {
 		return new promise( function(resolve, reject) {
 			logger.trace("save" );
@@ -63,22 +88,62 @@ function events(beneficiaryID) {
 		});
 	};
 
-	this.setup = function(service, operation, elementID) {
+	this.remove = function(eventID) {
+		return new promise( function(resolve, reject) {
+			var search = {_id: eventID};
+
+			physioDOM.db.collection("events").remove( search, function(err, nb) {
+				if(err) {
+					reject(err);
+				} else {
+					if( nb ) {
+						resolve( true );
+					} else {
+						reject( { err:404, message: "no item found"});
+					}
+				}
+			});
+		});
+	};
+
+	this.setup = function(service, operation, elementID, senderID) {
 		var that = this,
 			eventObj = {
 				ref: elementID,
+				sender: senderID,
 				datetime: moment().toISOString(),
 				subject: this.subject,
 				service: service,
 				operation: operation
 			};
 
-		return checkSchema(eventObj)
-			.then(function(eventObj) {
-				return that.save(eventObj);
-			}, function(err) {
-				logger.trace(err);
-			});
+		return this.getLastOne().then(function(lastEvent) {
+			logger.trace("ADD EVENT" );
+
+			if(eventObj.ref.toString() === lastEvent.ref.toString()
+				&& eventObj.operation === lastEvent.operation
+				&& eventObj.sender.toString() === lastEvent.sender.toString()) {
+
+				logger.trace("BY REPLACE" );
+				return that.remove(lastEvent._id).then(function() {
+					return checkSchema(eventObj)
+						.then(function(eventObj) {
+							return that.save(eventObj);
+						}, function(err) {
+							logger.trace(err);
+						});
+				});
+			} else {
+				logger.trace("BY ADDING" );
+				return checkSchema(eventObj)
+					.then(function(eventObj) {
+						return that.save(eventObj);
+					}, function(err) {
+						logger.trace(err);
+					});
+			}
+
+		});
 	};
 
 }
