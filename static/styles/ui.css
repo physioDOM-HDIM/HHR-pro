@@ -481,8 +481,9 @@ zdk-input-date {
 	vertical-align: middle;
 }
 
-span.mandatory {
-    color: red;
-    font-weight: bold;
-    font-size: 18px;
+.mandatory:after {
+	color: red;
+	font-weight: bold;
+	font-size: 18px;
+	content:" *";
 }

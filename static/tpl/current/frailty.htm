@@ -23,7 +23,7 @@
 		<form name="form" id="form" autocomplete="off" onsubmit="checkForm(); return false;">
 			<div class="row value-row questionnaire-row" data-name="CHAIR_TEST">
 				<div flex class="value-name">{{'Chair stand results' | i18n }}</div>
-				<div class="questionnaire-date">{% if status.chairStandDate %}{{status.chairStandDate | date('Y-m-d')}}{% endif %}</div>
+				<div class="questionnaire-date">{% if status.chairStandDate %}{{ status.chairStandDate | date }}{% endif %}</div>
 				<input type="text" class="questionnaire-score" value="{{status.chairStandScore}}" disabled />
 				<input type="hidden" class="questionnaire-answer" name="chairStandAnswer" value="{{status.chairStandAnswer}}" />
 				<div class="questionnaire-button-container">

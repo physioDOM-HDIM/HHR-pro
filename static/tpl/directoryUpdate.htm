@@ -1,6 +1,6 @@
 {% extends './page.htm' %}
 
-{% block title %}{{ "Professionnal directory"|i18n }}{% endblock %}
+{% block title %}{{ "Professional directory"|i18n }}{% endblock %}
 
 {% block head %}
 {% parent %}
@@ -37,7 +37,7 @@
     <div class="row">
         <input type="hidden" name="telecom[{%raw%}{{indx}}{%endraw%}].use" value="work">
         <div class="col">
-            <label>System:</label>
+            <label>{{"System"|i18n}} :</label>
             <select name="telecom[{%raw%}{{indx}}{%endraw%}].system" style="min-width: 150px;" onchange="checkEmailTypeValidation(this)">
                 {% for item in system.items %}
                 <option value="{{item.value}}" {{telecom_system_selected}}>{{item.label}}</option>
@@ -47,12 +47,12 @@
     </div>
     <div class="row">
         <div class="col">
-            <label>Value:</label>
+            <label>{{"Value"|i18n}} :</label>
             <input name="telecom[{%raw%}{{indx}}{%endraw%}].value" type="{%raw%}{{telecom_email_type_default}}{%endraw%}" class="text" />
         </div>
         <div>
             <span class="spacer"></span>
-            <button type="button" class="red small" onclick="deleteTelecom(this)">delete</button>
+            <button type="button" class="red small" onclick="deleteTelecom(this)">{{"Delete"|i18n}}</button>
         </div>
     </div>
 </script>
@@ -62,7 +62,7 @@
             <zdk-panel heading="{{'Identity' |i18n}}" collapsable="false" collapsed="false">
                 <input type="hidden" name="_id" value="{{professional._id.toString()}}">
                 <div class="row">
-                    <label {%raw%}{{organization_disabled}}{%endraw%}>Organization:</label>
+                    <label {%raw%}{{organization_disabled}}{%endraw%}>{{"Organization"|i18n}}:</label>
                     <input type="checkbox" name="organization" onchange="checkOrganization()" {% if professional && professional.organization===true %}checked{% endif %} />
                 </div>
                 <div class="row">
@@ -77,8 +77,8 @@
                     </div>
                     <div class="row">
                         <label>Gender <span class="mandatory">*</span>:</label>
-                        <input type="radio" name="gender" value="M" {% if professional.gender == 'M' %}checked{% endif %} />Man
-                        <input type="radio" name="gender" value="F" {% if professional.gender == 'F' %}checked{% endif %} />Woman
+                        <input type="radio" name="gender" value="M" {% if professional.gender == 'M' %}checked{% endif %} />{{"Man"|i18n}}
+                        <input type="radio" name="gender" value="F" {% if professional.gender == 'F' %}checked{% endif %} />{{"Woman"|i18n}}
                     </div>
                     <div class="row">
                         <label>{{ "Job" | i18n }} <span class="mandatory">*</span>:</label>
@@ -137,7 +137,7 @@
                         </div>
                         <div>
                             <span class="spacer"></span>
-                            <button type="button" class="red small" onclick="deleteTelecom(this)">delete</button>
+                            <button type="button" class="red small" onclick="deleteTelecom(this)">{{"Delete" | i18n }}</button>
                         </div>
                     </div>
                 </div>
@@ -162,7 +162,7 @@
                         </div>
                         <div>
                             <span class="spacer"></span>
-                            <button type="button" class="red small" onclick="deleteTelecom(this)">delete</button>
+                            <button type="button" class="red small" onclick="deleteTelecom(this)">{{"Delete"|i18n}}</button>
                         </div>
                     </div>
                 </div>
@@ -170,7 +170,7 @@
                 {% endif %}
                 <div id="addTelecomBtn" class="row control">
                     <span class="spacer"></span>
-                    <button class="blue small" type="button" onclick="addTelecom()">Add</button>
+                    <button class="blue small" type="button" onclick="addTelecom()">{{"Add"|i18n}}</button>
                 </div>
             </zdk-panel>
             <zdk-panel heading="{{'Address' |i18n}}" collapsable="false" collapsed="false">
@@ -194,24 +194,24 @@
             </zdk-panel>
             <zdk-panel heading="{{'Account' |i18n}}" collapsable="false" collapsed="false">
                 <div class="row">
-                    <label>Login:</label>
+                    <label>{{"Login"|i18n}} :</label>
                     <input type="text" name="account.login" value="{{professional.account.login}}" />
                 </div>
                 <div class="row">
-                    <label>Change password:</label>
+                    <label>{{"Change password"|i18n}} :</label>
                     <input type="password" name="account.password" class="account-password" onkeyup="checkPassword(this)" />
                 </div>
                 <div class="row">
-                    <label>Confirm password:</label>
+                    <label>{{"Confirm password"}} :</label>
                     <input type="password" name="checkAccountPassword" class="account-check-password" onkeyup="checkPassword(this)" />
                 </div>
                 <div class="row tip">
-                    Info: The password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters
+                    {{"Info: The password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters" | i18n }}
                 </div>
                 <div class="hidden" id="has-password">{{ professional.hasPassword }}</div>
                 {% if professional.hasPassword %}
                 <div class="row">
-                    <label>Active:</label>
+                    <label>{{ "Active"|i18n }}:</label>
                     <input type="checkbox" name="active" class="account-activation" {% if professional && professional.active===true %}checked{% endif %}/>
                 </div>
                 {% else %}
@@ -223,13 +223,13 @@
                 <span class="spacer"></span>
             <div class="buttonContainer">
                 {% if professional._id && sessionID.toString() !== professional._id.toString() %}
-                <button id="deleteItem" class="red" type="button" onclick="confirmDelete()">delete</button>
+                <button id="deleteItem" class="red" type="button" onclick="confirmDelete()">{{"Delete"|i18n}}</button>
                 {% endif %}
-                <button type="button" class="blue" onclick="window.history.back()">cancel</button>
+                <button type="button" class="blue" onclick="window.history.back()">{{"Cancel"|i18n}}</button>
                 {% if professional._id %}
-                <button id="saveItemBtn" class="green">save</button>
+                <button id="saveItemBtn" class="green">{{"Save"|i18n}}</button>
                 {% else %}
-                <button id="createItemBtn" class="green">create</button>
+                <button id="createItemBtn" class="green">{{"Create"|i18n}}</button>
                 {% endif %}
             </div>
             </div>

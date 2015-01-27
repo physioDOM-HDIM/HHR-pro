@@ -80,7 +80,7 @@
 					</div>
 					<div class="row control">
 						<span class="spacer"></span>
-						<button type="button" class="red" onclick="resetOrder()">Reset</button>
+						<button type="button" class="red" onclick="resetOrder()">{{"Reset" | i18n }}</button>
 						<button class="green">{{'Sort'|i18n}}</button>
 					</div>
 				</form>
@@ -111,9 +111,9 @@
 					</div>
 					<div>
 						{% if rights.write %}
-						<a href="/beneficiary/edit/{%raw%}{{item._id}}{% endraw %}"><button class="blue small" style="margin:5px">edit</button></a>
+						<a href="/beneficiary/edit/{%raw%}{{item._id}}{% endraw %}"><button class="blue small" style="margin:5px">{{"Edit"|i18n}}</button></a>
 						{% endif %}
-						<a href="/beneficiary/{%raw%}{{item._id}}{% endraw %}"><button class="blue small" style="margin:5px">select</button></a>
+						<a href="/beneficiary/{%raw%}{{item._id}}{% endraw %}"><button class="blue small" style="margin:5px">{{"Select"|i18n}}</button></a>
 					</div>
 				</div>
 			</div>
