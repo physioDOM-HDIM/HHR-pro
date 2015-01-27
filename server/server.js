@@ -58,6 +58,7 @@ if( program.config ) {
 		config.queue = tmp.queue.protocol+"://"+tmp.queue.ip+":"+tmp.queue.port;
 		config.key = tmp.key;
 		config.cache = tmp.cache;
+		config.languages = tmp.languages;
 	}
 } else {
 	logger.error("you must provide a config file");
