@@ -78,16 +78,28 @@
 			<label>{{ "Birth date"|i18n }} :</label><div>{{beneficiary.birthdate}}</div>
 		</div>
 		<div class="row">
-			<label>{{ "Size"|i18n }} :</label><div>{{ Math.floor(beneficiary.size) }}{{ "m"|i18n }}{{ (beneficiary.size+"").split(".")[1] }}</div>
+			<label>{{ "Size"|i18n }} :</label><div>{{(beneficiary.size+"").replace('.','')}}{{ "cm"|i18n }}</div>
 		</div>
 		<div class="row">
 			<label>{{ "Social id"|i18n }} : </label><div>{{beneficiary.socialID}}</div>
 		</div>
 		<div class="row">
-			<label>{{ "Perimeter"|i18n }} : </label><div>{{beneficiary.perimeter}}</div>
+			<label>{{ "Perimeter"|i18n }} : </label>
+			{% if beneficiary.perimeter !== 'NONE'%}
+				{% for key, item in perimeterArray.items %}
+                	{% if beneficiary.perimeter == key %}
+                		<div>{{item}}</div>
+                	{%endif%}
+                {% endfor %}
+			{% endif %}	
 		</div>
 		<div class="row">
-			<label>{{ "Referent"|i18n }} : </label><div>{%if beneficiary.referent %}{{beneficiary.referent.name.family}} {{beneficiary.referent.name.given}}{% else %}---{% endif %}</div>
+		<label>{{ "Referent"|i18n }} : </label>
+		{% for professional in beneficiary.professionals %}
+			{% if professional.referent %}
+			<div>{{professional.name.family}} {{professional.name.given}}</div>
+			{% endif %}
+		{% endfor %}
 		</div>
 		<div class="telecom">
 			{% for telecom in beneficiary.telecom %}
@@ -197,7 +209,8 @@
 			<td>
 				{% for telecom in prof.telecom %}
 					{% if telecom.system !== "email" %}
-						{{telecom.value}}
+						<span class="bold">{{telecom.system}}: </span>
+						<span>{{telecom.value}}</span><br>
 					{% endif %}
 				{% endfor %}
 			</td>

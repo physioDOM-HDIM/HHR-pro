@@ -279,13 +279,5 @@
 	"Special diet prescriptions": "Special diet prescriptions",
 	"Assistance services": "Assistance services",
 	"Delivery assistance": "Delivery assistance",
-	"Number of steps (optional)": "Number of steps (optional)",
-	"steps per week": "steps per week"
-=======
-	"OK": "OK",
-	"Lists management": "Gestion des listes",
-	"Lists": "Listes",
-	"Result Synthesis": "Synthèse des resultats",
-	"Since": "Depuis"
->>>>>>> feature/config:locales/fr.json
+	"Number of steps (optional)": "Number of steps (optional)"
 }
