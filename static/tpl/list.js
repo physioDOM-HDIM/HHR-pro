@@ -7,6 +7,8 @@ var list,            // the list to edit
     regexRef = /^(?=.*[a-zA-Z])[a-zA-Z0-9!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=]{1,}$/;
 
 var Utils = new Utils();
+var modified = false;
+var currentLanguage = null;
 
 window.addEventListener('DOMContentLoaded', function() {
 
@@ -27,8 +29,24 @@ window.addEventListener('DOMContentLoaded', function() {
             console.log(list);
             showLang();
         });
+	
+	currentLanguage = document.querySelector("select[id=lang]").value;
+	document.addEventListener('change', function( evt ) { 
+		if( evt.target.getAttribute("id") !== "lang" ) {
+			modified = true;
+		}
+	}, true );
 
 }, false);
+
+window.addEventListener("beforeunload", function( e) {
+	var confirmationMessage;
+	if(modified) {
+		confirmationMessage = document.querySelector("#unsave").innerHTML;
+		(e || window.event).returnValue = confirmationMessage;     //Gecko + IE
+		return confirmationMessage;                                //Gecko + Webkit, Safari, Chrome etc.
+	}
+});
 
 function showLang() {
     var tpl, prop;
@@ -142,6 +160,21 @@ function showLang() {
     });
     var html = Mustache.render(tpl, modelData);
     document.getElementById("newItems").innerHTML = html;
+}
+
+function changeLang() {
+	if( modified ) {
+		new Modal('cancelChange', function( resp ) {
+			if( resp ) {
+				modified = false;
+				showLang();
+			} else {
+				document.querySelector("select[id=lang]").value = currentLanguage;
+			}
+		});
+	} else {
+		showLang();
+	}
 }
 
 function update() {
@@ -267,6 +300,7 @@ function save() {
     newItems = [];
 
     Utils.promiseXHR("PUT", "/api/lists/" + list.name, 200, JSON.stringify(list)).then(function(response) {
+		modified = false;
         new Modal('updateSuccess', showLang);
     }, function(error) {
         new Modal('errorOccured', showLang);

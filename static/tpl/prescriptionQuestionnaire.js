@@ -9,7 +9,7 @@ var utils = new Utils(),
 
 window.addEventListener("DOMContentLoaded", function() {
 
-    infos.lang = document.querySelector('#lang').innerText;
+    infos.lang = Cookies.get("lang");
     getList();
 
 }, false);
@@ -37,7 +37,7 @@ var init = function() {
 
     for(var i= 0, len=questionnairePlan.length ; i<len; i++) {
         var dataItem = questionnairePlan[i];
-        dataItem.labelLang = dataItem.label[infos.lang];
+        dataItem.labelLang = dataItem.label[infos.lang] || dataItem.ref;
         
         var dataModel = {
                 idx: idx,

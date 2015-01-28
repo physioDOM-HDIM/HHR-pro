@@ -14,7 +14,7 @@ physiologicalData.dataRecords = {};
  */
 
 window.addEventListener("DOMContentLoaded", function() {
-    infos.lang = document.querySelector('#lang').innerHTML;
+    infos.lang = Cookies.get("lang");
     getParamList();
 }, false);
 
@@ -29,7 +29,7 @@ var getParamList = function(isRendered, callback) {
 		var parsing = function(category, showThreshold) {
 			param[category].forEach(function(param) {
 				param.edition = showThreshold;
-				param.lastReport = moment(param.lastReport).format("YYYY-MM-DD HH:mm");
+				param.lastReport = moment(param.lastReport).format("L LT");
 			});
 
 			physiologicalData.list[category] = param[category];

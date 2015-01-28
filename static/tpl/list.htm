@@ -17,12 +17,14 @@
 
 {% block content %}
 <div class="hidden" id="list-name">{{list.name}}</div>
+<div class="hidden" id="unsave">{{"You have unsaved data"|i18n}}</div>
+<div class="hidden" id="changelang">{{"Are you sure to cancel your changes ?"|i18n}}</div>
 
 <div class="row title">
 	<label class="title">{{list.name}}</label>
 	<span class="spacer"></span>
 	<label>{{ "Language"| i18n }} :</label>
-	<select name="lang" id="lang" onchange="update(); showLang()">
+	<select name="lang" id="lang" onchange="changeLang();">
 		{% for item in communication.items %}
 		<option value="{{item.value}}">{{item.label}}</option>
 		{% endfor %}
@@ -212,7 +214,7 @@
 <footer>
 	<div class="row">
 		<span class="spacer"></span>
-		<button type="button" class="red" onclick="window.history.back(1)">{{ "Cancel"|i18n }}</button>
+		<button type="button" class="red" onclick="modified=false; window.history.back(1)">{{ "Cancel"|i18n }}</button>
 		<button class="blue" onclick="save()">{{ "Save"|i18n }}</button>
 	</div>
 </footer>

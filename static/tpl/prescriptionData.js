@@ -26,7 +26,7 @@ var getList = function() {
         // lists.thresholds = JSON.parse(results.thresholds);
 
         for(var i = 0, leni = lists.parameters.items.length; i<leni; i++) {
-            lists.parameters.items[i].labelLang = lists.parameters.items[i].label[infos.lang];
+            lists.parameters.items[i].labelLang = lists.parameters.items[i].label[infos.lang] || lists.parameters.items[i].ref;
             /*
             if(lists.thresholds[lists.parameters.items[i].ref]) {
                 lists.parameters.items[i].threshold = lists.thresholds[lists.parameters.items[i].ref];
@@ -321,7 +321,7 @@ var removeData = function(id) {
 window.addEventListener("DOMContentLoaded", function() {
     infos.category = document.querySelector('.param-category').textContent;
     infos.paramList = document.querySelector('.param-list').textContent;
-    infos.lang = document.querySelector('#lang').textContent;
+    infos.lang = Cookies.get("lang");
     getList();
 
 }, false);

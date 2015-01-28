@@ -205,7 +205,7 @@ function create() {
 
 window.addEventListener("DOMContentLoaded", function() {
     infos.datasInit = form2js(document.forms.dataRecord);
-    infos.lang = document.getElementById('lang').textContent;
+    infos.lang = Cookies.get("lang");
     getLists();
 }, false);
 
@@ -255,13 +255,13 @@ function setLang() {
     var i, len;
 
     for (i = 0, len = lists.parameters.length; i < len; i++) {
-        lists.parameters[i].labelLang = lists.parameters[i].label[infos.lang];
+        lists.parameters[i].labelLang = lists.parameters[i].label[infos.lang] || lists.parameters[i].ref;
     }
     for (i = 0, len = lists.symptom.length; i < len; i++) {
-        lists.symptom[i].labelLang = lists.symptom[i].label[infos.lang];
+        lists.symptom[i].labelLang = lists.symptom[i].label[infos.lang] || lists.symptom[i].ref;
     }
     for (i = 0, len = lists.questionnaire.length; i < len; i++) {
-        lists.questionnaire[i].labelLang = lists.questionnaire[i].label[infos.lang];
+        lists.questionnaire[i].labelLang = lists.questionnaire[i].label[infos.lang] || lists.questionnaire[i].ref;
     }
 }
 
