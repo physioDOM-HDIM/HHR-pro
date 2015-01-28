@@ -55,7 +55,8 @@ function IPage() {
 		logger.info("lang", lang);
 		
 		i18n.setLocale(lang);
-
+		moment.locale(req.cookies.lang=="en"?"en-gb":req.cookies.lang)
+		
 		swig.setDefaults( {cache: physioDOM.config.cache} );
 		swig.setFilter("i18n", function (input, idx) {
 			// console.log("input", input, idx);
@@ -600,7 +601,7 @@ function IPage() {
 				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
 			})
 			.then( function( beneficiary ) {
-				moment.locale(req.cookies.lang);
+				moment.locale(req.cookies.lang=="en"?"en-gb":req.cookies.lang);
 				data.beneficiary = beneficiary;
 				data.beneficiary.birthdate = moment(data.beneficiary.birthdate).format("L")
 				return beneficiary._id ? beneficiary.getProfessionals() : null;
