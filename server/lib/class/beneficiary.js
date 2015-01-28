@@ -731,7 +731,7 @@ function Beneficiary( ) {
 			});
 	};
 
-	this.getGraphDataList = function() {
+	this.getGraphDataList = function( lang ) {
 		var that = this;
 
 		return new promise(function (resolve, reject) {
@@ -772,7 +772,7 @@ function Beneficiary( ) {
 			}
 
 			var promises = ["parameters", "symptom", "questionnaire"].map(function (listName) {
-				return physioDOM.Lists.getListArray(listName);
+				return physioDOM.Lists.getListArray(listName , lang );
 			});
 			
 			var thresholds;
@@ -795,7 +795,7 @@ function Beneficiary( ) {
 								reject(err);
 							} else {
 								RSVP.all( results.map(function (result) {
-											result.name = labels[result.text].en || result.text;
+											result.name = labels[result.text] || result.text;
 											if (thresholds[result.text]) {
 												result.threshold = thresholds[result.text];
 											}

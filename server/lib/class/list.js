@@ -80,7 +80,7 @@ function List() {
 	this.lang = function( lang ) {
 		var that = this;
 		return new promise( function( resolve, reject ) {
-			logger.trace("->lang", that.name, lang );
+			logger.trace("lang", that.name, lang );
 			if( !lang || physioDOM.config.languages.indexOf(lang) === -1 ) {
 				logger.warning("unsupported language ", lang);
 				reject( { code:405, message:"unrecognized language"});
@@ -92,10 +92,10 @@ function List() {
 			} else {
 				that.items.forEach(function (listItem) {
 					if (( !listItem.hasOwnProperty("active") || listItem.active === true) ) {
-						options.items.push({value: listItem.ref, label: listItem.label[lang] || listItem.label.en });
+						options.items.push({value: listItem.ref, label: listItem.label[lang] || listItem.label.en || listItem.ref });
 					}
 					if (--count === 0) {
-						logger.debug("-> Lang ", options );
+						// logger.debug("-> Lang ", options );
 						resolve(options);
 					}
 				});
