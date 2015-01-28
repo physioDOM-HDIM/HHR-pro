@@ -14,6 +14,8 @@ var _dataObj = null,
     tsanteListProfessionalElt = null,
     passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=])[a-zA-Z0-9!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=]{8,}$/;
 
+var modified = false;
+
 function _findProfessionalInBeneficiary(id, obj) {
     console.log("_findProfessionalInBeneficiary", arguments);
     var found = false,
@@ -667,6 +669,10 @@ function init() {
     tsanteListProfessionalElt = document.querySelector("#tsanteListProfessional");
     tsanteListProfessionalElt.addEventListener("tsante-response", _onHaveProfessionalsData, false);
 
+	document.addEventListener('change', function( evt ) {
+			modified = true;
+	}, true );
+	
     var promises,
         id = document.querySelector("form[name='beneficiary'] input[name='_id']").value;
 
@@ -743,3 +749,12 @@ function init() {
 }
 
 window.addEventListener("polymer-ready", init, false);
+
+window.addEventListener("beforeunload", function( e) {
+	var confirmationMessage;
+	if(modified) {
+		confirmationMessage = document.querySelector("#unsave").innerHTML;
+		(e || window.event).returnValue = confirmationMessage;     //Gecko + IE
+		return confirmationMessage;                                //Gecko + Webkit, Safari, Chrome etc.
+	}
+});
