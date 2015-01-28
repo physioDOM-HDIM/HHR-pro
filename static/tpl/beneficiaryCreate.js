@@ -388,6 +388,7 @@ function updateAll(obj) {
 
     if (_dataObj && _dataObj._id) {
         Utils.promiseXHR("PUT", "/api/beneficiaries/" + _dataObj._id, 200, JSON.stringify(obj)).then(function() {
+			modified = false;
             new Modal('updateSuccess');
         }, function(error) {
             new Modal('errorOccured');
