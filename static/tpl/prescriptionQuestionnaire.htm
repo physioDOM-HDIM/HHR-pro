@@ -79,7 +79,7 @@
 	<div class="row">
 		<div class="col vert" style="padding-left:50px">
 			<label></label>
-			<zdk-input-date id="date" name="newDate" value="" style="z-index:100" i18n="{{lang}}"></zdk-input-date>
+			<zdk-input-date id="date" name="newDate" value="" style="z-index:100" i18n="{% if lang=='en' %}en_gb{% else %}{{lang}}{% endif %}"></zdk-input-date>
 			<button type="button" class="small blue" onclick="addDate(this, {% raw %}{{idx}}{% endraw %})">{{'Add'|i18n}}</button>
 		</div>
 	</div>

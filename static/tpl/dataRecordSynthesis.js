@@ -19,7 +19,7 @@ var getParameterList = function() {
 				parameterList.push(parameters[param][i]);
 			}
 		}
-		moment().locale(lang);
+		moment.locale(Cookies.get("lang")=="en"?"en-gb":Cookies.get("lang"));;
 		
     	for(var y in parameterList) {
 
