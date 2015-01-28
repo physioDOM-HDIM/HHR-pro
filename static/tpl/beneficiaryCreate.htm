@@ -311,7 +311,7 @@
                 <label>{{ "Type"|i18n }}</label>
                 <select name="lifeCond.disability.type"> <!--required-->
                     {% for item in disability.items %}
-                    <option value="{{item.value}}" {% if item.value == beneficiary.disabilty.type %}selected{% endif %}>{{item.label}}</option>
+                    <option value="{{item.value}}" {% if item.value == beneficiary.lifeCond.disability.type %}selected{% endif %}>{{item.label}}</option>
                     {% endfor %}
                 </select>
             </div>
