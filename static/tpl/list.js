@@ -277,7 +277,6 @@ function editRole(itemref, roles, newItem) {
 }
 
 function save() {
-    console.log("save");
     update();
 
     var error = {};
