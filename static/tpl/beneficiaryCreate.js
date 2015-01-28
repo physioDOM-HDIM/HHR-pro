@@ -320,7 +320,9 @@ function checkLifeCondForm() {
         new Modal('errorNoMaritalStatus');
         return false;
     }
-
+	if( formObj.lifeCond.disability.percent ) {
+		formObj.lifeCond.disability.percent = parseInt(formObj.lifeCond.disability.percent, 10);
+	}
     return formObj;
 }
 
