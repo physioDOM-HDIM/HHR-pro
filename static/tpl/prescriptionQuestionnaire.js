@@ -72,7 +72,21 @@ var init = function() {
 var addDate = function(elt, idx) {
     var dateValue = elt.parentNode.querySelector('#date').value,
         dateContainer = elt.parentNode.parentNode.parentNode.querySelector('.dates-list'),
-        dateAddedTpl = document.querySelector('#dateAddedTpl');
+        dateAddedTpl = document.querySelector('#dateAddedTpl'),
+        dateAddedList = dateContainer.querySelectorAll('.date-added'),
+        dateMoment = moment(dateValue);
+
+    if(dateMoment.isBefore()) {
+        new Modal('errorDateOld');
+        return;
+    }
+
+    for(var i in dateAddedList) {
+        if(dateAddedList[i].value === dateValue) {
+            new Modal('errorDateExist');
+            return;
+        }
+    }
 
     if(dateValue && utils.parseDate(dateValue)) {
         dateContainer.innerHTML += Mustache.render(dateAddedTpl.innerHTML, {dateValue: dateValue, idx: idx, dateIdx: dateIdx});

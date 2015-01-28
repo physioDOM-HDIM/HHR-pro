@@ -19,6 +19,28 @@ function Modal (type, callback) {
         }]
     };
 
+    content.errorDateExist = {
+        title: "trad_error",
+        content: "trad_error_date_exist",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.errorDateOld = {
+        title: "trad_error",
+        content: "trad_error_date_old",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
     content.errorRef = {
         title: "trad_error",
         content: "trad_error_ref",

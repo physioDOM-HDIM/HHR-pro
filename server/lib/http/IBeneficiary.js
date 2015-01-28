@@ -657,7 +657,7 @@ var IBeneficiary = {
 				return beneficiary.questionnairePlan( );
 			})
 			.then( function( questionnairePlan) {
-				return questionnairePlan.getList();
+				return questionnairePlan.getList(req.session.lang);
 			})
 			.then( function( prescriptions ) {
 				res.send(prescriptions);
