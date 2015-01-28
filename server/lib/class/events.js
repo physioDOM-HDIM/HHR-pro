@@ -59,7 +59,8 @@ function events(beneficiaryID) {
 					logger.alert("Error");
 					throw err;
 				}
-				if(!doc && doc[0]) {
+				logger.debug("found", doc);
+				if(!doc || !doc[0]) {
 					reject( {code:404, error:"not found"});
 				} else {
 					for (var prop in doc[0]) {
@@ -117,33 +118,41 @@ function events(beneficiaryID) {
 				operation: operation
 			};
 
-		return this.getLastOne().then(function(lastEvent) {
-			logger.trace("ADD EVENT" );
-
-			if(eventObj.ref.toString() === lastEvent.ref.toString()
-				&& eventObj.operation === lastEvent.operation
-				&& eventObj.sender.toString() === lastEvent.sender.toString()) {
-
-				logger.trace("BY REPLACE" );
-				return that.remove(lastEvent._id).then(function() {
+		return this.getLastOne()
+			.then(function(lastEvent) {
+				logger.trace("ADD EVENT", lastEvent );
+	
+				if(eventObj.ref.toString() === lastEvent.ref.toString()
+					&& eventObj.operation === lastEvent.operation
+					&& eventObj.sender.toString() === lastEvent.sender.toString()) {
+	
+					logger.trace("BY REPLACE" );
+					return that.remove(lastEvent._id).then(function() {
+						return checkSchema(eventObj)
+							.then(function(eventObj) {
+								return that.save(eventObj);
+							}, function(err) {
+								logger.trace(err);
+							});
+					});
+				} else {
+					logger.trace("BY ADDING" );
 					return checkSchema(eventObj)
 						.then(function(eventObj) {
 							return that.save(eventObj);
 						}, function(err) {
 							logger.trace(err);
 						});
-				});
-			} else {
-				logger.trace("BY ADDING" );
+				}
+			})
+			.catch( function() {
 				return checkSchema(eventObj)
 					.then(function(eventObj) {
 						return that.save(eventObj);
 					}, function(err) {
 						logger.trace(err);
 					});
-			}
-
-		});
+			});
 	};
 
 }
