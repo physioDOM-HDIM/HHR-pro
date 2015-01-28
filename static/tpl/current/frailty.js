@@ -1,5 +1,28 @@
 'use strict';
 
+var normalElt,
+	riskElt;
+
+window.addEventListener('DOMContentLoaded', function() {
+
+	normalElt = document.querySelector('.choice-normal'),
+	riskElt = document.querySelector('.choice-risk');
+
+	//default
+	if(!normalElt.checked && !riskElt.checked) {
+		normalElt.checked = true;
+	}
+
+}, false);
+
+function updateChoice(elt) {
+	if(elt === normalElt) {
+		riskElt.checked = (!elt.checked);
+	} else {
+		normalElt.checked = (!elt.checked);
+	}
+}
+
 function checkForm(validate) {
 	var formObj = form2js(document.getElementById('form'));
 

@@ -14,6 +14,8 @@
 
 <link rel="stylesheet" href="../styles/current.css">
 
+<script src="/tpl/current/frailty.js"></script>
+
 {% endblock %}
 
 {% block content %}
@@ -31,8 +33,8 @@
 				</div>
 			</div>
 			<div class="row value-row">
-				{{'Normal'|i18n}} <input type="checkbox" name="normal" flex class="value-checkbox" {% if status.normal %}checked{% endif %} {% if status.validated %}disabled{% endif %} />
-				{{'Risk of fail'|i18n}} <input type="checkbox" name="risk" flex class="value-checkbox" {% if status.risk %}checked{% endif %} {% if status.validated %}disabled{% endif %} />
+				{{'Normal'|i18n}} <input type="checkbox" name="normal" onchange="updateChoice(this)" flex class="value-checkbox choice-normal" {% if status.normal %}checked{% endif %} {% if status.validated %}disabled{% endif %} />
+				{{'Risk of fail'|i18n}} <input type="checkbox" name="risk" onchange="updateChoice(this)" flex class="value-checkbox choice-risk" {% if status.risk %}checked{% endif %} {% if status.validated %}disabled{% endif %} />
 			</div>
 			
 			{% if rights.write %}
@@ -63,5 +65,5 @@
 </zdk-modal>
 
 <script src="/scripts/questionnaireButton.js"></script>
-<script src="/tpl/current/frailty.js"></script>
+
 {% endblock %}

@@ -211,5 +211,12 @@
 	"Range Max": "Range Max",
 	"Choose all providers roles": "Choose all providers roles",
 	"New item": "New item",
-	"providers role": "providers role"
+	"providers role": "providers role",
+	"Chair stand results": "Chair stand results",
+	"Normal": "Normal",
+	"Risk of fail": "Risk of fail",
+	"Physical activities recommendation": "Physical activities recommendation",
+	"Distance travelled": "Distance travelled",
+	"Number of steps (optional)": "Number of steps (optional)",
+	"steps per week": "steps per week"
 }
