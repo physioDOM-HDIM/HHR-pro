@@ -44,36 +44,36 @@
 
 <zdk-panel heading="{{'General'|i18n}}" id="param-General-container" collapsable="true" collapsed="false">
 	<div class="row">
-		<div class="col"></div>
-		<div class="col">{{'Minimum threshold'|i18n}}</div>
-		<div class="col">{{'Maximum threshold'|i18n}}</div>
+		<div class="col" style="flex:1.5"></div>
+		<div style="width:120px">{{'threshold'|i18n}} {{'min'|i18n}}</div>
+		<div style="width:120px">{{'threshold'|i18n}} {{'max'|i18n}}</div>
 		<div class="col">{{'Last Report on'|i18n}}</div>
 		<div class="spacing-nobutton"></div>
 	</div>
 </zdk-panel>
 <zdk-panel heading="{{'HDIM'|i18n}}" id="param-HDIM-container" collapsable="true" collapsed="false">
 	<div class="row">
-		<div class="col"></div>
-		<div class="col">{{'Minimum threshold'|i18n}}</div>
-		<div class="col">{{'Maximum threshold' | i18n}}</div>
+		<div class="col" style="flex:1.5"></div>
+		<div style="width:120px">{{'threshold'|i18n}} {{'min'|i18n}}</div>
+		<div style="width:120px">{{'threshold'|i18n}} {{'max'|i18n}}</div>
 		<div class="col">{{'Last Report on' | i18n}}</div>
 		<div class="spacing-nobutton"></div>
 	</div>
 </zdk-panel>
 <zdk-panel heading="{{'Symptoms'|i18n}}" id="param-symptom-container" collapsable="true" collapsed="false">
 	<div class="row">
-		<div class="col"></div>
-		<div class="col"></div>
-		<div class="col"></div>
+		<div class="col" style="flex:1.5"></div>
+		<div style="width:120px"></div>
+		<div style="width:120px"></div>
 		<div class="col">{{'Last Report on' | i18n }}</div>
 		<div class="spacing-nobutton"></div>
 	</div>
 </zdk-panel>
 <zdk-panel heading="{{'Questionnaires scores'|i18n}}" id="param-questionnaire-container" collapsable="true" collapsed="false">
 	<div class="row">
-		<div class="col"></div>
-		<div class="col"></div>
-		<div class="col"></div>
+		<div class="col" style="flex:1.5"></div>
+		<div style="width:120px"></div>
+		<div style="width:120px"></div>
 		<div class="col">{{'Last Report on' | i18n }}</div>
 		<div class="spacing-nobutton"></div>
 	</div>
@@ -84,8 +84,7 @@
 	{% raw %}{{#param}}{% endraw %}
 	{% raw %}
 		<div class="category hidden">{{category}}</div>
-		<div class="col">
-
+		<div class="col" style="flex:1.5; white-space: nowrap;text-overflow: ellipsis;overflow: hidden">
 			<input type="checkbox" id="param-blue-{{text}}" class="line-blue css-checkbox" value="{{text}}" onchange="resetLine('blue', this); getDataRecords();"/>
 			<label for="param-blue-{{text}}" class="css-label color-blue"></label>
 			<input type="checkbox" id="param-yellow-{{text}}" class="line-yellow css-checkbox" value="{{text}}" onchange="resetLine('yellow', this); getDataRecords()"/>
@@ -94,7 +93,7 @@
 
 		</div>
 		{{#threshold}}
-			<div class="col">
+			<div style="width:120px">
 				<div class="mode-read">
 					<span class="read-min">{{min}}</span>
 				</div>
@@ -102,7 +101,7 @@
 					<input type="text" value="{{min}}" name="{{text}}.min" class="input-min"/>
 				</div>
 			</div>
-			<div class="col">
+			<div style="width:120px">
 				<div class="mode-read">
 					<span class="read-max">{{max}}</span>
 				</div>
@@ -112,8 +111,8 @@
 			</div>
 		{{/threshold}}
 		{{^threshold}}
-			<div class="col"></div>
-			<div class="col"></div>
+			<div style="width:120px"></div>
+			<div style="width:120px"></div>
 		{{/threshold}}
 		<div class="col">{{lastReport}}</div>
 	{% endraw %}
@@ -125,8 +124,12 @@
 					<button type="button" class="blue small" onclick="edit(this)">{{'Edit' | i18n }}</button>
 				</div>
 				<div class="mode-update hidden">
-					<button type="button" class="green small" onclick="updateThreshold(this)">{{'Save' | i18n}}</button>
-					<button type="button" class="blue small" onclick="back(this)">{{'Back'|i18n }}</button>
+					<div>
+						<button type="button" class="green small" onclick="updateThreshold(this)">{{'Save' | i18n}}</button>
+					</div>
+					<div>
+						<button type="button" class="blue small" onclick="back(this)">{{'Back'|i18n }}</button>
+					</div>
 				</div>
 			{% raw %}{{/edition}}{% endraw %}
 			{% raw %}

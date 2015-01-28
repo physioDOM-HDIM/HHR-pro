@@ -123,8 +123,11 @@ var getDataRecords = function(init) {
 };
 
 var updateThreshold = function(elt) {
-	var line = elt.parentNode.parentNode.parentNode,
-		datas = form2js(line);
+	var line = elt;
+	while(! line.classList.contains("row")) {
+		line = line.parentNode;
+	}
+	var datas = form2js(line);
 
 		var i = 0,
 			len = datas.length;
@@ -155,14 +158,21 @@ var updateThreshold = function(elt) {
  */
 
 var back = function(elt) {
-	var line = elt.parentNode.parentNode.parentNode;
+	var line = elt;
+	while(! line.classList.contains("row")) {
+		line = line.parentNode;
+	}
 
 	resetThresholdUI(line);
 	toggleMode(line);
 };
 
 var edit = function(elt) {
-	var line = elt.parentNode.parentNode.parentNode;
+	var line = elt;
+	while(! line.classList.contains("row")) {
+		line = line.parentNode;
+	}
+	
 	toggleMode(line);
 };
 
