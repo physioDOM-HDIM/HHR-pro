@@ -172,7 +172,10 @@ function create() {
     if(createdDataRecordID !== null) {
         update(createdDataRecordID);
     } else {
-        var obj = form2js(document.forms.dataRecord);
+        var obj = form2js(document.forms.dataRecord),
+            sourceID = document.querySelector('#sourceID');
+
+        obj.source = sourceID.value;
 
         if(JSON.stringify(obj) !== "{}") {
 
@@ -191,6 +194,7 @@ function create() {
                 createSuccess();
                 var record = JSON.parse(response);
                 createdDataRecordID = record._id;
+                sourceID.disabled = true;
             }, function(error) {
                 errorOccured();
                 console.log("saveForm - error: ", error);

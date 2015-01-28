@@ -322,8 +322,9 @@ function Beneficiary( ) {
 	 * 
 	 * @returns {promise}
 	 */
-	this.getProfessionals = function() {
-		var that = this;
+	this.getProfessionals = function(jobFilter) {
+		var that = this,
+			proList = [];
 		if( that.professionals === undefined ) {
 			that.professionals = [];
 		}
@@ -340,10 +341,18 @@ function Beneficiary( ) {
 							.then( function( professional ) {
 								that.professionals[i] = professional;
 								that.professionals[i].referent = item.referent;
+
+								if(jobFilter && jobFilter.indexOf(that.professionals[i].job) > -1) {
+									proList.push(that.professionals[i])
+								}
 							})
 							.then( function() {
 								if( --count === 0) {
-									resolve( that.professionals );
+									if(jobFilter) {
+										resolve( proList );
+									} else {
+										resolve( that.professionals );
+									}
 								}
 							})
 							.catch( function(err) {

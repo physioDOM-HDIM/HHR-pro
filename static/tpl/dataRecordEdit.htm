@@ -240,6 +240,14 @@
 				{{ "From Consultation"|i18n }} {{dataRecordItems.source.name.family}} {{dataRecordItems.source.name.given}}
 			{% endif %}
 		</label>
+		{% if !dataRecordItems.home && rights.write && view === 'create' %}
+		<div class="spacer"></div>
+			<select name="sourceID" id="sourceID" class="float-right">
+				{% for professional in professionals %}
+					<option value="{{ professional._id.toString() }}">{{professional.name.family}} {{professional.name.given}}</option>
+				{% endfor %}
+			</select>
+		{% endif %}
 	</div>
 
 	<form name="dataRecord" id="dataRecord">

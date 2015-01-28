@@ -1071,6 +1071,12 @@ function IPage() {
 				})
 				.then(function (beneficiary) {
 					data.beneficiary = beneficiary;
+					var jobFilter = ['physician', 'medical'];
+					return beneficiary.getProfessionals(jobFilter);
+				})
+				.then(function(professionals) {
+					console.log(professionals);
+					data.professionals = professionals;
 					data.view = 'create';
 					data.lang = lang;
 					// jsut for test, otherwise read locale from session
