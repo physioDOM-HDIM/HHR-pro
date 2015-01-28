@@ -173,7 +173,30 @@ function Modal (type, callback) {
         }]
     };
 
-    
+    content.cancelChange = {
+		title: "trad_warning",
+		content: "trad_cancel_change",
+		buttons: [
+			{
+				id: "trad_no",
+				action: function() {
+					if(callback) {
+						callback(false);
+					}
+					self.closeModal();
+				}
+			},
+			{
+				id: "trad_continue",
+				action: function() {
+					if(callback) {
+						callback(true);
+					}
+					self.closeModal();
+				}
+			}
+		]
+	}
 
     content.createSuccess = {
         title: "trad_create",
@@ -367,6 +390,11 @@ Modal.prototype.showModal = function(modalObj) {
                         color = "green";
                     }
                     break;
+				case "trad_continue":
+					{
+						color = "blue";
+					}
+					break;
                 case "trad_yes":
                     {
                         color = "green";

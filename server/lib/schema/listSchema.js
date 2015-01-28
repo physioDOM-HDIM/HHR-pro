@@ -1,7 +1,7 @@
 /* jslint node:true */
 "use strict";
 
-var unity     		= require("./commonSchema").unity,
+var units     		= require("./commonSchema").units,
 	roleTypeCode	= require("./commonSchema").roleTypeCode;
 
 var listSchema = {
@@ -59,7 +59,7 @@ var listItem_MeasurableSchema = {
 			]
 		},
 		"active": { type: "boolean"},
-		"unity": { type:"string", "enum": unity },
+		"units": { type:"string", "enum": units },
 		"threshold": {
 			"min": {type: "number"},
 			"max": {type: "number"}

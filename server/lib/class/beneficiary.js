@@ -740,7 +740,7 @@ function Beneficiary( ) {
 			});
 	};
 
-	this.getGraphDataList = function() {
+	this.getGraphDataList = function( lang ) {
 		var that = this;
 
 		return new promise(function (resolve, reject) {
@@ -781,14 +781,14 @@ function Beneficiary( ) {
 			}
 
 			var promises = ["parameters", "symptom", "questionnaire"].map(function (listName) {
-				return physioDOM.Lists.getListArray(listName);
+				return physioDOM.Lists.getListArray(listName , lang );
 			});
 			
 			var thresholds;
 			that.getThreshold()
 				.then( function(_thresholds) {
 					thresholds = _thresholds;
-					return physioDOM.Lists.getList("unity")
+					return physioDOM.Lists.getList("units")
 				})
 				.then(function (units) {
 					RSVP.all(promises).then(function (lists) {
@@ -804,7 +804,7 @@ function Beneficiary( ) {
 								reject(err);
 							} else {
 								RSVP.all( results.map(function (result) {
-											result.name = labels[result.text].en || result.text;
+											result.name = labels[result.text] || result.text;
 											if (thresholds[result.text]) {
 												result.threshold = thresholds[result.text];
 											}
@@ -885,9 +885,9 @@ function Beneficiary( ) {
 						return list.getItem(paramName);
 					})
 					.then(function(param) {
-						physioDOM.Lists.getList("unity")
-							.then(function(unity) {
-								return unity.getItem(param.unity);
+						physioDOM.Lists.getList("units")
+							.then(function(units) {
+								return units.getItem(param.units);
 							})
 							.then( function(unit) {
 								if( unit.label[session.lang || "en"] === undefined ) {

@@ -153,42 +153,8 @@
 	</tsante-list>
 </zdk-panel>
 
-<zdk-panel heading="{{ 'Active services'|i18n }}" collapsable="true" collapsed="false">
-	<div>Not yet implemented</div>
-	<!--
-	<ul class="request" id="active">
-		<li>
-			<div class="ttable">
-				<div class="trow">
-					<div class="cell title">Meal delivery</div>
-					<div class="cell startdate">from : 2014-03-27</div>
-					<div class="cell stopdate">to : 2014-04-27</div>
-				</div>
-			</div>
-			<div class="ttable">
-				<div class="trow">
-					<div class="cell spacer"></div>
-					<div class="cell detail">All days at 11:30</div>
-				</div>
-			</div>
-		</li>
-		<li>
-			<div class="ttable">
-				<div class="trow">
-					<div class="cell title">Accompaniment aged person</div>
-					<div class="cell startdate">from : 2014-03-27</div>
-					<div class="cell stopdate">to : -</div>
-				</div>
-			</div>
-			<div class="ttable">
-				<div class="trow">
-					<div class="cell spacer"></div>
-					<div class="cell detail">All weekdays from 10:30 to 11:30</div>
-				</div>
-			</div>
-		</li>
-	</ul>
-	-->
+<zdk-panel heading="{{ 'Active services'|i18n }}" collapsable="true" collapsed="true">
+	<div>{{'Not yet implemented'|i18n}}</div>
 </zdk-panel>
 
 <zdk-panel heading="{{ 'Professional contacts'|i18n }}" collapsable="true" collapsed="true">
@@ -242,7 +208,7 @@
 			<label>{{ "Start date"|i18n }} : </label><div>{{beneficiary.entry.startDate}}</div>
 		</div>
 		<div class="row">
-			<label>{{ "Planned end date"|i18n }} : </label><div>{{beneficiary.entry.plannedEnd}}</div>
+			<label>{{ "Planned end"|i18n }} : </label><div>{{beneficiary.entry.plannedEnd}}</div>
 		</div>
 		<div class="row">
 			<label>{{ "End date"|i18n }} : </label><div>{{beneficiary.entry.endDate}}</div>

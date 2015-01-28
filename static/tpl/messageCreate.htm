@@ -1,6 +1,6 @@
 {% extends './page.htm' %}
 
-{% block title %}Message to Home{% endblock %}
+{% block title %}{{'Message to Home' | i18n}}{% endblock %}
 
 {% block head %}
 {% parent %}
@@ -27,7 +27,7 @@
 <form name="message">
 	<div class="row spaced-down">
 		<div class="col">
-			<label for="title">Title: </label>
+			<label for="title">{{'Title'|i18n}} : </label>
 			<input type="text" id="title" name="title">
 		</div>
 		{% if session.role === 'coordinator' %}
@@ -45,7 +45,7 @@
 		{% endif%}
 	</div>
 	<div class="row spaced-side">
-		<label for="content">Content: </label> <div class="spacer limitInfo"></div>
+		<label for="content">{{'Content'|i18n}} : </label> <div class="spacer limitInfo"></div>
 	</div>
 	<div class="row spaced-down">
 		<textarea name="content" id="content" rows="10"></textarea>

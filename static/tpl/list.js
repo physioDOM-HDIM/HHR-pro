@@ -7,10 +7,12 @@ var list,            // the list to edit
     regexRef = /^(?=.*[a-zA-Z])[a-zA-Z0-9!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=]{1,}$/;
 
 var Utils = new Utils();
+var modified = false;
+var currentLanguage = null;
 
 window.addEventListener('DOMContentLoaded', function() {
 
-    Utils.promiseXHR("GET","/api/lists/unity")
+    Utils.promiseXHR("GET","/api/lists/units")
         .then( function(response) {
             units = JSON.parse(response);
         })
@@ -27,8 +29,24 @@ window.addEventListener('DOMContentLoaded', function() {
             console.log(list);
             showLang();
         });
+	
+	currentLanguage = document.querySelector("select[id=lang]").value;
+	document.addEventListener('change', function( evt ) { 
+		if( evt.target.getAttribute("id") !== "lang" ) {
+			modified = true;
+		}
+	}, true );
 
 }, false);
+
+window.addEventListener("beforeunload", function( e) {
+	var confirmationMessage;
+	if(modified) {
+		confirmationMessage = document.querySelector("#unsave").innerHTML;
+		(e || window.event).returnValue = confirmationMessage;     //Gecko + IE
+		return confirmationMessage;                                //Gecko + Webkit, Safari, Chrome etc.
+	}
+});
 
 function showLang() {
     var tpl, prop;
@@ -56,11 +74,11 @@ function showLang() {
                     case "label" :
                         obj.label = item.label[lang.value];
                         break;
-                    case "unity":
+                    case "units":
                         obj.units = [];
                         units.items.forEach( function(unit) {
                             option = { value: unit.ref, label: unit.label[lang] || unit.label.en  };
-                            if( item.unity === unit.ref) {
+                            if( item.units === unit.ref) {
                                 option.selected = true;
                             } else {
                                 option.selected = false;
@@ -110,11 +128,11 @@ function showLang() {
                     case "label" :
                         obj.label = item.label[lang.value];
                         break;
-                    case "unity":
+                    case "units":
                         obj.units = [];
                         units.items.forEach( function(unit) {
                             option = { value: unit.ref, label: unit.label[lang] || unit.label.en  };
-                            if( item.unity === unit.ref) {
+                            if( item.units === unit.ref) {
                                 option.selected = true;
                             } else {
                                 option.selected = false;
@@ -142,6 +160,21 @@ function showLang() {
     });
     var html = Mustache.render(tpl, modelData);
     document.getElementById("newItems").innerHTML = html;
+}
+
+function changeLang() {
+	if( modified ) {
+		new Modal('cancelChange', function( resp ) {
+			if( resp ) {
+				modified = false;
+				showLang();
+			} else {
+				document.querySelector("select[id=lang]").value = currentLanguage;
+			}
+		});
+	} else {
+		showLang();
+	}
 }
 
 function update() {
@@ -244,7 +277,6 @@ function editRole(itemref, roles, newItem) {
 }
 
 function save() {
-    console.log("save");
     update();
 
     var error = {};
@@ -267,6 +299,7 @@ function save() {
     newItems = [];
 
     Utils.promiseXHR("PUT", "/api/lists/" + list.name, 200, JSON.stringify(list)).then(function(response) {
+		modified = false;
         new Modal('updateSuccess', showLang);
     }, function(error) {
         new Modal('errorOccured', showLang);
@@ -349,7 +382,7 @@ function addItem(node) {
             ref:"",
             "general":true,
             label:"",
-            "unity": "",
+            "unit": "",
             "autoInput": false,
             "threshold": {
                 "min": null,

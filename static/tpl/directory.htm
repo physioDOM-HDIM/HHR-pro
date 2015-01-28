@@ -103,8 +103,8 @@
                         </div>
                         <div class="row">
                             <div class="col">
-                                <div class="role" style="padding-left:50px;-webkit-flex:1; -ms-flex:1; flex:1">role : {% raw %}{{item.role}}{% endraw %}</div>
-                                <div class="job" style="-webkit-flex:1; -ms-flex:1; flex:1">job : {% raw %}{{item.job}}{% endraw %}</div>
+                                <div class="role" style="padding-left:50px;-webkit-flex:1; -ms-flex:1; flex:1">{{"role"|i18n}} : {% raw %}{{item.role}}{% endraw %}</div>
+                                <div class="job" style="-webkit-flex:1; -ms-flex:1; flex:1">{{"job"|i18n}} : {% raw %}{{item.job}}{% endraw %}</div>
                             </div>
                         </div>
                         <div class="row">
@@ -120,10 +120,10 @@
                     </div>
                     <div style="width:60px">
                         <template if="{% raw %}{{item.address && item.address.line && item.address.line.length > 0 || item.address.zip || item.address.city}}{% endraw %}">
-                            <button type="button" class="green small" onclick="toggleHiddenNode(this, '.address')">{{'detail'|i18n}}</button><br/>
+                            <button type="button" class="green small" onclick="toggleHiddenNode(this, '.address')">{{'Detail'|i18n}}</button><br/>
                         </template>
                         {% if rights.write %}
-                        <a href="/directory/{% raw %}{{item._id}}{% endraw %}" class="button blue small">edit</a>
+                        <a href="/directory/{% raw %}{{item._id}}{% endraw %}" class="button blue small">{{"Edit"|i18n}}</a>
                         {% endif %}
                     </div>
                 </div>

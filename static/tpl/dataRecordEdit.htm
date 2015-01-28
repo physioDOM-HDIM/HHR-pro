@@ -79,7 +79,7 @@
 				<div class="col bold" style="flex:2">{% raw %}{{ labelLang }}{% endraw %}</div>
 				<div class="col item-value" style="max-width:150px">{{ item.value }}</div>
 				{% if cat !== 'questionnaire' %}
-				<div class="col" style="max-width:150px">{% raw %}{{ unityLabel }}{% endraw %}</div>
+				<div class="col" style="max-width:150px">{% raw %}{{ unitLabel }}{% endraw %}</div>
 				{% else %}
 				<div class="col" style="max-width:150px">
 				<button type="button" class="blue small answer" data-answer="{{item.ref}}" onclick="showAnswer('{{item.ref}}')">{{"Questionnaire"|i18n}}</button>
@@ -129,7 +129,7 @@
 				<div class="col item-text" style="flex:2"></div>
 				<div class="col item-value" style="max-width:150px">
 				   {% endraw %}<input type="text" value="{{ item.value }}" name="items[{{item._id.toString()}}].value"/></div>{% raw %}
-				<div class="col unity" style="max-width:150px">{{ unityLabel }}</div>
+				<div class="col units" style="max-width:150px">{{ unitLabel }}</div>
 
 				{% endraw %}{% if cat !== 'questionnaire' %}{% raw %}
 				<div class="col" style="max-width:150px">
@@ -202,7 +202,7 @@
 		
 		{% raw %}{{^questionnaire}}{% endraw %}
 		<div class="col" style="max-width:150px"><input type="text" name="items[{% raw %}{{idx}}{% endraw %}].value"/></div>
-		<div class="col" style="max-width:150px"><span class="unity"></span></div>
+		<div class="col" style="max-width:150px"><span class="units"></span></div>
 		<div class="col" style="max-width:150px">
 			<div class="min-treshold spacing-around"></div>
 		</div>
@@ -324,12 +324,12 @@
 		<span class="spacer"></span>
 		{% if view === 'create'%}
 			{% if rights.write %}
-			<button class="green" onclick="create()">{{'save'|i18n}}</button>
+			<button class="green" onclick="create()">{{'Save'|i18n}}</button>
 			{% endif %}
 		{% else %}
-		<a href="/datarecord"><button class="blue big">{{'back'|i18n}}</button></a>
+		<a href="/datarecord"><button class="blue big">{{'Back'|i18n}}</button></a>
 		{% if rights.write %}
-			<button class="green" onclick="update('{{dataRecordItems._id.toString()}}')">{{'save'|i18n}}</button>
+			<button class="green" onclick="update('{{dataRecordItems._id.toString()}}')">{{'Save'|i18n}}</button>
 		{% endif %}
 		{% endif %}
 	</div>

@@ -52,6 +52,9 @@
 		filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff868686', endColorstr='#ff313131', GradientType=0);
 		*/
 		text-shadow: 1px 1px 0px black;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden;
 	}
 
 	li > div:before {
@@ -141,10 +144,10 @@
 	<span class="spacer"></span>
 	<div class="title"></div>
 	<span class="spacer"></span>
-	<div class="beneficiary">beneficiary<br>
+	<div class="beneficiary">{{"Beneficiary"|i18n}}<br>
 		<label id="beneficiary"><a href="/beneficiary/overview" target="main">-</a></label>
 	</div>
-	<div class="professional">{{account.firstname}}. {{account.lastname}}<br/><a href="/logout">Disconnect</a></div>
+	<div class="professional">{{account.firstname}}. {{account.lastname}}<br/><a href="/logout">{{"Disconnect"|i18n}}</a></div>
 </core-toolbar>
 
 <core-drawer-panel responsiveWidth="992px">
@@ -166,8 +169,6 @@
 			<li class="menuitem {% if item.disabled %}disabled{% endif %}" data-link="{{item.link}}" >{{item.label | i18n }}</li>
 			{% endif %}
 			
-			
-			
 			{% endmacro %}
 			
 			{% for item in items %}
@@ -177,10 +178,10 @@
 		
 		{% if admin %}
 		<ul class="admin tree">
-			<li class="menuitem" data-link="/settings/lists">Lists management</li>
-			<li class="menuitem" data-link="/questionnaires">Questionnaires</li>
+			<li class="menuitem" data-link="/settings/lists">{{"Lists management"|i18n}}</li>
+			<li class="menuitem" data-link="/questionnaires">{{"Questionnaires"|i18n}}</li>
 			<!-- <li class="menuitem"><a href="/services/health/create" target="main">Healthcare: add a basic health service</a></li> -->
-			<li class="menuitem" data-link="/admin/rights">Rights</li>
+			<li class="menuitem" data-link="/admin/rights">{{"Rights"|i18n}}</li>
 		</ul>
 		{% endif %}
 	</div>

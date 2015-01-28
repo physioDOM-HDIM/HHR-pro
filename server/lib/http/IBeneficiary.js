@@ -494,7 +494,7 @@ var IBeneficiary = {
 			})
 			.then( function(selectedBeneficiary) {
 				beneficiary = selectedBeneficiary;
-				return beneficiary.getGraphDataList();
+				return beneficiary.getGraphDataList( req.session.lang || physioDOM.lang );
 			}).then( function( graphList) {
 				res.send(graphList);
 				next();
