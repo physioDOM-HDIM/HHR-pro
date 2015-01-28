@@ -419,7 +419,7 @@
             <div class="col diagnosis" style="flex: none; width: 250px;">
                 <div class="mandatory">{{ "Main diagnosis"|i18n }}</div>
                 <select name="diagnosis.chronic.main" required>
-                    {% for item in disability.items %}
+                    {% for item in diagnosis.items %}
                         <option value="{{item.value}}" {% if beneficiary.diagnosis.chronic.main==item.value %}selected{% endif %}>{{item.label}}</option>
                     {% endfor %}
                 </select>
@@ -427,7 +427,7 @@
             <div class="col">
                 <div>{{ "Associated diagnosis"|i18n }}</div>
                 <div class="dblcol">
-                {% for item in disability.items %}
+                {% for item in diagnosis.items %}
                     <div class="row" style="display:block">
                     <input type="checkbox" name="diagnosis.chronic.associated[{{item.value}}]" value="{{item.value}}" {% if beneficiary.diagnosis.chronic.associated && beneficiary.diagnosis.chronic.associated.indexOf(item.value)!==-1 %}checked{% endif %}> {{item.label}}
                     </div>

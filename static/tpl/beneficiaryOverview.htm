@@ -248,7 +248,7 @@
 		</div>
 		<p>{{ "Chronic pathologies"|i18n }}</p>
 		<div class="row">
-			<label>{{ "Main diagnosis"|i18n }} : </label><div>{{disabilityArray.items[beneficiary.diagnosis.chronic.main]}}</div>
+			<label>{{ "Main diagnosis"|i18n }} : </label><div>{{diagnosisArray.items[beneficiary.diagnosis.chronic.main]}}</div>
 		</div>
 		{% for assoDiag in beneficiary.diagnosis.chronic.associated %}
 			{% if loop.first %}
@@ -256,7 +256,7 @@
 			{% endif %}
 				<li>
 					<div class="row">
-						<div>{{disabilityArray.items[assoDiag]}}</div>
+						<div>{{diagnosisArray.items[assoDiag]}}</div>
 					</div>
 				</li>
 			{% if loop.last %}
