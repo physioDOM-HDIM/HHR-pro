@@ -76,7 +76,7 @@
 		<div class="readMode">
 			<div class="row">
 				{% raw %}{{#item}}{% endraw %}
-				<div class="col bold" style="flex:2">{% raw %}{{ labelLang }}{% endraw %}</div>
+				<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{% raw %}{{ labelLang }}{% endraw %}</div>
 				<div class="col item-value" style="max-width:150px">{{ item.value }}</div>
 				{% if cat !== 'questionnaire' %}
 				<div class="col" style="max-width:150px">{% raw %}{{ unitLabel }}{% endraw %}</div>
@@ -126,7 +126,7 @@
 			<div class="row">
 				{% raw %}
 				{{#item}}
-				<div class="col item-text" style="flex:2"></div>
+				<div class="col item-text" style="-webkit-flex:2; -ms-flex:2; flex:2;"></div>
 				<div class="col item-value" style="max-width:150px">
 				   {% endraw %}<input type="text" value="{{ item.value }}" name="items[{{item._id.toString()}}].value"/></div>{% raw %}
 				<div class="col units" style="max-width:150px">{{ unitLabel }}</div>
@@ -184,7 +184,7 @@
 	<script type="template" id="newItem">
 	<div class="row questionnaire-row">
 
-		<div class="col item-text" style="flex:2"></div>
+		<div class="col item-text" style="-webkit-flex:2; -ms-flex:2; flex:2;"></div>
 
 		{% raw %}{{#questionnaire}}{% endraw %}
 		<div class="col" style="max-width:150px">
@@ -253,7 +253,7 @@
 	<form name="dataRecord" id="dataRecord">
 		<zdk-panel heading="{{'Physiological parameters' |i18n}}" collapsable="false" collapsed="false">
 			<div class="row">
-				<div class="col bold" style="flex:2">{{ 'Parameter'|i18n }}</div>
+				<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{{ 'Parameter'|i18n }}</div>
 				<div class="col bold" style="max-width:150px">{{ 'Value'|i18n }}</div>
 				<div class="col bold" style="max-width:150px">{{ 'Unit'|i18n }}</div>
 				<div class="col bold" style="max-width:150px">{{ 'Min threshold' | i18n }}</div>
@@ -280,7 +280,7 @@
 		</zdk-panel>
 		<zdk-panel heading="{{'Symptoms assessments' |i18n}}" collapsable="false" collapsed="false">
 			<div class="row">
-				<div class="col bold" style="flex:2">{{ 'Assessment'|i18n }}</div>
+				<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{{ 'Assessment'|i18n }}</div>
 				<div class="col bold" style="max-width:150px">{{ 'Value'|i18n }}</div>
 				<div class="col bold" style="max-width:150px"></div>
 				<div class="col bold" style="max-width:150px"></div>
@@ -300,7 +300,7 @@
 		</zdk-panel>
 		<zdk-panel heading="{{'Questionnaires' |i18n}}" collapsable="false" collapsed="false">
 			<div class="row">
-				<div class="col bold" style="flex:2">{{ 'Questionnaire'|i18n }}</div>
+				<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{{ 'Questionnaire'|i18n }}</div>
 				<div class="col bold" style="max-width:150px">{{ 'Value'|i18n }}</div>
 				<div class="col bold" style="max-width:150px"></div>
 				<div class="col bold" style="max-width:150px"></div>
