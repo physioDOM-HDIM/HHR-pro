@@ -8,7 +8,9 @@
 <script src="/bower_components/form2js/src/form2js.js"></script>
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
 <script src="/tpl/beneficiaries.js"></script>
-
+<style>
+	.inactive { opacity:0.5; }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -91,8 +93,8 @@
 		<template is="auto-binding" repeat="{% raw %}{{item in list.items}}{% endraw %}">
 			<div class="item">
 				<div class="row">
-					<div style="-webkit-flex:1; -ms-flex:1; flex:1">
-						<div>
+					<div style="-webkit-flex:1; -ms-flex:1; flex:1;" class="{% raw %}{{item.activeClass}}{% endraw %}">
+							<div>
 							<div flex>
 								<div style="font-weight:bold">{% raw %}{{item.name.family}} {{item.name.given}}{% endraw %}</div>
 							</div>

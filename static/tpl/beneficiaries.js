@@ -89,6 +89,8 @@ function init() {
             	list.items[i].date = moment(list.items[i].lastEvent).format("L LT") ;
             	list.items[i].dateFrom = " ("+moment(list.items[i].lastEvent).from(moment())+")";
         	}
+			list.items[i].activeClass = list.items[i].active?"active":"inactive";
+			list.items[i].activeItem = list.items[i].active?"active":"hidden";
         }
         this.render(list);
     });
