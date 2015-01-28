@@ -486,3 +486,7 @@ span.mandatory {
     font-weight: bold;
     font-size: 18px;
 }
+
+.invalid-form {
+	border: 2px solid red;
+}

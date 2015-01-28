@@ -5,7 +5,7 @@ var normalElt,
 
 window.addEventListener('DOMContentLoaded', function() {
 
-	normalElt = document.querySelector('.choice-normal'),
+	normalElt = document.querySelector('.choice-normal');
 	riskElt = document.querySelector('.choice-risk');
 
 	//default
