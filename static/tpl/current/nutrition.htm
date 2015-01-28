@@ -29,8 +29,9 @@
 					<div flex class="value-name">{{'Size'|i18n}}</div>
 					<input
 						id="sizeInput"
-						type="text"
+						type="number"
 						name="size"
+						step="any"
 						class="value-input"
 						value="{{beneficiary.size}}"
 						{% if status.validated %}disabled{% else %}readonly{% endif %} />
@@ -40,23 +41,25 @@
 					<div flex class="value-name">{{'Weight'|i18n}}</div>
 					<input
 						id="weightInput"
-						type="text"
+						type="number"
 						name="weight"
+						step="any"
 						class="value-input"
 						value="{{status.weight}}" {% if status.validated %}disabled{% endif %} />
 					<div class="value-unit">{{'kilogram'|i18n}}</div>
 				</div>
 				<div class="row value-row">
 					<div flex class="value-name">{{'Lean/fat ratio'|i18n}}</div>
-					<input type="text" name="lean" class="value-input" value="{{status.lean}}" {% if status.validated %}disabled{% endif %} />
+					<input type="number" name="lean" class="value-input" value="{{status.lean}}" {% if status.validated %}disabled{% endif %} />
 					<div class="value-unit"></div>
 				</div>
 				<div class="row value-row">
 					<div flex class="value-name">{{'BMI'|i18n}}</div>
 					<input
 						id="bmiInput"
-						type="text"
+						type="number"
 						name="bmi"
+						step="any"
 						class="value-input"
 						value="{{status.bmi}}" {% if status.validated %}disabled{% endif %} />
 					<div class="value-unit"></div>
@@ -64,7 +67,7 @@
 				<div class="row value-row questionnaire-row" data-name="MNA">
 					<div flex class="value-name">{{'MNA score'|i18n}}</div>
 					<div class="questionnaire-date">{% if status.mnaDate %}{{status.mnaDate | date }}{% endif %}</div>
-					<input type="text" class="questionnaire-score" value="{{status.mnaScore}}" readonly />
+					<input type="number" class="questionnaire-score" value="{{status.mnaScore}}" readonly />
 					<input type="hidden" class="questionnaire-answer" name="mnaAnswer" value="{{status.mnaAnswer}}" />
 					<div class="questionnaire-button-container">
 						<a class="button small blue" href={% if status.mnaAnswer %}"/answers/{{status.mnaAnswer}}"{% else %}"/questionnaire/MNA"{% endif %}>{{'Questionnaire'|i18n}}</a>
@@ -73,7 +76,7 @@
 				<div class="row value-row questionnaire-row" data-name="MNA_MINI">
 					<div flex class="value-name">{{'MNA SF score'|i18n}}</div>
 					<div class="questionnaire-date">{% if status.mnaSfDate %}{{status.mnaSfDate | date }}{% endif %}</div>
-					<input type="text" class="questionnaire-score" value="{{status.mnaSfScore}}" readonly />
+					<input type="number" class="questionnaire-score" value="{{status.mnaSfScore}}" readonly />
 					<input type="hidden" class="questionnaire-answer" name="mnaSfAnswer" value="{{status.mnaSfAnswer}}" />
 					<div class="questionnaire-button-container">
 						<a class="button small blue" href={% if status.mnaSfAnswer %}"/answers/{{status.mnaSfAnswer}}"{% else %}"/questionnaire/MNA_MINI"{% endif %}>{{'Questionnaire'|i18n}}</a>
@@ -82,7 +85,7 @@
 				<div class="row value-row questionnaire-row" data-name="SNAQ">
 					<div flex class="value-name">{{'SNAQ score' | i18n }}</div>
 					<div class="questionnaire-date">{% if status.snaqDate %}{{status.snaqDate | date }}{% endif %}</div>
-					<input type="text" class="questionnaire-score" value="{{status.snaqScore}}" readonly />
+					<input type="number" class="questionnaire-score" value="{{status.snaqScore}}" readonly />
 					<input type="hidden" class="questionnaire-answer" name="snaqAnswer" value="{{status.snaqAnswer}}" />
 					<div class="questionnaire-button-container">
 						<a class="button small blue" href={% if status.snaqAnswer %}"/answers/{{status.snaqAnswer}}"{% else %}"/questionnaire/SNAQ"{% endif %}>{{'Questionnaire'|i18n}}</a>
@@ -91,7 +94,7 @@
 				<div class="row value-row questionnaire-row" data-name="DHD-FFQ">
 					<div flex class="value-name">{{'Eetscore'|i18n}}</div>
 					<div class="questionnaire-date">{% if status.dhdDate %}{{status.dhdDate | date }}{% endif %}</div>
-					<input type="text" class="questionnaire-score" value="{{status.dhdScore}}" readonly />
+					<input type="number" class="questionnaire-score" value="{{status.dhdScore}}" readonly />
 					<input type="hidden" class="questionnaire-answer" name="dhdAnswer" value="{{status.dhdAnswer}}" />
 					<div class="questionnaire-button-container">
 						<a class="button small blue" href={% if status.dhdAnswer %}"/answers/{{status.dhdAnswer}}"{% else %}"/questionnaire/DHD-FFQ"{% endif %}>{{'Questionnaire'|i18n}}</a>
