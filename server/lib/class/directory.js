@@ -80,8 +80,9 @@ function Directory( ) {
 								}
 								break;
 							default:
-								if( ["true","false"].indexOf(search[prop]) !== -1) {
-									search[prop] = (search[prop]==="true"?true:false);
+								console.log( "prop", prop, tmp.prop );
+								if( ["true","false"].indexOf(tmp[prop]) !== -1) {
+									search[prop] = (tmp[prop]==="true"?true:false);
 								}
 						}
 					}

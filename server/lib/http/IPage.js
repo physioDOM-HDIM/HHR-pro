@@ -260,14 +260,13 @@ function IPage() {
 				lists.forEach(function(list) {
 					data[Object.keys(list)] = list[Object.keys(list)];
 				});
+				console.log( data.role );
 				return physioDOM.Directory();
 			})
 			.then(function(directory) {
 				return directory.getAdminEntryByID(req.params.professionalID);
 			})
 			.then(function(professional) {
-				// logger.debug("data", JSON.stringify(data, null, 4));
-				// logger.debug("prof ", professional);
 				if (professional) {
 					data.professional = professional;
 				}

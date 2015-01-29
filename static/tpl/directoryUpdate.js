@@ -1,4 +1,5 @@
 "use strict";
+/* global Modal, form2js */
 
 var Utils = new Utils();
 
@@ -11,7 +12,8 @@ var _dataObj = null,
     _communicationEnum = null,
     _idxNbTelecom = 0,
     passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=])[a-zA-Z0-9!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=]{8,}$/,
-    passwordPlaceholder = '****';
+    passwordPlaceholder = '****',
+	modified = false;
 
 function checkDefaultGender() {
     var elt,
@@ -31,7 +33,7 @@ function checkDefaultGender() {
 
 function checkOrganization() {
     console.log("checkOrganization", arguments);
-    var elt = document.querySelector("#nonOrgContainer"),
+    var i, elt = document.querySelector("#nonOrgContainer"),
         isOrganization = document.querySelector("form[name=directoryForm] input[name='organization']").checked;
 
     var inputList = elt.querySelectorAll('input[type="radio"]'),
@@ -40,14 +42,14 @@ function checkOrganization() {
     //Show/Hide relative information to a none organization
     if(isOrganization) {
 
-        for(var i = 0; i<inputListLength; i++) {
+        for( i = 0; i<inputListLength; i++) {
             inputList[i].disabled = true;
         }
 
         elt.className = elt.className + " hidden";
     } else {
 
-        for(var i = 0; i<inputListLength; i++) {
+        for( i = 0; i<inputListLength; i++) {
             inputList[i].disabled = false;
         }
 
@@ -136,6 +138,7 @@ function deleteTelecom(node) {
         node = node.parentNode;
     }
     node.parentNode.removeChild(node);
+	modified = true;
 }
 
 function addTelecom() {
@@ -187,6 +190,7 @@ function updateItem(obj) {
 
         RSVP.all(tabPromises).then(function() {
             new Modal('updateSuccess', function() {
+				modified = false;
                 window.history.back();
             });
         }).catch(function(error) {
@@ -196,25 +200,27 @@ function updateItem(obj) {
     } else {
         var callSuccess = function() {
             new Modal('createSuccess', function() {
+				modified = false;
                 window.history.back();
             });
         };
 
-        Utils.promiseXHR("POST", "/api/directory", 200, JSON.stringify(data)).then(function(response) {
-           	var res = JSON.parse(response);
-            return res._id;
-        }).then(function(userID) {
-            if (accountData && userID) {
-                Utils.promiseXHR("POST", "/api/directory/" + userID + "/account", 200, JSON.stringify(accountData)).then(function() {
-                    callSuccess();
-                });
-            } else {
-                callSuccess();
-            }
-        }).catch(function(error) {
-            new Modal('errorOccured');
-            console.log("updateItem - error: ", error);
-        });
+        Utils.promiseXHR("POST", "/api/directory", 200, JSON.stringify(data))
+			.then(function(response) {
+				var res = JSON.parse(response);
+				return res._id;
+			}).then(function(userID) {
+				if (accountData && userID) {
+					Utils.promiseXHR("POST", "/api/directory/" + userID + "/account", 200, JSON.stringify(accountData)).then(function() {
+						callSuccess();
+					});
+				} else {
+					callSuccess();
+				}
+			}).catch(function(error) {
+				new Modal('errorOccured');
+				console.log("updateItem - error: ", error);
+			});
     }
 }
 
@@ -252,15 +258,27 @@ function checkPassword () {
 
 function init() {
     console.log("init");
+	
+	document.addEventListener('change', function( evt ) {
+		modified = true;
+	}, true );
+	
     _idxNbTelecom = document.querySelectorAll(".telecomContainer").length;
     var hasPassword = (document.querySelector('#has-password').innerHTML === 'true');
-console.log(hasPassword);
+	
     if(hasPassword) {
         document.querySelector('.account-password').value = passwordPlaceholder;
         document.querySelector('.account-check-password').value = passwordPlaceholder;
     }
-
-    checkOrganization();
 }
+
+window.addEventListener("beforeunload", function( e) {
+	var confirmationMessage;
+	if(modified) {
+		confirmationMessage = document.querySelector("#unsave").innerHTML;
+		(e || window.event).returnValue = confirmationMessage;     //Gecko + IE
+		return confirmationMessage;                                //Gecko + Webkit, Safari, Chrome etc.
+	}
+});
 
 window.addEventListener("DOMContentLoaded", init, false);

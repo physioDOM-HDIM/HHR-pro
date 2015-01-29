@@ -92,7 +92,13 @@ function List() {
 			} else {
 				that.items.forEach(function (listItem) {
 					if (( !listItem.hasOwnProperty("active") || listItem.active === true) ) {
-						options.items.push({value: listItem.ref, label: listItem.label[lang] || listItem.label.en || listItem.ref });
+						var label;
+						if( listItem.label[lang] === undefined && listItem.label.en === undefined ) {
+							label = listItem.ref;
+						} else {
+							label = listItem.label[lang] || listItem.label.en;
+						}
+						options.items.push({value: listItem.ref, label: label  });
 					}
 					if (--count === 0) {
 						// logger.debug("-> Lang ", options );
