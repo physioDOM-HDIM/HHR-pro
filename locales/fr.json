@@ -304,5 +304,13 @@
 	"Delta": "Delta",
 	"Results synthesis": "Synthèse des résultats",
 	"The date is already added": "Cette date est déjà ajoutée",
-	"The date can't be before today": "La date ne peut être dans le passé"
+	"The date can't be before today": "La date ne peut être dans le passé",
+	"Given": "Prénom",
+	"An email address is mandatory": "Une adresse mail est obligatoire",
+	"email": "email",
+	"phone": "téléphone",
+	"mobile": "mobile",
+	"Questionnaire overview": "Aperçu des questionnaires",
+	"Result": "Résultat",
+	"Your score is: ": "Le score est : "
 }
