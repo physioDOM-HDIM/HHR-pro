@@ -17,6 +17,8 @@
 {% endblock %}
 
 {% block content %}
+<div class="hidden" id="unsave">{{"You have unsaved data"|i18n}}</div>
+<div class="hidden" id="changelang">{{"Are you sure to cancel your changes ?"|i18n}}</div>
 
 <div class="row title">
 	<label class="title">
@@ -30,7 +32,7 @@
 <div class="row control actions">
 	<span class="spacer"></span>
 	<div class="mode-update hidden">
-		<button type="button" class="red big" onclick="toggleMode()">{{ "Cancel"|i18n }}</button>
+		<button type="button" class="red big" onclick="modified = false; toggleMode()">{{ "Cancel"|i18n }}</button>
 		<button type="button" class="blue big" onclick="saveRecommendation()">{{ "Save"|i18n }}</button>
 	</div>
 
