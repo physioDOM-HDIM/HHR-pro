@@ -93,13 +93,17 @@ function addLine(category) {
         }
     }
 
+	if( category === 'symptom' ) {
+		newLine.querySelector("input[type=number]").setAttribute("min",0);
+		newLine.querySelector("input[type=number]").setAttribute("max",10);
+		newLine.querySelector("input[type=number]").setAttribute("step",1);
+	}
     container.appendChild(newLine);
 
     var contentField = newLine.querySelector('.questionnaire-comment');
 
     if(contentField) {
         contentField.onkeyup = function () {
-            console.log('toto');
             var lines = contentField.value.split("\n");
             for (var i = 0; i < lines.length; i++) {
                 if (lines[i].length <= 60) { continue; }
