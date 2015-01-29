@@ -171,14 +171,22 @@ function Directory( ) {
 	this.deleteEntry = function(entryID) {
 		function deleteProfessional( professionalID) {
 			return new promise( function(resolve, reject) {
-				physioDOM.db.collection("professionals").remove({ _id: professionalID}, function (err, nb) {
+
+				physioDOM.db.collection("beneficiaries").update( { 'professionals.professionalID': professionalID }, { '$pull': { professionals : { professionalID: professionalID } } }, { multi:true }, function(err) {
 					if(err) {
 						console.log(err);
-						reject(err);
 					} else {
-						return resolve(nb);
+						physioDOM.db.collection("professionals").remove({ _id: professionalID}, function (err, nb) {
+							if(err) {
+								console.log(err);
+								reject(err);
+							} else {
+								return resolve(nb);
+							}
+						});
 					}
-				});
+				})
+
 			});
 		}
 
