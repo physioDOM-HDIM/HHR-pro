@@ -138,14 +138,17 @@ function onHaveData(data){
     for(var i=0; i<_dataObj.list.items.length; i++){
         item = _dataObj.list.items[i];
         if( item.job ) {
-            item.job = _dataLists.job.items[item.job] ? _dataLists.job.items[item.job][_lang] : item.job;
+            item.job = _dataLists.job[item.job] ? _dataLists.job[item.job][_lang] : item.job;
         }
         if( item.role ) {
-            item.role = _dataLists.role.items[item.role] ? _dataLists.role.items[item.role][_lang] : item.role;
+            item.role = _dataLists.role[item.role] ? _dataLists.role[item.role][_lang] : item.role;
         }
         if( item.perimeter ) {
-            item.perimeter = _dataLists.perimeter.items[item.perimeter] ? _dataLists.perimeter.items[item.perimeter][_lang] : item.perimeter;
+            item.perimeter = _dataLists.perimeter[item.perimeter] ? _dataLists.perimeter[item.perimeter][_lang] : item.perimeter;
         }
+		if( item.organizationType ) {
+			item.organizationType = _dataLists.organizationType[item.organizationType] ? _dataLists.organizationType[item.organizationType][_lang] : item.organizationType;
+		}
     }
     listPagerElt.render( _dataObj.list );
 }
@@ -224,7 +227,8 @@ function init() {
     var promises = {
         job: promiseXHR("GET", "/api/lists/job/array", 200),
         role: promiseXHR("GET", "/api/lists/role/array", 200),
-        perimeter: promiseXHR("GET", "/api/lists/perimeter/array", 200)
+        perimeter: promiseXHR("GET", "/api/lists/perimeter/array", 200),
+		organizationType: promiseXHR("GET", "/api/lists/organizationType/array", 200),
     };
     var errorCB = function(error){
         console.log("Init error", error);
@@ -244,12 +248,13 @@ function init() {
     RSVP.hash(promises).then(function(results) {
         try{
             _dataLists = {};
-            _dataLists.job = JSON.parse(results.job);
-            _dataLists.role = JSON.parse(results.role);
-            _dataLists.perimeter = JSON.parse(results.perimeter);
+            _dataLists.job = JSON.parse(results.job).items;
+            _dataLists.role = JSON.parse(results.role).items;
+            _dataLists.perimeter = JSON.parse(results.perimeter).items;
+			_dataLists.organizationType = JSON.parse(results.organizationType).items;
             
             //TODO: get lang from cookie
-            _lang = "en";
+            _lang = Cookies.get("lang") || "en";
 
             listPagerElt = document.querySelector("tsante-list");
             if(listPagerElt){

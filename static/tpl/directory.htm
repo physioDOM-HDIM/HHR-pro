@@ -83,7 +83,7 @@
                         <div class="row">
                             <div class="col">
                                 <span class="name" style="-webkit-flex:2; -ms-flex:2; flex:2;font-weight:bold">
-                                    {% raw %}{{!item.organization ? item.name.family+" "+(item.name.given ? item.name.given : "")+" ("+item.gender+")" : item.name.family}}{% endraw %}
+                                    {% raw %}{{!item.organization ? item.name.family+" "+(item.name.given ? item.name.given : "")+" ("+item.gender+")" : item.name.family +" ("+ item.organizationType +")" }}{% endraw %}
                                 </span>
                             </div>
                         </div>
