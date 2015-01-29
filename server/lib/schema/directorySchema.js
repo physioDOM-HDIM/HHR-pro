@@ -47,6 +47,7 @@ var organizationSchema = {
 			required:true
 		},
 		"organization": { type:"boolean",  "enum": [ true ], required:true},
+		"organizationType": { type:"string" },
 		"role": { type:"string", required:true },
 		"job": { type:"string"},
 		"communication": { type:"string", "enum": [ "fr", "es", "nl", "en" ] },

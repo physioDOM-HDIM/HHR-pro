@@ -247,6 +247,7 @@ function IPage() {
 			"role",
 			"job",
 			"communication",
+			"organizationType",
 			"perimeter"
 		].map(promiseList);
 
@@ -260,7 +261,7 @@ function IPage() {
 				lists.forEach(function(list) {
 					data[Object.keys(list)] = list[Object.keys(list)];
 				});
-				console.log( data.role );
+				console.log( data.organizationType );
 				return physioDOM.Directory();
 			})
 			.then(function(directory) {

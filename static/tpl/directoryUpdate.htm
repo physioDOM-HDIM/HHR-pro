@@ -69,15 +69,25 @@
                     <input type="checkbox" name="organization" onchange="checkOrganization()" {% if professional && professional.organization===true %}checked{% endif %} />
                 </div>
 	            {% endif %}
+	            {% if professional._id && professional.organization %}
+	            <div class="row">
+		            <label></label>
+		            {{"Organization"|i18n}}
+		            <input type="hidden"  name="organization" value="true">
+	            </div>
+	            {% endif %}
                 <div class="row">
                     <label class="mandatory">{{"Name"|i18n}} :</label>
                     <input type="text" name="name.family" placeholder="Mandatory field" required value="{{professional.name.family}}" />
                 </div>
 	            {% if professional._id && professional.organization %}
 	            <div class="row">
-		            <label></label>
-		            {{"Organization"|i18n}}
-		            <input type="hidden"  name="organization" value="true">
+		            <label class="mandatory">{{"Organization type"|i18n}} :</label>
+		            <select name="organizationType" required>
+			            {% for item in organizationType.items %}
+			            <option value="{{item.value}}" {% if professional.organizationType == item.value %}selected{% endif %}>{{item.label}}</option>
+			            {% endfor %}
+		            </select>
 	            </div>
 	            {% endif %}
                 {% if !professional._id || !professional.organization %}
@@ -101,7 +111,18 @@
                     </div>
                 </div>
 	            {% endif %}
-                
+	            {% if !professional._id %}
+	            <div id="OrgContainer" class="hidden">
+		            <div class="row">
+			            <label class="mandatory">{{"Organization type"|i18n}} :</label>
+			            <select name="organizationType" required>
+				            {% for item in organizationType.items %}
+				            <option value="{{item.value}}" {% if professional.organizationType == item.value %}selected{% endif %}>{{item.label}}</option>
+				            {% endfor %}
+			            </select>
+		            </div>
+		        </div>
+	            {% endif %}
                 <div class="row">
                     <label class="mandatory">{{ "Role" | i18n }}:</label>
                     <select name="role" required>

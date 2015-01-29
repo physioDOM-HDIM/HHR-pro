@@ -33,31 +33,32 @@ function checkDefaultGender() {
 
 function checkOrganization() {
     console.log("checkOrganization", arguments);
-    var i, elt = document.querySelector("#nonOrgContainer"),
+    var i, elt1 = document.querySelector("#nonOrgContainer"),
+		elt2 = document.querySelector("#OrgContainer"),
         isOrganization = document.querySelector("form[name=directoryForm] input[name='organization']").checked;
 
-    var inputList = elt.querySelectorAll('input[type="radio"]'),
+    var inputList = elt1.querySelectorAll('input[type="radio"]'),
         inputListLength = inputList.length;
 
     //Show/Hide relative information to a none organization
     if(isOrganization) {
-
         for( i = 0; i<inputListLength; i++) {
             inputList[i].disabled = true;
         }
-
-        elt.className = elt.className + " hidden";
+		elt2.querySelector("select").disabled = false;
+		elt2.classList.remove("hidden");
+        elt1.classList.add("hidden");
     } else {
-
         for( i = 0; i<inputListLength; i++) {
             inputList[i].disabled = false;
         }
-
-        elt.className = "";
+		elt2.querySelector("select").disabled = true;
+		elt2.classList.add("hidden");
+		elt1.classList.remove("hidden");
     }
 
     //Firefox fix: set default value for this required input due to validation form even if the node is hidden or the required attribute removed
-    elt = document.querySelector("form[name=directoryForm] input[name='name.given']");
+    var elt = document.querySelector("form[name=directoryForm] input[name='name.given']");
     elt.value = isOrganization ? " " : elt.value === " " ? "" : elt.value;
 }
 
