@@ -307,5 +307,6 @@
 	"Man": "Man",
 	"Woman": "Woman",
 	"Change password": "Change password",
-	"Info: The password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters": "Info: The password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters"
+	"Info: The password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters": "Info: The password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters",
+	"Questionnaire answers": "Questionnaire answers"
 }

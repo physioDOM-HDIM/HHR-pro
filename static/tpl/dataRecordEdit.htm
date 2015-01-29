@@ -6,8 +6,9 @@
 <script src="/bower_components/rsvp/rsvp.min.js"></script>
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
 <script src="/bower_components/zdk-calendar/form2js.js"></script>
-<script src="/scripts/questionnaireButton.js"></script>
 <script src="/scripts/utils.js"></script>
+
+<script src="/scripts/questionnaireButton.js"></script>
 <script src="/tpl/dataRecordEdit.js"></script>
 <style>
 	select {
@@ -185,7 +186,7 @@
 	<div class="row questionnaire-row">
 
 		<div class="col item-text" style="-webkit-flex:2; -ms-flex:2; flex:2;"></div>
-
+		<input type="hidden" class="questionnaire-text" name="items[{% raw %}{{idx}}{% endraw %}].text" value="" />
 		{% raw %}{{#questionnaire}}{% endraw %}
 		<div class="col" style="max-width:150px">
 			<input type="text" class="questionnaire-score" name="items[{% raw %}{{idx}}{% endraw %}].value" value="" disabled />
