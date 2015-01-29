@@ -66,22 +66,22 @@
                     <input type="checkbox" name="organization" onchange="checkOrganization()" {% if professional && professional.organization===true %}checked{% endif %} />
                 </div>
                 <div class="row">
-                    <label>Name <span class="mandatory">*</span>:</label>
+                    <label class="mandatory">{{"Name"|i18n}} :</label>
                     <input type="text" name="name.family" placeholder="Mandatory field" required value="{{professional.name.family}}" />
                 </div>
                 
                 <div id="nonOrgContainer">
                     <div class="row">
-                        <label>Given <span class="mandatory">*</span>:</label>
+                        <label class="mandatory">{{"Given"|i18n}} :</label>
                         <input type="text" name="name.given" placeholder="Mandatory field" required value="{{professional.name.given}}" />
                     </div>
                     <div class="row">
-                        <label>Gender <span class="mandatory">*</span>:</label>
+                        <label class="mandatory">{{"Civility"|i18n}} :</label>
                         <input type="radio" name="gender" value="M" {% if professional.gender == 'M' %}checked{% endif %} />{{"Man"|i18n}}
                         <input type="radio" name="gender" value="F" {% if professional.gender == 'F' %}checked{% endif %} />{{"Woman"|i18n}}
                     </div>
                     <div class="row">
-                        <label>{{ "Job" | i18n }} <span class="mandatory">*</span>:</label>
+                        <label class="mandatory">{{ "Job" | i18n }} :</label>
                         <select name="job" required>
                             {% for item in job.items %}
                             <option value="{{item.value}}" {% if  professional.job == item.value %}selected{% endif %}>{{item.label}}</option>
@@ -91,7 +91,7 @@
                 </div>
                 
                 <div class="row">
-                    <label>{{ "Role" | i18n }}:</label>
+                    <label class="mandatory">{{ "Role" | i18n }}:</label>
                     <select name="role" required>
                         {% for item in role.items %}
                         <option value="{{item.value}}" {% if professional.role == item.value %}selected{% endif %}>{{item.label}}</option>
@@ -99,7 +99,7 @@
                     </select>
                 </div>
                 <div class="row">
-                    <label>{{ "Language" | i18n }} <span class="mandatory">*</span>:</label>
+                    <label class="mandatory">{{ "Language" | i18n }} :</label>
                     <select name="communication">
                         {% for item in communication.items %}
                         <option value="{{item.value}}" {% if professional.communication == item.value %}selected{% endif %}>{{item.label}}</option>
@@ -116,13 +116,13 @@
                 </div>
             </zdk-panel>
             <zdk-panel heading="{{'Telecom' |i18n}}" collapsable="false" collapsed="false">
-                <span class="mandatory">*</span> (Email system )
+	            <span style="color:tomato">{{"An email address is mandatory"|i18n}}</span>
                 {% if !professional.telecom %}
                 <div class="telecomContainer">
                     <div class="row">
                         <input type="hidden" name="telecom[0].use" value="work">
                         <div class="col">
-                            <label>System:</label>
+                            <label>{{"Type"|i18n}} :</label>
                             <select name="telecom[0].system" onchange="checkEmailTypeValidation(this)" required>
                                 {% for item in system.items %}
                                 <option value="{{item.value}}" {% if item.value=='email' %}selected{% endif %}>{{item.label}}</option>
@@ -132,7 +132,7 @@
                     </div>
                     <div class="row">
                         <div class="col">
-                            <label>Value:</label>
+                            <label>{{"Value"|i18n}} :</label>
                             <input name="telecom[0].value" value="" type="email" />
                         </div>
                         <div>
@@ -147,7 +147,7 @@
                     <div class="row">
                         <input type="hidden" name="telecom[{{loop.index}}].use" value="work">
                         <div class="col">
-                            <label>System:</label>
+                            <label>{{"Type"|i18n}} :</label>
                             <select name="telecom[{{loop.index}}].system" style="min-width: 150px;" onchange="checkEmailTypeValidation(this)" required>
                                 {% for item in system.items %}
                                 <option value="{{item.value}}" {% if entry.system==item.value %}selected{% endif %}>{{item.label}}</option>
@@ -157,7 +157,7 @@
                     </div>
                     <div class="row">
                         <div class="col">
-                            <label>Value:</label>
+                            <label>{{"Value"|i18n}} :</label>
                             <input name="telecom[{{loop.index}}].value" value="{{entry.value}}" type="{% if entry.system=='email' %}email{% else %}text{% endif %}" />
                         </div>
                         <div>
@@ -176,7 +176,7 @@
             <zdk-panel heading="{{'Address' |i18n}}" collapsable="false" collapsed="false">
                 <input type="hidden" name="address.use" value="work">
                 <div class="row">
-                    <label>Street :</label>
+                    <label>{{"Street"|i18n}} :</label>
                     <!-- Line break is needed to place each line -->
                     <textarea name="address.line">{% for line in professional.address.line %}{{line}}
 {% endfor %}</textarea>
