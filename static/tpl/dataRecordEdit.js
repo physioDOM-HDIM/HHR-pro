@@ -220,14 +220,17 @@ function getLists() {
             parameters: utils.promiseXHR("GET", "/api/lists/parameters", 200),
             symptom: utils.promiseXHR("GET", "/api/lists/symptom", 200),
             questionnaire: utils.promiseXHR("GET", "/api/lists/questionnaire", 200),
-            units: utils.promiseXHR("GET", "/api/lists/units", 200)
+            units: utils.promiseXHR("GET", "/api/lists/units", 200),
+            threshold: utils.promiseXHR("GET", "/api/beneficiary/thresholds", 200)
         };
 
     RSVP.hash(promises).then(function(results) {
         function filterActive(element) {
             return element.active;
-        } 
-        
+        }
+
+        lists.threshold =  JSON.parse(results.threshold);
+
         lists.parameters = JSON.parse(results.parameters).items.filter(filterActive);
         lists.symptom = JSON.parse(results.symptom).items.filter(filterActive);
         lists.questionnaire = JSON.parse(results.questionnaire).items.filter(filterActive);
@@ -238,6 +241,12 @@ function getLists() {
             leni = lists.parameters.length;
 
         for(i; i<leni; i++) {
+            for(var ref in lists.threshold) {
+                if(ref === lists.parameters[i].ref) {
+                   lists.parameters[i].threshold = lists.threshold[ref];
+                }
+            }
+
             var y = 0,
                 leny = unitsList.length;
 
