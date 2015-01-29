@@ -2,6 +2,7 @@
 
 var normalElt,
 	riskElt;
+var modified = false;
 
 window.addEventListener('DOMContentLoaded', function() {
 
@@ -13,7 +14,20 @@ window.addEventListener('DOMContentLoaded', function() {
 		normalElt.checked = true;
 	}
 
+	document.addEventListener('change', function( evt ) {
+		modified = true;
+	}, false );
+	
 }, false);
+
+window.addEventListener("beforeunload", function( e) {
+	var confirmationMessage;
+	if(modified) {
+		confirmationMessage = document.querySelector("#unsave").innerHTML;
+		(e || window.event).returnValue = confirmationMessage;     //Gecko + IE
+		return confirmationMessage;                                //Gecko + Webkit, Safari, Chrome etc.
+	}
+});
 
 function updateChoice(elt) {
 	if(elt === normalElt) {
@@ -42,6 +56,7 @@ function checkForm(validate) {
 				}
 			}
 			new Modal('saveSuccess');
+			modified = false;
 		}, function(error) {
 			new Modal('errorOccured');
 			console.log(error);
