@@ -331,6 +331,7 @@ function Beneficiary( ) {
 		return new promise( function(resolve, reject) {
 			logger.trace("getProfessionals");
 			var count = that.professionals.length;
+			that.professionals.sort( function(a,b) { return b.referent?true:false; });
 			if( !count ) {
 				resolve( [] );
 			}
