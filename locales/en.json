@@ -308,5 +308,13 @@
 	"Woman": "Woman",
 	"Change password": "Change password",
 	"Info: The password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters": "Info: The password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters",
+	"Given": "Given",
+	"An email address is mandatory": "An email address is mandatory",
+	"Access management": "Access management",
+	"Select role :": "Select role :",
+	"Write": "Write",
+	"email": "email",
+	"phone": "phone",
+	"mobile": "mobile",
 	"Questionnaire answers": "Questionnaire answers"
 }
