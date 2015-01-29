@@ -106,6 +106,13 @@
 
 </zdk-panel>
 
+{% if rights.write %}
+<div class="row control actions">
+	<span class="spacer"></span>
+	<a href="/message/create"><button class="blue big">{{ "New message"|i18n }}</button></a>
+</div>
+{% endif %}
+
 <tsante-list url="/api/beneficiary/messages" pg="1" offset="25" auto="true" autoRender="false" unresolved id="tsanteList">
 <template is="auto-binding" repeat="{% raw %}{{item in list.items}}{% endraw %}">
 	<div class="item">
@@ -138,13 +145,6 @@
 	
 </template>
 </tsante-list>
-
-{% if rights.write %}
-<div class="row control actions">
-	<span class="spacer"></span>
-	<a href="/message/create"><button class="blue big">{{ "New message"|i18n }}</button></a>
-</div>
-{% endif %}
 
 {% include 'modal.htm' %}
 
