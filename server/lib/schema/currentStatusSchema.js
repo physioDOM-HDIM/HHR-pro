@@ -11,18 +11,18 @@ var currentWellBeingSchema = {
 					enum: ["well"],
 					required: true
 				},
-				"sf12Score": {
+				"sf36Score": {
 					type: "number",
 					default: 0,
-					description: "SF12 questionnaire score"
+					description: "SF36 questionnaire score"
 				},
-				"sf12Date": {
+				"sf36Date": {
 					type: "date",
-					description: "SF12 questionnaire date"
+					description: "SF36 questionnaire date"
 				},
-				"sf12Answer": {
+				"sf36Answer": {
 					type: "string",
-					description: "SF12 questionnaire answer ID"
+					description: "SF36 questionnaire answer ID"
 				}
 			},
 			"required": ["name"]
