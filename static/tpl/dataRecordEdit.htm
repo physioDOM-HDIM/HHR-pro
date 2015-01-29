@@ -14,7 +14,7 @@
 	select {
 		min-width:100px;
 	}
-	input[type=text] {
+	input[type=text][type=number] {
 		width: 100%;
 	}
 	h2 {
@@ -51,13 +51,14 @@
 	-line adding (for new items)
 #}
 
-<div class="hidden" id="lang">{{lang}}</div>
+<div class="hidden" id="unsave">{{"You have unsaved data"|i18n}}</div>
+<div class="hidden" id="changelang">{{"Are you sure to cancel your changes ?"|i18n}}</div>
 
 <script type="html/text" id="selectParam">
 	{% if view === 'create'%}
-	<select onchange="updateParam(this)" name="items[{% raw %}{{ idx }}{% endraw %}].text">
+	<select onchange="updateParam(this)" name="items[{% raw %}{{ idx }}{% endraw %}].text" required>
 	{% else%}
-	<select onchange="updateParam(this)" name="items[{% raw %}{{id}}{% endraw %}].text">
+	<select onchange="updateParam(this)" name="items[{% raw %}{{id}}{% endraw %}].text" required>
 	{% endif%}
 		<option></option>
 	{% raw %}
@@ -129,7 +130,7 @@
 				{{#item}}
 				<div class="col item-text" style="-webkit-flex:2; -ms-flex:2; flex:2;"></div>
 				<div class="col item-value" style="max-width:150px">
-				   {% endraw %}<input type="text" value="{{ item.value }}" name="items[{{item._id.toString()}}].value"/></div>{% raw %}
+				   {% endraw %}<input type="number" step="any" value="{{ item.value }}" name="items[{{item._id.toString()}}].value"/></div>{% raw %}
 				<div class="col units" style="max-width:150px">{{ unitLabel }}</div>
 
 				{% endraw %}{% if cat !== 'questionnaire' %}{% raw %}
@@ -189,7 +190,7 @@
 		<input type="hidden" class="questionnaire-text" name="items[{% raw %}{{idx}}{% endraw %}].text" value="" />
 		{% raw %}{{#questionnaire}}{% endraw %}
 		<div class="col" style="max-width:150px">
-			<input type="text" class="questionnaire-score" name="items[{% raw %}{{idx}}{% endraw %}].value" value="" disabled />
+			<input  type="number" class="questionnaire-score" name="items[{% raw %}{{idx}}{% endraw %}].value" value="" disabled />
 			<input type="hidden" class="questionnaire-score" name="items[{% raw %}{{idx}}{% endraw %}].value" value="" />
 		</div>
 		<input type="hidden" class="questionnaire-answer" name="items[{% raw %}{{idx}}{% endraw %}].ref" value="" />
@@ -202,7 +203,7 @@
 		{% raw %}{{/questionnaire}}{% endraw %}
 		
 		{% raw %}{{^questionnaire}}{% endraw %}
-		<div class="col" style="max-width:150px"><input type="text" name="items[{% raw %}{{idx}}{% endraw %}].value"/></div>
+		<div class="col" style="max-width:150px"><input type="number" step="any"  name="items[{% raw %}{{idx}}{% endraw %}].value"/></div>
 		<div class="col" style="max-width:150px"><span class="units"></span></div>
 		<div class="col" style="max-width:150px">
 			<div class="min-treshold spacing-around"></div>
@@ -251,7 +252,7 @@
 		{% endif %}
 	</div>
 
-	<form name="dataRecord" id="dataRecord">
+	<form name="dataRecord" id="dataRecord" onsubmit="checkForm(); return false;">
 		<zdk-panel heading="{{'Physiological parameters' |i18n}}" collapsable="false" collapsed="false">
 			<div class="row">
 				<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{{ 'Parameter'|i18n }}</div>
@@ -319,21 +320,23 @@
 			{% endif %}
 
 		</zdk-panel>
+		
+		<div class="row control" style="height:60px; align-content: center">
+			<span class="spacer"></span>
+			{% if view === 'create'%}
+			{% if rights.write %}
+			<button id="saveBtn" class="green">{{'Save'|i18n}}</button>
+			{% endif %}
+			{% else %}
+			<a href="/datarecord"><button class="blue big">{{'Back'|i18n}}</button></a>
+			{% if rights.write %}
+			<button id="saveBtn" class="green">{{'Save'|i18n}}</button>
+			{% endif %}
+			{% endif %}
+		</div>
 	</form>
 
-	<div class="row control" style="height:60px; align-content: center">
-		<span class="spacer"></span>
-		{% if view === 'create'%}
-			{% if rights.write %}
-			<button class="green" onclick="create()">{{'Save'|i18n}}</button>
-			{% endif %}
-		{% else %}
-		<a href="/datarecord"><button class="blue big">{{'Back'|i18n}}</button></a>
-		{% if rights.write %}
-			<button class="green" onclick="update('{{dataRecordItems._id.toString()}}')">{{'Save'|i18n}}</button>
-		{% endif %}
-		{% endif %}
-	</div>
+	
 </div>
 
 

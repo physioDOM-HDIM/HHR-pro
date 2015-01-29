@@ -4,9 +4,30 @@ var utils = new Utils(),
     infos = {},
     idx = 0,
     createdDataRecordID = null,
-    lists = {};
+    lists = {},
+	modified = false;
 
 infos.datasInit = null;
+
+window.addEventListener("DOMContentLoaded", function() {
+	infos.datasInit = form2js(document.forms.dataRecord);
+	infos.lang = Cookies.get("lang");
+	getLists();
+
+	document.addEventListener('change', function( evt ) {
+		modified = true;
+	}, true );
+
+}, false);
+
+window.addEventListener("beforeunload", function( e) {
+	var confirmationMessage;
+	if(modified) {
+		confirmationMessage = document.querySelector("#unsave").innerHTML;
+		(e || window.event).returnValue = confirmationMessage;     //Gecko + IE
+		return confirmationMessage;                                //Gecko + Webkit, Safari, Chrome etc.
+	}
+});
 
 function hasClass(element, cls) {
     return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
@@ -157,6 +178,7 @@ function update(dataRecordID) {
 
         utils.promiseXHR("PUT", "/api/beneficiary/datarecords/"+dataRecordID, 200, JSON.stringify(data)).then(function(response) {
             updateSuccess();
+			modified = false;
         }, function(error) {
             errorOccured();
             console.log("saveForm - error: ", error);
@@ -167,8 +189,18 @@ function update(dataRecordID) {
     }
 }
 
-function create() {
+function checkForm() {
+	if (!document.forms.dataRecord.checkValidity()) {
+		var btn = document.querySelector("#saveBtn");
+		if (btn) { btn.click(); }
+		return;
+	} else {
+		create();
+	}
+}
 
+function create() {
+	
     if(createdDataRecordID !== null) {
         update(createdDataRecordID);
     } else {
@@ -195,6 +227,7 @@ function create() {
                 var record = JSON.parse(response);
                 createdDataRecordID = record._id;
                 sourceID.disabled = true;
+				modified = false;
             }, function(error) {
                 errorOccured();
                 console.log("saveForm - error: ", error);
@@ -206,12 +239,6 @@ function create() {
     }
 
 }
-
-window.addEventListener("DOMContentLoaded", function() {
-    infos.datasInit = form2js(document.forms.dataRecord);
-    infos.lang = Cookies.get("lang");
-    getLists();
-}, false);
 
 
 function getLists() {
