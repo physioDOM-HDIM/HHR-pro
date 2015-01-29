@@ -13,20 +13,18 @@
 <link rel="import" href="/bower_components/zdk-panel/zdk-panel.html">
 
 <link rel="stylesheet" href="../styles/current.css">
-<style>
-	div.assist { width: 250px; }
-	input.assist { max-width: none; }
-</style>
 {% endblock %}
 
 {% block content %}
+<div class="hidden" id="unsave">{{"You have unsaved data"|i18n}}</div>
+<div class="hidden" id="changelang">{{"Are you sure to cancel your changes ?"|i18n}}</div>
 <div id="content">
 	<zdk-panel heading="{{ 'Nutritional status' | i18n }}">
 		<form name="form" id="form" autocomplete="off" onsubmit="checkForm(); return false;">
 			<fieldset>
 				<legend>{{'Diet values'|i18n}}</legend>
 				<div class="row value-row">
-					<div flex class="value-name">{{'Size'|i18n}}</div>
+					<div class="value-name">{{'Size'|i18n}}</div>
 					<input
 						id="sizeInput"
 						type="number"
@@ -38,7 +36,7 @@
 					<div class="value-unit">{{'meter'|i18n}}</div>
 				</div>
 				<div class="row value-row">
-					<div flex class="value-name">{{'Weight'|i18n}}</div>
+					<div class="value-name">{{'Weight'|i18n}}</div>
 					<input
 						id="weightInput"
 						type="number"
@@ -49,12 +47,12 @@
 					<div class="value-unit">{{'kilogram'|i18n}}</div>
 				</div>
 				<div class="row value-row">
-					<div flex class="value-name">{{'Lean/fat ratio'|i18n}}</div>
+					<div class="value-name">{{'Lean/fat ratio'|i18n}}</div>
 					<input type="number" name="lean" class="value-input" value="{{status.lean}}" {% if status.validated %}disabled{% endif %} />
 					<div class="value-unit"></div>
 				</div>
 				<div class="row value-row">
-					<div flex class="value-name">{{'BMI'|i18n}}</div>
+					<div class="value-name">{{'BMI'|i18n}}</div>
 					<input
 						id="bmiInput"
 						type="number"
@@ -65,7 +63,7 @@
 					<div class="value-unit"></div>
 				</div>
 				<div class="row value-row questionnaire-row" data-name="MNA">
-					<div flex class="value-name">{{'MNA score'|i18n}}</div>
+					<div class="quest-name">{{'MNA score'|i18n}}</div>
 					<div class="questionnaire-date">{% if status.mnaDate %}{{status.mnaDate | date }}{% endif %}</div>
 					<input type="number" class="questionnaire-score" value="{{status.mnaScore}}" readonly />
 					<input type="hidden" class="questionnaire-answer" name="mnaAnswer" value="{{status.mnaAnswer}}" />
@@ -74,7 +72,7 @@
 					</div>
 				</div>
 				<div class="row value-row questionnaire-row" data-name="MNA_MINI">
-					<div flex class="value-name">{{'MNA SF score'|i18n}}</div>
+					<div class="quest-name">{{'MNA SF score'|i18n}}</div>
 					<div class="questionnaire-date">{% if status.mnaSfDate %}{{status.mnaSfDate | date }}{% endif %}</div>
 					<input type="number" class="questionnaire-score" value="{{status.mnaSfScore}}" readonly />
 					<input type="hidden" class="questionnaire-answer" name="mnaSfAnswer" value="{{status.mnaSfAnswer}}" />
@@ -83,7 +81,7 @@
 					</div>
 				</div>
 				<div class="row value-row questionnaire-row" data-name="SNAQ">
-					<div flex class="value-name">{{'SNAQ score' | i18n }}</div>
+					<div class="quest-name">{{'SNAQ score' | i18n }}</div>
 					<div class="questionnaire-date">{% if status.snaqDate %}{{status.snaqDate | date }}{% endif %}</div>
 					<input type="number" class="questionnaire-score" value="{{status.snaqScore}}" readonly />
 					<input type="hidden" class="questionnaire-answer" name="snaqAnswer" value="{{status.snaqAnswer}}" />
@@ -92,7 +90,7 @@
 					</div>
 				</div>
 				<div class="row value-row questionnaire-row" data-name="DHD-FFQ">
-					<div flex class="value-name">{{'Eetscore'|i18n}}</div>
+					<div class="quest-name">{{'Eetscore'|i18n}}</div>
 					<div class="questionnaire-date">{% if status.dhdDate %}{{status.dhdDate | date }}{% endif %}</div>
 					<input type="number" class="questionnaire-score" value="{{status.dhdScore}}" readonly />
 					<input type="hidden" class="questionnaire-answer" name="dhdAnswer" value="{{status.dhdAnswer}}" />
@@ -113,7 +111,7 @@
 				<legend>{{'Assistance services'|i18n}}</legend>
 
 				<div class="row value-row">
-					<div class="value-name assist">{{'Delivery assistance'|i18n}}</div>
+					<div class="assist-name assist">{{'Delivery assistance'|i18n}}</div>
 					<input type="checkbox" class="value-checkbox" />
 					<input type="text" class="value-input assist" />
 				</div>
@@ -124,7 +122,7 @@
 				<div id="buttons" class="row control">
 					<span class="spacer"></span>
 					<button type="button" class="blue" onclick="showConfirm();">{{'Validate'|i18n}}</button>
-					<button type="button" class="red" onclick="location.reload();">{{'Cancel'|i18n}}</button>
+					<button type="button" class="red" onclick="modified=false; location.reload();">{{'Cancel'|i18n}}</button>
 					<button class="green">{{'Save'|i18n}}</button>
 				</div>
 				{% endif %}

@@ -1,5 +1,7 @@
 'use strict';
 
+var modified = false;
+
 function checkForm(validate) {
 	var formObj = form2js(document.getElementById('form'));
 
@@ -37,6 +39,7 @@ function checkForm(validate) {
 				}
 			}
 			new Modal('saveSuccess');
+			modified = false;
 		}, function(error) {
 			new Modal('errorOccured');
 			console.log(error);
@@ -64,7 +67,19 @@ function hideConfirm() {
 	document.getElementById('confirmModal').hide();
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+window.addEventListener('DOMContentLoaded', function() {
 	document.getElementById('sizeInput').addEventListener('change', computeBMI);
 	document.getElementById('weightInput').addEventListener('change', computeBMI);
+	document.addEventListener('change', function( evt ) {
+		modified = true;
+	}, true );
+});
+
+window.addEventListener("beforeunload", function( e) {
+	var confirmationMessage;
+	if(modified) {
+		confirmationMessage = document.querySelector("#unsave").innerHTML;
+		(e || window.event).returnValue = confirmationMessage;     //Gecko + IE
+		return confirmationMessage;                                //Gecko + Webkit, Safari, Chrome etc.
+	}
 });

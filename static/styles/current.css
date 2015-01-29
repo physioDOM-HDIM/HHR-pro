@@ -12,14 +12,20 @@ legend {
 	padding: 0;
 }
 
+.assist-name,
+.quest-name {
+	width: 250px;
+}
 .value-name {
-
+	width: 370px;
 }
 
 input.value-input {
 	margin: 0 10px;
 	max-width: 150px;
 }
+
+input.assist { max-width: none; }
 
 .value-unit {
 	padding: 0 0 0 10px;
@@ -31,6 +37,7 @@ input.value-input {
 .questionnaire-date {
 	color: #b0b0b0;
 	padding: 0 10px;
+	width: 100px;
 }
 
 input.questionnaire-score {
