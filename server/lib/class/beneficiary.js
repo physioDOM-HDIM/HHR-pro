@@ -781,7 +781,7 @@ function Beneficiary( ) {
 			}
 
 			var promises = ["parameters", "symptom", "questionnaire"].map(function (listName) {
-				return physioDOM.Lists.getListArray(listName , lang );
+				return physioDOM.Lists.getList(listName);
 			});
 			
 			var thresholds;
@@ -792,11 +792,23 @@ function Beneficiary( ) {
 				})
 				.then(function (units) {
 					RSVP.all(promises).then(function (lists) {
-						var labels = {};
+
+						var labels = {},
+							unitsData = {};
+
 						for (var i = 0; i < lists.length; i++) {
-							for (var prop in lists[i].items) {
-								labels[prop] = lists[i].items[prop];
+							for (var y in lists[i].items) {
+								var ref = lists[i].items[y].ref;
+
+								labels[ref] = lists[i].items[y].label[lang];
+
+								for(var z in units.items) {
+									if(units.items[z].ref === lists[i].items[y].units) {
+										unitsData[ref] = units.items[z].label[lang];
+									}
+								}
 							}
+
 						}
 
 						physioDOM.db.collection("dataRecordItems").group(groupRequest.key, groupRequest.cond, groupRequest.initial, groupRequest.reduce, function (err, results) {
@@ -805,6 +817,7 @@ function Beneficiary( ) {
 							} else {
 								RSVP.all( results.map(function (result) {
 											result.name = labels[result.text] || result.text;
+											result.unit = unitsData[result.text] || '';
 											if (thresholds[result.text]) {
 												result.threshold = thresholds[result.text];
 											}
