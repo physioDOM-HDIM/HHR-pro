@@ -13,6 +13,7 @@ var restify = require("restify"),
 	PhysioDOM = require("./lib/class/physiodom");
 
 var IDirectory = require('./lib/http/IDirectory'),
+	ICSV = require('./lib/http/ICSV'),
 	IBeneficiary = require('./lib/http/IBeneficiary'),
 	ILists = require("./lib/http/ILists"),
 	IPage = require("./lib/http/IPage"),
@@ -307,6 +308,8 @@ server.get( '/api/menu', IMenu.getMenu);
 
 // Rights
 server.put( '/api/rights', IMenu.putRights);
+
+server.get( '/api/directory/export', ICSV.getDirectory);
 
 server.get( '/api/directory', IDirectory.getEntries);
 server.post('/api/directory', IDirectory.createEntry);

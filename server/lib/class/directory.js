@@ -102,6 +102,17 @@ function Directory( ) {
 		return dbPromise.getList(cursor, pg, offset);
 	};
 
+	this.getList = function() {
+		logger.trace("getList");
+		return new promise( function(resolve, reject) {
+			physioDOM.db.collection("professionals").find({}).sort({ "name.family":1}).toArray(function(err, list) {
+				console.log(err);
+				console.log(list);
+				resolve(list);
+			});
+		});
+	};
+
 	/**
 	 * get an entry given by its id
 	 * 
