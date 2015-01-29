@@ -17,7 +17,6 @@ var IDirectory = require('./lib/http/IDirectory'),
 	ILists = require("./lib/http/ILists"),
 	IPage = require("./lib/http/IPage"),
 	IQuestionnaire = require("./lib/http/IQuestionnaire"),
-	IDataRecord = require("./lib/http/IDataRecord"),
 	ICurrentStatus = require('./lib/http/ICurrentStatus'),
 	IMenu = require("./lib/http/IMenu"),
 	configSchema = require("./lib/schema/configSchema.js");
