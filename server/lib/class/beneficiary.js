@@ -342,8 +342,9 @@ function Beneficiary( ) {
 								that.professionals[i] = professional;
 								that.professionals[i].referent = item.referent;
 
-								if(jobFilter && jobFilter.indexOf(that.professionals[i].job) > -1) {
-									proList.push(that.professionals[i])
+								if(jobFilter && jobFilter.indexOf(that.professionals[i].role) !== -1 ) {
+									// && that.professionals[i].active : to filter only active professionnal
+									proList.push(that.professionals[i]);
 								}
 							})
 							.then( function() {
