@@ -52,7 +52,7 @@ if( program.config ) {
 		}
 		process.exit(1);
 	} else {
-		config.port = tmp.port;
+		config.port = program.port || tmp.port;
 		config.Lang = tmp.Lang;
 		config.mongouri = "mongodb://"+tmp.mongo.ip+"/"+tmp.mongo.db;
 		config.queue = tmp.queue.protocol+"://"+tmp.queue.ip+":"+tmp.queue.port;
