@@ -255,6 +255,11 @@ var saveData = function() {
     dataprog.endDate = data.endDate;
     dataprog.frequency = data.frequency;
 
+	document.forms.dataprog.querySelector("#dateError").classList.add("hidden");
+	if( dataprog.endDate && dataprog.startDate && dataprog.startDate > dataprog.endDate ) {
+		document.forms.dataprog.querySelector("#dateError").classList.remove("hidden");
+		return;
+	}
     if(data.repeat) {
         dataprog.repeat = parseInt(data.repeat,10);
     }
