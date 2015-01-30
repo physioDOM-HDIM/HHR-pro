@@ -17,7 +17,7 @@ window.addEventListener("DOMContentLoaded", function() {
 	document.addEventListener('change', function( evt ) {
 		modified = true;
 	}, true );
-
+	createdDataRecordID = document.querySelector("#createdDataRecordID").value; 
 }, false);
 
 window.addEventListener("beforeunload", function( e) {
@@ -180,16 +180,26 @@ function update(dataRecordID) {
 
         }
 
-        utils.promiseXHR("PUT", "/api/beneficiary/datarecords/"+dataRecordID, 200, JSON.stringify(data)).then(function(response) {
-            updateSuccess();
-			modified = false;
-        }, function(error) {
-            errorOccured();
-            console.log("saveForm - error: ", error);
-        });
+        utils.promiseXHR("PUT", "/api/beneficiary/datarecords/"+dataRecordID, 200, JSON.stringify(data))
+			.then(function(response) {
+            	updateSuccess();
+				modified = false;
+        	}, function(error) {
+            	errorOccured();
+            	console.log("saveForm - error: ", error);
+        	});
 
     } else {
-        errorOccured();
+		new Modal('confirmDeleteRecord', function() {
+			utils.promiseXHR("DELETE", "/api/beneficiary/datarecords/"+dataRecordID, 200)
+				.then( function(response) {
+					modified = false;
+					window.location.href = "/datarecord";
+				}, function(error) {
+					errorOccured();
+					console.log("saveForm - error: ", error);
+				});
+		});
     }
 }
 
@@ -211,10 +221,9 @@ function create() {
         var obj = form2js(document.forms.dataRecord),
             sourceID = document.querySelector('#sourceID');
 
-        obj.source = sourceID.value;
-
         if(JSON.stringify(obj) !== "{}") {
-
+			obj.source = sourceID.value;
+			
             var i=0,
             len = obj.items.length;
 
@@ -237,8 +246,6 @@ function create() {
                 console.log("saveForm - error: ", error);
             });
 
-        } else {
-            errorOccured();
         }
     }
 
@@ -455,139 +462,21 @@ function toggleEditMode(id) {
     }
 }
 
-
-
-
-/* Modal */
-
-function closeModal() {
-    console.log("closeModal", arguments);
-    document.getElementById('statusModal').hide();
-
-    var elt = document.getElementById('statusModal'),
-        subElt, child;
-    subElt = elt.querySelector(".modalTitleContainer");
-    subElt.innerHTML = "";
-    subElt.classList.add("hidden");
-    subElt = elt.querySelector(".modalContentContainer");
-    subElt.innerHTML = "";
-    subElt.classList.add("hidden");
-    subElt = elt.querySelector(".modalButtonContainer");
-    for (var i = subElt.childNodes.length - 1; i >= 0; i--) {
-        child = subElt.childNodes[i];
-        subElt.removeChild(child);
-    }
-    subElt.classList.add("hidden");
-}
-
-function showModal(modalObj) {
-    console.log("showModal", arguments);
-
-    var elt = document.getElementById("statusModal"),
-        subElt;
-    if (modalObj.title) {
-        subElt = elt.querySelector(".modalTitleContainer");
-        subElt.innerHTML = document.getElementById(modalObj.title).innerHTML;
-        subElt.classList.remove("hidden");
-    }
-    if (modalObj.content) {
-        subElt = elt.querySelector(".modalContentContainer");
-        subElt.innerHTML = document.getElementById(modalObj.content).innerHTML;
-        subElt.classList.remove("hidden");
-    }
-
-    if (modalObj.buttons) {
-        var btn, obj, color;
-        subElt = elt.querySelector(".modalButtonContainer");
-        for (var i = 0; i < modalObj.buttons.length; i++) {
-            obj = modalObj.buttons[i];
-            btn = document.createElement("button");
-            btn.innerHTML = document.getElementById(obj.id).innerHTML;
-            btn.onclick = obj.action;
-            switch (obj.id) {
-                case "trad_ok":
-                    {
-                        color = "green";
-                    }
-                    break;
-                case "trad_yes":
-                    {
-                        color = "green";
-                    }
-                    break;
-                case "trad_no":
-                    {
-                        color = "blue";
-                    }
-                    break;
-            }
-            btn.classList.add(color);
-            subElt.appendChild(btn);
-        }
-        subElt.classList.remove("hidden");
-    }
-
-    document.getElementById("statusModal").show();
-}
-
 function confirmDeleteItem(id) {
-    var modalObj = {
-        title: "trad_delete",
-        content: "trad_confirm_delete",
-        buttons: [{
-            id: "trad_yes",
-            action: function() {
-                removeItem(id);
-                closeModal();
-            }
-        }, {
-            id: "trad_no",
-            action: function() {
-                closeModal();
-            }
-        }]
-    };
-    showModal(modalObj);
+	new Modal('confirmDeleteItem', function() {
+		removeItem(id);
+		modified = true;
+	});
 }
 
 function errorOccured() {
-    var modalObj = {
-        title: "trad_error",
-        content: "trad_error_occured",
-        buttons: [{
-            id: "trad_ok",
-            action: function() {
-                closeModal();
-            }
-        }]
-    };
-    showModal(modalObj);
+	new Modal('errorOccured');
 }
 
 function createSuccess() {
-    var modalObj = {
-        title: "trad_create",
-        content: "trad_success_create",
-        buttons: [{
-            id: "trad_ok",
-            action: function() {
-                closeModal();
-            }
-        }]
-    };
-    showModal(modalObj);
+	new Modal('createSuccess');
 }
 
 function updateSuccess() {
-    var modalObj = {
-        title: "trad_update",
-        content: "trad_success_update",
-        buttons: [{
-            id: "trad_ok",
-            action: function() {
-                closeModal();
-            }
-        }]
-    };
-    showModal(modalObj);
+	new Modal('updateSuccess');
 }
