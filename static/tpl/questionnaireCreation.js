@@ -1,8 +1,19 @@
 "use strict";
 
-var Utils = new Utils();
+var Utils = new Utils(),
+	modified = false,
+	langChoice;
 
 window.addEventListener("DOMContentLoaded", init, false);
+
+window.addEventListener("beforeunload", function( e) {
+	var confirmationMessage;
+	if(modified) {
+		confirmationMessage = document.querySelector("#unsave").innerHTML;
+		(e || window.event).returnValue = confirmationMessage;     //Gecko + IE
+		return confirmationMessage;                                //Gecko + Webkit, Safari, Chrome etc.
+	}
+});
 
 function init() {
     document.forms.newQ.addEventListener("click", function(evt){
@@ -30,7 +41,49 @@ function init() {
     	}
 
     }, true);
+
+	//init lang english
+    changeLang('en');
+
+    document.addEventListener('change', function( evt ) { 
+		if( evt.target.getAttribute("id") !== "lang" ) {
+			modified = true;
+			document.querySelector('#lang').disabled = true;
+		}
+	}, true );
 }
+
+var changeLang = function(lang, from) {
+	langChoice = lang;
+	if(!from) {
+		from = document;
+	}
+
+	var tradInputList = from.querySelectorAll('.trad-input'),
+		langInfoList = from.querySelectorAll('.lang-info'),
+		inputLabelUpdateList = from.querySelectorAll('.input-label-update');
+
+	[].forEach.call(inputLabelUpdateList, function(elt) {
+		var input = elt.querySelector('#'+lang);
+		if(input) {
+			updateLabel(input);
+		}
+	});
+
+	[].forEach.call(langInfoList, function(elt) {
+		elt.innerHTML = lang;
+	});
+
+	[].forEach.call(tradInputList, function(elt) {
+		Utils.hideElt(elt);
+	});
+
+	[].forEach.call(tradInputList, function(elt) {
+		if(elt.id === lang) {
+			Utils.showElt(elt, 'trad-input');
+		}
+	});
+};
 
 var updateLabel = function(elt) {
 	var container = elt.parentNode.parentNode.parentNode;
@@ -84,7 +137,7 @@ function _addHeaderQuestion(node){
 
 	obj = node.getAttribute("data-obj").split(";");
 	elt = document.querySelector("#tplHeaderQuestion").innerHTML;
-    modelData = { name: obj[0]+"["+(""+Math.random()).split(".")[1]+"]", lang: obj[1]};
+    modelData = { name: obj[0]+"["+(""+Math.random()).split(".")[1]+"]"};
     html = Mustache.render(elt, modelData);
     div = document.createElement("div");
     div.innerHTML = html;
@@ -95,6 +148,8 @@ function _addHeaderQuestion(node){
 	cl = node.parentNode.classList;
 	div.className = cl.contains("itemContainer") || cl.contains("nestedQuestionnaire") ? "nestedQuestionnaire" : "itemContainer";
 	node.parentNode.insertBefore(div, node);
+
+	changeLang(langChoice, div);
 }
 
 function _addQuestion(node){
@@ -104,7 +159,7 @@ function _addQuestion(node){
 
 	obj = node.getAttribute("data-obj").split(";");
 	elt = document.querySelector("#tplQuestion").innerHTML;
-    modelData = { name: obj[0]+"["+(""+Math.random()).split(".")[1]+"]", lang: obj[1]};
+    modelData = { name: obj[0]+"["+(""+Math.random()).split(".")[1]+"]"};
     html = Mustache.render(elt, modelData);
     div = document.createElement("div");
     div.innerHTML = html;
@@ -115,6 +170,8 @@ function _addQuestion(node){
 	cl = node.parentNode.classList;
 	div.className = cl.contains("itemContainer") || cl.contains("nestedQuestionnaire") ? "nestedQuestionnaire" : "itemContainer";
 	node.parentNode.insertBefore(div, node);
+
+	changeLang(langChoice, div);
 }
 
 function _addChoice(node){
@@ -123,7 +180,7 @@ function _addChoice(node){
 
 	obj = node.getAttribute("data-obj").split(";");
 	elt = document.querySelector("#tplChoice").innerHTML;
-    modelData = { name: obj[0]+"["+(""+Math.random()).split(".")[1]+"]", lang: obj[1]};
+    modelData = { name: obj[0]+"["+(""+Math.random()).split(".")[1]+"]"};
     html = Mustache.render(elt, modelData);
     div = document.createElement("div");
     div.className = "answer";
@@ -133,6 +190,8 @@ function _addChoice(node){
 		node = node.parentNode;
 	}
 	node.parentNode.insertBefore(div, node);
+
+	changeLang(langChoice, div);
 }
 
 function saveForm(){
@@ -140,26 +199,35 @@ function saveForm(){
 	var obj = form2js(document.forms.newQ);
 	console.log("res", obj);
 
+	delete obj.lang;
+
 	if(obj._id){
 		//Update
 		Utils.promiseXHR("PUT", "/api/questionnaires/" + obj._id, 200, JSON.stringify(obj)).then(function(response) {
-            alert("SUCCESS");
+            new Modal('updateSuccess', function() {
+            	modified = false;
+            	document.querySelector('#lang').disabled = false;
+            });
+
         }, function(error) {
-            alert("FAILED");
+            new Modal('errorOccured');
             console.log("saveForm - error: ", error);
         });
 	}
 	else{
 		//Creation
 		Utils.promiseXHR("POST", "/api/questionnaires", 200, JSON.stringify(obj)).then(function(response) {
-            alert("SUCCESS");
+            new Modal('saveSuccess', function() {
+            	modified = false;
+            	document.querySelector('#lang').disabled = false;
+            });
             //set questionnaire id
             var obj = JSON.parse(response);
             if(obj._id){
             	document.querySelector("#questionnaireID").value = obj._id;
             }
         }, function(error) {
-            alert("FAILED");
+            new Modal('errorOccured');
             console.log("saveForm - error: ", error);
         });
 	}

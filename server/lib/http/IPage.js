@@ -813,7 +813,17 @@ function IPage() {
 			rights: { read: admin, write:admin, url:"/questionnaires/create" }
 		};
 
-		physioDOM.Questionnaires()
+		var promises = [
+			"communication"
+		].map(promiseList);
+
+		RSVP.all(promises)
+			.then(function(lists) {
+				lists.forEach(function (list) {
+					data[Object.keys(list)] = list[Object.keys(list)];
+				});
+				return physioDOM.Questionnaires();
+			})
 			.then(function(questionnaires){
 				if(req.params.questionnaireName){
 					return questionnaires.getQuestionnaireByName(req.params.questionnaireName);
