@@ -57,7 +57,6 @@ function DataRecords( beneficiaryID ) {
 				logger.warning("bad filter format");
 			}
 		}
-		logger.debug("search", search);
 		
 		var cursor = physioDOM.db.collection("dataRecords").find(search);
 		var cursorSort = {};
@@ -88,7 +87,7 @@ function DataRecords( beneficiaryID ) {
 							return item;
 						})
 						.catch( function(err) {
-							console.log("err", err);
+							logger.warning("getList error",err);
 							return item;
 						});
 				});
@@ -99,7 +98,7 @@ function DataRecords( beneficiaryID ) {
 						return list;
 					})
 					.catch( function(err) {
-						console.log(err);
+						logger.warning("getList error",err);
 						return list;
 					});
 			});
