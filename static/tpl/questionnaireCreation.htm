@@ -202,10 +202,10 @@
 					<input type="text" name="{{name}}.choice[{{loop.index}}].ref" value="{{c.ref}}" />
 				</div>
 				<div class="col input-label-update">
-					{{loop.index}}<label>Trad: (<span class="lang-info"></span>)</label>
+					<label>Trad: (<span class="lang-info"></span>)</label>
 					{% set idx = loop.index;%}
 					{% for item in communication.items %}
-						{{idx}}<input type="text" name="{{name}}.choice[{{idx}}].label.{{item.value}}" value="{% if c.label[item.value] %}{{ c.label[item.value] }}{% endif %}" id="{{item.value}}" class="trad-input hidden" onkeyup="updateLabel(this)" />
+						<input type="text" name="{{name}}.choice[{{idx}}].label.{{item.value}}" value="{% if c.label[item.value] %}{{ c.label[item.value] }}{% endif %}" id="{{item.value}}" class="trad-input hidden" onkeyup="updateLabel(this)" />
 					{% endfor %}
 				</div>
 			</div>
