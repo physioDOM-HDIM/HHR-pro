@@ -1,19 +1,13 @@
 "use strict";
 
+/* global Cookies, moment, form2js, RSVP, Modal */
+
 var utils = new Utils(),
     infos = {},
     questionnairePlan = [],
     idx = 0,
     dateIdx = 0,
     modified = false;
-
-window.addEventListener("DOMContentLoaded", function() {
-
-    infos.lang = Cookies.get("lang");
-    getList();
-
-}, false);
-
 
 /**
  * Getting questionnaireProg
@@ -26,6 +20,22 @@ var getList = function() {
             init();
         });
 };
+
+window.addEventListener("DOMContentLoaded", function() {
+	infos.lang = Cookies.get("lang");
+	moment.locale( infos.lang === "en"?"en_gb":infos.lang );
+	getList();
+
+}, false);
+
+window.addEventListener("beforeunload", function( e) {
+	var confirmationMessage;
+	if(modified) {
+		confirmationMessage = document.querySelector("#unsave").innerHTML;
+		(e || window.event).returnValue = confirmationMessage;     //Gecko + IE
+		return confirmationMessage;                                //Gecko + Webkit, Safari, Chrome etc.
+	}
+});
 
 /**
  * Data Binding / Templating
@@ -89,7 +99,13 @@ var addDate = function(elt, idx) {
     }
 
     if(dateValue && utils.parseDate(dateValue)) {
-        dateContainer.innerHTML += Mustache.render(dateAddedTpl.innerHTML, {dateValue: dateValue, idx: idx, dateIdx: dateIdx});
+		var data = {
+			dateValue: dateValue, 
+			dateDisplay: moment(dateValue).format("L"), 
+			idx: idx, 
+			dateIdx: dateIdx
+		};
+        dateContainer.innerHTML += Mustache.render(dateAddedTpl.innerHTML, data );
         elt.parentNode.querySelector('#date').value = "";
         dateIdx++;
         modified = true;
@@ -125,12 +141,3 @@ var saveData = function( ) {
             new Modal('errorOccured', function() { });
         });
 };
-
-window.addEventListener("beforeunload", function( e) {
-    var confirmationMessage;
-    if(modified) {
-        confirmationMessage = document.querySelector("#unsave").innerHTML;
-        (e || window.event).returnValue = confirmationMessage;     //Gecko + IE
-        return confirmationMessage;                                //Gecko + Webkit, Safari, Chrome etc.
-    }
-});
