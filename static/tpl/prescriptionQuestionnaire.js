@@ -57,8 +57,13 @@ var init = function() {
                         var dateAddedTpl = document.querySelector('#dateAddedTpl');
                         var dateIndex = dateIdx;
                         dateIdx++;
-
-                        return Mustache.render(dateAddedTpl.innerHTML, {dateValue: render(val), idx: idx, dateIdx: dateIndex});
+						var data = {
+							dateValue: render(val),
+							dateDisplay: moment(render(val)).format("L"), 
+							idx: idx, 
+							dateIdx: dateIndex
+						};
+                        return Mustache.render(dateAddedTpl.innerHTML, data);
                     };
                 }
             };
