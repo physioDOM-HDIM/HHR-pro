@@ -411,11 +411,11 @@ function Beneficiary( ) {
 					var indx = -1;
 					that.professionals.forEach( function( item, i ) {
 						if ( item.professionalID.toString() === professional._id.toString() ) {
-							console.log("professional found");
+							// console.log("professional found");
 							indx = i;
 						}
 					});
-					console.log("indx", indx);
+					// console.log("indx", indx);
 					if(indx !== -1) {
 						that.professionals[indx] = {professionalID: professional._id, referent: referent || false};
 					} else {
@@ -614,6 +614,21 @@ function Beneficiary( ) {
 		});
 	};
 
+	this.deleteDataRecordByID = function( dataRecordID ) {
+		var datarecord, that = this;
+
+		return new promise( function(resolve, reject) {
+			logger.trace("getDataRecordByID", dataRecordID);
+			var search = { _id: new ObjectID( dataRecordID ) };
+			physioDOM.db.collection("dataRecords").remove(search, function (err, nb) {
+				if (err) {
+					reject(err);
+				}
+				resolve(nb);
+			});
+		});
+	};
+	
 	/**
 	 * Create a dataRecord for the current beneficiary from the given dataRecordObj
 	 * 
@@ -684,7 +699,7 @@ function Beneficiary( ) {
 					}
 					for (var prop in updatedThresholds) {
 						if (thresholdResult.hasOwnProperty(prop)) {
-							console.log("test ", Object.keys(updatedThresholds[prop]));
+							// console.log("test ", Object.keys(updatedThresholds[prop]));
 							if (JSON.stringify(Object.keys(updatedThresholds[prop])) === JSON.stringify(['min', 'max'])) {
 								that.threshold[prop] = updatedThresholds[prop];
 							} else {

@@ -1033,15 +1033,16 @@ function IPage() {
 				return beneficiary.getCompleteDataRecordByID(req.params.dataRecordID);
 			})
 			.then(function(record) {
-				// jsut for test, otherwise read locale from session
-				moment.locale("en_gb");
-
+				var lang = req.session.person.item.communication || physioDOM.lang;
+				lang = lang==="en"?"en_gb":lang;
+				moment.locale( lang );
+				
+				logger.debug( record );
 				data.dataRecordItems = record;
 				data.dataRecordItems.datetime = moment(data.dataRecordItems.datetime).format("L LT");
 				data.view = 'update';
-				data.lang = lang;
 
-				console.log("dataRecordItems :", data.dataRecordItems);
+				// console.log("dataRecordItems :", data.dataRecordItems);
 
 				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/dataRecordEdit.htm', data, function(err, output) {
 					if (err) {

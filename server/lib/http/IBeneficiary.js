@@ -356,6 +356,37 @@ var IBeneficiary = {
 	},
 
 	/**
+	 * remove a data record
+	 *
+	 * The whole data record with all his value is read from the body of the request.
+	 *
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	removeDataRecord: function(req, res, next) {
+		logger.trace("deleteDataRecord");
+		var beneficiary;
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then(function (beneficiaryObj) {
+				beneficiary = beneficiaryObj;
+				return beneficiary.deleteDataRecordByID(req.params.dataRecordID);
+			})
+			.then(function( nb ) {
+				res.send( 200, { code:200, message:"Datarecord removed"} );
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	/**
 	 * Get the list of threshold limits for the current beneficiary
 	 * 
 	 * @param req

@@ -339,6 +339,7 @@ server.post('/api/beneficiary/datarecord', IBeneficiary.newDataRecord );
 server.put( '/api/beneficiary/datarecords/:dataRecordID', IBeneficiary.updateDataRecord );
 server.post('/api/beneficiary/thresholds', IBeneficiary.setThreshold);
 server.get( '/api/beneficiary/thresholds', IBeneficiary.getThreshold);
+server.del( '/api/beneficiary/datarecords/:dataRecordID', IBeneficiary.removeDataRecord );
 
 server.get( '/api/beneficiary/graph', IBeneficiary.getGraphDataList );
 server.get( '/api/beneficiary/graph/:category/:paramName', IBeneficiary.getGraphData );
