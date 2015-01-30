@@ -218,7 +218,7 @@ function Modal (type, callback) {
 				}
 			}
 		]
-	}
+	};
 
     content.createSuccess = {
         title: "trad_create",
@@ -290,6 +290,23 @@ function Modal (type, callback) {
         }]
     };
 
+	content.confirmDeleteRecord = {
+		title: "trad_delete",
+		content: "trad_confirm_delete_record",
+		buttons: [{
+			id: "trad_yes",
+			action: function() {
+				callback();
+				self.closeModal();
+			}
+		}, {
+			id: "trad_no",
+			action: function() {
+				self.closeModal();
+			}
+		}]
+	};
+	
     content.confirmDeleteItem = {
         title: "trad_delete",
         content: "trad_confirm_delete",
