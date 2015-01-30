@@ -334,7 +334,7 @@ input[type=radio] + input[type=radio] {
 	margin-left:10px;
 }
 
-.hidden, .hide {
+.hidden, .hide, div.col.hidden {
 	display: none;
 }
 
@@ -493,4 +493,8 @@ zdk-input-date {
 
 .invalid-form {
 	border: 2px solid red;
+}
+
+.full-width	{
+	width: 100%;
 }
