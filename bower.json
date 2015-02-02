@@ -1,0 +1,36 @@
+{
+  "name": "PhysioDOM",
+  "version": "0.0.9",
+  "authors": [
+    "fablec <fabrice.lecoz@telecomsante.com>"
+  ],
+  "main": "index.htm",
+  "license": "Telecom Sante",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#~0.5.1",
+    "core-ajax": "Polymer/core-ajax#~0.5.1",
+    "core-input": "Polymer/core-input#~0.5.1",
+    "zdk-panel": "~0.3.0",
+    "zdk-modal": "~0.3.0",
+    "zdk-calendar": "~0.2.8",
+    "mustache": "~0.8.2",
+    "rsvp": "~3.0.13",
+    "form2js": "*",
+    "core-drawer-panel": "Polymer/core-drawer-panel#~0.5.1",
+    "core-toolbar": "Polymer/core-toolbar#~0.5.1",
+    "paper-elements": "Polymer/paper-elements#~0.5.1",
+    "zdk-agenda": "~0.1.0",
+    "momentjs": "~2.8.4",
+    "tsante-pager": "../install/tsante-pager-v0.2.1.tar.gz",
+    "tsante-listpager": "../install/tsante-listpager-v0.3.0.tar.gz",
+    "highcharts-release": "~4.0.4",
+    "cookies-js": "~1.1.0"
+  }
+}
