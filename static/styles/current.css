@@ -14,10 +14,10 @@ legend {
 
 .assist-name,
 .quest-name {
-	width: 250px;
+	width: 100px;
 }
 .value-name {
-	width: 370px;
+	width: 210px;
 }
 
 input.value-input {
@@ -29,7 +29,7 @@ input.assist { max-width: none; }
 
 .value-unit {
 	padding: 0 0 0 10px;
-	width: 120px;
+	width: 80px;
 	color: #999;
 	font-size: 0.9em;
 }
@@ -37,7 +37,7 @@ input.assist { max-width: none; }
 .questionnaire-date {
 	color: #b0b0b0;
 	padding: 0 10px;
-	width: 100px;
+	width: 90px;
 }
 
 input.questionnaire-score {
@@ -46,9 +46,19 @@ input.questionnaire-score {
 	max-width: 150px;
 }
 
+div.row label.comment-label {
+	width: 210px;
+	text-align: right;
+	color: #777;
+}
+
+input.comment-input {
+	margin: 0 0 0 10px;
+}
+
 .questionnaire-button-container {
 	padding: 0 0 0 10px;
-	width: 120px;
+	width: 80px;
 	text-align: left;
 }
 
