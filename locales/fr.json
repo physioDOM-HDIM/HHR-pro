@@ -312,5 +312,8 @@
 	"mobile": "mobile",
 	"Questionnaire overview": "Aperçu des questionnaires",
 	"Result": "Résultat",
-	"Your score is: ": "Le score est : "
+	"Your score is: ": "Le score est : ",
+	"Data curves": "Data curves",
+	"Personal": "Personal",
+	"Are you sure you want to delete this record ?": "Are you sure you want to delete this record ?"
 }
