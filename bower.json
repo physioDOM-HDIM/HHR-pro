@@ -28,8 +28,8 @@
     "paper-elements": "Polymer/paper-elements#~0.5.1",
     "zdk-agenda": "~0.1.0",
     "momentjs": "~2.8.4",
-    "tsante-pager": "install/tsante-pager-v0.2.1.tar.gz",
-    "tsante-listpager": "install/tsante-listpager-v0.3.0.tar.gz",
+    "tsante-pager": "./install/tsante-pager-v0.2.1.tar.gz",
+    "tsante-listpager": "./install/tsante-listpager-v0.3.0.tar.gz",
     "highcharts-release": "~4.0.4",
     "cookies-js": "~1.1.0"
   }
