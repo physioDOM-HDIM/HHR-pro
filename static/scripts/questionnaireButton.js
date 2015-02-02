@@ -24,12 +24,12 @@ function onQuestionnaireValidate(name, date, score, answerID) {
 	var eltScore = document.querySelectorAll('.questionnaire-row[data-name="' + name + '"] .questionnaire-score');
 	var eltAnswerId = document.querySelector('.questionnaire-row[data-name="' + name + '"] .questionnaire-answer');
 	var eltAnswerText = document.querySelector('.questionnaire-row[data-name="' + name + '"] .questionnaire-text');
-	var select = document.querySelector('.questionnaire-row select');
+	var select = document.querySelector('.questionnaire-row[data-name="' + name + '"] select');
 
-	eltAnswerText.value = select.value;
-
-	select.value
-	select.disabled = true;
+	if (select) {
+		eltAnswerText.value = select.value;
+		select.disabled = true;
+	}
 
 	if (eltDate) {
 		eltDate.innerHTML = moment(date, moment.ISO_8601).format('L');
