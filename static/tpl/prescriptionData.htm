@@ -131,6 +131,11 @@
 			<zdk-input-date name="endDate" value="{% raw %}{{data.endDate}}{% endraw %}" style="z-index:100"></zdk-input-date>
 		</div>
 	</div>
+	<div id="dateError" class="row hidden">
+		<div style="text-align:center;width:100%;color:red">
+		{{"The end date must be greater than the start date" | i18n}}
+		</div>
+	</div>
 
 	<div class="row">
 		<label>{{"Frequency"|i18n}}</label>
@@ -157,6 +162,14 @@
 		<button type="button" onclick="saveData()" class="green">{{"Save"|i18n}}</button>
 	</div>
 	
+</script>
+
+<script type="template" id="tpl-option-daily">
+
+	<div class="row">
+		{{"Every"|i18n}} <input type="number" name="repeat" class="option-repeat" value="{% raw %}{{data.repeat}}{% endraw %}"> {{"Day"|i18n}}
+	</div>
+
 </script>
 
 <script type="template" id="tpl-option-weekly">

@@ -1,7 +1,8 @@
 "use strict";
 
 var Utils = new Utils(),
-	parameterList = [];
+	parameterList = [],
+    lang = "en";
 
 
 var getParameterList = function() {
@@ -18,11 +19,12 @@ var getParameterList = function() {
 				parameterList.push(parameters[param][i]);
 			}
 		}
-
+		moment.locale(Cookies.get("lang")=="en"?"en-gb":Cookies.get("lang"));;
+		
     	for(var y in parameterList) {
 
-    		parameterList[y].firstMeasureDatetime= moment(parameterList[y].firstReport).format("YYYY-MM-DD");
-    		parameterList[y].lastMeasureDatetime= moment(parameterList[y].lastReport).format("YYYY-MM-DD");
+    		parameterList[y].firstMeasureDatetime= moment(parameterList[y].firstReport).format("L");
+    		parameterList[y].lastMeasureDatetime= moment(parameterList[y].lastReport).format("L");
     		parameterList[y].delta = (parameterList[y].lastValue - parameterList[y].firstValue).toFixed(2);
 
 			var row = document.createElement('div'),
@@ -44,5 +46,6 @@ var getParameterList = function() {
  */
 
 window.addEventListener("DOMContentLoaded", function() {
+	lang = Cookies.get("lang");
 	getParameterList();
 }, false);

@@ -103,7 +103,7 @@ var ICurrentStatus = {
 						updateItem._id = current._id;
 						current.update(updateItem)
 					.then(function (current) {
-						return beneficiary.createEvent('Health status', 'update')
+						return beneficiary.createEvent('Health status', 'update', current._id, req.session.person.id)
 							.then( function() {
 								return createDataRecord(current);
 							});
@@ -121,7 +121,7 @@ var ICurrentStatus = {
 					// Current status not found: create a new one
 					new CurrentStatus().update(updateItem)
 						.then(function (current) {
-							return beneficiary.createEvent('Health status', 'create')
+							return beneficiary.createEvent('Health status', 'create', current._id, req.session.person.id)
 								.then( function() {
 									return createDataRecord(current);
 								});

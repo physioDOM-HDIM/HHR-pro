@@ -80,8 +80,9 @@ function Directory( ) {
 								}
 								break;
 							default:
-								if( ["true","false"].indexOf(search[prop]) !== -1) {
-									search[prop] = (search[prop]==="true"?true:false);
+								console.log( "prop", prop, tmp.prop );
+								if( ["true","false"].indexOf(tmp[prop]) !== -1) {
+									search[prop] = (tmp[prop]==="true"?true:false);
 								}
 						}
 					}
@@ -99,6 +100,17 @@ function Directory( ) {
 		}
 		cursor = cursor.sort( cursorSort );
 		return dbPromise.getList(cursor, pg, offset);
+	};
+
+	this.getList = function() {
+		logger.trace("getList");
+		return new promise( function(resolve, reject) {
+			physioDOM.db.collection("professionals").find({}).sort({ "name.family":1}).toArray(function(err, list) {
+				console.log(err);
+				console.log(list);
+				resolve(list);
+			});
+		});
 	};
 
 	/**
@@ -159,14 +171,22 @@ function Directory( ) {
 	this.deleteEntry = function(entryID) {
 		function deleteProfessional( professionalID) {
 			return new promise( function(resolve, reject) {
-				physioDOM.db.collection("professionals").remove({ _id: professionalID}, function (err, nb) {
+
+				physioDOM.db.collection("beneficiaries").update( { 'professionals.professionalID': professionalID }, { '$pull': { professionals : { professionalID: professionalID } } }, { multi:true }, function(err) {
 					if(err) {
 						console.log(err);
-						reject(err);
 					} else {
-						return resolve(nb);
+						physioDOM.db.collection("professionals").remove({ _id: professionalID}, function (err, nb) {
+							if(err) {
+								console.log(err);
+								reject(err);
+							} else {
+								return resolve(nb);
+							}
+						});
 					}
-				});
+				})
+
 			});
 		}
 

@@ -255,7 +255,9 @@ function Professional() {
 								switch(key) {
 									case "name":
 										that.name.family = capitalize(that.name.family);
-										that.name.given = capitalize(that.name.given);
+										if( that.name.given ) {
+											that.name.given = capitalize(that.name.given);
+										}
 										break;
 									default:
 								}

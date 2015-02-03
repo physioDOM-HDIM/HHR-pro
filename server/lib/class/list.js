@@ -53,7 +53,12 @@ function List() {
 				if(!doc) {
 					reject( {code:404, error:"not found"});
 				} else {
+					if(doc.hasOwnProperty('hasRank')) {
+						doc.items.sort(function(a,b) { return a.rank - b.rank } );
+					}
+
 					for (var prop in doc) {
+
 						if (doc.hasOwnProperty(prop)) {
 							that[prop] = doc[prop];
 						}
@@ -75,8 +80,9 @@ function List() {
 	this.lang = function( lang ) {
 		var that = this;
 		return new promise( function( resolve, reject ) {
-			logger.trace("lang",lang);
-			if( !lang || physioDOM.lang.indexOf(lang) === -1 ) {
+			logger.trace("lang", that.name, lang );
+			if( !lang || physioDOM.config.languages.indexOf(lang) === -1 ) {
+				logger.warning("unsupported language ", lang);
 				reject( { code:405, message:"unrecognized language"});
 			}
 			var options = { defaultValue: that.defaultValue, items:[] };
@@ -85,10 +91,17 @@ function List() {
 				resolve( options );
 			} else {
 				that.items.forEach(function (listItem) {
-					if (( !listItem.hasOwnProperty("active") || listItem.active === true) && listItem.label.hasOwnProperty(lang)) {
-						options.items.push({value: listItem.ref, label: listItem.label[lang]});
+					if (( !listItem.hasOwnProperty("active") || listItem.active === true) ) {
+						var label;
+						if( listItem.label[lang] === undefined && listItem.label.en === undefined ) {
+							label = listItem.ref;
+						} else {
+							label = listItem.label[lang] || listItem.label.en;
+						}
+						options.items.push({value: listItem.ref, label: label  });
 					}
 					if (--count === 0) {
+						// logger.debug("-> Lang ", options );
 						resolve(options);
 					}
 				});
@@ -252,7 +265,7 @@ function List() {
 			that.getItemIndx( itemRef )
 				.then( function(indx) {
 					for( var lang in translation ) {
-						if( physioDOM.lang.indexOf( lang ) === -1 ) {
+						if( physioDOM.config.languages.indexOf( lang ) === -1 ) {
 							throw { code:405, message:"lang '"+lang+"' is not managed"};
 						} else {
 							that.items[indx].label[lang] = translation[lang];

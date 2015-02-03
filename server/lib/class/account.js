@@ -57,7 +57,11 @@ function Account( obj ) {
 				person   : that.person
 			};
 			var session = new Session( obj );
-			session.save()
+			session.getPerson()
+				.then( function( session ) {
+					session.lang = session.person.item.communication || physioDOM.lang;
+					return session.save();
+				})
 				.then(resolv)
 				.catch(reject);
 		});

@@ -1,6 +1,6 @@
 {% extends './page.htm' %}
 
-{% block title %}Data Record{% endblock %}
+{% block title %}{{'Results synthesis'|i18n}}{% endblock %}
 
 {% block head %}
 {% parent %}
@@ -29,9 +29,10 @@
 <div id="synthesis">
 	<div class="row">
 		<div class="col"></div>
-		<div class="col bold">First Measure</div>
-		<div class="col bold">Last Measure</div>
-		<div class="col bold">Delta</div>
+		<div class="col bold">{{'Unit'|i18n}}</div>
+		<div class="col bold">{{'First Measure'|i18n}}</div>
+		<div class="col bold">{{'Last Measure'|i18n}}</div>
+		<div class="col bold">{{'Delta'|i18n}}</div>
 	</div>
 </div>
 
@@ -39,6 +40,7 @@
 <script type="template" id="tpl-line">
 {{#parameter}}
 	<div class="col">{{name}}</div>
+	<div class="col"><div class="bold spacing-around result">{{unit}}</div></div>
 	<div class="col"><div class="bold spacing-around result">{{firstValue}}</div> ({{firstMeasureDatetime}})</div>
 	<div class="col"><div class="bold spacing-around result">{{lastValue}}</div> ({{lastMeasureDatetime}})</div>
 	<div class="col"><div class="bold spacing-around result">{{delta}}</div></div>

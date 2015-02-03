@@ -20,13 +20,13 @@
 <div id="content">
 	<zdk-panel heading="{{ 'Well being' | i18n }}">
 		<form name="form" id="form" autocomplete="off" onsubmit="checkForm(); return false;">
-			<div class="row value-row questionnaire-row" data-name="SF12">
-				<div flex class="value-name">{{'SF 12 score'|i18n}}</div>
-				<div class="questionnaire-date">{% if status.sf12Date %}{{status.sf12Date | date('Y-m-d')}}{% endif %}</div>
-				<input type="text" class="questionnaire-score" value="{{status.sf12Score}}" readonly />
-				<input type="hidden" class="questionnaire-answer" name="sf12Answer" value="{{status.sf12Answer}}" />
+			<div class="row value-row questionnaire-row" data-name="SF36">
+				<div class="quest-name">{{'SF 36 score'|i18n}}</div>
+				<div class="questionnaire-date">{% if status.sf36Date %}{{status.sf36Date | date }}{% endif %}</div>
+				<input type="text" class="questionnaire-score" value="{{status.sf36Score}}" readonly />
+				<input type="hidden" class="questionnaire-answer" name="sf36Answer" value="{{status.sf36Answer}}" />
 				<div class="questionnaire-button-container">
-					<a class="button small blue" href={% if status.sf12Answer %}"/answers/{{status.sf12Answer}}"{% else %}"/questionnaire/SF12"{% endif %}>{{'Questionnaire'|i18n}}</a>
+					<a class="button small blue" href={% if status.sf36Answer %}"/answers/{{status.sf36Answer}}"{% else %}"/questionnaire/SF36"{% endif %}>{{'Questionnaire'|i18n}}</a>
 				</div>
 			</div>
 			{% if rights.write %}

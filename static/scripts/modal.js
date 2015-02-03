@@ -19,6 +19,28 @@ function Modal (type, callback) {
         }]
     };
 
+    content.errorDateExist = {
+        title: "trad_error",
+        content: "trad_error_date_exist",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
+    content.errorDateOld = {
+        title: "trad_error",
+        content: "trad_error_date_old",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                self.closeModal();
+            }
+        }]
+    };
+
     content.errorRef = {
         title: "trad_error",
         content: "trad_error_ref",
@@ -173,7 +195,30 @@ function Modal (type, callback) {
         }]
     };
 
-    
+    content.cancelChange = {
+		title: "trad_warning",
+		content: "trad_cancel_change",
+		buttons: [
+			{
+				id: "trad_no",
+				action: function() {
+					if(callback) {
+						callback(false);
+					}
+					self.closeModal();
+				}
+			},
+			{
+				id: "trad_continue",
+				action: function() {
+					if(callback) {
+						callback(true);
+					}
+					self.closeModal();
+				}
+			}
+		]
+	};
 
     content.createSuccess = {
         title: "trad_create",
@@ -245,6 +290,23 @@ function Modal (type, callback) {
         }]
     };
 
+	content.confirmDeleteRecord = {
+		title: "trad_delete",
+		content: "trad_confirm_delete_record",
+		buttons: [{
+			id: "trad_yes",
+			action: function() {
+				callback();
+				self.closeModal();
+			}
+		}, {
+			id: "trad_no",
+			action: function() {
+				self.closeModal();
+			}
+		}]
+	};
+	
     content.confirmDeleteItem = {
         title: "trad_delete",
         content: "trad_confirm_delete",
@@ -367,6 +429,11 @@ Modal.prototype.showModal = function(modalObj) {
                         color = "green";
                     }
                     break;
+				case "trad_continue":
+					{
+						color = "blue";
+					}
+					break;
                 case "trad_yes":
                     {
                         color = "green";

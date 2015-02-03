@@ -17,7 +17,7 @@ var beneficiarySchema = {
 		"deceased"     : {type: "boolean"},
 		"address"      : {type: "array", item: {"$ref": "/SimpleAddress"} },
 		"gender"       : { type:"string", "enum": [ "F" , "M" ] , "required":true},
-		"maritalStatus": {type: "string", "enum": maritalStatus},
+		"maritalStatus": {type: "string"},
 		"active"       : {type: "boolean" },
 		"contact"      : {type: "array", "$ref": "/ContactPartner"},
 		"account"      : {type: "object", "description": "ObjectID of the account"},
@@ -44,7 +44,8 @@ var beneficiarySchema = {
 				"startDate" : {format: "date", required:true},
 				"plannedEnd": {format: "date"},
 				"endDate"   : {format: "date"},
-				"comeFrom"  : {type: "string"}
+				"comeFrom"  : {type: "string"},
+				"destination": { type:"string"}
 			},
 			"additionalProperties": false
 		},

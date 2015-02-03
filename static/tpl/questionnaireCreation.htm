@@ -7,282 +7,112 @@
 <script src="/bower_components/mustache/mustache.js"></script>
 <script src="/bower_components/rsvp/rsvp.min.js"></script>
 <script src="/bower_components/form2js/src/form2js.js"></script>
+
+<script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
+<script src="/tpl/questionnaireCreation.js"></script>
+
+<link rel="stylesheet" href="/styles/questionnaireCreation.css">
+
 {% endblock %}
 
 {% block content %}
+<div class="hidden" id="unsave">{{"You have unsaved data"|i18n}}</div>
+
 <script type="text/template" id="tplHeaderQuestion">
-	<div class="row">
-		<div class="col">
-			<label class="bold">Header ref: </label>
-			<input type="text" name="{%raw%}{{name}}.headerRef{%endraw%}" />
-		</div>
-	    <div class="col">
-			<label class="bold">{%raw%}Trad: ({{lang}}) {%endraw%}</label>
-			<input type="text" name="{%raw%}{{name}}.headerLabel.{{lang}}{%endraw%}" />
-		</div>
+	<div class="row control spaced">
+		<span class="spacer"></span>
+		<button type="button" class="small red deleteQuestion">Delete header question</button>
 	</div>
+
+	<div class="row">
+		<label class="bold">Header ref: </label>
+		<input type="text" name="{%raw%}{{name}}.headerRef{%endraw%}" />
+	</div>
+
+	<div class="row">
+		<label class="bold">{%raw%}Header (<span class="lang-info"></span>):  {%endraw%}</label>
+		{% for item in communication.items %}
+			<input type="text" name="{%raw%}{{name}}{%endraw%}.headerLabel.{{item.value}}" id="{{item.value}}" class="trad-input hidden" />
+		{% endfor %}
+	</div>
+
 	<div class="row">
 		<label class="bold">Subscore: </label>
 		<input type="text" name="{%raw%}{{name}}.subscore{%endraw%}" />
 	</div>
+
 	<div class="row control btnContainer">
 		<span class="spacer"></span>
-		<button type="button" class="small red deleteHeaderQuestion">delete header question</button>
-	</div>
-	<hr>
-	<div class="row control btnContainer">
-		<span class="spacer"></span>
-		<button type="button" class="small blue addHeaderQuestion" data-obj="{%raw%}{{name}}.questions;{{lang}}{%endraw%}">add header question</button>
-		<button type="button" class="small blue addQuestion" data-obj="{%raw%}{{name}}.questions;{{lang}}{%endraw%}">add question</button>
+		<button type="button" class="small blue addHeaderQuestion" data-obj="{%raw%}{{name}}.questions;{%endraw%}">Add header question</button>
+		<button type="button" class="small blue addQuestion" data-obj="{%raw%}{{name}}.questions;{%endraw%}">Add question</button>
 	</div>
 </script>
 
 <script type="text/template" id="tplQuestion">
-	<div class="row">
-		<div class="col">
-			<label class="bold">Question ref: </label>
-			<input type="text" name="{%raw%}{{name}}.ref{%endraw%}" />
-		</div>
-		<div class="col">
-			<label class="bold">{%raw%}Trad: ({{lang}}){%endraw%}</label>
-			<input type="text" name="{%raw%}{{name}}.label.{{lang}}{%endraw%}" />
-		</div>
-		<div class="col btnContainer">
-			<button type="button" class="small red deleteQuestion">delete question</button>
-		</div>
+
+	<div class="row control spaced">
+		<span class="spacer"></span>
+		<button type="button" class="small red deleteQuestion">Delete question</button>
 	</div>
-	<br/>
+
+	<div class="row">
+		<label class="bold">Question ref: </label>
+		<input type="text" name="{%raw%}{{name}}.ref{%endraw%}" />
+	</div>
+	<div class="row">
+		<label class="bold">{%raw%}Trad: (<span class="lang-info"></span>){%endraw%}</label>
+		{% for item in communication.items %}
+			<input type="text" name="{%raw%}{{name}}{%endraw%}.label.{{item.value}}" id="{{item.value}}" class="trad-input hidden" />
+		{% endfor %}
+	</div>
+
 	<div class="row control btnContainer">
 		<span class="spacer"></span>
-		<button type="button" class="small blue addChoice" data-obj="{%raw%}{{name}}.choice;{{lang}}{%endraw%}">add choice</button>
+		<button type="button" class="small blue addChoice" data-obj="{%raw%}{{name}}.choice;{%endraw%}">Add choice</button>
 	</div>
-	<br/>
+
 </script>
 
 <script type="text/template" id="tplChoice">
-	<div class="col">
-		<label>Choice ref</label>
-		<input type="text" name="{%raw%}{{name}}.ref{%endraw%}" />
+
+	<div class="row">
+		<div class="col">
+			<label>Choice ref</label>
+			<input type="text" name="{%raw%}{{name}}.ref{%endraw%}" />
+		</div>
+		<div class="col">
+			<label>{%raw%}Trad (<span class="lang-info"></span>): {%endraw%}</label>
+			{% for item in communication.items %}
+			<input type="text" name="{%raw%}{{name}}{%endraw%}.label.{{item.value}}" id="{{item.value}}" class="trad-input hidden" />
+			{% endfor %}
+		</div>
 	</div>
-	<div class="col">
-		<label>{%raw%}Trad: ({{lang}}){%endraw%}</label>
-		<input type="text" name="{%raw%}{{name}}.label.{{lang}}{%endraw%}" />
+
+	<div class="row">
+		<div class="col">
+			<label>Choice Value</label>
+			<input type="text" name="{%raw%}{{name}}.value{%endraw%}" />
+		</div>
+		<div class="col">
+			<label>Choice System</label>
+			<select name="{%raw%}{{name}}.system{%endraw%}">
+	    		<option value="integer">integer</option>
+	    		<option value="boolean">boolean</option>
+	    		<option value="decimal">decimal</option>
+	    		<option value="string">string</option>
+	    	</select>
+		</div>
 	</div>
-	<div class="col">
-		<label>Choice Value</label>
-		<input type="text" name="{%raw%}{{name}}.value{%endraw%}" />
+
+	<div class="row">
+		<div class="col btnContainer">
+			<div class="spacer"></div>
+			<button type="button" class="small red deleteChoice">Delete</button>
+		</div>
 	</div>
-	<div class="col">
-		<label>Choice System</label>
-		<select name="{%raw%}{{name}}.system{%endraw%}">
-    		<option value="integer">integer</option>
-    		<option value="boolean">boolean</option>
-    		<option value="decimal">decimal</option>
-    		<option value="string">string</option>
-    	</select>
-	</div>
-	<div class="col btnContainer">
-		<button type="button" class="small red deleteChoice">delete</button>
-	</div>
+
 </script>
-
-<script type="text/javascript">
-
-	var promiseXHR = function(method, url, statusOK, data) {
-	    var promise = new RSVP.Promise(function(resolve, reject) {
-	        var client = new XMLHttpRequest();
-	        statusOK = statusOK ? statusOK : 200;
-	        client.open(method, url);
-	        client.onreadystatechange = function handler() {
-	            if (this.readyState === this.DONE) {
-	                if (this.status === statusOK) {
-	                    resolve(this.response);
-	                } else {
-	                    reject(this);
-	                }
-	            }
-	        };
-	        client.send(data ? data : null);
-	    });
-
-	    return promise;
-	};
-
-	function _deleteHeaderQuestion(node){
-		console.log("_deleteHeaderQuestion");
-		while (!node.classList.contains("nestedQuestionnaire") && !node.classList.contains("itemContainer")){
-    		node = node.parentNode;
-    	}
-    	node.parentNode.removeChild(node);
-	}
-
-	function _deleteQuestion(node){
-		console.log("_deleteQuestion");
-		while (!node.classList.contains("nestedQuestionnaire") && !node.classList.contains("itemContainer")){
-    		node = node.parentNode;
-    	}
-    	node.parentNode.removeChild(node);
-	}
-
-	function _deleteChoice(node){
-		console.log("_deleteChoice");
-		while (!node.classList.contains("answers")){
-    		node = node.parentNode;
-    	}
-    	node.parentNode.removeChild(node);
-	}
-
-	function _addHeaderQuestion(node){
-		console.log("_addHeaderQuestion", node.getAttribute("data-obj"));
-		var obj, elt, modelData, html, div, cl;
-
-		obj = node.getAttribute("data-obj").split(";");
-		elt = document.querySelector("#tplHeaderQuestion").innerHTML;
-	    modelData = { name: obj[0]+"["+(""+Math.random()).split(".")[1]+"]", lang: obj[1]};
-	    html = Mustache.render(elt, modelData);
-	    div = document.createElement("div");
-	    div.innerHTML = html;
-
-	    while (!node.classList.contains("btnContainer")){
-    		node = node.parentNode;
-    	}
-    	cl = node.parentNode.classList;
-    	div.className = cl.contains("itemContainer") || cl.contains("nestedQuestionnaire") ? "nestedQuestionnaire" : "itemContainer";
-    	node.parentNode.insertBefore(div, node);
-	}
-
-	function _addQuestion(node){
-		console.log("_addQuestion", node.getAttribute("data-obj"));
-
-		var obj, elt, modelData, html, div, cl;
-
-		obj = node.getAttribute("data-obj").split(";");
-		elt = document.querySelector("#tplQuestion").innerHTML;
-	    modelData = { name: obj[0]+"["+(""+Math.random()).split(".")[1]+"]", lang: obj[1]};
-	    html = Mustache.render(elt, modelData);
-	    div = document.createElement("div");
-	    div.innerHTML = html;
-
-	    while (!node.classList.contains("btnContainer")){
-    		node = node.parentNode;
-    	}
-    	cl = node.parentNode.classList;
-    	div.className = cl.contains("itemContainer") || cl.contains("nestedQuestionnaire") ? "nestedQuestionnaire" : "itemContainer";
-    	node.parentNode.insertBefore(div, node);
-	}
-
-	function _addChoice(node){
-		console.log("_addChoice", node.getAttribute("data-obj"));
-		var obj, elt, modelData, html, div;
-
-		obj = node.getAttribute("data-obj").split(";");
-		elt = document.querySelector("#tplChoice").innerHTML;
-	    modelData = { name: obj[0]+"["+(""+Math.random()).split(".")[1]+"]", lang: obj[1]};
-	    html = Mustache.render(elt, modelData);
-	    div = document.createElement("div");
-	    div.className = "row answers";
-	    div.innerHTML = html;
-
-	    while (!node.classList.contains("btnContainer")){
-    		node = node.parentNode;
-    	}
-    	node.parentNode.insertBefore(div, node);
-	}
-
-	function saveForm(){
-		console.log("saveForm");
-		var obj = form2js(document.forms.newQ);
-		console.log("res", obj);
-
-		if(obj._id){
-			//Update
-			promiseXHR("PUT", "/api/questionnaires/" + obj._id, 200, JSON.stringify(obj)).then(function(response) {
-	            alert("SUCCESS");
-	        }, function(error) {
-	            alert("FAILED");
-	            console.log("saveForm - error: ", error);
-	        });
-		}
-		else{
-			//Creation
-			promiseXHR("POST", "/api/questionnaires", 200, JSON.stringify(obj)).then(function(response) {
-	            alert("SUCCESS");
-	            //set questionnaire id
-	            var obj = JSON.parse(response);
-	            if(obj._id){
-	            	document.querySelector("#questionnaireID").value = obj._id;
-	            }
-	        }, function(error) {
-	            alert("FAILED");
-	            console.log("saveForm - error: ", error);
-	        });
-		}
-	};
-
-function init() {
-	console.log("init");
-
-    //Event click management
-    document.forms.newQ.addEventListener("click", function(evt){
-    	var node = evt.target,
-    		cl = node.classList;
-
-    	if(node.tagName.toLowerCase() !== "button"){
-    		return;
-    	}
-
-    	if(cl.contains("deleteHeaderQuestion")){
-    		_deleteHeaderQuestion(node);
-    	}
-    	else if(cl.contains("addHeaderQuestion")){
-    		_addHeaderQuestion(node);
-    	}
-    	else if(cl.contains("addQuestion")){
-    		_addQuestion(node);
-    	}
-		else if(cl.contains("deleteQuestion")){
-    		_deleteQuestion(node);
-    	}
-    	else if(cl.contains("deleteChoice")){
-    		_deleteChoice(node);
-    	}
-    	else if(cl.contains("addChoice")){
-    		_addChoice(node);
-    	}
-
-    }, true);
-}
-
-window.addEventListener("DOMContentLoaded", init, false);
-</script>
-<style>
-	.answers{
-		margin-left: 30px;
-	}
-	.space{
-		width: 20%;
-		margin: 30px auto;
-		border-color: black;
-	}
-	.nestedQuestionnaire{
-		margin-left: 20px;
-	}
-	div.col.btnContainer{
-		flex: 0.15;
-		-ms-flex: 0.15;
-		-moz-flex: 0.15;
-		-webkit-flex: 0.15;
-	}
-	form{
-		position: relative;
-	}
-	.nestedQuestionnaire{
-		background: rgb(190, 190, 190);
-	}
-	.itemContainer{
-		background: rgb(228, 228, 228);
-	}
-</style>
 
 {% macro tpl(q, idx) %}
 	{% set name = "questions" %}
@@ -293,26 +123,33 @@ window.addEventListener("DOMContentLoaded", init, false);
 		{% endif %}
 	{% endfor %}
 
+	<div class="row control spaced">
+		<span class="spacer"></span>
+		<button type="button" class="small red deleteQuestion">
+		{% if q.headerRef %}
+			Delete header question
+		{% else %}
+			Delete question
+		{% endif %}
+		</button>
+	</div>
+
 	{% if q.headerRef %}
 		<div class="row">
-			<div class="col">
-				<label class="bold">Header ref: </label>
-				<input type="text" name="{{name}}.headerRef" value="{{q.headerRef}}" />
-			</div>
-			<div class="col">
-				<label class="bold">Trad: ({{lang}}) </label>
-				<input type="text" name="{{name}}.headerLabel.{{lang}}" value="{{q.headerLabel[lang]}}" />
-			</div>
+			<label class="bold">Header ref: </label>
+			<input type="text" name="{{name}}.headerRef" value="{{q.headerRef}}" />
+		</div>
+		<div class="row">
+			<label class="bold">Trad: (<span class="lang-info"></span>) </label>
+			{% for item in communication.items %}
+				<input type="text" name="{{name}}.headerLabel.{{item.value}}" value="{% if q.headerLabel[item.value] %}{{ q.headerLabel[item.value] }}{% endif %}" id="{{item.value}}" class="trad-input hidden" />
+			{% endfor %}
 		</div>
 		<div class="row">
 			<label class="bold">Subscore: </label>
 			<input type="text" name="{{name}}.subscore" value="{{q.subscore}}" />
 		</div>
-		<div class="row control btnContainer">
-			<span class="spacer"></span>
-			<button type="button" class="small red deleteHeaderQuestion">delete header question</button>
-		</div>
-		<hr>
+		<hr class="nested-space">
 		{% for subQ in q.questions %}
 			{% set idx = idx|push(loop.index) %}
 			<div class="nestedQuestionnaire">
@@ -323,95 +160,129 @@ window.addEventListener("DOMContentLoaded", init, false);
 			{% if loop.last %}
 				<div class="row control btnContainer">
 					<span class="spacer"></span>
-					<button type="button" class="small blue addHeaderQuestion" data-obj="{{name}}.questions;{{lang}}">add header question</button>
-					<button type="button" class="small blue addQuestion" data-obj="{{name}}.questions;{{lang}}">add question</button>
+					<button type="button" class="small blue addHeaderQuestion" data-obj="{{name}}.questions;">Add header question</button>
+					<button type="button" class="small blue addQuestion" data-obj="{{name}}.questions;">Add question</button>
 				</div>
 			{% endif %}
 		{% endfor %}
 	{% else %}
 		<div class="row">
-			<div class="col">
-				<label class="bold">Question ref: </label>
-				<input type="text" name="{{name}}.ref" value="{{q.ref}}" />
-			</div>
-			<div class="col">
-				<label class="bold">Trad: ({{lang}})</label>
-				<input type="text" name="{{name}}.label.{{lang}}" value="{{q.label[lang]}}" />
-			</div>
-			<div class="col btnContainer">
-				<button type="button" class="small red deleteQuestion">delete question</button>
-			</div>
+			<label class="bold">Question ref: </label>
+			<input type="text" name="{{name}}.ref" value="{{q.ref}}" />
 		</div>
-		<br/>
+
+		<div class="row">
+			<label class="bold">Question (<span class="lang-info"></span>): </label>
+			{% for item in communication.items %}
+				<input type="text" name="{{name}}.label.{{item.value}}" value="{% if q.label[item.value] %}{{ q.label[item.value] }}{% endif %}" id="{{item.value}}" class="trad-input hidden" />
+			{% endfor %}
+		</div>
 	{% endif %}
+
+	<div class="answer-list">
 	{% for c in q.choice %}
-		<div class="row answers">
-			<div class="col">
-				<label>Choice ref</label>
-				<input type="text" name="{{name}}.choice[{{loop.index}}].ref" value="{{c.ref}}" />
+		<div class="answer">
+
+			<div class="row spaced">
+
+				<div class="bold label-question">
+					{{c.label[lang]}}
+				</div>
+				<div class="spacer"></div>
+
+				<button type="button" class="small blue mode-read" onclick="showQuestion(this, true)">Show</button>
+				<button type="button" class="small blue mode-edit hidden" onclick="showQuestion(this, false)">Hide</button>
+
 			</div>
-			<div class="col">
-				<label>Trad: ({{lang}})</label>
-				<input type="text" name="{{name}}.choice[{{loop.index}}].label.{{lang}}" value="{{c.label[lang]}}" />
+
+			<div class="row mode-edit hidden">
+
+				<div class="col">
+					<label>Choice ref</label>
+					<input type="text" name="{{name}}.choice[{{loop.index}}].ref" value="{{c.ref}}" />
+				</div>
+				<div class="col input-label-update">
+					<label>Trad: (<span class="lang-info"></span>)</label>
+					{% set idx = loop.index;%}
+					{% for item in communication.items %}
+						<input type="text" name="{{name}}.choice[{{idx}}].label.{{item.value}}" value="{% if c.label[item.value] %}{{ c.label[item.value] }}{% endif %}" id="{{item.value}}" class="trad-input hidden" onkeyup="updateLabel(this)" />
+					{% endfor %}
+				</div>
 			</div>
-			<div class="col">
-				<label>Choice Value</label>
-				<input type="text" name="{{name}}.choice[{{loop.index}}].value" value="{{c.value}}" />
+			<div class="row mode-edit hidden">
+
+				<div class="col">
+					<label>Choice Value</label>
+					<input type="text" name="{{name}}.choice[{{loop.index}}].value" value="{{c.value}}" />
+				</div>
+				<div class="col">
+					<label>Choice System</label>
+					<select name="{{name}}.choice[{{loop.index}}].system">
+			    		<option value="integer" {% if c.system === "integer" %}selected{% endif %}>integer</option>
+			    		<option value="boolean" {% if c.system === "boolean" %}selected{% endif %}>boolean</option>
+			    		<option value="decimal" {% if c.system === "decimal" %}selected{% endif %}>decimal</option>
+			    		<option value="string" {% if c.system === "string" %}selected{% endif %}>string</option>
+			    	</select>
+				</div>
+
 			</div>
-			<div class="col">
-				<label>Choice System</label>
-				<select name="{{name}}.choice[{{loop.index}}].system">
-		    		<option value="integer" {% if c.system === "integer" %}selected{% endif %}>integer</option>
-		    		<option value="boolean" {% if c.system === "boolean" %}selected{% endif %}>boolean</option>
-		    		<option value="decimal" {% if c.system === "decimal" %}selected{% endif %}>decimal</option>
-		    		<option value="string" {% if c.system === "string" %}selected{% endif %}>string</option>
-		    	</select>
-			</div>
-			<div class="col btnContainer">
-				<button type="button" class="small red deleteChoice">delete</button>
+
+			<div class="row mode-edit hidden">
+
+				<div class="col btnContainer">
+					<div class="spacer"></div>
+					<button type="button" class="small red deleteChoice">Delete</button>
+				</div>
+
 			</div>
 		</div>
+
 		{% if loop.last %}
 			<div class="row control btnContainer">
 				<span class="spacer"></span>
-				<button type="button" class="small blue addChoice" data-obj="{{name}}.choice;{{lang}}">add choice</button>
+				<button type="button" class="small blue addChoice" data-obj="{{name}}.choice;">Add choice</button>
 			</div>
-			<br/>
 		{% endif %}
+
 	{% endfor %}
+	</div>
+
 {% endmacro %}
 
 <div class="mainContainer">
 	<form name="newQ" autocomplete="off" onsubmit="saveForm(); return false;">
 		<input id="questionnaireID" type="hidden" name="_id" value="{{questionnaire._id.toString()}}"/>
 		<div class="row">
-			<div class="col">
-				<label>Questionnaire name</label>
-				<input type="text" name="name" value="{{questionnaire.name}}"/>
-			</div>
-			<div class="col">
-				<label>Questionnaire ref</label>
-				<input type="text" name="ref" value="{{questionnaire.ref}}"/>
-			</div>
-			<div class="col">
-				<label>Trad: ({{lang}})</label>
-				<input type="text" name="label.{{lang}}" {% if questionnaire.label[lang] %}value="{{questionnaire.label[lang]}}"{% endif %}/>
-			</div>
+			<div class="spacer"></div>
+			<label>{{ "Language"| i18n }} :</label>
+			<select name="lang" id="lang" onchange="changeLang(this.value);">
+				{% for item in communication.items %}
+				<option value="{{item.value}}">{{item.label}}</option>
+				{% endfor %}
+			</select>
 		</div>
-		<hr>
+		<div class="row">
+				<label class="bold">Questionnaire name</label>
+				<input type="text" name="name" value="{{questionnaire.name}}"/>
+		</div>
+		<div class="row">
+			<label class="bold">Questionnaire ref</label>
+			<input type="text" name="ref" value="{{questionnaire.ref}}"/>
+		</div>
+		<!-- <div class="col">
+			<label>Trad: ({{lang}})</label>
+			<input type="text" name="label.{{lang}}" {% if questionnaire.label[lang] %}value="{{questionnaire.label[lang]}}"{% endif %}/>
+		</div> -->
 		{% for q in questionnaire.questions %}
 			<div class="itemContainer">
 				{% set number = "" %}
 				{{tpl(q, [loop.index])}}
 			</div>
-			{% if !loop.last %}
-				<hr class="space">
-			{% endif %}
 		{% endfor %}
 		<div class="row control btnContainer">
 			<span class="spacer"></span>
-			<button id="addHeader" type="button" class="blue addHeaderQuestion" data-obj="questions;{{lang}}">New Header Question</button>
-			<button id="addSimple" type="button" class="blue addQuestion" data-obj="questions;{{lang}}">New Simple Question</button>
+			<button id="addHeader" type="button" class="blue addHeaderQuestion" data-obj="questions;">New Header Question</button>
+			<button id="addSimple" type="button" class="blue addQuestion" data-obj="questions;">New Simple Question</button>
 		</div>
 		<div class="row control">
 			<span class="spacer"></span>
@@ -420,4 +291,7 @@ window.addEventListener("DOMContentLoaded", init, false);
 		</div>
 	</form>
 </div>
+
+{% include 'modal.htm' %}
+
 {% endblock %}

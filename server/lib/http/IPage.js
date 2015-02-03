@@ -31,7 +31,8 @@ var logger = new Logger("IPage");
 var i18n = new(require('i18n-2'))({
 	// setup some locales - other locales default to the first locale
 	devMode: true,
-	locales: ["en", "es", "nl", "fr"]
+	locales: ["en", "es", "nl", "fr"],
+	extension:".json"
 });
 
 /**
@@ -45,10 +46,18 @@ function IPage() {
 	var lang;
 
 	function init(req) {
-		lang = req.session.lang || req.cookies.lang || req.params.lang || "en";
+		if(req.session) {
+			console.log("test");
+			lang = req.session.lang || req.cookies.lang || req.params.lang || physioDOM.lang;
+		} else {
+			lang = req.cookies.lang || req.params.lang || physioDOM.lang;
+		}
+		logger.info("lang", lang);
+		
 		i18n.setLocale(lang);
-
-		swig.setDefaults({cache: false});
+		moment.locale(req.cookies.lang=="en"?"en-gb":req.cookies.lang)
+		
+		swig.setDefaults( {cache: physioDOM.config.cache} );
 		swig.setFilter("i18n", function (input, idx) {
 			// console.log("input", input, idx);
 			return i18n.__(input);
@@ -60,6 +69,9 @@ function IPage() {
 		swig.setFilter("pop", function (arr) {
 				arr.pop();
 				return arr;
+		});
+		swig.setFilter("date", function( date ) {
+			return moment(date).format("L");
 		});
 	}
 
@@ -95,6 +107,26 @@ function IPage() {
 			});
 	}
 	
+	this.login = function( req, res, next ) {
+		logger.trace("login page");
+		var html;
+		
+		init(req);
+		
+		logger.trace("login page 2");
+		html = swig.renderFile(DOCUMENTROOT+'/static/index.htm', [], function(err, output) {
+			if (err) {
+				console.log("error", err);
+				console.log("output", output);
+				res.write(err);
+				res.end();
+				next();
+			} else {
+				sendPage(output, res, next);
+			}
+		});
+	}
+	
 	/**
 	 * Main Layout
 	 *
@@ -110,7 +142,7 @@ function IPage() {
 		
 		new Menu().getMenu( req.session.role )
 			.then( function( menu ) {
-				logger.debug("menu",req.session.role, menu);
+				// logger.debug("menu",req.session.role, menu);
 				var data = {
 					admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
 					items: menu
@@ -118,7 +150,7 @@ function IPage() {
 
 				req.session.getPerson()
 					.then(function(session) {
-						logger.debug("person", session.person);
+						// logger.debug("person", session.person);
 						data.account = {
 								firstname: session.person.item.name.given.slice(0, 1).toUpperCase(),
 								lastname: session.person.item.name.family
@@ -215,6 +247,7 @@ function IPage() {
 			"role",
 			"job",
 			"communication",
+			"organizationType",
 			"perimeter"
 		].map(promiseList);
 
@@ -228,14 +261,13 @@ function IPage() {
 				lists.forEach(function(list) {
 					data[Object.keys(list)] = list[Object.keys(list)];
 				});
+				console.log( data.organizationType );
 				return physioDOM.Directory();
 			})
 			.then(function(directory) {
 				return directory.getAdminEntryByID(req.params.professionalID);
 			})
 			.then(function(professional) {
-				logger.debug("data", JSON.stringify(data, null, 4));
-				logger.debug("prof ", professional);
 				if (professional) {
 					data.professional = professional;
 				}
@@ -286,6 +318,8 @@ function IPage() {
 			"wayOfLife",
 			"maritalStatus",
 			"disability",
+			"diagnosis",
+			"destination",
 			"communication",
 			"profession",
 			"perimeter",
@@ -362,6 +396,8 @@ function IPage() {
 			"wayOfLife",
 			"maritalStatus",
 			"disability",
+			"diagnosis",
+			"destination",
 			"communication",
 			"profession",
 			"perimeter",
@@ -521,7 +557,7 @@ function IPage() {
 			req.session.beneficiary = new ObjectID(req.params.beneficiaryID);
 		}
 		if(!req.session.beneficiary) {
-			logger.debug("no beneficiary selected");
+			// logger.debug("no beneficiary selected");
 			res.header('Location', '/beneficiaries');
 			res.send(302);
 			return next();
@@ -539,6 +575,8 @@ function IPage() {
 			"wayOfLife",
 			"maritalStatus",
 			"disability",
+			"diagnosis",
+			"destination",
 			"communication",
 			"profession",
 			"perimeter",
@@ -563,7 +601,9 @@ function IPage() {
 				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
 			})
 			.then( function( beneficiary ) {
+				moment.locale(req.cookies.lang=="en"?"en-gb":req.cookies.lang);
 				data.beneficiary = beneficiary;
+				data.beneficiary.birthdate = moment(data.beneficiary.birthdate).format("L")
 				return beneficiary._id ? beneficiary.getProfessionals() : null;
 			}).then(function(professionals){
 				if( professionals ){
@@ -611,7 +651,7 @@ function IPage() {
 
 		var promises = [
 			"communication",
-			"unity",
+			"units",
 			"job"
 		].map(promiseList);
 
@@ -670,7 +710,7 @@ function IPage() {
 
 		var promises = [
 			"communication",
-			"unity",
+			"units",
 			"job"
 		].map(promiseList);
 
@@ -684,7 +724,7 @@ function IPage() {
 					.then(function (list) {
 						data.list = list;
 						data.lang = lang;
-						logger.debug("DATA", data);
+						// logger.debug("DATA", data);
 
 						html = swig.renderFile(DOCUMENTROOT+'/static/tpl/list.htm', data, function (err, output) {
 							if (err) {
@@ -773,7 +813,17 @@ function IPage() {
 			rights: { read: admin, write:admin, url:"/questionnaires/create" }
 		};
 
-		physioDOM.Questionnaires()
+		var promises = [
+			"communication"
+		].map(promiseList);
+
+		RSVP.all(promises)
+			.then(function(lists) {
+				lists.forEach(function (list) {
+					data[Object.keys(list)] = list[Object.keys(list)];
+				});
+				return physioDOM.Questionnaires();
+			})
 			.then(function(questionnaires){
 				if(req.params.questionnaireName){
 					return questionnaires.getQuestionnaireByName(req.params.questionnaireName);
@@ -823,7 +873,7 @@ function IPage() {
 			.then( function( _rights ) {
 				data.rights = _rights;
 				data.rights.read = data.rights.write;
-				logger.debug("rights", data.rights );
+				// logger.debug("rights", data.rights );
 				return physioDOM.Questionnaires();
 			})
 			.then(function(questionnaires){
@@ -917,7 +967,7 @@ function IPage() {
 		};
 		
 		if( !req.session.beneficiary ) {
-			logger.debug("no beneficiary selected");
+			// logger.debug("no beneficiary selected");
 			res.header('Location', '/beneficiaries');
 			res.send(302);
 			return next();
@@ -983,15 +1033,16 @@ function IPage() {
 				return beneficiary.getCompleteDataRecordByID(req.params.dataRecordID);
 			})
 			.then(function(record) {
-				// jsut for test, otherwise read locale from session
-				moment.locale("en_gb");
-
+				var lang = req.session.person.item.communication || physioDOM.lang;
+				lang = lang==="en"?"en_gb":lang;
+				moment.locale( lang );
+				
+				logger.debug( record );
 				data.dataRecordItems = record;
 				data.dataRecordItems.datetime = moment(data.dataRecordItems.datetime).format("L LT");
 				data.view = 'update';
-				data.lang = lang;
 
-				console.log("dataRecordItems :", data.dataRecordItems);
+				// console.log("dataRecordItems :", data.dataRecordItems);
 
 				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/dataRecordEdit.htm', data, function(err, output) {
 					if (err) {
@@ -1025,14 +1076,14 @@ function IPage() {
 		};
 
 		if( !req.session.beneficiary ) {
-			logger.debug("no beneficiary selected");
+			// logger.debug("no beneficiary selected");
 			res.header('Location', '/beneficiaries');
 			res.send(302);
 			return next();
 		} else {
 			new Menu().rights( req.session.role, data.rights.url )
 				.then( function( _rights ) {
-					logger.debug("rights", _rights );
+					// logger.debug("rights", _rights );
 					data.rights = _rights;
 					return physioDOM.Beneficiaries();
 				})
@@ -1041,6 +1092,12 @@ function IPage() {
 				})
 				.then(function (beneficiary) {
 					data.beneficiary = beneficiary;
+					var jobFilter = ['physician', 'medical'];
+					return beneficiary.getProfessionals(jobFilter);
+				})
+				.then(function(professionals) {
+					console.log(professionals);
+					data.professionals = professionals;
 					data.view = 'create';
 					data.lang = lang;
 					// jsut for test, otherwise read locale from session
@@ -1078,7 +1135,7 @@ function IPage() {
 		};
 
 		if( !req.session.beneficiary ) {
-			logger.debug("no beneficiary selected");
+			// logger.debug("no beneficiary selected");
 			res.header('Location', '/beneficiaries');
 			res.send(302);
 			return next();
@@ -1131,7 +1188,7 @@ function IPage() {
 		};
 
 		if( !req.session.beneficiary ) {
-			logger.debug("no beneficiary selected");
+			// logger.debug("no beneficiary selected");
 			res.header('Location', '/beneficiaries');
 			res.send(302);
 			return next();
@@ -1186,7 +1243,7 @@ function IPage() {
 		};
 
 		if( !req.session.beneficiary ) {
-			logger.debug("no beneficiary selected");
+			// logger.debug("no beneficiary selected");
 			res.header('Location', '/beneficiaries');
 			res.send(302);
 			return next();
@@ -1363,7 +1420,7 @@ function IPage() {
 		};
 
 		if (!req.session.beneficiary) {
-			logger.debug("No beneficiary selected");
+			// logger.debug("No beneficiary selected");
 			res.header('Location', '/beneficiaries');
 			res.send(302);
 			return next();
@@ -1604,7 +1661,7 @@ function IPage() {
 				subMenu.push(menu);
 			}
 		}
-		logger.debug('_getSubMenu', parentId);
+		// logger.debug('_getSubMenu', parentId);
 		return subMenu;
 	}
 

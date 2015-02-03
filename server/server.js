@@ -13,13 +13,14 @@ var restify = require("restify"),
 	PhysioDOM = require("./lib/class/physiodom");
 
 var IDirectory = require('./lib/http/IDirectory'),
+	ICSV = require('./lib/http/ICSV'),
 	IBeneficiary = require('./lib/http/IBeneficiary'),
 	ILists = require("./lib/http/ILists"),
 	IPage = require("./lib/http/IPage"),
 	IQuestionnaire = require("./lib/http/IQuestionnaire"),
-	IDataRecord = require("./lib/http/IDataRecord"),
 	ICurrentStatus = require('./lib/http/ICurrentStatus'),
-	IMenu = require("./lib/http/IMenu");
+	IMenu = require("./lib/http/IMenu"),
+	configSchema = require("./lib/schema/configSchema.js");
 
 var pkg     = require('../package.json');
 var logger = new Logger( "PhysioDOM App");
@@ -36,7 +37,34 @@ program
 	.version(pkg.version)
 	.usage('[options] [dir]')
 	.option('-p, --port <port>', 'specify the port [8001]', Number, 8001)
+	.option('-c, --config <config>', 'configuration file', String )
 	.parse(process.argv);
+
+if( program.config ) {
+	if( !program.config.match(/^\//) ) {
+		program.config = path.join(__dirname+'/..',program.config );
+	}
+	var tmp = require(program.config);
+	var check = configSchema.validator.validate( tmp, { "$ref":"/Config"} );
+	if( check.errors.length ) {
+		for( var i= 0, l=check.errors.length; i<l; i++) {
+			logger.error( "config "+ check.errors[i].stack );
+		}
+		process.exit(1);
+	} else {
+		config.port = program.port || tmp.port;
+		config.Lang = tmp.Lang;
+		config.mongouri = "mongodb://"+tmp.mongo.ip+"/"+tmp.mongo.db;
+		config.queue = tmp.queue.protocol+"://"+tmp.queue.ip+":"+tmp.queue.port;
+		config.key = tmp.key;
+		config.cache = tmp.cache;
+		config.languages = tmp.languages;
+	}
+} else {
+	logger.error("you must provide a config file");
+	process.exit(1);
+}
+
 
 /**
  * requestLog
@@ -67,7 +95,7 @@ function responseLog(req, res) {
 	return;
 }
 
-var physioDOM = new PhysioDOM();   // PhysioDOM object is global and so shared to all modules
+var physioDOM = new PhysioDOM( config );   // PhysioDOM object is global and so shared to all modules
 // @todo move database uri to a config file
 physioDOM.connect("mongodb://127.0.0.1/physioDOM");
 global.physioDOM = physioDOM;
@@ -81,7 +109,7 @@ I18n.expressBind(server, {
 	// setup some locales - other locales default to en silently
 	locales: physioDOM.lang,
 	// change the cookie name from 'lang' to 'locale'
-	cookieName: 'locale'
+	cookieName: 'lang'
 });
 
 server.pre(function(req, res, next) {
@@ -201,40 +229,6 @@ server.use(function checkAcl(req, res, next) {
 	}
 	
 	return next();
-	/*
-	if( req.url.match(/^(\/|\/api\/login)$/) ) {
-		return next();
-	}
-	if(!req.cookies.sessionID) {
-			logger.warning("not authorized");
-			res.send(403);
-			return next(false);
-	} else {
-		physioDOM.getSession(req.cookies.sessionID)
-			.then( function(session) {
-				if( session.expire - (new Date()).getTime() < 0 ) {
-					logger.warning( "session has expired");
-					cookies.set('sessionID');
-					if( req.url.match(/^\/api/)) {
-						res.send(403, { code:"EXPIRED", msg:"session has expired"});
-						return next(false);
-					} else {
-						return readFile(path.join(DOCUMENT_ROOT, '/index.htm'), req, res, next);
-					}
-				} else {
-					
-					logger.debug("session expires at "+ moment().add( session.expire - (new Date()).getTime(), 'ms' ).format());
-					return next();
-				}
-			})
-			.catch( function(err) {
-				console.log("Error ", err);
-				cookies.set('sessionID');
-				res.send(403);
-				return next(false);
-			});
-	}
-	*/
 });
 
 function apiLogin(req, res, next) {
@@ -269,6 +263,7 @@ function apiLogin(req, res, next) {
 				.then( function(session) {
 					cookies.set('sessionID', session.sessionID, cookieOptions);
 					cookies.set('role', session.role, { path: '/', httpOnly : false} );
+					cookies.set('lang', session.lang || physioDOM.lang, { path: '/', httpOnly : false});
 					res.send(200, { code:200, message:"logged" } );
 					return next();
 				})
@@ -314,6 +309,8 @@ server.get( '/api/menu', IMenu.getMenu);
 // Rights
 server.put( '/api/rights', IMenu.putRights);
 
+server.get( '/api/directory/export', ICSV.getDirectory);
+
 server.get( '/api/directory', IDirectory.getEntries);
 server.post('/api/directory', IDirectory.createEntry);
 server.get( '/api/directory/:entryID', IDirectory.getEntry );
@@ -342,6 +339,7 @@ server.post('/api/beneficiary/datarecord', IBeneficiary.newDataRecord );
 server.put( '/api/beneficiary/datarecords/:dataRecordID', IBeneficiary.updateDataRecord );
 server.post('/api/beneficiary/thresholds', IBeneficiary.setThreshold);
 server.get( '/api/beneficiary/thresholds', IBeneficiary.getThreshold);
+server.del( '/api/beneficiary/datarecords/:dataRecordID', IBeneficiary.removeDataRecord );
 
 server.get( '/api/beneficiary/graph', IBeneficiary.getGraphDataList );
 server.get( '/api/beneficiary/graph/:category/:paramName', IBeneficiary.getGraphData );
@@ -468,13 +466,15 @@ server.get(/\/[^api|components\/]?$/, function(req, res, next) {
 	if( req.session ) {
 		return IPage.ui( req, res, next);
 	} else {
-		return readFile(path.join(DOCUMENT_ROOT, '/index.htm'), req, res, next);
+		var cookies = new Cookies(req, res);
+		cookies.set('lang',physioDOM.lang, cookieOptions);
+		return IPage.login( req, res, next);
 	}
 });
 
 server.get(/\/[^api\/]?.*/, serveStatic );
 
-server.listen(program.port, "127.0.0.1", function() {
+server.listen(config.port, "127.0.0.1", function() {
 	logger.info('------------------------------------------------------------------');
 	logger.info(server.name + ' listening at '+ server.url);
 });

@@ -8,7 +8,9 @@
 <script src="/bower_components/form2js/src/form2js.js"></script>
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
 <script src="/tpl/beneficiaries.js"></script>
-
+<style>
+	.inactive { opacity:0.5; }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -80,40 +82,40 @@
 					</div>
 					<div class="row control">
 						<span class="spacer"></span>
-						<button type="button" class="red" onclick="resetOrder()">Reset</button>
+						<button type="button" class="red" onclick="resetOrder()">{{"Reset" | i18n }}</button>
 						<button class="green">{{'Sort'|i18n}}</button>
 					</div>
 				</form>
 			</div>
 	</zdk-panel>
 	
-	<tsante-list url="/api/beneficiaries" pg="1" auto="true" unresolved id="tsanteList">
+	<tsante-list url="/api/beneficiaries" pg="1" offset="25" auto="true" unresolved id="tsanteList">
 		<template is="auto-binding" repeat="{% raw %}{{item in list.items}}{% endraw %}">
 			<div class="item">
 				<div class="row">
-					<div style="-webkit-flex:1; -ms-flex:1; flex:1">
-						<div>
+					<div style="-webkit-flex:1; -ms-flex:1; flex:1;" class="{% raw %}{{item.activeClass}}{% endraw %}">
+							<div>
 							<div flex>
 								<div style="font-weight:bold">{% raw %}{{item.name.family}} {{item.name.given}}{% endraw %}</div>
 							</div>
 							<div flex style="padding-left:50px;">
-								<div class="col"><span style="-webkit-flex:1; -ms-flex:1; flex:1">{{ "Last Event"|i18n }} : <b>{% raw %}{{ item.date }}{% endraw %}</b> {% raw %}{{item.dateFrom}}{% endraw %}</span></div>
+								<div class="col"><span style="-webkit-flex:1; -ms-flex:1; flex:1">{{ "Last event"|i18n }} : <b>{% raw %}{{ item.date }}{% endraw %}</b> {% raw %}{{item.dateFrom}}{% endraw %}</span></div>
 							</div>
 							<div class="row" style="padding-left:50px;">
-								<div class="col">{{ "Birth date:"| i18n }} {% raw %}{{item.birthdate}}{% endraw %}</div>
-								<div class="col">{{ "Perimeter:" | i18n }} {% raw %}{{item.perimeter | labelPerimeter}}{% endraw %}</div>
+								<div class="col">{{ "Birth date"| i18n }} : {% raw %}{{item.birthdate}}{% endraw %}</div>
+								<div class="col">{{ "Perimeter" | i18n }} : {% raw %}{{item.perimeter | labelPerimeter}}{% endraw %}</div>
 							</div>
 							<div class="row" style="padding-left:50px;">
-								<div class="col">{{ "Zip code:"  | i18n }} {% raw %}{{item.address | zipcode}}{% endraw %}</div>
-								<div class="col">{{ "City:"      | i18n }} {% raw %}{{item.address | city}}{% endraw %}</div>
+								<div class="col">{{ "Zip code"  | i18n }} : {% raw %}{{item.address | zipcode}}{% endraw %}</div>
+								<div class="col">{{ "City"      | i18n }} : {% raw %}{{item.address | city}}{% endraw %}</div>
 							</div>
 						</div>
 					</div>
 					<div>
 						{% if rights.write %}
-						<a href="/beneficiary/edit/{%raw%}{{item._id}}{% endraw %}"><button class="blue small" style="margin:5px">edit</button></a>
+						<a href="/beneficiary/edit/{%raw%}{{item._id}}{% endraw %}"><button class="blue small" style="margin:5px">{{"Edit"|i18n}}</button></a>
 						{% endif %}
-						<a href="/beneficiary/{%raw%}{{item._id}}{% endraw %}"><button class="blue small" style="margin:5px">select</button></a>
+						<a href="/beneficiary/{%raw%}{{item._id}}{% endraw %}"><button class="blue small" style="margin:5px">{{"Select"|i18n}}</button></a>
 					</div>
 				</div>
 			</div>

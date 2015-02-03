@@ -1,6 +1,6 @@
 {% extends './page.htm' %}
 
-{% block title %}Message to Home{% endblock %}
+{% block title %}{{'Message to Home' | i18n }}{% endblock %}
 
 {% block head %}
 {% parent %}
@@ -54,7 +54,7 @@
 
 			<div class="row spaced">
 				<div class="col">
-					<label class="collabel" for="startDate">{{ "Since"|i18n }}: </label>
+					<label class="collabel" for="startDate">{{ "Since"|i18n }} : </label>
 					<div class="colcontent">
 						<zdk-input-date class="startDate" name="startDate" style="z-index:100"></zdk-input-date>
 					</div>
@@ -106,6 +106,13 @@
 
 </zdk-panel>
 
+{% if rights.write %}
+<div class="row control actions">
+	<span class="spacer"></span>
+	<a href="/message/create"><button class="blue big">{{ "New message"|i18n }}</button></a>
+</div>
+{% endif %}
+
 <tsante-list url="/api/beneficiary/messages" pg="1" offset="25" auto="true" autoRender="false" unresolved id="tsanteList">
 <template is="auto-binding" repeat="{% raw %}{{item in list.items}}{% endraw %}">
 	<div class="item">
@@ -138,13 +145,6 @@
 	
 </template>
 </tsante-list>
-
-{% if rights.write %}
-<div class="row control actions">
-	<span class="spacer"></span>
-	<a href="/message/create"><button class="blue big">{{ "New message"|i18n }}</button></a>
-</div>
-{% endif %}
 
 {% include 'modal.htm' %}
 

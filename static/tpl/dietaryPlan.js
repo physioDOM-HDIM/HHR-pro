@@ -1,4 +1,5 @@
 var Utils = new Utils();
+var modified = false;
 
 /**
  * Init Data and listeners
@@ -6,7 +7,19 @@ var Utils = new Utils();
 
 window.addEventListener('DOMContentLoaded', function() {
 	initData();
+	document.addEventListener('change', function( evt ) {
+		modified = true;
+	}, true );
 }, false);
+
+window.addEventListener("beforeunload", function( e) {
+	var confirmationMessage;
+	if(modified) {
+		confirmationMessage = document.querySelector("#unsave").innerHTML;
+		(e || window.event).returnValue = confirmationMessage;     //Gecko + IE
+		return confirmationMessage;                                //Gecko + Webkit, Safari, Chrome etc.
+	}
+});
 
 var initData = function(callback) {
 
@@ -86,6 +99,7 @@ var saveRecommendation = function() {
 
 	Utils.promiseXHR("POST", "/api/beneficiary/dietary-plan", 200, JSON.stringify(recommendation)).then(function(response) {
         new Modal('saveSuccess', function() {
+			modified = false;
         	window.location.href = "/dietary-plan";
         });
     }, function(error) {

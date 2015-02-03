@@ -24,43 +24,49 @@ var logger = new Logger("questionnairePlan");
 function QuestionnairePlan( beneficiaryID ) {
 	this.subject = beneficiaryID;
 
-	this.getList = function( ) {
+	this.getList = function(lang) {
 		var that = this;
 		return new promise( function(resolve, reject) {
-			logger.trace("getList");
-			physioDOM.Questionnaires()
+			logger.trace("getList", lang);
+			physioDOM.Lists.getList( 'questionnaire' )
 				.then(function (questionnaires) {
-					return questionnaires.getQuestionnaires(1,100);
-				})
-				.then(function (questionnaires) {
+					logger.debug( "test",questionnaires );
 					var promises = questionnaires.items.map(function (questionnaire) {
-						return new promise( function(resolve, reject) {
-							var search = {subject: that.subject, ref: questionnaire.name};
-							physioDOM.db.collection("questionnairePlan").findOne(search, function (err, result) {
-								if(err || !result ) {
-									var ret = {
-										subject: that.subject,
-										frequency: "",
-										comment: "",
-										ref: search.ref,
-										date: [ ],
-										label: questionnaire.label
-									};
-									resolve( ret );
-								} else {
-									result.label = questionnaire.label;
-									resolve(result);
-								}
+						if(questionnaire.active) {
+							return new promise(function (resolve, reject) {
+								logger.debug("test1", questionnaire);
+								var search = {subject: that.subject, ref: questionnaire.ref};
+								physioDOM.db.collection("questionnairePlan").findOne(search, function (err, result) {
+									logger.debug("test2", result);
+									if (err || !result) {
+										var ret = {
+											subject  : that.subject,
+											frequency: "",
+											comment  : "",
+											ref      : questionnaire.ref,
+											date     : [],
+											label    : questionnaire.label[lang] || questionnaire.label.en
+										};
+										resolve(ret);
+									} else {
+										result.label = questionnaire.label;
+										resolve(result);
+									}
+								});
 							});
-						});
+						}
 					});
 					RSVP.all(promises)
 						.then(function ( programmings ) {
+							logger.debug( programmings );
+							/*
 							var result = [];
-							programmings.forEach( function( questProg ) {
-								result.push(questProg);
-							});
-							resolve(result);
+							programmings.forEach( 
+								function( questProg ) {
+									result.push(questProg);
+								});
+							*/
+							resolve(programmings);
 						});
 				});
 		});

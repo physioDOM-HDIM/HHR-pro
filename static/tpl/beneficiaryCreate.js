@@ -14,6 +14,8 @@ var _dataObj = null,
     tsanteListProfessionalElt = null,
     passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=])[a-zA-Z0-9!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=]{8,}$/;
 
+var modified = false;
+
 function _findProfessionalInBeneficiary(id, obj) {
     console.log("_findProfessionalInBeneficiary", arguments);
     var found = false,
@@ -318,7 +320,9 @@ function checkLifeCondForm() {
         new Modal('errorNoMaritalStatus');
         return false;
     }
-
+	if( formObj.lifeCond.disability.percent ) {
+		formObj.lifeCond.disability.percent = parseInt(formObj.lifeCond.disability.percent, 10);
+	}
     return formObj;
 }
 
@@ -386,6 +390,7 @@ function updateAll(obj) {
 
     if (_dataObj && _dataObj._id) {
         Utils.promiseXHR("PUT", "/api/beneficiaries/" + _dataObj._id, 200, JSON.stringify(obj)).then(function() {
+			modified = false;
             new Modal('updateSuccess');
         }, function(error) {
             new Modal('errorOccured');
@@ -667,6 +672,10 @@ function init() {
     tsanteListProfessionalElt = document.querySelector("#tsanteListProfessional");
     tsanteListProfessionalElt.addEventListener("tsante-response", _onHaveProfessionalsData, false);
 
+	document.addEventListener('change', function( evt ) {
+			modified = true;
+	}, true );
+	
     var promises,
         id = document.querySelector("form[name='beneficiary'] input[name='_id']").value;
 
@@ -730,7 +739,7 @@ function init() {
 
     //Set placeholder for date input according to the local from lang cookie
     //TODO get lang cookie
-    _langCookie = "en";
+    _langCookie = Cookies.get("lang");
     _momentFormat = moment.localeData(_langCookie).longDateFormat("L");
     [].map.call(document.querySelectorAll(".date"), function(item) {
         item.setAttribute("placeholder", _momentFormat);
@@ -743,3 +752,12 @@ function init() {
 }
 
 window.addEventListener("polymer-ready", init, false);
+
+window.addEventListener("beforeunload", function( e) {
+	var confirmationMessage;
+	if(modified) {
+		confirmationMessage = document.querySelector("#unsave").innerHTML;
+		(e || window.event).returnValue = confirmationMessage;     //Gecko + IE
+		return confirmationMessage;                                //Gecko + Webkit, Safari, Chrome etc.
+	}
+});

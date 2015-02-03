@@ -109,7 +109,7 @@ var IBeneficiary = {
 					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID);
 				})
 				.then(function (beneficiary) {
-					return beneficiary.update(updateItem);
+					return beneficiary.update(updateItem, req.session.person.id);
 				})
 				.then( function (beneficiary ) {
 					res.send( beneficiary );
@@ -341,8 +341,43 @@ var IBeneficiary = {
 			.then( function( dataRecord ) {
 				return dataRecord.getComplete();
 			})
-			.then( function( completeDataRecord ) {
-				res.send( completeDataRecord );
+			.then(function(completeDataRecord) {
+				res.send(completeDataRecord);
+				logger.trace(completeDataRecord._id, req.session.person.id);
+				return beneficiary.createEvent('Data record', 'update', new ObjectID(completeDataRecord._id), req.session.person.id);
+			})
+			.then(function() {
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	/**
+	 * remove a data record
+	 *
+	 * The whole data record with all his value is read from the body of the request.
+	 *
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	removeDataRecord: function(req, res, next) {
+		logger.trace("deleteDataRecord");
+		var beneficiary;
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then(function (beneficiaryObj) {
+				beneficiary = beneficiaryObj;
+				return beneficiary.deleteDataRecordByID(req.params.dataRecordID);
+			})
+			.then(function( nb ) {
+				res.send( 200, { code:200, message:"Datarecord removed"} );
 				next();
 			})
 			.catch( function(err) {
@@ -490,7 +525,7 @@ var IBeneficiary = {
 			})
 			.then( function(selectedBeneficiary) {
 				beneficiary = selectedBeneficiary;
-				return beneficiary.getGraphDataList();
+				return beneficiary.getGraphDataList( req.session.lang || physioDOM.lang );
 			}).then( function( graphList) {
 				res.send(graphList);
 				next();
@@ -653,7 +688,7 @@ var IBeneficiary = {
 				return beneficiary.questionnairePlan( );
 			})
 			.then( function( questionnairePlan) {
-				return questionnairePlan.getList();
+				return questionnairePlan.getList(req.session.lang);
 			})
 			.then( function( prescriptions ) {
 				res.send(prescriptions);

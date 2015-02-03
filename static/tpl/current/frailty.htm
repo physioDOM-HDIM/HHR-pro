@@ -14,16 +14,19 @@
 
 <link rel="stylesheet" href="../styles/current.css">
 
+<script src="/tpl/current/frailty.js"></script>
+
 {% endblock %}
 
 {% block content %}
-
+<div class="hidden" id="unsave">{{"You have unsaved data"|i18n}}</div>
+<div class="hidden" id="changelang">{{"Are you sure to cancel your changes ?"|i18n}}</div>
 <div id="content">
 	<zdk-panel heading="{{ 'Frailty status' | i18n }}">
 		<form name="form" id="form" autocomplete="off" onsubmit="checkForm(); return false;">
 			<div class="row value-row questionnaire-row" data-name="CHAIR_TEST">
-				<div flex class="value-name">{{'Chair stand results' | i18n }}</div>
-				<div class="questionnaire-date">{% if status.chairStandDate %}{{status.chairStandDate | date('Y-m-d')}}{% endif %}</div>
+				<div class="quest-name">{{'Chair stand results' | i18n }}</div>
+				<div class="questionnaire-date">{% if status.chairStandDate %}{{ status.chairStandDate | date }}{% endif %}</div>
 				<input type="text" class="questionnaire-score" value="{{status.chairStandScore}}" disabled />
 				<input type="hidden" class="questionnaire-answer" name="chairStandAnswer" value="{{status.chairStandAnswer}}" />
 				<div class="questionnaire-button-container">
@@ -31,8 +34,8 @@
 				</div>
 			</div>
 			<div class="row value-row">
-				{{'Normal'|i18n}} <input type="checkbox" name="normal" flex class="value-checkbox" {% if status.normal %}checked{% endif %} {% if status.validated %}disabled{% endif %} />
-				{{'Risk of fail'|i18n}} <input type="checkbox" name="risk" flex class="value-checkbox" {% if status.risk %}checked{% endif %} {% if status.validated %}disabled{% endif %} />
+				{{'Normal'|i18n}} <input type="checkbox" name="normal" onchange="updateChoice(this)" class="value-checkbox choice-normal" style="width:100px" {% if status.normal %}checked{% endif %} {% if status.validated %}disabled{% endif %} />
+				{{'Risk of fail'|i18n}} <input type="checkbox" name="risk" onchange="updateChoice(this)" class="value-checkbox choice-risk" {% if status.risk %}checked{% endif %} {% if status.validated %}disabled{% endif %} />
 			</div>
 			
 			{% if rights.write %}
@@ -40,7 +43,7 @@
 				<div id="buttons" class="row control">
 					<span class="spacer"></span>
 					<button type="button" class="blue" onclick="showConfirm();">{{'Validate'|i18n}}</button>
-					<button type="button" class="red" onclick="location.reload();">{{'Cancel'|i18n}}</button>
+					<button type="button" class="red" onclick="modified=false; location.reload();">{{'Cancel'|i18n}}</button>
 					<button class="green">{{'Save'|i18n}}</button>
 				</div>
 				{% endif %}
@@ -63,5 +66,5 @@
 </zdk-modal>
 
 <script src="/scripts/questionnaireButton.js"></script>
-<script src="/tpl/current/frailty.js"></script>
+
 {% endblock %}

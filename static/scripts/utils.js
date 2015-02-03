@@ -73,6 +73,22 @@ Utils.prototype.hasClass = function(element, cls) {
 };
 
 /**
+ * Remove a class from an element
+ */
+
+Utils.prototype.removeClass = function(elt, className) {
+    elt.className = elt.className.replace( new RegExp('(?:^|\\s)'+className+'(?!\\S)') ,'');
+}
+
+/**
+ * Add a class to an element
+ */
+
+Utils.prototype.addClass = function(elt, className) {
+    elt.className = elt.className + ' ' + className;
+}
+
+/**
  * Toggle an element
  */
 

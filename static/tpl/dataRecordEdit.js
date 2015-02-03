@@ -4,9 +4,30 @@ var utils = new Utils(),
     infos = {},
     idx = 0,
     createdDataRecordID = null,
-    lists = {};
+    lists = {},
+	modified = false;
 
 infos.datasInit = null;
+
+window.addEventListener("DOMContentLoaded", function() {
+	infos.datasInit = form2js(document.forms.dataRecord);
+	infos.lang = Cookies.get("lang");
+	getLists();
+
+	document.addEventListener('change', function( evt ) {
+		modified = true;
+	}, true );
+	createdDataRecordID = document.querySelector("#createdDataRecordID").value; 
+}, false);
+
+window.addEventListener("beforeunload", function( e) {
+	var confirmationMessage;
+	if(modified) {
+		confirmationMessage = document.querySelector("#unsave").innerHTML;
+		(e || window.event).returnValue = confirmationMessage;     //Gecko + IE
+		return confirmationMessage;                                //Gecko + Webkit, Safari, Chrome etc.
+	}
+});
 
 function hasClass(element, cls) {
     return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
@@ -49,7 +70,7 @@ function addLine(category) {
         };
 
     newLine.innerHTML = tpl.innerHTML;
-    newLine.className = 'row questionnaire-row';
+    newLine.className = 'questionnaire-row';
 
     newLine.querySelector('.item-text').innerHTML = selectParamTpl;
 
@@ -72,11 +93,35 @@ function addLine(category) {
         }
     }
 
+	if( category === 'symptom' ) {
+		newLine.querySelector("input[type=number]").setAttribute("min",0);
+		newLine.querySelector("input[type=number]").setAttribute("max",10);
+		newLine.querySelector("input[type=number]").setAttribute("step",1);
+	}
     container.appendChild(newLine);
+
+    var contentField = newLine.querySelector('.questionnaire-comment');
+
+    if(contentField) {
+        contentField.onkeyup = function () {
+            var lines = contentField.value.split("\n");
+            for (var i = 0; i < lines.length; i++) {
+                if (lines[i].length <= 60) { continue; }
+                var j = 0, space = 60;
+                while (j++ <= 60) {
+                    if (lines[i].charAt(j) === " ") { space = j; }
+                }
+                lines[i + 1] = lines[i].substring(space + 1) + (lines[i + 1] || "");
+                lines[i] = lines[i].substring(0, space);
+            }
+            contentField.value = lines.slice(0, 9).join("\n");
+        };
+    }
+
 }
 
 function removeLine(element) {
-    var line = element.parentNode.parentNode,
+    var line = element.parentNode.parentNode.parentNode,
         container = line.parentNode;
 
     container.removeChild(line);
@@ -135,27 +180,50 @@ function update(dataRecordID) {
 
         }
 
-        utils.promiseXHR("PUT", "/api/beneficiary/datarecords/"+dataRecordID, 200, JSON.stringify(data)).then(function(response) {
-            updateSuccess();
-        }, function(error) {
-            errorOccured();
-            console.log("saveForm - error: ", error);
-        });
+        utils.promiseXHR("PUT", "/api/beneficiary/datarecords/"+dataRecordID, 200, JSON.stringify(data))
+			.then(function(response) {
+            	updateSuccess();
+				modified = false;
+        	}, function(error) {
+            	errorOccured();
+            	console.log("saveForm - error: ", error);
+        	});
 
     } else {
-        errorOccured();
+		new Modal('confirmDeleteRecord', function() {
+			utils.promiseXHR("DELETE", "/api/beneficiary/datarecords/"+dataRecordID, 200)
+				.then( function(response) {
+					modified = false;
+					window.location.href = "/datarecord";
+				}, function(error) {
+					errorOccured();
+					console.log("saveForm - error: ", error);
+				});
+		});
     }
 }
 
-function create() {
+function checkForm() {
+	if (!document.forms.dataRecord.checkValidity()) {
+		var btn = document.querySelector("#saveBtn");
+		if (btn) { btn.click(); }
+		return;
+	} else {
+		create();
+	}
+}
 
-    if(createdDataRecordID !== null) {
+function create() {
+	
+    if(createdDataRecordID ) {
         update(createdDataRecordID);
     } else {
-        var obj = form2js(document.forms.dataRecord);
+        var obj = form2js(document.forms.dataRecord),
+            sourceID = document.querySelector('#sourceID');
 
         if(JSON.stringify(obj) !== "{}") {
-
+			obj.source = sourceID.value;
+			
             var i=0,
             len = obj.items.length;
 
@@ -171,23 +239,17 @@ function create() {
                 createSuccess();
                 var record = JSON.parse(response);
                 createdDataRecordID = record._id;
+                sourceID.disabled = true;
+				modified = false;
             }, function(error) {
                 errorOccured();
                 console.log("saveForm - error: ", error);
             });
 
-        } else {
-            errorOccured();
         }
     }
 
 }
-
-window.addEventListener("DOMContentLoaded", function() {
-    infos.datasInit = form2js(document.forms.dataRecord);
-    infos.lang = document.getElementById('lang').textContent;
-    getLists();
-}, false);
 
 
 function getLists() {
@@ -196,30 +258,39 @@ function getLists() {
             parameters: utils.promiseXHR("GET", "/api/lists/parameters", 200),
             symptom: utils.promiseXHR("GET", "/api/lists/symptom", 200),
             questionnaire: utils.promiseXHR("GET", "/api/lists/questionnaire", 200),
-            unity: utils.promiseXHR("GET", "/api/lists/unity", 200)
+            units: utils.promiseXHR("GET", "/api/lists/units", 200),
+            threshold: utils.promiseXHR("GET", "/api/beneficiary/thresholds", 200)
         };
 
     RSVP.hash(promises).then(function(results) {
         function filterActive(element) {
             return element.active;
-        } 
-        
+        }
+
+        lists.threshold =  JSON.parse(results.threshold);
+
         lists.parameters = JSON.parse(results.parameters).items.filter(filterActive);
         lists.symptom = JSON.parse(results.symptom).items.filter(filterActive);
         lists.questionnaire = JSON.parse(results.questionnaire).items.filter(filterActive);
 
-        var unityList = JSON.parse(results.unity).items;
+        var unitsList = JSON.parse(results.units).items;
 
         var i = 0,
             leni = lists.parameters.length;
 
         for(i; i<leni; i++) {
+            for(var ref in lists.threshold) {
+                if(ref === lists.parameters[i].ref) {
+                   lists.parameters[i].threshold = lists.threshold[ref];
+                }
+            }
+
             var y = 0,
-                leny = unityList.length;
+                leny = unitsList.length;
 
             for(y; y<leny; y++) {
-                if(lists.parameters[i].unity === unityList[y].ref) {
-                    lists.parameters[i].unityLabel = unityList[y].label[infos.lang];
+                if(lists.parameters[i].units === unitsList[y].ref) {
+                    lists.parameters[i].unitsLabel = unitsList[y].label[infos.lang];
                     break;
                 }
             }
@@ -235,13 +306,13 @@ function setLang() {
     var i, len;
 
     for (i = 0, len = lists.parameters.length; i < len; i++) {
-        lists.parameters[i].labelLang = lists.parameters[i].label[infos.lang];
+        lists.parameters[i].labelLang = lists.parameters[i].label[infos.lang] || lists.parameters[i].ref;
     }
     for (i = 0, len = lists.symptom.length; i < len; i++) {
-        lists.symptom[i].labelLang = lists.symptom[i].label[infos.lang];
+        lists.symptom[i].labelLang = lists.symptom[i].label[infos.lang] || lists.symptom[i].ref;
     }
     for (i = 0, len = lists.questionnaire.length; i < len; i++) {
-        lists.questionnaire[i].labelLang = lists.questionnaire[i].label[infos.lang];
+        lists.questionnaire[i].labelLang = lists.questionnaire[i].label[infos.lang] || lists.questionnaire[i].ref;
     }
 }
 
@@ -290,11 +361,11 @@ function initParams() {
 }
 
 var updateParam = function(element, directValue) {
-    var container = element.parentNode.parentNode,
+    var container = element.parentNode.parentNode.parentNode,
         select = container.querySelector('select'),
         minContainer = container.querySelector('.min-treshold'),
         maxContainer = container.querySelector('.max-treshold'),
-        unityContainer = container.querySelector('.unity'),
+        unitsContainer = container.querySelector('.units'),
         categoryContainer = container.querySelector('.item-category');
 
     if(!directValue) {
@@ -335,7 +406,7 @@ var updateParam = function(element, directValue) {
 
         minContainer.innerHTML = param.threshold.min? param.threshold.min: '-';
         maxContainer.innerHTML = param.threshold.max? param.threshold.max: '-';
-        unityContainer.innerHTML = param.unityLabel? param.unityLabel: '';
+        unitsContainer.innerHTML = param.unitsLabel? param.unitsLabel: '';
     }
     else if (category === 'questionnaire') {
         // Questionnaire item
@@ -351,7 +422,7 @@ var updateParam = function(element, directValue) {
     else {
         minContainer.innerHTML = '-';
         maxContainer.innerHTML = '-';
-        unityContainer.innerHTML = '';
+        unitsContainer.innerHTML = '';
     }
 
     // Disable the selected option on other rows
@@ -391,139 +462,21 @@ function toggleEditMode(id) {
     }
 }
 
-
-
-
-/* Modal */
-
-function closeModal() {
-    console.log("closeModal", arguments);
-    document.getElementById('statusModal').hide();
-
-    var elt = document.getElementById('statusModal'),
-        subElt, child;
-    subElt = elt.querySelector(".modalTitleContainer");
-    subElt.innerHTML = "";
-    subElt.classList.add("hidden");
-    subElt = elt.querySelector(".modalContentContainer");
-    subElt.innerHTML = "";
-    subElt.classList.add("hidden");
-    subElt = elt.querySelector(".modalButtonContainer");
-    for (var i = subElt.childNodes.length - 1; i >= 0; i--) {
-        child = subElt.childNodes[i];
-        subElt.removeChild(child);
-    }
-    subElt.classList.add("hidden");
-}
-
-function showModal(modalObj) {
-    console.log("showModal", arguments);
-
-    var elt = document.getElementById("statusModal"),
-        subElt;
-    if (modalObj.title) {
-        subElt = elt.querySelector(".modalTitleContainer");
-        subElt.innerHTML = document.getElementById(modalObj.title).innerHTML;
-        subElt.classList.remove("hidden");
-    }
-    if (modalObj.content) {
-        subElt = elt.querySelector(".modalContentContainer");
-        subElt.innerHTML = document.getElementById(modalObj.content).innerHTML;
-        subElt.classList.remove("hidden");
-    }
-
-    if (modalObj.buttons) {
-        var btn, obj, color;
-        subElt = elt.querySelector(".modalButtonContainer");
-        for (var i = 0; i < modalObj.buttons.length; i++) {
-            obj = modalObj.buttons[i];
-            btn = document.createElement("button");
-            btn.innerHTML = document.getElementById(obj.id).innerHTML;
-            btn.onclick = obj.action;
-            switch (obj.id) {
-                case "trad_ok":
-                    {
-                        color = "green";
-                    }
-                    break;
-                case "trad_yes":
-                    {
-                        color = "green";
-                    }
-                    break;
-                case "trad_no":
-                    {
-                        color = "blue";
-                    }
-                    break;
-            }
-            btn.classList.add(color);
-            subElt.appendChild(btn);
-        }
-        subElt.classList.remove("hidden");
-    }
-
-    document.getElementById("statusModal").show();
-}
-
 function confirmDeleteItem(id) {
-    var modalObj = {
-        title: "trad_delete",
-        content: "trad_confirm_delete",
-        buttons: [{
-            id: "trad_yes",
-            action: function() {
-                removeItem(id);
-                closeModal();
-            }
-        }, {
-            id: "trad_no",
-            action: function() {
-                closeModal();
-            }
-        }]
-    };
-    showModal(modalObj);
+	new Modal('confirmDeleteItem', function() {
+		removeItem(id);
+		modified = true;
+	});
 }
 
 function errorOccured() {
-    var modalObj = {
-        title: "trad_error",
-        content: "trad_error_occured",
-        buttons: [{
-            id: "trad_ok",
-            action: function() {
-                closeModal();
-            }
-        }]
-    };
-    showModal(modalObj);
+	new Modal('errorOccured');
 }
 
 function createSuccess() {
-    var modalObj = {
-        title: "trad_create",
-        content: "trad_success_create",
-        buttons: [{
-            id: "trad_ok",
-            action: function() {
-                closeModal();
-            }
-        }]
-    };
-    showModal(modalObj);
+	new Modal('createSuccess');
 }
 
 function updateSuccess() {
-    var modalObj = {
-        title: "trad_update",
-        content: "trad_success_update",
-        buttons: [{
-            id: "trad_ok",
-            action: function() {
-                closeModal();
-            }
-        }]
-    };
-    showModal(modalObj);
+	new Modal('updateSuccess');
 }

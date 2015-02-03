@@ -64,13 +64,13 @@
 		padding-left:5px;
 	}
 	tr.referent {
-		background: LightYellow;
+		background: LightSkyBlue;
 		font-weight:700;
 	}
 </style>
   
 <div class="colContainer">
-	<zdk-panel id="personal" heading="{{ 'Personnal'|i18n }}">
+	<zdk-panel id="personal" heading="{{ 'Personal'|i18n }}">
 		<div class="row">
 			<div class="bold">{{beneficiary.name.family}} {{beneficiary.name.given}} ({{beneficiary.gender}})</div>
 		</div>
@@ -78,16 +78,28 @@
 			<label>{{ "Birth date"|i18n }} :</label><div>{{beneficiary.birthdate}}</div>
 		</div>
 		<div class="row">
-			<label>{{ "Size"|i18n }} :</label><div>{{ Math.floor(beneficiary.size) }}{{ "m"|i18n }}{{ (beneficiary.size+"").split(".")[1] }}</div>
+			<label>{{ "Size"|i18n }} :</label><div>{{(beneficiary.size+"").replace('.','')}}{{ "cm"|i18n }}</div>
 		</div>
 		<div class="row">
 			<label>{{ "Social id"|i18n }} : </label><div>{{beneficiary.socialID}}</div>
 		</div>
 		<div class="row">
-			<label>{{ "Perimeter"|i18n }} : </label><div>{{beneficiary.perimeter}}</div>
+			<label>{{ "Perimeter"|i18n }} : </label>
+			{% if beneficiary.perimeter !== 'NONE'%}
+				{% for key, item in perimeterArray.items %}
+                	{% if beneficiary.perimeter == key %}
+                		<div>{{item}}</div>
+                	{%endif%}
+                {% endfor %}
+			{% endif %}	
 		</div>
 		<div class="row">
-			<label>{{ "Referent"|i18n }} : </label><div>{%if beneficiary.referent %}{{beneficiary.referent.name.family}} {{beneficiary.referent.name.given}}{% else %}---{% endif %}</div>
+		<label>{{ "Referent"|i18n }} : </label>
+		{% for professional in beneficiary.professionals %}
+			{% if professional.referent %}
+			<div>{{professional.name.family}} {{professional.name.given}}</div>
+			{% endif %}
+		{% endfor %}
 		</div>
 		<div class="telecom">
 			{% for telecom in beneficiary.telecom %}
@@ -141,45 +153,11 @@
 	</tsante-list>
 </zdk-panel>
 
-<zdk-panel heading="{{ 'Active services'|i18n }}" collapsable="true" collapsed="false">
-	<div>Not yet implemented</div>
-	<!--
-	<ul class="request" id="active">
-		<li>
-			<div class="ttable">
-				<div class="trow">
-					<div class="cell title">Meal delivery</div>
-					<div class="cell startdate">from : 2014-03-27</div>
-					<div class="cell stopdate">to : 2014-04-27</div>
-				</div>
-			</div>
-			<div class="ttable">
-				<div class="trow">
-					<div class="cell spacer"></div>
-					<div class="cell detail">All days at 11:30</div>
-				</div>
-			</div>
-		</li>
-		<li>
-			<div class="ttable">
-				<div class="trow">
-					<div class="cell title">Accompaniment aged person</div>
-					<div class="cell startdate">from : 2014-03-27</div>
-					<div class="cell stopdate">to : -</div>
-				</div>
-			</div>
-			<div class="ttable">
-				<div class="trow">
-					<div class="cell spacer"></div>
-					<div class="cell detail">All weekdays from 10:30 to 11:30</div>
-				</div>
-			</div>
-		</li>
-	</ul>
-	-->
+<zdk-panel heading="{{ 'Active services'|i18n }}" collapsable="true" collapsed="true">
+	<div>{{'Not yet implemented'|i18n}}</div>
 </zdk-panel>
 
-<zdk-panel heading="{{ 'Professional contacts'|i18n }}" collapsable="true" collapsed="true">
+<zdk-panel heading="{{ 'Professional contacts'|i18n }}" collapsable="true" collapsed="false">
 	<table id="stakeholders">
 		<thead>
 		<tr>
@@ -197,7 +175,8 @@
 			<td>
 				{% for telecom in prof.telecom %}
 					{% if telecom.system !== "email" %}
-						{{telecom.value}}
+						<span class="bold">{{telecom.system}}: </span>
+						<span>{{telecom.value}}</span><br>
 					{% endif %}
 				{% endfor %}
 			</td>
@@ -226,16 +205,19 @@
 	<div style="-webkit-column-count: 2; -webkit-column-gap: 10px; -webkit-column-rule: 1px solid black; box-sizing: border-box">
 	{% if beneficiary.entry %}
 		<div class="row">
-			<label>{{ "Start date"|i18n }} : </label><div>{{beneficiary.entry.startDate}}</div>
+			<label>{{ "Start date"|i18n }} : </label><div>{{beneficiary.entry.startDate | date }}</div>
 		</div>
 		<div class="row">
-			<label>{{ "Planned end date"|i18n }} : </label><div>{{beneficiary.entry.plannedEnd}}</div>
+			<label>{{ "Come from"|i18n }} : </label><div>{{destinationArray.items[beneficiary.entry.comeFrom]}}</div>
 		</div>
 		<div class="row">
-			<label>{{ "End date"|i18n }} : </label><div>{{beneficiary.entry.endDate}}</div>
+			<label>{{ "Planned end"|i18n }} : </label><div>{% if beneficiary.entry.plannedEnd %}{{beneficiary.entry.plannedEnd | date }}{% endif %}</div>
 		</div>
 		<div class="row">
-			<label>{{ "Come from"|i18n }} : </label><div>{{beneficiary.entry.comeFrom}}</div>
+			<label>{{ "End date"|i18n }} : </label><div>{% if beneficiary.entry.endDate %}{{beneficiary.entry.endDate | date }}{% endif %}</div>
+		</div>
+		<div class="row">
+			<label>{{ "Destination"|i18n }} : </label><div>{{destinationArray.items[beneficiary.entry.destination]}}</div>
 		</div>
 	{% endif %}
 	<div class="row">
@@ -256,7 +238,7 @@
 				<label>{{ "Type of disability"|i18n }} : </label><div>{{disabilityArray.items[beneficiary.lifeCond.disability.type]}}</div>
 			</div>
 			<div class="row">
-				<label>{{ "Disability level"|i18n }} : </label><div>{{beneficiary.lifeCond.disability.percent}}</div>
+				<label>{{ "Disability level"|i18n }} : </label><div>{{beneficiary.lifeCond.disability.percent}} %</div>
 			</div>
 		{% endif %}
 	{% endif %}
@@ -269,7 +251,7 @@
 		</div>
 		<p>{{ "Chronic pathologies"|i18n }}</p>
 		<div class="row">
-			<label>{{ "Main diagnosis"|i18n }} : </label><div>{{disabilityArray.items[beneficiary.diagnosis.chronic.main]}}</div>
+			<label>{{ "Main diagnosis"|i18n }} : </label><div>{{diagnosisArray.items[beneficiary.diagnosis.chronic.main]}}</div>
 		</div>
 		{% for assoDiag in beneficiary.diagnosis.chronic.associated %}
 			{% if loop.first %}
@@ -277,7 +259,7 @@
 			{% endif %}
 				<li>
 					<div class="row">
-						<div>{{disabilityArray.items[assoDiag]}}</div>
+						<div>{{diagnosisArray.items[assoDiag]}}</div>
 					</div>
 				</li>
 			{% if loop.last %}

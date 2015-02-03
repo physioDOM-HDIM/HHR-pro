@@ -69,6 +69,7 @@ function Beneficiaries( ) {
 		if( session.role) { 
 			if( ["administrator","coordinator"].indexOf(session.role.toLowerCase())===-1 ) {
 				search.professionals= { "$elemMatch": {professionalID: session.person.id.toString() }};
+				search.active = true;
 			}
 		} else {
 			throw { code:403, message:"forbidden"};

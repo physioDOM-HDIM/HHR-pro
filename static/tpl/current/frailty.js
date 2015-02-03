@@ -1,5 +1,42 @@
 'use strict';
 
+var normalElt,
+	riskElt;
+var modified = false;
+
+window.addEventListener('DOMContentLoaded', function() {
+
+	normalElt = document.querySelector('.choice-normal');
+	riskElt = document.querySelector('.choice-risk');
+
+	//default
+	if(!normalElt.checked && !riskElt.checked) {
+		normalElt.checked = true;
+	}
+
+	document.addEventListener('change', function( evt ) {
+		modified = true;
+	}, false );
+	
+}, false);
+
+window.addEventListener("beforeunload", function( e) {
+	var confirmationMessage;
+	if(modified) {
+		confirmationMessage = document.querySelector("#unsave").innerHTML;
+		(e || window.event).returnValue = confirmationMessage;     //Gecko + IE
+		return confirmationMessage;                                //Gecko + Webkit, Safari, Chrome etc.
+	}
+});
+
+function updateChoice(elt) {
+	if(elt === normalElt) {
+		riskElt.checked = (!elt.checked);
+	} else {
+		normalElt.checked = (!elt.checked);
+	}
+}
+
 function checkForm(validate) {
 	var formObj = form2js(document.getElementById('form'));
 
@@ -19,6 +56,7 @@ function checkForm(validate) {
 				}
 			}
 			new Modal('saveSuccess');
+			modified = false;
 		}, function(error) {
 			new Modal('errorOccured');
 			console.log(error);

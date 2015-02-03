@@ -14,7 +14,8 @@
  * @type {exports}
  */
 	
-var Logger = require("logger");
+var Logger = require("logger"),
+	Cookies = require("cookies");
 var logger = new Logger("IDirectory");
 
 /**
@@ -120,6 +121,11 @@ var IDirectory = {
 					return professional.update( item );
 				})
 				.then(function (professional) {
+					if ( req.session.person.id.toString() == professional._id.toString() ) {
+						req.session.lang = professional.communication || physioDOM.lang;
+						var cookies = new Cookies(req, res);
+						cookies.set('lang',physioDOM.lang, { path: '/', httpOnly : false});
+					}
 					res.send(professional);
 					next();
 				})

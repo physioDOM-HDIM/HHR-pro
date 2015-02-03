@@ -6,14 +6,16 @@
 <script src="/bower_components/rsvp/rsvp.min.js"></script>
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
 <script src="/bower_components/zdk-calendar/form2js.js"></script>
-<script src="/scripts/questionnaireButton.js"></script>
 <script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
+
+<script src="/scripts/questionnaireButton.js"></script>
 <script src="/tpl/dataRecordEdit.js"></script>
 <style>
 	select {
 		min-width:100px;
 	}
-	input[type=text] {
+	input[type=text][type=number] {
 		width: 100%;
 	}
 	h2 {
@@ -50,13 +52,14 @@
 	-line adding (for new items)
 #}
 
-<div class="hidden" id="lang">{{lang}}</div>
+<div class="hidden" id="unsave">{{"You have unsaved data"|i18n}}</div>
+<div class="hidden" id="changelang">{{"Are you sure to cancel your changes ?"|i18n}}</div>
 
 <script type="html/text" id="selectParam">
 	{% if view === 'create'%}
-	<select onchange="updateParam(this)" name="items[{% raw %}{{ idx }}{% endraw %}].text">
+	<select onchange="updateParam(this)" name="items[{% raw %}{{ idx }}{% endraw %}].text" required>
 	{% else%}
-	<select onchange="updateParam(this)" name="items[{% raw %}{{id}}{% endraw %}].text">
+	<select onchange="updateParam(this)" name="items[{% raw %}{{id}}{% endraw %}].text" required>
 	{% endif%}
 		<option></option>
 	{% raw %}
@@ -76,10 +79,10 @@
 		<div class="readMode">
 			<div class="row">
 				{% raw %}{{#item}}{% endraw %}
-				<div class="col bold" style="flex:2">{% raw %}{{ labelLang }}{% endraw %}</div>
+				<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{% raw %}{{ labelLang }}{% endraw %}</div>
 				<div class="col item-value" style="max-width:150px">{{ item.value }}</div>
 				{% if cat !== 'questionnaire' %}
-				<div class="col" style="max-width:150px">{% raw %}{{ unityLabel }}{% endraw %}</div>
+				<div class="col" style="max-width:150px">{% raw %}{{ unitLabel }}{% endraw %}</div>
 				{% else %}
 				<div class="col" style="max-width:150px">
 				<button type="button" class="blue small answer" data-answer="{{item.ref}}" onclick="showAnswer('{{item.ref}}')">{{"Questionnaire"|i18n}}</button>
@@ -118,15 +121,18 @@
 				{% endif %}
 
 			</div>
+			{% if cat === 'questionnaire' %}
+				<div class="row">{{item.comment}}</div>
+			{% endif %}
 		</div>
 		<div class="updateMode hidden">
 			<div class="row">
 				{% raw %}
 				{{#item}}
-				<div class="col item-text" style="flex:2"></div>
+				<div class="col item-text" style="-webkit-flex:2; -ms-flex:2; flex:2;"></div>
 				<div class="col item-value" style="max-width:150px">
-				   {% endraw %}<input type="text" value="{{ item.value }}" name="items[{{item._id.toString()}}].value"/></div>{% raw %}
-				<div class="col unity" style="max-width:150px">{{ unityLabel }}</div>
+				   {% endraw %}<input type="number" step="any" value="{{ item.value }}" name="items[{{item._id.toString()}}].value"/></div>{% raw %}
+				<div class="col units" style="max-width:150px">{{ unitLabel }}</div>
 
 				{% endraw %}{% if cat !== 'questionnaire' %}{% raw %}
 				<div class="col" style="max-width:150px">
@@ -179,37 +185,44 @@
 
 
 	<script type="template" id="newItem">
-		<div class="col item-text" style="flex:2"></div>
-
+	<div class="row questionnaire-row">
+		<div class="col item-text" style="-webkit-flex:2; -ms-flex:2; flex:2;"></div>
+		<input type="hidden" class="questionnaire-text" name="items[{% raw %}{{idx}}{% endraw %}].text" value="" />
 		{% raw %}{{#questionnaire}}{% endraw %}
-		<div class="col" style="max-width:150px">
-			<input type="text" class="questionnaire-score" name="items[{% raw %}{{idx}}{% endraw %}].value" value="" disabled />
-			<input type="hidden" class="questionnaire-score" name="items[{% raw %}{{idx}}{% endraw %}].value" value="" />
-		</div>
-		<input type="hidden" class="questionnaire-answer" name="items[{% raw %}{{idx}}{% endraw %}].ref" value="" />
-		<div class="col questionnaire-button-container" style="max-width:150px">
-			<span></span>
-			<a class="button small blue disabled" href="">{{'Questionnaire'|i18n}}</a>
-		</div>
-		<div class="col" style="max-width:150px"></div>
-		<div class="col" style="max-width:150px"></div>
+			<div class="col" style="max-width:150px">
+				<input  type="number" class="questionnaire-score" name="items[{% raw %}{{idx}}{% endraw %}].value" value="" disabled />
+				<input type="hidden" class="questionnaire-score" name="items[{% raw %}{{idx}}{% endraw %}].value" value="" />
+			</div>
+			<input type="hidden" class="questionnaire-answer" name="items[{% raw %}{{idx}}{% endraw %}].ref" value="" />
+			<div class="col questionnaire-button-container" style="max-width:150px">
+				<span></span>
+				<a class="button small blue disabled" href="">{{'Questionnaire'|i18n}}</a>
+			</div>
+			<div class="col" style="max-width:150px"></div>
+			<div class="col" style="max-width:150px"></div>
 		{% raw %}{{/questionnaire}}{% endraw %}
 		
 		{% raw %}{{^questionnaire}}{% endraw %}
-		<div class="col" style="max-width:150px"><input type="text" name="items[{% raw %}{{idx}}{% endraw %}].value"/></div>
-		<div class="col" style="max-width:150px"><span class="unity"></span></div>
-		<div class="col" style="max-width:150px">
-			<div class="min-treshold spacing-around"></div>
-		</div>
-		<div class="col" style="max-width:150px">
-			<div class="max-treshold spacing-around"></div>
-		</div>
+			<div class="col" style="max-width:150px"><input type="number" step="any"  name="items[{% raw %}{{idx}}{% endraw %}].value"/></div>
+			<div class="col" style="max-width:150px"><span class="units"></span></div>
+			<div class="col" style="max-width:150px">
+				<div class="min-treshold spacing-around"></div>
+			</div>
+			<div class="col" style="max-width:150px">
+				<div class="max-treshold spacing-around"></div>
+			</div>
 		{% raw %}{{/questionnaire}}{% endraw %}
 
 		<input name="items[{% raw %}{{idx}}{% endraw %}].category" id="new-item-category" type="hidden">
 		<div style="width:100px; text-align:right">
 			<button type="button" class="blue small" onclick="removeLine(this)">{{'Cancel'|i18n}}</button>
 		</div>
+	</div>
+	{% raw %}{{#questionnaire}}{% endraw %}
+	<div class="row">
+		<textarea name="items[{% raw %}{{idx}}{% endraw %}].comment" class="questionnaire-comment" rows="10"></textarea>
+	</div>
+	{% raw %}{{/questionnaire}}{% endraw %}
 	</script>
 
 
@@ -229,12 +242,21 @@
 				{{ "From Consultation"|i18n }} {{dataRecordItems.source.name.family}} {{dataRecordItems.source.name.given}}
 			{% endif %}
 		</label>
+		{% if !dataRecordItems.home && rights.write && view === 'create' %}
+		<div class="spacer"></div>
+			<select name="sourceID" id="sourceID" class="float-right">
+				{% for professional in professionals %}
+					<option value="{{ professional._id.toString() }}">{{professional.name.family}} {{professional.name.given}}</option>
+				{% endfor %}
+			</select>
+		{% endif %}
+		<input type="hidden" id="createdDataRecordID" value="{{dataRecordItems._id}}">
 	</div>
 
-	<form name="dataRecord" id="dataRecord">
+	<form name="dataRecord" id="dataRecord" onsubmit="checkForm(); return false;">
 		<zdk-panel heading="{{'Physiological parameters' |i18n}}" collapsable="false" collapsed="false">
 			<div class="row">
-				<div class="col bold" style="flex:2">{{ 'Parameter'|i18n }}</div>
+				<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{{ 'Parameter'|i18n }}</div>
 				<div class="col bold" style="max-width:150px">{{ 'Value'|i18n }}</div>
 				<div class="col bold" style="max-width:150px">{{ 'Unit'|i18n }}</div>
 				<div class="col bold" style="max-width:150px">{{ 'Min threshold' | i18n }}</div>
@@ -261,7 +283,7 @@
 		</zdk-panel>
 		<zdk-panel heading="{{'Symptoms assessments' |i18n}}" collapsable="false" collapsed="false">
 			<div class="row">
-				<div class="col bold" style="flex:2">{{ 'Assessment'|i18n }}</div>
+				<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{{ 'Assessment'|i18n }}</div>
 				<div class="col bold" style="max-width:150px">{{ 'Value'|i18n }}</div>
 				<div class="col bold" style="max-width:150px"></div>
 				<div class="col bold" style="max-width:150px"></div>
@@ -281,7 +303,7 @@
 		</zdk-panel>
 		<zdk-panel heading="{{'Questionnaires' |i18n}}" collapsable="false" collapsed="false">
 			<div class="row">
-				<div class="col bold" style="flex:2">{{ 'Questionnaire'|i18n }}</div>
+				<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{{ 'Questionnaire'|i18n }}</div>
 				<div class="col bold" style="max-width:150px">{{ 'Value'|i18n }}</div>
 				<div class="col bold" style="max-width:150px"></div>
 				<div class="col bold" style="max-width:150px"></div>
@@ -299,52 +321,26 @@
 			{% endif %}
 
 		</zdk-panel>
+		
+		<div class="row control" style="height:60px; align-content: center">
+			<span class="spacer"></span>
+			{% if view === 'create'%}
+			{% if rights.write %}
+			<button id="saveBtn" class="green">{{'Save'|i18n}}</button>
+			{% endif %}
+			{% else %}
+			<a href="/datarecord"><button type="button" class="blue big">{{'Back'|i18n}}</button></a>
+			{% if rights.write %}
+			<button id="saveBtn" class="green">{{'Save'|i18n}}</button>
+			{% endif %}
+			{% endif %}
+		</div>
 	</form>
 
-	<div class="row control" style="height:60px; align-content: center">
-		<span class="spacer"></span>
-		{% if view === 'create'%}
-			{% if rights.write %}
-			<button class="green" onclick="create()">{{'save'|i18n}}</button>
-			{% endif %}
-		{% else %}
-		<a href="/datarecord"><button class="blue big">{{'back'|i18n}}</button></a>
-		{% if rights.write %}
-			<button class="green" onclick="update('{{dataRecordItems._id.toString()}}')">{{'save'|i18n}}</button>
-		{% endif %}
-		{% endif %}
-	</div>
+	
 </div>
 
-
-{#
-	Hidden Elements only for js use in frontend
-#}
-
-<zdk-modal id="statusModal" closebutton="false">
-	<div class="modalContainer">
-		<div class="modalTitleContainer"></div>
-		<div class="modalContentContainer"></div>
-		<div class="modalButtonContainer"></div>
-	</div>
-</zdk-modal>
-
-<div class="hidden">
-	<div id="trad_save">{{ "Save"|i18n }}</div>
-	<div id="trad_create">{{ "Create"|i18n }}</div>
-	<div id="trad_delete">{{ "Delete"|i18n }}</div>
-	<div id="trad_error">{{ "Error"|i18n }}</div>
-	<div id="trad_update">{{ "Update"|i18n }}</div>
-	<div id="trad_confirm_save">{{ "Are you sure you want to save those changes ?"|i18n }}</div>
-	<div id="trad_confirm_delete">{{ "Are you sure you want to delete this item ?"|i18n }}</div>
-	<div id="trad_error_occured">{{ "An error occured"|i18n }}</div>
-	<div id="trad_success_create">{{ "Item successfully created"|i18n }}</div>
-	<div id="trad_success_update">{{ "Item successfully updated"|i18n }}</div>
-	<div id="trad_yes">{{ "Yes"|i18n }}</div>
-	<div id="trad_no">{{ "No"|i18n }}</div>
-	<div id="trad_ok">{{ "Ok"|i18n }}</div>
-</div>
-
+{% include "./modal.htm" %}
 {% endblock %}
 
 

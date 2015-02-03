@@ -33,8 +33,8 @@ var roleTypeCode = [
 ];
 module.exports.roleTypeCode = roleTypeCode;
 
-// @todo:  get unity list from database
-var unity = [
+// @todo:  get units list from database
+var units = [
 	"cm",
 	"m",
 	"km",
@@ -43,7 +43,7 @@ var unity = [
 	"°C",
 	"Steps/week"
 ];
-module.exports.unity = unity;
+module.exports.units = units;
 
 // @todo:  get job list from database
 var job = [

@@ -194,8 +194,8 @@ function CurrentStatus() {
 	this.saveAnswer = function(beneficiaryID, questionnaireName, answer) {
 		switch (questionnaireName) {
 
-			case 'SF12':
-				return this._saveAnswerInQuestionnaire(beneficiaryID, answer, 'well', 'sf12');
+			case 'SF36':
+				return this._saveAnswerInQuestionnaire(beneficiaryID, answer, 'well', 'sf36');
 			case 'MNA':
 				return this._saveAnswerInQuestionnaire(beneficiaryID, answer, 'nutrition', 'mna');
 			case 'MNA_MINI':

@@ -83,7 +83,7 @@
                         <div class="row">
                             <div class="col">
                                 <span class="name" style="-webkit-flex:2; -ms-flex:2; flex:2;font-weight:bold">
-                                    {% raw %}{{!item.organization ? item.name.family+" "+(item.name.given ? item.name.given : "")+" ("+item.gender+")" : item.name.family}}{% endraw %}
+                                    {% raw %}{{!item.organization ? item.name.family+" "+(item.name.given ? item.name.given : "")+" ("+item.gender+")" : item.name.family +" ("+ item.organizationType +")" }}{% endraw %}
                                 </span>
                             </div>
                         </div>
@@ -103,15 +103,15 @@
                         </div>
                         <div class="row">
                             <div class="col">
-                                <div class="role" style="padding-left:50px;-webkit-flex:1; -ms-flex:1; flex:1">role : {% raw %}{{item.role}}{% endraw %}</div>
-                                <div class="job" style="-webkit-flex:1; -ms-flex:1; flex:1">job : {% raw %}{{item.job}}{% endraw %}</div>
+                                <div class="role" style="padding-left:50px;-webkit-flex:1; -ms-flex:1; flex:1">{{"role"|i18n}} : {% raw %}{{item.role}}{% endraw %}</div>
+                                <div class="job" style="-webkit-flex:1; -ms-flex:1; flex:1">{{"job"|i18n}} : {% raw %}{{item.job}}{% endraw %}</div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col" style="padding-left:50px;">
                                 <template repeat="{% raw %}{{telecomItem in item.telecom}}{% endraw %}">
                                     <template if="{% raw %}{{telecomItem.system !== 'email'}}{% endraw %}">
-                                        <div style="flex:1">{% raw %}{{telecomItem.system}} : {{telecomItem.value}}{% endraw %}</div>
+                                        <div style="-webkit-flex:1; -ms-flex:1; flex:1;">{% raw %}{{telecomItem.system}} : {{telecomItem.value}}{% endraw %}</div>
                                         <!--<span class="{% raw %}{{telecomItem.system}}{% endraw %}">{% raw %}{{telecomItem.system}} : {{telecomItem.value}}{% endraw %}</span>-->
                                     </template>
                                 </template>
@@ -120,10 +120,10 @@
                     </div>
                     <div style="width:60px">
                         <template if="{% raw %}{{item.address && item.address.line && item.address.line.length > 0 || item.address.zip || item.address.city}}{% endraw %}">
-                            <button type="button" class="green small" onclick="toggleHiddenNode(this, '.address')">{{'detail'|i18n}}</button><br/>
+                            <button type="button" class="green small" onclick="toggleHiddenNode(this, '.address')">{{'Detail'|i18n}}</button><br/>
                         </template>
                         {% if rights.write %}
-                        <a href="/directory/{% raw %}{{item._id}}{% endraw %}" class="button blue small">edit</a>
+                        <a href="/directory/{% raw %}{{item._id}}{% endraw %}" class="button blue small">{{"Edit"|i18n}}</a>
                         {% endif %}
                     </div>
                 </div>
@@ -141,6 +141,7 @@
 
     {% if rights.write %}
     <div class="row control">
+        <a href="/api/directory/export"><button id="addEntry" class="blue" type="button">Export CSV</button></a>
         <span class="spacer"></span>
         <a href="/directory/create"><button id="addEntry" class="blue" type="button">Add entry</button></a>
     </div>

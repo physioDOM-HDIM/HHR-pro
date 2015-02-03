@@ -17,12 +17,14 @@
 
 {% block content %}
 <div class="hidden" id="list-name">{{list.name}}</div>
+<div class="hidden" id="unsave">{{"You have unsaved data"|i18n}}</div>
+<div class="hidden" id="changelang">{{"Are you sure to cancel your changes ?"|i18n}}</div>
 
 <div class="row title">
 	<label class="title">{{list.name}}</label>
 	<span class="spacer"></span>
 	<label>{{ "Language"| i18n }} :</label>
-	<select name="lang" id="lang" onchange="update(); showLang()">
+	<select name="lang" id="lang" onchange="changeLang();">
 		{% for item in communication.items %}
 		<option value="{{item.value}}">{{item.label}}</option>
 		{% endfor %}
@@ -63,6 +65,18 @@
 					<label>{{ "Label"|i18n }}:</label>
 					<input type="text" name="{% raw %}items[{{idx}}].label.{{lang}}{% endraw %}" value="{% raw %}{{label}}{% endraw %}" {% raw %}{{^editable}}disabled{{/editable}}{% endraw %} />
 				</div>
+				{% raw %}{{#hasRank}}{% endraw %}
+				<div class="col">
+					<label>{{ "Rank"|i18n }}:</label>
+					<input type="number" name="{% raw %}items[{{idx}}].rank{% endraw %}" value="{% raw %}{{rank}}{% endraw %}" />
+				</div>
+				{% raw %}{{/hasRank}}{% endraw %}
+				{% raw %}{{#hasTVLabel}}{% endraw %}
+				<div class="col">
+					<label>{{ "TVLabel"|i18n }}:</label>
+					<input type="text" name="{% raw %}items[{{idx}}].TVLabel{% endraw %}" value="{% raw %}{{TVLabel}}{% endraw %}" />
+				</div>
+				{% raw %}{{/hasTVLabel}}{% endraw %}
 			</div>
 			{% raw %}{{#service}}{% endraw %}
 			<div class="row">Provider roles <button type="button" class="small blue" onclick="editRole({% raw %}{{idx}},{{roles}}{{#new}},true{{/new}}{% endraw %})" >Edit</button></div>
@@ -109,7 +123,7 @@
 				</div>
 				<div class="col">
 					<label>{{ "Unit"|i18n }}:</label>
-					<select name="{% raw %}items[{{idx}}].unity{% endraw %}">
+					<select name="{% raw %}items[{{idx}}].units{% endraw %}">
 						{% raw %}
 						{{#units}}
 						<option value="{{value}}" {{#selected}}selected{{/selected}} >{{label}}</option>
@@ -126,21 +140,21 @@
 			</div>
 			<div class="row">
 				<div class="col">
-					<label>{{ "Threshold Min"|i18n }}:</label>
+					<label>{{ "Threshold min"|i18n }}:</label>
 					<input type="text" name="{% raw %}items[{{idx}}].threshold.min{% endraw %}" value="{% raw %}{{threshold.min}}{% endraw %}"/>
 				</div>
 				<div class="col">
-					<label>{{ "Threshold Max"|i18n }}:</label>
+					<label>{{ "Threshold max"|i18n }}:</label>
 					<input type="text" name="{% raw %}items[{{idx}}].threshold.max{% endraw %}" value="{% raw %}{{threshold.max}}{% endraw %}" />
 				</div>
 			</div>
 			<div class="row">
 				<div class="col">
-					<label>{{ "Range Min"|i18n }}:</label>
+					<label>{{ "Range min"|i18n }}:</label>
 					<input type="text" name="{% raw %}items[{{idx}}].range.min{% endraw %}" value="{% raw %}{{range.min}}{% endraw %}" />
 				</div>
 				<div class="col">
-					<label>{{ "Range Max"|i18n }}:</label>
+					<label>{{ "Range max"|i18n }}:</label>
 					<input type="text" name="{% raw %}items[{{idx}}].range.max{% endraw %}" value="{% raw %}{{range.max}}{% endraw %}" />
 				</div>
 			</div>
@@ -200,7 +214,7 @@
 <footer>
 	<div class="row">
 		<span class="spacer"></span>
-		<button type="button" class="red" onclick="window.history.back(1)">{{ "Cancel"|i18n }}</button>
+		<button type="button" class="red" onclick="modified=false; window.history.back(1)">{{ "Cancel"|i18n }}</button>
 		<button class="blue" onclick="save()">{{ "Save"|i18n }}</button>
 	</div>
 </footer>

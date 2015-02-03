@@ -1,0 +1,51 @@
+Name, Gender/Organisation, job, role, Contact, active, address
+{% for directory in directoryList -%}
+
+	{{- directory.name.family }} {{ directory.name.given- }},
+
+	{%- if directory.gender -%}
+		{{- directory.gender -}}
+	{%- elseif organizationTypeList[directory.organizationType] -%}
+		{{- organizationTypeList[directory.organizationType][lang] -}}
+	{%- else -%}
+		{{- directory.organizationType -}}
+	{%- endif -%},
+
+	{%- if jobList[directory.job] -%}
+		{{- jobList[directory.job][lang] -}}
+	{%- else -%}
+		{{- directory.job -}}
+	{%- endif -%},
+
+	{%- if directory.role -%}
+		{{- directory.role -}}
+	{%- endif -%},"
+
+	{%- for com in directory.telecom -%}
+		{{- com.system+" " -}}
+		{%- if com.use -%}
+			{{- "("+com.use+")" -}}
+		{%- endif -%}
+		 {{- ": "+com.value -}}
+		{%- if !loop.last %}
+{% endif -%}
+	{%- endfor -%}",
+
+	{%- if directory.active -%}
+		{{- "Yes" -}}
+	{%- else -%}
+		{{- "No" -}}
+	{%- endif -%},"
+
+	{%- for line in directory.address.line -%}
+		{{- line }}
+{%- endfor -%}
+
+	{%- if directory.address.zip -%}
+		{{- directory.address.zip -}}
+	{%- endif -%}
+
+	{%- if directory.address.city -%}
+		{{- " " + directory.address.city.toUpperCase() -}}
+	{%- endif -%}"
+{% endfor %}

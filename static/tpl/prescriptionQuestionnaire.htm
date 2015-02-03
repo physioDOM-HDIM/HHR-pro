@@ -11,7 +11,6 @@
 <script src="/tpl/prescriptionQuestionnaire.js"></script>
 
 <link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
-<!--<link href="https://fontastic.s3.amazonaws.com/nwyYQQLXDKry2PeZf58hxC/icons.css" rel="stylesheet">-->
 <link rel="stylesheet" href="/styles/icons.css">
 <link rel="stylesheet" href="/styles/prescriptionData.css">
 {% endblock %}
@@ -79,7 +78,7 @@
 	<div class="row">
 		<div class="col vert" style="padding-left:50px">
 			<label></label>
-			<zdk-input-date id="date" name="newDate" value="" style="z-index:100"></zdk-input-date>
+			<zdk-input-date id="date" name="newDate" value="" style="z-index:100" i18n="{% if lang=='en' %}en_gb{% else %}{{lang}}{% endif %}"></zdk-input-date>
 			<button type="button" class="small blue" onclick="addDate(this, {% raw %}{{idx}}{% endraw %})">{{'Add'|i18n}}</button>
 		</div>
 	</div>
@@ -96,8 +95,8 @@
 		</button>
 		{% endif %}
 		{% raw %}
-		{{dateValue}}
-		<input type="hidden" name="questionnaire[{{idx}}].date[{{dateIdx}}]" value="{{dateValue}}">
+		{{dateDisplay}}
+		<input type="hidden" class="date-added" name="questionnaire[{{idx}}].date[{{dateIdx}}]" value="{{dateValue}}">
 		{% endraw %}
 	</li>
 </script>

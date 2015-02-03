@@ -36,6 +36,7 @@ var dataRecordItemSchema = {
 		text: { type:"string", description:"reference label of the parameter", required: true},
 		value: { type:"number", description:"value of the item ( score for a questionnaire )", required: true },
 		ref: { type: "string", description:"the questionnaire answers identifier"},
+		comment: { type: "string", description: "comment for questionnaire"},
 		automatic: { type:"boolean", default:false },
 		dataRecordID: { type:"string", description:"the identifier of the data record" }
 	},

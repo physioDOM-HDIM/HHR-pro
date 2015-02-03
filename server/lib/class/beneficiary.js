@@ -254,7 +254,7 @@ function Beneficiary( ) {
 	 * @param updatedEntry
 	 * @returns {promise}
 	 */
-	this.update = function( updatedEntry ) {
+	this.update = function( updatedEntry, professionalID) {
 		var that = this;
 		return new promise( function(resolve, reject) {
 			logger.trace("update");
@@ -282,7 +282,7 @@ function Beneficiary( ) {
 					return that.save();
 				})
 				.then( function() {
-					that.createEvent("Beneficiary","update");
+					that.createEvent("Beneficiary","update", updatedEntry._id, professionalID);
 				})
 				.then(resolve)
 				.catch(reject);
@@ -322,14 +322,16 @@ function Beneficiary( ) {
 	 * 
 	 * @returns {promise}
 	 */
-	this.getProfessionals = function() {
-		var that = this;
+	this.getProfessionals = function(jobFilter) {
+		var that = this,
+			proList = [];
 		if( that.professionals === undefined ) {
 			that.professionals = [];
 		}
 		return new promise( function(resolve, reject) {
 			logger.trace("getProfessionals");
 			var count = that.professionals.length;
+			that.professionals.sort( function(a,b) { return b.referent?true:false; });
 			if( !count ) {
 				resolve( [] );
 			}
@@ -340,10 +342,19 @@ function Beneficiary( ) {
 							.then( function( professional ) {
 								that.professionals[i] = professional;
 								that.professionals[i].referent = item.referent;
+
+								if(jobFilter && jobFilter.indexOf(that.professionals[i].role) !== -1 ) {
+									// && that.professionals[i].active : to filter only active professionnal
+									proList.push(that.professionals[i]);
+								}
 							})
 							.then( function() {
 								if( --count === 0) {
-									resolve( that.professionals );
+									if(jobFilter) {
+										resolve( proList );
+									} else {
+										resolve( that.professionals );
+									}
 								}
 							})
 							.catch( function(err) {
@@ -400,11 +411,11 @@ function Beneficiary( ) {
 					var indx = -1;
 					that.professionals.forEach( function( item, i ) {
 						if ( item.professionalID.toString() === professional._id.toString() ) {
-							console.log("professional found");
+							// console.log("professional found");
 							indx = i;
 						}
 					});
-					console.log("indx", indx);
+					// console.log("indx", indx);
 					if(indx !== -1) {
 						that.professionals[indx] = {professionalID: professional._id, referent: referent || false};
 					} else {
@@ -603,6 +614,21 @@ function Beneficiary( ) {
 		});
 	};
 
+	this.deleteDataRecordByID = function( dataRecordID ) {
+		var datarecord, that = this;
+
+		return new promise( function(resolve, reject) {
+			logger.trace("getDataRecordByID", dataRecordID);
+			var search = { _id: new ObjectID( dataRecordID ) };
+			physioDOM.db.collection("dataRecords").remove(search, function (err, nb) {
+				if (err) {
+					reject(err);
+				}
+				resolve(nb);
+			});
+		});
+	};
+	
 	/**
 	 * Create a dataRecord for the current beneficiary from the given dataRecordObj
 	 * 
@@ -611,14 +637,14 @@ function Beneficiary( ) {
 	 * @param dataRecordObj
 	 * @returns {promise}
 	 */
-	this.createDataRecord = function( dataRecordObj, professionalID ) {
+	this.createDataRecord = function( dataRecordObj, professionalID) {
 		var that = this;
 		return new promise( function(resolve, reject) {
 			logger.trace("createDataRecord");
 			var dataRecord = new DataRecord();
 			dataRecord.setup(that._id, dataRecordObj, professionalID)
 				.then(function (dataRecord) {
-					return that.createEvent('Data record', 'create')
+					return that.createEvent('Data record', 'create', dataRecord._id, professionalID)
 						.then( function() {
 							return that.getCompleteDataRecordByID(dataRecord._id);
 						});
@@ -673,7 +699,7 @@ function Beneficiary( ) {
 					}
 					for (var prop in updatedThresholds) {
 						if (thresholdResult.hasOwnProperty(prop)) {
-							console.log("test ", Object.keys(updatedThresholds[prop]));
+							// console.log("test ", Object.keys(updatedThresholds[prop]));
 							if (JSON.stringify(Object.keys(updatedThresholds[prop])) === JSON.stringify(['min', 'max'])) {
 								that.threshold[prop] = updatedThresholds[prop];
 							} else {
@@ -714,24 +740,24 @@ function Beneficiary( ) {
 		var messages = new Messages( this._id ),
 			that = this;
 
-		return messages.create( session, professionalID, msg ).then(function() {
-			that.createEvent('Message', 'create');
-		})
+		return messages.create( session, professionalID, msg ).then(function(message) {
+			that.createEvent('Message', 'create', message._id, professionalID);
+		});
 	};
 
-	this.createEvent = function(service, operation) {
+	this.createEvent = function(service, operation, elementID, senderID) {
 		logger.trace("create event", service);
 		var events = new Events(this._id);
 		var that = this;
 
-		return events.setup(service, operation)
+		return events.setup(service, operation, elementID, senderID)
 			.then(function(eventObj) {
 				that.lastEvent = eventObj.datetime;
 				that.save();
 			});
 	};
 
-	this.getGraphDataList = function() {
+	this.getGraphDataList = function( lang ) {
 		var that = this;
 
 		return new promise(function (resolve, reject) {
@@ -772,22 +798,34 @@ function Beneficiary( ) {
 			}
 
 			var promises = ["parameters", "symptom", "questionnaire"].map(function (listName) {
-				return physioDOM.Lists.getListArray(listName);
+				return physioDOM.Lists.getList(listName);
 			});
 			
 			var thresholds;
 			that.getThreshold()
 				.then( function(_thresholds) {
 					thresholds = _thresholds;
-					return physioDOM.Lists.getList("unity")
+					return physioDOM.Lists.getList("units")
 				})
 				.then(function (units) {
 					RSVP.all(promises).then(function (lists) {
-						var labels = {};
+
+						var labels = {},
+							unitsData = {};
+
 						for (var i = 0; i < lists.length; i++) {
-							for (var prop in lists[i].items) {
-								labels[prop] = lists[i].items[prop];
+							for (var y in lists[i].items) {
+								var ref = lists[i].items[y].ref;
+
+								labels[ref] = lists[i].items[y].label[lang];
+
+								for(var z in units.items) {
+									if(units.items[z].ref === lists[i].items[y].units) {
+										unitsData[ref] = units.items[z].label[lang];
+									}
+								}
 							}
+
 						}
 
 						physioDOM.db.collection("dataRecordItems").group(groupRequest.key, groupRequest.cond, groupRequest.initial, groupRequest.reduce, function (err, results) {
@@ -795,7 +833,8 @@ function Beneficiary( ) {
 								reject(err);
 							} else {
 								RSVP.all( results.map(function (result) {
-											result.name = labels[result.text].en || result.text;
+											result.name = labels[result.text] || result.text;
+											result.unit = unitsData[result.text] || '';
 											if (thresholds[result.text]) {
 												result.threshold = thresholds[result.text];
 											}
@@ -876,9 +915,9 @@ function Beneficiary( ) {
 						return list.getItem(paramName);
 					})
 					.then(function(param) {
-						physioDOM.Lists.getList("unity")
-							.then(function(unity) {
-								return unity.getItem(param.unity);
+						physioDOM.Lists.getList("units")
+							.then(function(units) {
+								return units.getItem(param.units);
 							})
 							.then( function(unit) {
 								if( unit.label[session.lang || "en"] === undefined ) {

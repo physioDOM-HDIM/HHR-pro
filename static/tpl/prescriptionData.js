@@ -26,7 +26,7 @@ var getList = function() {
         // lists.thresholds = JSON.parse(results.thresholds);
 
         for(var i = 0, leni = lists.parameters.items.length; i<leni; i++) {
-            lists.parameters.items[i].labelLang = lists.parameters.items[i].label[infos.lang];
+            lists.parameters.items[i].labelLang = lists.parameters.items[i].label[infos.lang] || lists.parameters.items[i].ref;
             /*
             if(lists.thresholds[lists.parameters.items[i].ref]) {
                 lists.parameters.items[i].threshold = lists.thresholds[lists.parameters.items[i].ref];
@@ -80,7 +80,12 @@ var init = function() {
             dataItem.hasDetail = true;
             dataItem.hasMoreDetail = false;
         } else {
-            dataItem.hasDetail = false;
+            if(dataItem.repeat && dataItem.repeat !== 1) {
+                dataItem.hasDetail = true;
+            } else {
+                dataItem.hasDetail = false;
+            }
+            dataItem.frequencyType = 'day';
             dataItem.hasMoreDetail = false;
         }
 
@@ -121,6 +126,7 @@ var updateParam = function(elt) {
 var showOptions = function(frequency, dataModel) {
 
     var optionsContainer = document.querySelector('.frequency-options'),
+        dailyTpl = document.querySelector('#tpl-option-daily'),
         weeklyTpl = document.querySelector('#tpl-option-weekly'),
         monthlyTpl = document.querySelector('#tpl-option-monthly');
 
@@ -130,8 +136,9 @@ var showOptions = function(frequency, dataModel) {
     } else if(frequency === 'monthly') {
         if( dataModel === undefined ) { dataModel = { data: { repeat:1 } }; }
         optionsContainer.innerHTML = Mustache.render(monthlyTpl.innerHTML, dataModel);
-    } else {
-        optionsContainer.innerHTML = '';
+    } else if(frequency === 'daily'){
+        if( dataModel === undefined ) { dataModel = { data: { repeat:1 } }; }
+        optionsContainer.innerHTML = Mustache.render(dailyTpl.innerHTML, dataModel);
     }
 
 };
@@ -248,27 +255,41 @@ var saveData = function() {
     dataprog.endDate = data.endDate;
     dataprog.frequency = data.frequency;
 
+	document.forms.dataprog.querySelector("#dateError").classList.add("hidden");
+	if( dataprog.endDate && dataprog.startDate && dataprog.startDate > dataprog.endDate ) {
+		document.forms.dataprog.querySelector("#dateError").classList.remove("hidden");
+		return;
+	}
     if(data.repeat) {
         dataprog.repeat = parseInt(data.repeat,10);
     }
 
+    var inputStartDate = document.forms.dataprog.querySelector("zdk-input-date[name=startDate]"),
+        frequencyChoice = document.forms.dataprog.querySelector(".frequency-choice"),
+        daysSelection = document.forms.dataprog.querySelector(".days");
+
     if( !data.startDate ) {
-        document.forms.dataprog.querySelector("zdk-input-date[name=startDate]").style.border = "2px solid red";
+        utils.addClass(inputStartDate, 'invalid-form');
         return;
     } else {
-        document.forms.dataprog.querySelector("zdk-input-date[name=startDate]").style.border = null;
+        utils.removeClass(inputStartDate, 'invalid-form');
     }
+
     if(!data.frequency) {
-        document.forms.dataprog.querySelector(".frequency-choice").style.border = "2px solid red";
+        utils.addClass(frequencyChoice, 'invalid-form');
         return;
     } else {
-        document.forms.dataprog.querySelector(".frequency-choice").style.border = null;
+        utils.removeClass(frequencyChoice, 'invalid-form');
     }
-    if(data.frequency !== "daily" && !data.when ) {
-        document.forms.dataprog.querySelector(".days").style.border = "2px solid red";
+
+    if(data.frequency !== "daily" && (!data.when || (data.when && !data.when.days))) {
+        utils.addClass(daysSelection, 'invalid-form');
         return;
+    } else if(data.frequency !== "daily") {
+        utils.removeClass(daysSelection, 'invalid-form');
     }
-    
+
+
     if(data.when) {
         var i = 0,
             len = data.when.days.length;
@@ -321,7 +342,7 @@ var removeData = function(id) {
 window.addEventListener("DOMContentLoaded", function() {
     infos.category = document.querySelector('.param-category').textContent;
     infos.paramList = document.querySelector('.param-list').textContent;
-    infos.lang = document.querySelector('#lang').textContent;
+    infos.lang = Cookies.get("lang");
     getList();
 
 }, false);

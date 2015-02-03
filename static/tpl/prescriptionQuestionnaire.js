@@ -1,19 +1,13 @@
 "use strict";
 
+/* global Cookies, moment, form2js, RSVP, Modal */
+
 var utils = new Utils(),
     infos = {},
     questionnairePlan = [],
     idx = 0,
     dateIdx = 0,
     modified = false;
-
-window.addEventListener("DOMContentLoaded", function() {
-
-    infos.lang = document.querySelector('#lang').innerText;
-    getList();
-
-}, false);
-
 
 /**
  * Getting questionnaireProg
@@ -27,6 +21,22 @@ var getList = function() {
         });
 };
 
+window.addEventListener("DOMContentLoaded", function() {
+	infos.lang = Cookies.get("lang");
+	moment.locale( infos.lang === "en"?"en_gb":infos.lang );
+	getList();
+
+}, false);
+
+window.addEventListener("beforeunload", function( e) {
+	var confirmationMessage;
+	if(modified) {
+		confirmationMessage = document.querySelector("#unsave").innerHTML;
+		(e || window.event).returnValue = confirmationMessage;     //Gecko + IE
+		return confirmationMessage;                                //Gecko + Webkit, Safari, Chrome etc.
+	}
+});
+
 /**
  * Data Binding / Templating
  */
@@ -37,7 +47,7 @@ var init = function() {
 
     for(var i= 0, len=questionnairePlan.length ; i<len; i++) {
         var dataItem = questionnairePlan[i];
-        dataItem.labelLang = dataItem.label[infos.lang];
+        dataItem.labelLang = dataItem.label[infos.lang] || dataItem.ref;
         
         var dataModel = {
                 idx: idx,
@@ -47,8 +57,13 @@ var init = function() {
                         var dateAddedTpl = document.querySelector('#dateAddedTpl');
                         var dateIndex = dateIdx;
                         dateIdx++;
-
-                        return Mustache.render(dateAddedTpl.innerHTML, {dateValue: render(val), idx: idx, dateIdx: dateIndex});
+						var data = {
+							dateValue: render(val),
+							dateDisplay: moment(render(val)).format("L"), 
+							idx: idx, 
+							dateIdx: dateIndex
+						};
+                        return Mustache.render(dateAddedTpl.innerHTML, data);
                     };
                 }
             };
@@ -72,10 +87,30 @@ var init = function() {
 var addDate = function(elt, idx) {
     var dateValue = elt.parentNode.querySelector('#date').value,
         dateContainer = elt.parentNode.parentNode.parentNode.querySelector('.dates-list'),
-        dateAddedTpl = document.querySelector('#dateAddedTpl');
+        dateAddedTpl = document.querySelector('#dateAddedTpl'),
+        dateAddedList = dateContainer.querySelectorAll('.date-added'),
+        dateMoment = moment(dateValue);
+
+    if(dateMoment.isBefore()) {
+        new Modal('errorDateOld');
+        return;
+    }
+
+    for(var i in dateAddedList) {
+        if(dateAddedList[i].value === dateValue) {
+            new Modal('errorDateExist');
+            return;
+        }
+    }
 
     if(dateValue && utils.parseDate(dateValue)) {
-        dateContainer.innerHTML += Mustache.render(dateAddedTpl.innerHTML, {dateValue: dateValue, idx: idx, dateIdx: dateIdx});
+		var data = {
+			dateValue: dateValue, 
+			dateDisplay: moment(dateValue).format("L"), 
+			idx: idx, 
+			dateIdx: dateIdx
+		};
+        dateContainer.innerHTML += Mustache.render(dateAddedTpl.innerHTML, data );
         elt.parentNode.querySelector('#date').value = "";
         dateIdx++;
         modified = true;
@@ -111,12 +146,3 @@ var saveData = function( ) {
             new Modal('errorOccured', function() { });
         });
 };
-
-window.addEventListener("beforeunload", function( e) {
-    var confirmationMessage;
-    if(modified) {
-        confirmationMessage = document.querySelector("#unsave").innerHTML;
-        (e || window.event).returnValue = confirmationMessage;     //Gecko + IE
-        return confirmationMessage;                                //Gecko + Webkit, Safari, Chrome etc.
-    }
-});

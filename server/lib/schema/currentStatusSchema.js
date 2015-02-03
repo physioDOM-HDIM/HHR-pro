@@ -11,18 +11,18 @@ var currentWellBeingSchema = {
 					enum: ["well"],
 					required: true
 				},
-				"sf12Score": {
+				"sf36Score": {
 					type: "number",
 					default: 0,
-					description: "SF12 questionnaire score"
+					description: "SF36 questionnaire score"
 				},
-				"sf12Date": {
+				"sf36Date": {
 					type: "date",
-					description: "SF12 questionnaire date"
+					description: "SF36 questionnaire date"
 				},
-				"sf12Answer": {
+				"sf36Answer": {
 					type: "string",
-					description: "SF12 questionnaire answer ID"
+					description: "SF36 questionnaire answer ID"
 				}
 			},
 			"required": ["name"]
@@ -47,13 +47,25 @@ var currentNutritionSchema = {
 					type: "number",
 					description: "Weight"
 				},
+				"commentWeight": {
+					type: "string",
+					description: "Weight comment"
+				},
 				"lean": {
 					type: "number",
 					description: "Lean/fat ratio"
 				},
+				"commentLean": {
+					type: "string",
+					description: "Lean/fat ratio comment"
+				},
 				"bmi": {
 					type: "number",
 					description: "BMI"
+				},
+				"commentBmi": {
+					type: "string",
+					description: "BMI comment"
 				},
 				"mnaScore": {
 					type: "number",
@@ -68,6 +80,10 @@ var currentNutritionSchema = {
 					type: "string",
 					description: "MNA questionnaire answer ID"
 				},
+				"commentMna": {
+					type: "string",
+					description: "MNA comment"
+				},
 				"mnaSfScore": {
 					type: "number",
 					default: 0,
@@ -80,6 +96,10 @@ var currentNutritionSchema = {
 				"mnaSfAnswer": {
 					type: "string",
 					description: "MNA SF questionnaire answer ID"
+				},
+				"commentMnaSf": {
+					type: "string",
+					description: "MNA SF comment"
 				},
 				"snaqScore": {
 					type: "number",
@@ -94,6 +114,10 @@ var currentNutritionSchema = {
 					type: "string",
 					description: "SNAQ questionnaire answer ID"
 				},
+				"commentSnaq": {
+					type: "string",
+					description: "SNAQ comment"
+				},
 				"dhdScore": {
 					type: "number",
 					default: 0,
@@ -106,6 +130,10 @@ var currentNutritionSchema = {
 				"dhdAnswer": {
 					type: "string",
 					description: "DHD-FFQ questionnaire answer ID"
+				},
+				"commentDhd": {
+					type: "string",
+					description: "DHD-FFQ comment"
 				},
 				"dietPresc": {
 					type: "string",
