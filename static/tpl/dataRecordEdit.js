@@ -215,7 +215,7 @@ function checkForm() {
 
 function create() {
 	
-    if(createdDataRecordID !== null) {
+    if(createdDataRecordID ) {
         update(createdDataRecordID);
     } else {
         var obj = form2js(document.forms.dataRecord),

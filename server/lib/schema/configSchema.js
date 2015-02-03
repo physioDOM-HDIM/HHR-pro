@@ -9,7 +9,7 @@ var configSchema = {
 		"mongo": {
 			type                  : "object",
 			properties            : {
-				ip  : {format: "ipv4", description: "ip of the mongo server", required: true},
+				ip  : {type: "string", description: "ip of the mongo server", required: true},
 				db  : {type: "string", description: "name of the database", required: true},
 				port: {
 					type       : "integer",
@@ -37,7 +37,7 @@ var configSchema = {
 			type : "object",
 			properties : {
 				protocol: {type: "string", pattern: "^(http|https)", required: true},
-				ip      : {format: "ipv4", required: true},
+				ip      : {type: "string", required: true},
 				port    : {type: "integer", default: 9000, minimum: 9000, maximum: 9100}
 			},
 			"additionalProperties": false
