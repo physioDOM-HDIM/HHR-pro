@@ -192,7 +192,9 @@ function IPage() {
 		var promises = [
 			"perimeter",
 			"job",
-			"role"
+			"role",
+			"organizationType",
+			"civility"
 		].map(promiseList);
 
 		new Menu().rights( req.session.role, data.rights.url )
@@ -1757,7 +1759,8 @@ function IPage() {
 		init(req);
 		var data = {
 			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false,
-			rights: { read:false, write:false, url: '/agenda' }
+			rights: { read:false, write:false, url: '/agenda' },
+			lang : lang
 		};
 
 		new Menu().rights( req.session.role, data.rights.url )

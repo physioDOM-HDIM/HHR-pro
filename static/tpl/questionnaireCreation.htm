@@ -31,7 +31,7 @@
 	</div>
 
 	<div class="row">
-		<label class="bold">{%raw%}{{'Header' | i18n}} (<span class="lang-info"></span>):  {%endraw%}</label>
+		<label class="bold">{{'Header' | i18n}} (<span class="lang-info"></span>): </label>
 		{% for item in communication.items %}
 			<input type="text" name="{%raw%}{{name}}{%endraw%}.headerLabel.{{item.value}}" id="{{item.value}}" class="trad-input hidden" />
 		{% endfor %}
@@ -53,7 +53,7 @@
 
 	<div class="row control spaced">
 		<span class="spacer"></span>
-		<button type="button" class="small red deleteQuestion">Delete question</button>
+		<button type="button" class="small red deleteQuestion">{{'Delete question'|i18n}}</button>
 	</div>
 
 	<div class="row">
@@ -61,7 +61,7 @@
 		<input type="text" name="{%raw%}{{name}}.ref{%endraw%}" />
 	</div>
 	<div class="row">
-		<label class="bold">{%raw%}{{'Translation'|i18n}} : (<span class="lang-info"></span>){%endraw%}</label>
+		<label class="bold">{{'Translation'|i18n}} : (<span class="lang-info"></span>)</label>
 		{% for item in communication.items %}
 			<input type="text" name="{%raw%}{{name}}{%endraw%}.label.{{item.value}}" id="{{item.value}}" class="trad-input hidden" />
 		{% endfor %}
@@ -82,7 +82,7 @@
 			<input type="text" name="{%raw%}{{name}}.ref{%endraw%}" />
 		</div>
 		<div class="col">
-			<label>{%raw%}{{'Translation'|i18n}} (<span class="lang-info"></span>): {%endraw%}</label>
+			<label>{{'Translation'|i18n}} (<span class="lang-info"></span>): </label>
 			{% for item in communication.items %}
 			<input type="text" name="{%raw%}{{name}}{%endraw%}.label.{{item.value}}" id="{{item.value}}" class="trad-input hidden" />
 			{% endfor %}
@@ -127,9 +127,9 @@
 		<span class="spacer"></span>
 		<button type="button" class="small red deleteQuestion">
 		{% if q.headerRef %}
-			Delete header question
+			{{'Delete header question'|i18n}}
 		{% else %}
-			Delete question
+			{{'Delete question'|i18n}}
 		{% endif %}
 		</button>
 	</div>
@@ -269,8 +269,7 @@
 				{% endif %}
 		</div>
 		<div class="row">
-			<label class="bold">{{'Questionnaire name'|i18n}}</label>
-			<!-- <input type="text" name="ref" value="{{questionnaire.ref}}"/> -->
+			<label class="bold">{{'Questionnaire label'|i18n}}</label>
 			<br/>
 			{% for item in communication.items %}
 			<input type="text" name="label.{{item.value}}" value="{% if questionnaire.label[item.value] %}{{ questionnaire.label[item.value] }}{% endif %}" id="{{item.value}}" class="trad-input hidden" />

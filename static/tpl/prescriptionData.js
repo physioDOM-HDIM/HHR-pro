@@ -51,32 +51,36 @@ var init = function() {
 
         var dataItem = lists.dataprog[i],
             param = utils.findInObject(lists.parameters.items, 'ref', dataItem.ref);
-
+		if ( dataItem.repeat > 1 ) { 
+			dataItem.freqRepeat = true; 
+		}
         //translate options of weekly and montly for the template
         if(dataItem.frequency === 'monthly') {
             dataItem.frequencyType = 'month';
+			dataItem.freqMonth = true;
             dataItem.hasDetail = true;
             dataItem.hasMoreDetail = true;
 
             var weekNumber = Number(String(Math.abs(dataItem.when.days[0])).charAt(0));
 
             if(weekNumber === 1) {
-                dataItem.when.weekNumber = 'first';
+                dataItem.when.weekFirst = true;
             } else if(weekNumber === 2){
-                dataItem.when.weekNumber = 'second';
+                dataItem.when.weekSecond = true;
             } else if(weekNumber === 3){
-                dataItem.when.weekNumber = 'third';
+                dataItem.when.weekThird = true;
             } else if(weekNumber === 4){
-                dataItem.when.weekNumber = 'fourth';
+                dataItem.when.weekFourth = true;
             }
 
             if(dataItem.when.days[0] > 0) {
-                dataItem.when.order = 'beginning';
+                dataItem.when.orderBegin = true;
             } else {
-                dataItem.when.order = 'end';
+                dataItem.when.orderEnd = true;
             }
         } else if (dataItem.frequency === 'weekly') {
             dataItem.frequencyType = 'week';
+			dataItem.freqWeek = true;
             dataItem.hasDetail = true;
             dataItem.hasMoreDetail = false;
         } else {
@@ -86,6 +90,7 @@ var init = function() {
                 dataItem.hasDetail = false;
             }
             dataItem.frequencyType = 'day';
+			dataItem.freqDay = true;
             dataItem.hasMoreDetail = false;
         }
 

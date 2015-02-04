@@ -1,5 +1,5 @@
 {% extends './page.htm' %}
-{% block title %}{{title}}{% endblock %}
+{% block title %}{{'Prescritption of data monitoring'|i18n}}{% endblock %}
 {% block head %}
 {% parent %}
 <script src="/bower_components/mustache/mustache.js"></script>
@@ -16,7 +16,6 @@
 
 {% block content %}
 
-<div class="hidden" id="lang">{{ lang }}</div>
 <div class="hidden param-category">{{ category }}</div>
 <div class="hidden param-list">{{ parameterList }}</div>
 <div class="row title">
@@ -31,7 +30,7 @@
 <div class="row control">
 	<span class="spacer"></span>
 	{% if rights.write %}
-	<button type="button" class="blue" onclick="showForm()">Add</button>
+	<button type="button" class="blue" onclick="showForm()">{{'Add'|i18n}}</button>
 	{% endif %}
 </div>
 
@@ -64,7 +63,18 @@
 		<div class="col">
 			<label>
 				{% raw %}{{#data.hasDetail}}{% endraw %}
-					{{"Every"|i18n}} {% raw %}{{data.repeat}} {{data.frequencyType}}{% endraw %}
+					
+				{% raw %}{{#data.freqMonth}}{% endraw %}
+					{{"Every"|i18n}} {% raw %}{{#data.freqRepeat}}{{data.repeat}}{{/data.freqRepeat}}{% endraw %}
+					{{"months"|i18n}}
+				{% raw %}{{/data.freqMonth}}{% endraw %}
+				{% raw %}{{#data.freqWeek}}{% endraw %}
+					{{"Every2"|i18n}} {% raw %}{{#data.freqRepeat}}{{data.repeat}}{{/data.freqRepeat}}{% endraw %}
+					{{"weeks"|i18n}}{% raw %}{{/data.freqWeek}}{% endraw %}
+				{% raw %}{{#data.freqDay}}{% endraw %}
+					{{"Every"|i18n}} {% raw %}{{#data.freqRepeat}}{{data.repeat}}{{/data.freqRepeat}}{% endraw %}
+					{{"days"|i18n}}
+				{% raw %}{{/data.freqDay}}{% endraw %}
 				{% raw %}{{/data.hasDetail}}{% endraw %}
 				{% raw %}{{^data.hasDetail}}{% endraw %}
 					{{"Everyday"|i18n}}
@@ -89,9 +99,15 @@
 	<div class="row">
 		<div class="col05"></div>
 		<div class="col">
-			{{"The"|i18n}} {% raw %}{{data.when.weekNumber}}{% endraw %} {{"week from the"|i18n}} {% raw %}{{data.when.order}}{% endraw %} {{"of the month"|i18n}}
+			{% raw %}{{#data.when.weekFirst}}{% endraw %}{{"The first"|i18n}}{% raw %}{{/data.when.weekFirst}}{% endraw %}
+			{% raw %}{{#data.when.weekSecond}}{% endraw %}{{"The second"|i18n}}{% raw %}{{/data.when.weekSecond}}{% endraw %}
+			{% raw %}{{#data.when.weekThird}}{% endraw %}{{"The third"|i18n}}{% raw %}{{/data.when.weekThird}}{% endraw %}
+			{% raw %}{{#data.when.weekFourth}}{% endraw %}{{"The fourth"|i18n}}{% raw %}{{/data.when.weekFourth}}{% endraw %}
+			&nbsp;{{"week from the"|i18n}} 
+			{% raw %}{{#data.when.orderBegin}}{% endraw %}{{"beginning"|i18n}}{% raw %}{{/data.when.orderBegin}}{% endraw %}
+			{% raw %}{{#data.when.orderEnd}}{% endraw %}{{"end"|i18n}}{% raw %}{{/data.when.orderEnd}}{% endraw %}
+			&nbsp;{{"of the month"|i18n}}
 		</div>
-		<!-- <div class="col"></div> -->
 	</div>
 	{% raw %}{{/data.hasMoreDetail}}{% endraw %}
 	
@@ -165,15 +181,12 @@
 </script>
 
 <script type="template" id="tpl-option-daily">
-
 	<div class="row">
 		{{"Every"|i18n}} <input type="number" name="repeat" class="option-repeat" value="{% raw %}{{data.repeat}}{% endraw %}"> {{"Day"|i18n}}
 	</div>
-
 </script>
 
 <script type="template" id="tpl-option-weekly">
-
 	<div class="row">
 		{{"Every"|i18n}} <input type="number" name="repeat" class="option-repeat" value="{% raw %}{{data.repeat}}{% endraw %}"> {{"Week"|i18n}}
 	</div>
@@ -186,21 +199,19 @@
 		<input type="checkbox" name="when.days[]" value="6" {% raw %}{{#getDaysDefault}}6{{/getDaysDefault}}{% endraw %}/>{{"Sat"|i18n}}
 		<input type="checkbox" name="when.days[]" value="0" {% raw %}{{#getDaysDefault}}0{{/getDaysDefault}}{% endraw %}/>{{"Sun"|i18n}}
 	</div>
-
 </script>
 
 <script type="template" id="tpl-option-monthly">
-
 	<div class="row">
 		{{"Every"|i18n}} <input type="number" name="repeat" class="option-repeat" value="{% raw %}{{data.repeat}}{% endraw %}"> {{"Month"|i18n}}
 	</div>
 	<div class="row">
-		The <select name="when.week" class="spacing-around">
+		<select name="when.week" class="spacing-around">
 			<option value="1" {% raw %}{{#getWeekDefault}}1{{/getWeekDefault}}{% endraw %}>{{"first"|i18n}}</option>
 			<option value="2" {% raw %}{{#getWeekDefault}}2{{/getWeekDefault}}{% endraw %}>{{"second"|i18n}}</option>
 			<option value="3" {% raw %}{{#getWeekDefault}}3{{/getWeekDefault}}{% endraw %}>{{"third"|i18n}}</option>
 			<option value="4" {% raw %}{{#getWeekDefault}}4{{/getWeekDefault}}{% endraw %}>{{"fourth"|i18n}}</option>
-		</select> week
+		</select> {{'week'|i18n}}
 	</div>
 	<div class="row">
 		{{"from the"|i18n}} <select name="when.order" class="spacing-around">
@@ -209,15 +220,14 @@
 		</select> {{"of the month"|i18n}}
 	</div>
 	<div class="row days">
-		<input type="checkbox" name="when.days[]" value="1" {% raw %}{{#getDaysDefault}}1{{/getDaysDefault}}{% endraw %}/>{{"Mon"|i18n}}
-		<input type="checkbox" name="when.days[]" value="2" {% raw %}{{#getDaysDefault}}2{{/getDaysDefault}}{% endraw %}/>{{"Tue"|i18n}}
-		<input type="checkbox" name="when.days[]" value="3" {% raw %}{{#getDaysDefault}}3{{/getDaysDefault}}{% endraw %}/>{{"Wed"|i18n}}
-		<input type="checkbox" name="when.days[]" value="4" {% raw %}{{#getDaysDefault}}4{{/getDaysDefault}}{% endraw %}/>{{"Thu"|i18n}}
-		<input type="checkbox" name="when.days[]" value="5" {% raw %}{{#getDaysDefault}}5{{/getDaysDefault}}{% endraw %}/>{{"Fri"|i18n}}
-		<input type="checkbox" name="when.days[]" value="6" {% raw %}{{#getDaysDefault}}6{{/getDaysDefault}}{% endraw %}/>{{"Sat"|i18n}}
+		<input type="checkbox" name="when.days[]" value="1" {% raw %}{{#getDaysDefault}}1{{/getDaysDefault}}{% endraw %}/>{{"Mon"|i18n}}&nbsp;&nbsp;
+		<input type="checkbox" name="when.days[]" value="2" {% raw %}{{#getDaysDefault}}2{{/getDaysDefault}}{% endraw %}/>{{"Tue"|i18n}}&nbsp;&nbsp;
+		<input type="checkbox" name="when.days[]" value="3" {% raw %}{{#getDaysDefault}}3{{/getDaysDefault}}{% endraw %}/>{{"Wed"|i18n}}&nbsp;&nbsp;
+		<input type="checkbox" name="when.days[]" value="4" {% raw %}{{#getDaysDefault}}4{{/getDaysDefault}}{% endraw %}/>{{"Thu"|i18n}}&nbsp;&nbsp;
+		<input type="checkbox" name="when.days[]" value="5" {% raw %}{{#getDaysDefault}}5{{/getDaysDefault}}{% endraw %}/>{{"Fri"|i18n}}&nbsp;&nbsp;
+		<input type="checkbox" name="when.days[]" value="6" {% raw %}{{#getDaysDefault}}6{{/getDaysDefault}}{% endraw %}/>{{"Sat"|i18n}}&nbsp;&nbsp;
 		<input type="checkbox" name="when.days[]" value="0" {% raw %}{{#getDaysDefault}}0{{/getDaysDefault}}{% endraw %}/>{{"Sun"|i18n}}
 	</div>
-
 </script>
 
 

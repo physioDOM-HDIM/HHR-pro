@@ -147,7 +147,10 @@ function onHaveData(data){
             item.perimeter = _dataLists.perimeter[item.perimeter] ? _dataLists.perimeter[item.perimeter][_lang] : item.perimeter;
         }
 		if( item.organizationType ) {
-			item.organizationType = _dataLists.organizationType[item.organizationType] ? _dataLists.organizationType[item.organizationType][_lang] : item.organizationType;
+			item.organizationType = _dataLists.organizationType[item.organizationType] ? _dataLists.organizationType[item.organizationType][_lang] || item.organizationType  : item.organizationType;
+		}
+		if( item.gender ) {
+			item.gender = _dataLists.civility[item.gender] ? _dataLists.civility[item.gender][_lang] || item.gender  : item.gender;
 		}
     }
     listPagerElt.render( _dataObj.list );
@@ -229,6 +232,7 @@ function init() {
         role: promiseXHR("GET", "/api/lists/role/array", 200),
         perimeter: promiseXHR("GET", "/api/lists/perimeter/array", 200),
 		organizationType: promiseXHR("GET", "/api/lists/organizationType/array", 200),
+		civility: promiseXHR("GET", "/api/lists/civility/array", 200)
     };
     var errorCB = function(error){
         console.log("Init error", error);
@@ -252,6 +256,7 @@ function init() {
             _dataLists.role = JSON.parse(results.role).items;
             _dataLists.perimeter = JSON.parse(results.perimeter).items;
 			_dataLists.organizationType = JSON.parse(results.organizationType).items;
+			_dataLists.civility = JSON.parse(results.civility).items;
             
             //TODO: get lang from cookie
             _lang = Cookies.get("lang") || "en";

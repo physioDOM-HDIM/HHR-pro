@@ -32,6 +32,9 @@
 		text-align: center;
 		line-height: 50px;
 	}
+	span.warn {
+		color:Tomato;
+	}
 </style>
 
 {% macro tpl(q, idx) %}
@@ -44,7 +47,7 @@
 	{% endfor %}
 
 	{% if q.headerRef %}
-		<div class="bold">{{idx|join("-")}} - {{q.headerLabel[lang]}}</div>
+		<div class="bold">{{idx|join("-")}} - {{q.headerLabel[lang] || q.headerLabel["en"] }} {% if !q.headerLabel[lang] %}<span class="warn">( en )</span>{% endif %}</div>
 		<input type="hidden" name="{{name}}.subscore" value="{{q.subscore}}" />
 		<hr>
 		{% for subQ in q.questions %}
@@ -56,18 +59,16 @@
 		{% endfor %}
 	{% else %}
 		<div class="row">
-			<div>{{idx|join("-")}} - {{q.label[lang]}}</div>
+			<div>{{idx|join("-")}} - {{q.label[lang] || q.label["en"] }} {% if !q.label[lang] %}<span class="warn">( en )</span>{% endif %}</div>
 		</div>
 		<br/>
 	{% endif %}
 	{% for c in q.choice %}
 		<div class="row answers">
-			{% if !c.label[lang] %}
-				<input type="text" name="{{name}}.choice" required />
-			{% else %}
-				<label for="{{name}}.choice">{{c.label[lang]}}</label>
+			
+				<label for="{{name}}.choice">{{c.label[lang] || c.label["en"] }} {% if !c.label[lang] %}<span class="warn">( en )</span>{% endif %}</label>
 				<input type="radio" name="{{name}}.choice" value="{{c.value}}" required />
-			{% endif %}
+			
 		</div>
 		{% if loop.last %}
 			<br/>
@@ -79,7 +80,7 @@
 	{% if preview %}
 	<div class="preview">{{'Preview display'|i18n}}</div>
 	{% endif %}
-	<h2>{{questionnaire.label[lang]}}</h2>
+	<h2>{{questionnaire.label[lang] || questionnaire.label["en"] }} {% if !questionnaire.label[lang] %}<span class="warn">( en )</span>{% endif %}</h2>
 	<form autocomplete="off" name="questionnaire" onsubmit="checkForm(); return false;">
 		<input type="hidden" name="ref" value="{{questionnaire._id.toString()}}" />
 		<input type="hidden" name="score" value="{{questionnaire.score}}" />
@@ -111,9 +112,9 @@
 			<div class="modalTitleContainer">{{'Result' | i18n}}</div>
 			<div class="modalContentContainer">{{'Your score is: ' |i18n}}<span id="score">{{score}}</span></div>
 			<div class="modalButtonContainer">
-				<button class="green" onclick="closeModal();">{{'OK' | i18n}}</script>
+				<button class="green" onclick="closeModal();">{{'OK' | i18n}}</button>
 			</div>
-		</button>
+		</div>
 	</zdk-modal>
 </div>
 
