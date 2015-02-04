@@ -135,7 +135,7 @@
                     <label class="mandatory">{{ "Language" | i18n }} :</label>
                     <select name="communication">
                         {% for item in communication.items %}
-                        <option value="{{item.value}}" {% if professional.communication == item.value %}selected{% endif %}>{{item.label}}</option>
+                        <option value="{{item.value}}" {% if professional.communication %}{% if professional.communication == item.value %}selected{% endif %}{% else %}{% if lang == item.value %}selected{% endif %}{% endif %}>{{item.label}}</option>
                         {% endfor %}
                     </select>
                 </div>

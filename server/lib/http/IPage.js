@@ -57,7 +57,8 @@ function IPage() {
 		i18n.setLocale(lang);
 		moment.locale(req.cookies.lang=="en"?"en-gb":req.cookies.lang)
 		
-		swig.setDefaults( {cache: physioDOM.config.cache} );
+		// swig.setDefaults( {cache: physioDOM.config.cache?'memory':false} );
+		swig.setDefaults( { cache: false } );
 		swig.setFilter("i18n", function (input, idx) {
 			// console.log("input", input, idx);
 			return i18n.__(input);
@@ -240,7 +241,8 @@ function IPage() {
 		init(req);
 		var data = {
 			admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
-			rights: { read:false, write:false, url: '/directory' }
+			rights: { read:false, write:false, url: '/directory' },
+			lang: physioDOM.lang
 		};
 
 		var promises = [
@@ -263,7 +265,6 @@ function IPage() {
 				lists.forEach(function(list) {
 					data[Object.keys(list)] = list[Object.keys(list)];
 				});
-				console.log( data.organizationType );
 				return physioDOM.Directory();
 			})
 			.then(function(directory) {
