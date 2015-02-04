@@ -214,7 +214,7 @@ server.pre(restify.pre.userAgentConnection());
 server.use(function checkAcl(req, res, next) {
 	logger.trace("checkAcl",req.url);
 
-	if( req.url === "/" || req.url.match(/^(\/api|\/logout|\/directory|\/settings|\/questionnaires|\/admin)/) ) {
+	if( req.url === "/" || req.url.match(/^(\/api|\/logout|\/directory|\/settings|\/questionnaires|\/admin|\/beneficiaries)/) ) {
 		return next();
 	} else {
 
@@ -415,7 +415,7 @@ server.get( '/api/logout', logout);
 server.get( '/logout', logout);
 
 server.get( '/beneficiaries', IPage.beneficiaries);
-server.get( '/beneficiary/create', IPage.beneficiaryCreate);
+server.get( '/beneficiaries/create', IPage.beneficiaryCreate);
 server.get( '/beneficiary/edit/:beneficiaryID', IPage.beneficiaryUpdate);
 server.get( '/beneficiary/update', IPage.beneficiaryUpdate );
 server.get( '/beneficiary/:beneficiaryID', IPage.beneficiaryOverview );
