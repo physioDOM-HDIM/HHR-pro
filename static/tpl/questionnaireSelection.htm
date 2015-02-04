@@ -47,10 +47,10 @@
 	<ul>
 	{% for q in questionnaires.items %}
 		<li>
-			<a href="/questionnaire/edit/{{q.name}}">
+			<a href="/questionnaires/edit/{{q.name}}">
 				<button class="small blue">Edit (dev only)</button>
 			</a>
-			<a class="link" href="/questionnaire/{{q.name}}">{{q.label[lang]}} </a>
+			<a class="link" href="/questionnaires/preview/{{q.name}}">{{q.label[lang]}} </a>
 		</li>
 	{% endfor %}
 	</ul>

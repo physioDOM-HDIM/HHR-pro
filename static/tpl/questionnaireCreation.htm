@@ -22,30 +22,30 @@
 <script type="text/template" id="tplHeaderQuestion">
 	<div class="row control spaced">
 		<span class="spacer"></span>
-		<button type="button" class="small red deleteQuestion">Delete header question</button>
+		<button type="button" class="small red deleteQuestion">{{'Delete header question' | i18n}}</button>
 	</div>
 
 	<div class="row">
-		<label class="bold">Header ref: </label>
+		<label class="bold">{{'Header ref'|i18n}} : </label>
 		<input type="text" name="{%raw%}{{name}}.headerRef{%endraw%}" />
 	</div>
 
 	<div class="row">
-		<label class="bold">{%raw%}Header (<span class="lang-info"></span>):  {%endraw%}</label>
+		<label class="bold">{%raw%}{{'Header' | i18n}} (<span class="lang-info"></span>):  {%endraw%}</label>
 		{% for item in communication.items %}
 			<input type="text" name="{%raw%}{{name}}{%endraw%}.headerLabel.{{item.value}}" id="{{item.value}}" class="trad-input hidden" />
 		{% endfor %}
 	</div>
 
 	<div class="row">
-		<label class="bold">Subscore: </label>
+		<label class="bold">{{'Subscore' | i18n}} : </label>
 		<input type="text" name="{%raw%}{{name}}.subscore{%endraw%}" />
 	</div>
 
 	<div class="row control btnContainer">
 		<span class="spacer"></span>
-		<button type="button" class="small blue addHeaderQuestion" data-obj="{%raw%}{{name}}.questions;{%endraw%}">Add header question</button>
-		<button type="button" class="small blue addQuestion" data-obj="{%raw%}{{name}}.questions;{%endraw%}">Add question</button>
+		<button type="button" class="small blue addHeaderQuestion" data-obj="{%raw%}{{name}}.questions;{%endraw%}">{{'Add header question'|i18n}}</button>
+		<button type="button" class="small blue addQuestion" data-obj="{%raw%}{{name}}.questions;{%endraw%}">{{'Add question'|i18n}}</button>
 	</div>
 </script>
 
@@ -57,11 +57,11 @@
 	</div>
 
 	<div class="row">
-		<label class="bold">Question ref: </label>
+		<label class="bold">{{'Question ref'|i18n}} : </label>
 		<input type="text" name="{%raw%}{{name}}.ref{%endraw%}" />
 	</div>
 	<div class="row">
-		<label class="bold">{%raw%}Trad: (<span class="lang-info"></span>){%endraw%}</label>
+		<label class="bold">{%raw%}{{'Translation'|i18n}} : (<span class="lang-info"></span>){%endraw%}</label>
 		{% for item in communication.items %}
 			<input type="text" name="{%raw%}{{name}}{%endraw%}.label.{{item.value}}" id="{{item.value}}" class="trad-input hidden" />
 		{% endfor %}
@@ -69,7 +69,7 @@
 
 	<div class="row control btnContainer">
 		<span class="spacer"></span>
-		<button type="button" class="small blue addChoice" data-obj="{%raw%}{{name}}.choice;{%endraw%}">Add choice</button>
+		<button type="button" class="small blue addChoice" data-obj="{%raw%}{{name}}.choice;{%endraw%}">{{'Add choice'|i18n}}</button>
 	</div>
 
 </script>
@@ -82,7 +82,7 @@
 			<input type="text" name="{%raw%}{{name}}.ref{%endraw%}" />
 		</div>
 		<div class="col">
-			<label>{%raw%}Trad (<span class="lang-info"></span>): {%endraw%}</label>
+			<label>{%raw%}{{'Translation'|i18n}} (<span class="lang-info"></span>): {%endraw%}</label>
 			{% for item in communication.items %}
 			<input type="text" name="{%raw%}{{name}}{%endraw%}.label.{{item.value}}" id="{{item.value}}" class="trad-input hidden" />
 			{% endfor %}
@@ -91,11 +91,11 @@
 
 	<div class="row">
 		<div class="col">
-			<label>Choice Value</label>
+			<label>{{'Choice Value'|i18n}}</label>
 			<input type="text" name="{%raw%}{{name}}.value{%endraw%}" />
 		</div>
 		<div class="col">
-			<label>Choice System</label>
+			<label>{{'Choice System'|i18n}}/label>
 			<select name="{%raw%}{{name}}.system{%endraw%}">
 	    		<option value="integer">integer</option>
 	    		<option value="boolean">boolean</option>
@@ -108,7 +108,7 @@
 	<div class="row">
 		<div class="col btnContainer">
 			<div class="spacer"></div>
-			<button type="button" class="small red deleteChoice">Delete</button>
+			<button type="button" class="small red deleteChoice">{{'Delete'|i18n}}</button>
 		</div>
 	</div>
 
@@ -136,17 +136,17 @@
 
 	{% if q.headerRef %}
 		<div class="row">
-			<label class="bold">Header ref: </label>
+			<label class="bold">{{'Header ref'|i18n}}: </label>
 			<input type="text" name="{{name}}.headerRef" value="{{q.headerRef}}" />
 		</div>
 		<div class="row">
-			<label class="bold">Trad: (<span class="lang-info"></span>) </label>
+			<label class="bold">{{'Translate'}}: (<span class="lang-info"></span>) </label>
 			{% for item in communication.items %}
 				<input type="text" name="{{name}}.headerLabel.{{item.value}}" value="{% if q.headerLabel[item.value] %}{{ q.headerLabel[item.value] }}{% endif %}" id="{{item.value}}" class="trad-input hidden" />
 			{% endfor %}
 		</div>
 		<div class="row">
-			<label class="bold">Subscore: </label>
+			<label class="bold">{{'Subscore'|i18n}}: </label>
 			<input type="text" name="{{name}}.subscore" value="{{q.subscore}}" />
 		</div>
 		<hr class="nested-space">
@@ -160,19 +160,19 @@
 			{% if loop.last %}
 				<div class="row control btnContainer">
 					<span class="spacer"></span>
-					<button type="button" class="small blue addHeaderQuestion" data-obj="{{name}}.questions;">Add header question</button>
-					<button type="button" class="small blue addQuestion" data-obj="{{name}}.questions;">Add question</button>
+					<button type="button" class="small blue addHeaderQuestion" data-obj="{{name}}.questions;">{{'Add header question'|i18n}}</button>
+					<button type="button" class="small blue addQuestion" data-obj="{{name}}.questions;">{{'Add question'|i18n}}</button>
 				</div>
 			{% endif %}
 		{% endfor %}
 	{% else %}
 		<div class="row">
-			<label class="bold">Question ref: </label>
+			<label class="bold">{{'Question ref'|i18n}} : </label>
 			<input type="text" name="{{name}}.ref" value="{{q.ref}}" />
 		</div>
 
 		<div class="row">
-			<label class="bold">Question (<span class="lang-info"></span>): </label>
+			<label class="bold">{{'Question'|i18n}} (<span class="lang-info"></span>): </label>
 			{% for item in communication.items %}
 				<input type="text" name="{{name}}.label.{{item.value}}" value="{% if q.label[item.value] %}{{ q.label[item.value] }}{% endif %}" id="{{item.value}}" class="trad-input hidden" />
 			{% endfor %}
@@ -190,19 +190,19 @@
 				</div>
 				<div class="spacer"></div>
 
-				<button type="button" class="small blue mode-read" onclick="showQuestion(this, true)">Show</button>
-				<button type="button" class="small blue mode-edit hidden" onclick="showQuestion(this, false)">Hide</button>
+				<button type="button" class="small blue mode-read" onclick="showQuestion(this, true)">{{'Show'|i18n}}</button>
+				<button type="button" class="small blue mode-edit hidden" onclick="showQuestion(this, false)">{{'Hide'|i18n}}</button>
 
 			</div>
 
 			<div class="row mode-edit hidden">
 
 				<div class="col">
-					<label>Choice ref</label>
+					<label>{{'Choice ref'|i18n}}</label>
 					<input type="text" name="{{name}}.choice[{{loop.index}}].ref" value="{{c.ref}}" />
 				</div>
 				<div class="col input-label-update">
-					<label>Trad: (<span class="lang-info"></span>)</label>
+					<label>{{'Translate'}}: (<span class="lang-info"></span>)</label>
 					{% set idx = loop.index;%}
 					{% for item in communication.items %}
 						<input type="text" name="{{name}}.choice[{{idx}}].label.{{item.value}}" value="{% if c.label[item.value] %}{{ c.label[item.value] }}{% endif %}" id="{{item.value}}" class="trad-input hidden" onkeyup="updateLabel(this)" />
@@ -212,11 +212,11 @@
 			<div class="row mode-edit hidden">
 
 				<div class="col">
-					<label>Choice Value</label>
+					<label>{{'Choice Value'|i18n}}</label>
 					<input type="text" name="{{name}}.choice[{{loop.index}}].value" value="{{c.value}}" />
 				</div>
 				<div class="col">
-					<label>Choice System</label>
+					<label>{{'Choice System'|i18n}}</label>
 					<select name="{{name}}.choice[{{loop.index}}].system">
 			    		<option value="integer" {% if c.system === "integer" %}selected{% endif %}>integer</option>
 			    		<option value="boolean" {% if c.system === "boolean" %}selected{% endif %}>boolean</option>
@@ -231,7 +231,7 @@
 
 				<div class="col btnContainer">
 					<div class="spacer"></div>
-					<button type="button" class="small red deleteChoice">Delete</button>
+					<button type="button" class="small red deleteChoice">{{'Delete'|i18n}}</button>
 				</div>
 
 			</div>
@@ -240,7 +240,7 @@
 		{% if loop.last %}
 			<div class="row control btnContainer">
 				<span class="spacer"></span>
-				<button type="button" class="small blue addChoice" data-obj="{{name}}.choice;">Add choice</button>
+				<button type="button" class="small blue addChoice" data-obj="{{name}}.choice;">{{'Add choice'|i18n}}</button>
 			</div>
 		{% endif %}
 
@@ -262,17 +262,20 @@
 			</select>
 		</div>
 		<div class="row">
-				<label class="bold">Questionnaire name</label>
-				<input type="text" name="name" value="{{questionnaire.name}}"/>
+				<label class="bold">{{'Questionnaire ref'|i18n}}</label>
+				<input type="text" name="name" value="{{questionnaire.name}}" {% if questionnaire._id %}disabled{% endif %}/>
+				{% if questionnaire._id %}
+				<input type="hidden" name="name" value="{{questionnaire.name}}"/> 
+				{% endif %}
 		</div>
 		<div class="row">
-			<label class="bold">Questionnaire ref</label>
-			<input type="text" name="ref" value="{{questionnaire.ref}}"/>
+			<label class="bold">{{'Questionnaire name'|i18n}}</label>
+			<!-- <input type="text" name="ref" value="{{questionnaire.ref}}"/> -->
+			<br/>
+			{% for item in communication.items %}
+			<input type="text" name="label.{{item.value}}" value="{% if questionnaire.label[item.value] %}{{ questionnaire.label[item.value] }}{% endif %}" id="{{item.value}}" class="trad-input hidden" />
+			{% endfor %}
 		</div>
-		<!-- <div class="col">
-			<label>Trad: ({{lang}})</label>
-			<input type="text" name="label.{{lang}}" {% if questionnaire.label[lang] %}value="{{questionnaire.label[lang]}}"{% endif %}/>
-		</div> -->
 		{% for q in questionnaire.questions %}
 			<div class="itemContainer">
 				{% set number = "" %}
@@ -281,13 +284,13 @@
 		{% endfor %}
 		<div class="row control btnContainer">
 			<span class="spacer"></span>
-			<button id="addHeader" type="button" class="blue addHeaderQuestion" data-obj="questions;">New Header Question</button>
-			<button id="addSimple" type="button" class="blue addQuestion" data-obj="questions;">New Simple Question</button>
+			<button id="addHeader" type="button" class="blue addHeaderQuestion" data-obj="questions;">{{'New Header Question'|i18n}}</button>
+			<button id="addSimple" type="button" class="blue addQuestion" data-obj="questions;">{{'New Simple Question'|i18n}}</button>
 		</div>
 		<div class="row control">
 			<span class="spacer"></span>
-			<button type="button" class="red" onclick="window.history.back()">Cancel</button>
-			<button class="blue">Save</button>
+			<button type="button" class="red" onclick="window.history.back()">{{'Cancel'|i18n}}</button>
+			<button class="blue">{{'Save'|i18n}}</button>
 		</div>
 	</form>
 </div>

@@ -428,8 +428,9 @@ server.get( '/directory/:professionalID', IPage.directoryUpdate);
 server.get( '/settings/lists', IPage.lists);
 server.get( '/settings/lists/:listName', IPage.list);
 server.get( '/questionnaires', IPage.questionnaires);
-server.get( '/questionnaire/create', IPage.createQuestionnaire);
-server.get( '/questionnaire/edit/:questionnaireName', IPage.createQuestionnaire);
+server.get( '/questionnaires/create', IPage.createQuestionnaire);
+server.get( '/questionnaires/edit/:questionnaireName', IPage.createQuestionnaire);
+server.get( '/questionnaires/preview/:questionnaireName', IPage.questionnairePreview);
 server.get( '/questionnaire/:questionnaireName', IPage.questionnaireOverview);
 
 server.get( '/answers/:entryID', IPage.questionnaireAnswers);

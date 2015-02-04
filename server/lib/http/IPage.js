@@ -750,7 +750,7 @@ function IPage() {
 	// -------------- Questionnaires pages ---------------------
 	
 	/**
-	 * Questionnaire
+	 * Questionnaires pages ( admin / coordinator only eyes )
 	 *
 	 * @param req
 	 * @param res
@@ -772,6 +772,7 @@ function IPage() {
 				return questionnaires.getQuestionnaires();
 			})
 			.then( function(questionnaires) {
+				console.log( questionnaires );
 				data.questionnaires = questionnaires;
 				data.lang = lang;
 				//logger.debug("DATA", data);
@@ -903,6 +904,58 @@ function IPage() {
 			});
 	};
 
+
+	/**
+	 * Questionnaire Preview
+	 * 
+	 * The questionnaire preview is shown only to admin and coordinators when editing a questionnaire
+	 *
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	this.questionnairePreview = function(req, res, next) {
+		logger.trace("questionnairePreview");
+		var html;
+
+		init(req);
+
+		var referer = URL.parse(req.headers.referer).pathname;
+		var admin = ['coordinator', 'administrator'].indexOf(req.session.role) !== -1 ? true : false;
+		var data = {
+			admin: admin,
+			rights: { read: admin, write:admin, url:referer },
+			preview: true
+		};
+
+		physioDOM.Questionnaires()
+			.then(function(questionnaires){
+				return questionnaires.getQuestionnaireByName(req.params.questionnaireName);
+			})
+			.then( function(questionnaire) {
+				data.questionnaire = questionnaire;
+				data.lang = lang;
+				//logger.debug("DATA", data);
+				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/questionnaireOverview.htm', data, function (err, output) {
+					if (err) {
+						console.log("error", err);
+						console.log("output", output);
+						res.write(err);
+						res.end();
+						next();
+					} else {
+						sendPage(output, res, next);
+					}
+				});
+			})
+			.catch( function(err) {
+				logger.error(err);
+				res.write(err);
+				res.end();
+				next();
+			});
+	};
+	
 	/**
 	 * Questionnaire answers page.
 	 * 

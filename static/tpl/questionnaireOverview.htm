@@ -25,6 +25,13 @@
 	.nestedQuestionnaire {
 		margin-left: 20px;
 	}
+	.preview {
+		font-size: 1.2em;
+		color: Tomato;
+		border: 2px solid tomato;
+		text-align: center;
+		line-height: 50px;
+	}
 </style>
 
 {% macro tpl(q, idx) %}
@@ -69,6 +76,9 @@
 {% endmacro %}
 
 <div class="mainContainer">
+	{% if preview %}
+	<div class="preview">{{'Preview display'|i18n}}</div>
+	{% endif %}
 	<h2>{{questionnaire.label[lang]}}</h2>
 	<form autocomplete="off" name="questionnaire" onsubmit="checkForm(); return false;">
 		<input type="hidden" name="ref" value="{{questionnaire._id.toString()}}" />
@@ -82,11 +92,18 @@
 				<hr class="space">
 			{% endif %}
 		{% endfor%}
+		{% if preview %}
+		<div class="row control">
+			<span class="spacer"></span>
+			<button type="button" class="blue" onclick="window.history.back()">{{'Back' | i18n}}</button>
+		</div>
+		{% else %}
 		<div class="row control">
 			<span class="spacer"></span>
 			<button type="button" class="red" onclick="window.parent.closeQuestionnaire()">{{'Cancel'|i18n}}</button>
 			<button class="green">{{'OK' | i18n}}</button>
 		</div>
+		{% endif %}
 	</form>
 
 	<zdk-modal id="statusModal" closebutton="false">
