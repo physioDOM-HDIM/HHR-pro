@@ -28,12 +28,7 @@ var Menu = require('../class/menu.js');
 var DOCUMENTROOT=require("path").join(__dirname,"../../../");
 
 var logger = new Logger("IPage");
-var i18n = new(require('i18n-2'))({
-	// setup some locales - other locales default to the first locale
-	devMode: true,
-	locales: ["en", "es", "nl", "fr"],
-	extension:".json"
-});
+var i18n;
 
 /**
  * IPage
@@ -46,6 +41,14 @@ function IPage() {
 	var lang;
 
 	function init(req) {
+		i18n = new(require('i18n-2'))({
+			// setup some locales - other locales default to the first locale
+			devMode: physioDOM.config.cache?false:true,
+			// locales: ["en", "es", "nl", "fr"],
+			locales: physioDOM.config.languages,
+			extension:".json"
+		});
+		
 		if(req.session) {
 			console.log("test");
 			lang = req.session.lang || req.cookies.lang || req.params.lang || physioDOM.lang;
@@ -55,7 +58,7 @@ function IPage() {
 		logger.info("lang", lang);
 		
 		i18n.setLocale(lang);
-		moment.locale(req.cookies.lang=="en"?"en-gb":req.cookies.lang)
+		moment.locale(req.cookies.lang=="en"?"en-gb":req.cookies.lang);
 		
 		// swig.setDefaults( {cache: physioDOM.config.cache?'memory':false} );
 		swig.setDefaults( { cache: false } );
