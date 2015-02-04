@@ -76,11 +76,14 @@ var IBeneficiary = {
 		logger.trace("getBeneficiary");
 		physioDOM.Beneficiaries()
 			.then( function(beneficiaries) {
+				/*
 				if( req.params.entryID ) {
+					logger.debug("add beneficiary to session");
 					req.session.beneficiary = new ObjectID(req.params.entryID);
 					req.session.save();
 				}
-				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+				*/
+				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary || new ObjectID(req.params.entryID) );
 			})
 			.then( function(beneficiary) {
 				res.send( beneficiary );
