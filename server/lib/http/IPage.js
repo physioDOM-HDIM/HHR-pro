@@ -778,7 +778,6 @@ function IPage() {
 				return questionnaires.getQuestionnaires();
 			})
 			.then( function(questionnaires) {
-				console.log( questionnaires );
 				data.questionnaires = questionnaires;
 				data.lang = lang;
 				//logger.debug("DATA", data);
@@ -1155,7 +1154,6 @@ function IPage() {
 					return beneficiary.getProfessionals(jobFilter);
 				})
 				.then(function(professionals) {
-					console.log(professionals);
 					data.professionals = professionals;
 					data.view = 'create';
 					data.lang = lang;
@@ -1321,7 +1319,6 @@ function IPage() {
 				})
 				.then(function(result) {
 					data.session = result.session;
-					console.log(data.session);
 					return result.beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
 				})
 				.then(function (beneficiary) {
@@ -1472,7 +1469,7 @@ function IPage() {
 		logger.trace('currentHealthStatus', name);
 
 		init(req);
-		console.log( req.url )
+		
 		var data = {
 			admin: ['coordinator', 'administrator'].indexOf(req.session.role) !== -1 ? true : false,
 			rights: { read:false, write:false, url: req.url }

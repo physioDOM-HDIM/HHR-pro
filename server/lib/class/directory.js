@@ -80,7 +80,6 @@ function Directory( ) {
 								}
 								break;
 							default:
-								console.log( "prop", prop, tmp.prop );
 								if( ["true","false"].indexOf(tmp[prop]) !== -1) {
 									search[prop] = (tmp[prop]==="true"?true:false);
 								}
