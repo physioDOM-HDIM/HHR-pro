@@ -114,6 +114,48 @@ function Beneficiary( ) {
 	};
 
 	/**
+	 * Get a beneficiary in the database known by its ID
+	 * this method is only used by the Queue API
+	 *
+	 * on success the promise returns the beneficiary record,
+	 * else return an error ( code 404 )
+	 *
+	 * @param beneficiaryID
+	 * @param professional
+	 * @returns {promise}
+	 */
+	this.getHHR = function( beneficiaryID ) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("getHHR", beneficiaryID);
+			var search = { _id: beneficiaryID };
+
+			physioDOM.db.collection("beneficiaries").findOne(search, function (err, doc) {
+				if (err) {
+					logger.alert("Error");
+					throw err;
+				}
+				if(!doc) {
+					reject( {code:404, error:"beneficiary not found"});
+				} else {
+					for (var prop in doc) {
+						if (doc.hasOwnProperty(prop)) {
+							that[prop] = doc[prop];
+						}
+					}
+					if( !that.address ) {
+						that.address = [ { use:"home" }];
+					}
+					if( !that.telecom ) {
+						that.telecom = [ { system:"phone" }];
+					}
+					resolve(that);
+				}
+			});
+		});
+	};
+	
+	/**
 	 * return account information about the beneficiary
 	 *
 	 * the promise resolve with account information as object,
@@ -383,7 +425,7 @@ function Beneficiary( ) {
 				if( professional.professionalID === professionalID.toString() ) { 
 					hasProfessional = true;
 				}
-			})
+			});
 			resolve( hasProfessional );
 		});
 	};
@@ -579,7 +621,7 @@ function Beneficiary( ) {
 	 * @returns {promise}
 	 */
 	this.getCompleteDataRecordByID = function( dataRecordID ) {
-		var datarecord, that = this;
+		var that = this;
 		
 		return new promise( function(resolve, reject) {
 			logger.trace("getCompleteDataRecordByID", dataRecordID);
@@ -598,7 +640,7 @@ function Beneficiary( ) {
 	};
 
 	this.getDataRecordByID = function( dataRecordID ) {
-		var datarecord, that = this;
+		var that = this;
 
 		return new promise( function(resolve, reject) {
 			logger.trace("getDataRecordByID", dataRecordID);
@@ -615,8 +657,6 @@ function Beneficiary( ) {
 	};
 
 	this.deleteDataRecordByID = function( dataRecordID ) {
-		var datarecord, that = this;
-
 		return new promise( function(resolve, reject) {
 			logger.trace("getDataRecordByID", dataRecordID);
 			var search = { _id: new ObjectID( dataRecordID ) };
@@ -805,7 +845,7 @@ function Beneficiary( ) {
 			that.getThreshold()
 				.then( function(_thresholds) {
 					thresholds = _thresholds;
-					return physioDOM.Lists.getList("units")
+					return physioDOM.Lists.getList("units");
 				})
 				.then(function (units) {
 					RSVP.all(promises).then(function (lists) {
