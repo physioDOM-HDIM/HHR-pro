@@ -54,7 +54,19 @@ function List() {
 					reject( {code:404, error:"not found"});
 				} else {
 					if(doc.hasOwnProperty('hasRank')) {
-						doc.items.sort(function(a,b) { return a.rank - b.rank } );
+						doc.items.sort(function(a,b) {
+							// sort by rank else by ref
+							if( a.rank && !b.rank) { 
+								return -1;
+							}
+							if( !a.rank && b.rank) {
+								return 1;
+							}
+							if( !a.rank && !b.rank ) {
+								return a.ref > b.ref;
+							}
+							return a.rank - b.rank;
+						} );
 					}
 
 					for (var prop in doc) {
