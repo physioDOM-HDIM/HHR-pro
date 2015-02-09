@@ -910,6 +910,137 @@ function Beneficiary( ) {
 				.catch( reject );
 		});
 	};
+
+	this.getHistoryDataList = function( lang ) {
+		var that = this;
+
+		return new promise(function (resolve, reject) {
+			logger.trace("getHistoricDataList", that._id);
+			var graphList = {
+				"General"      : [],
+				"HDIM"         : [],
+				"symptom"      : [],
+				"questionnaire": []
+			};
+
+			var reduceFunction = function ( curr, result ) {
+				if( !result.history.length ) {
+					result.history.push( { datetime: curr.datetime, value: curr.value} );
+				} else {
+					var done = false;
+					for( var i= 0, l = result.history.length; i < l; i++ ) {
+						if ( result.history[i].datetime < curr.datetime ) {
+							result.history.splice(i,0, { datetime: curr.datetime, value: curr.value} );
+							done = true;
+							break;
+						}
+					}
+					if( done === false && result.history.length < 5) {
+						result.history.push( { datetime: curr.datetime, value: curr.value} );
+					}
+					if( result.history.length > 5 ) {
+						result.history = result.history.slice(0,5);
+					}
+				}
+			};
+
+			var groupRequest = {
+				key    : {text: 1, category: 1, rank:1, precision:1, TVLabel:1, comment:1 },
+				cond   : {subject: that._id},
+				reduce : reduceFunction.toString(),
+				initial: { history: [] }
+			};
+
+			function compareItems(a, b) {
+				if (a.text < b.text) {
+					return -1;
+				}
+				if (a.text > b.text) {
+					return 1;
+				}
+				return 0;
+			}
+
+			var promises = ["parameters", "symptom", "questionnaire"].map(function (listName) {
+				return physioDOM.Lists.getList(listName);
+			});
+
+			var thresholds;
+			that.getThreshold()
+				.then( function(_thresholds) {
+					thresholds = _thresholds;
+					return physioDOM.Lists.getList("units");
+				})
+				.then(function (units) {
+					RSVP.all(promises).then(function (lists) {
+						var labels = {},
+							unitsData = {},
+							ranks = {},
+							TVLabels = {},
+							precisions = {};
+
+						for (var i = 0; i < lists.length; i++) {
+							for (var y in lists[i].items) {
+								var ref = lists[i].items[y].ref;
+
+								labels[ref] = lists[i].items[y].label[lang];
+								ranks[ref] = lists[i].items[y].rank || '';
+								TVLabels[ref] = lists[i].items[y].TVLabel || '';
+								precisions[ref] = lists[i].items[y].precision ? 1 : 0;
+								for(var z in units.items) {
+									if(units.items[z].ref === lists[i].items[y].units) {
+										unitsData[ref] = units.items[z].label[lang];
+									}
+								}
+							}
+						}
+
+						physioDOM.db.collection("dataRecordItems").group(groupRequest.key, groupRequest.cond, groupRequest.initial, groupRequest.reduce, function (err, results) {
+							if (err) {
+								reject(err);
+							} else {
+								RSVP.all( results.map(function (result) {
+										result.name = labels[result.text] || result.text;
+										result.unit = unitsData[result.text] || '';
+										result.rank = ranks[result.text];
+										result.TVLabel = TVLabels[result.text];
+										result.precision = precisions[result.text];
+										
+										if (thresholds[result.text]) {
+											result.threshold = thresholds[result.text];
+										}
+										return result;
+									})
+								)
+									.then( function(results) {
+										graphList.General = results.filter(function (item) {
+											return item.category === "General";
+										});
+										graphList.HDIM = results.filter(function (item) {
+											return item.category === "HDIM";
+										});
+										graphList.symptom = results.filter(function (item) {
+											return item.category === "symptom";
+										});
+										graphList.questionnaire = results.filter(function (item) {
+											return item.category === "questionnaire";
+										});
+
+										graphList.General.sort(compareItems);
+										graphList.HDIM.sort(compareItems);
+										graphList.symptom.sort(compareItems);
+										graphList.questionnaire.sort(compareItems);
+
+										resolve(graphList);
+									})
+									.catch( reject );
+							}
+						});
+					});
+				})
+				.catch( reject );
+		});
+	};
 	
 	this.getGraphData = function(category, paramName, startDate, stopDate, session ) {
 		var graphData = {text: paramName, data: []};

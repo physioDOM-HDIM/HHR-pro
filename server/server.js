@@ -324,8 +324,13 @@ server.del( '/api/beneficiaries/:entryID', IBeneficiary.deleteBeneficiary );
 server.get( '/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryProfessionals );
 server.post('/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryAddProfessional );
 server.del( '/api/beneficiaries/:entryID/professionals/:profID', IBeneficiary.beneficiaryDelProfessional );
+
+// graph Data
+server.get( '/api/beneficiary/graph', IBeneficiary.getGraphDataList );
+server.get( '/api/beneficiary/graph/:category/:paramName', IBeneficiary.getGraphData );
 server.get( '/api/beneficiaries/:entryID/graph', IBeneficiary.getGraphDataList );
 server.get( '/api/beneficiaries/:entryID/graph/:category/:paramName', IBeneficiary.getGraphData );
+server.get( '/api/beneficiary/history', IBeneficiary.getHistoryDataList );
 
 // use of the session to determine the selected beneficiary
 server.get( '/api/beneficiary', IBeneficiary.getBeneficiary  );
@@ -338,8 +343,6 @@ server.post('/api/beneficiary/thresholds', IBeneficiary.setThreshold);
 server.get( '/api/beneficiary/thresholds', IBeneficiary.getThreshold);
 server.del( '/api/beneficiary/datarecords/:dataRecordID', IBeneficiary.removeDataRecord );
 
-server.get( '/api/beneficiary/graph', IBeneficiary.getGraphDataList );
-server.get( '/api/beneficiary/graph/:category/:paramName', IBeneficiary.getGraphData );
 
 // messages to home
 server.get( '/api/beneficiary/messages', IBeneficiary.getMessages );
