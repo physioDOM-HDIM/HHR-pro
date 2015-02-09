@@ -20,6 +20,7 @@ var IDirectory = require('./lib/http/IDirectory'),
 	IQuestionnaire = require("./lib/http/IQuestionnaire"),
 	ICurrentStatus = require('./lib/http/ICurrentStatus'),
 	IMenu = require("./lib/http/IMenu"),
+	IQueue = require("./lib/http/IQueue"),
 	configSchema = require("./lib/schema/configSchema.js");
 
 var pkg     = require('../package.json');
@@ -59,6 +60,7 @@ if( program.config ) {
 		config.key = tmp.key;
 		config.cache = tmp.cache;
 		config.languages = tmp.languages;
+		config.server = tmp.server;
 	}
 } else {
 	logger.error("you must provide a config file");
@@ -149,24 +151,19 @@ server.use( function(req, res, next) {
 					.then(function (session) {
 						session.getPerson()
 							.then(function (session) {
-								// logger.debug("session", JSON.stringify(person,null,4));
-								// cb(null, session);
 								resolve(session);
 							})
 							.catch(function (err) {
 								logger.error("error", JSON.stringify(err, null, 4));
-								// cb(err, null);
 								reject(err);
 							});
 					})
 					.catch(function (err) {
 						logger.warning("error", err, cb);
-						// cb(err, null);
 						reject(err);
 					});
 			} else {
 				logger.warning("no session");
-				// cb(null, null);
 				reject();
 			}
 		});
@@ -188,8 +185,8 @@ server.use( function(req, res, next) {
 						cookies = new Cookies(req, res);
 						cookies.set('sessionID');
 						logger.debug("url", req.url);
-						if (req.url.match(/^(\/|\/api\/login|\/api\/logout|\/logout)$/)) {
-							// console.log("url match");
+						if (req.url.match(/^(\/|\/api\/login|\/api\/logout|\/logout|\/api\/queue\/status)$/)) {
+							console.log("url match");
 							return next();
 						} else {
 							if (req.url.match(/^\/api/)) {
@@ -214,7 +211,7 @@ server.pre(restify.pre.userAgentConnection());
 server.use(function checkAcl(req, res, next) {
 	logger.trace("checkAcl",req.url);
 
-	if( req.url === "/" || req.url.match(/^(\/api|\/logout|\/directory|\/settings|\/questionnaires|\/admin|\/beneficiaries)/) ) {
+	if( req.url === "/" || req.url.match(/^(\/api|\/logout|\/directory|\/settings|\/questionnaires|\/admin|\/beneficiaries|\/queue)/) ) {
 		return next();
 	} else {
 
@@ -409,6 +406,10 @@ server.put( '/api/questionnaires/:entryID', IQuestionnaire.updateQuestionnaire);
 server.post('/api/login', apiLogin);
 server.get( '/api/logout', logout);
 
+// ===================================================
+//              Queue messages
+server.get( '/api/queue/init', IQueue.init );
+server.post('/api/queue/status', IQueue.status );
 
 // ===================================================
 //               Pages requests
