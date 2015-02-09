@@ -117,19 +117,18 @@ function IPage() {
 		
 		init(req);
 		
-		logger.trace("login page 2");
 		html = swig.renderFile(DOCUMENTROOT+'/static/index.htm', [], function(err, output) {
 			if (err) {
 				console.log("error", err);
 				console.log("output", output);
 				res.write(err);
 				res.end();
-				next();
+				next(false);
 			} else {
 				sendPage(output, res, next);
 			}
 		});
-	}
+	};
 	
 	/**
 	 * Main Layout
@@ -226,7 +225,7 @@ function IPage() {
 				logger.error(err);
 				res.write(err);
 				res.end();
-				next();
+				next(false);
 			});
 	};
 
@@ -1932,7 +1931,7 @@ function IPage() {
 
 		res.write(html);
 		res.end();
-		next();
+		next(false);
 	}
 }
 

@@ -229,7 +229,7 @@ function toggleDrawer() {
 
 function closeDrawer() {
 	var drawer = document.querySelector("core-drawer-panel");
-	if (drawer) {
+	if ( drawer && drawer.closeDrawer ) {
 		drawer.closeDrawer();
 	}
 }
