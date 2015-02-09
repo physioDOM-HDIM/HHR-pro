@@ -28,7 +28,7 @@ var IQueue = {
 	init: function( req, res, next ) {
 		logger.trace("init hhr", req.session.beneficiary );
 		
-		var queue = new Queue( req.session );
+		var queue = new Queue( req.session.beneficiary );
 		queue.init( )
 			.then( function ( response ) {
 				res.send(200);
@@ -42,23 +42,20 @@ var IQueue = {
 	},
 	
 	status: function( req, res, next ) {
+		logger.trace("status");
 		try {
 			var msg = JSON.parse(req.body.toString());
 			logger.debug("status msg :", msg );
-			var search = { _id: new ObjectID( msg.subject) };
-			var update = { '$set': { "biomasterStatus": msg.status } };
-			logger.debug(search, update );
-			physioDOM.db.collection('beneficiaries').update( search, update , function( err, nb) {
-				if(err) {
-					res.send(500, err);
-					next(false);
-				} else {
-					logger.debug("status",nb);
+			var queue = new Queue( new ObjectID( msg.subject) );
+			queue.status( msg )
+				.then( function() {
 					res.send(200);
 					next();
-				}
-			} );
-			
+				})
+				.catch( function(err) {
+					res.send(500 || err.code, err.message );
+					next(false);
+				})
 		} catch(err) {
 			res.send(400);
 			return next(false);
