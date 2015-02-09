@@ -381,6 +381,7 @@ function addItem(node) {
             new:true,
             ref:"",
             "general":true,
+			"precision":false,
             label:"",
             "unit": "",
             "autoInput": false,
