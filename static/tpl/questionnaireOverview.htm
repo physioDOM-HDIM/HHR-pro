@@ -65,10 +65,12 @@
 	{% endif %}
 	{% for c in q.choice %}
 		<div class="row answers">
-			
+			{% if !c.label[lang] && !c.label["en"] %}
+				<input type="number" name="{{name}}.choice" required />
+			{% else %}
 				<label for="{{name}}.choice">{{c.label[lang] || c.label["en"] }} {% if !c.label[lang] %}<span class="warn">( en )</span>{% endif %}</label>
 				<input type="radio" name="{{name}}.choice" value="{{c.value}}" required />
-			
+			{% endif %}
 		</div>
 		{% if loop.last %}
 			<br/>
