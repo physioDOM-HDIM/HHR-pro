@@ -38,7 +38,7 @@ function Queue ( beneficiaryID ) {
 						"gateway": beneficiary.biomaster,
 						"method": "DELETE",
 						"content": [
-							{"branch": "hhr[" + beneficiary._id + "]"}
+							{"branch": "hhr['" + beneficiary._id + "']"}
 						]
 					};
 					logger.debug("msg", msg);

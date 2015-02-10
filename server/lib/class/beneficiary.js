@@ -21,6 +21,7 @@ var RSVP = require("rsvp"),
 	PhysicalPlan = require("./physicalPlan"),
 	Events = require("./events"),
 	dbPromise = require("./database"),
+	Queue = require("./queue.js"),
 	moment = require("moment");
 
 var logger = new Logger("Beneficiary");
@@ -910,7 +911,6 @@ function Beneficiary( ) {
 				.catch( reject );
 		});
 	};
-
 	this.getHistoryDataList = function( lang ) {
 		var that = this;
 
@@ -945,7 +945,7 @@ function Beneficiary( ) {
 			};
 
 			var groupRequest = {
-				key    : {text: 1, category: 1, rank:1, precision:1, TVLabel:1, comment:1 },
+				key    : {text: 1, category: 1, rank:1, precision:1, TVLabel:1 },
 				cond   : {subject: that._id},
 				reduce : reduceFunction.toString(),
 				initial: { history: [] }
@@ -1280,6 +1280,628 @@ function Beneficiary( ) {
 		});
 	};
 
+	function pushMeasure( queue, leaf, units, parameters, measures ) {
+		return new promise( function(resolve,rejet) {
+			var msg = [];
+			// logger.debug( "measure", measures );
+			// logger.debug( "parameters", parameters );
+			msg.push({
+				name : leaf + ".datetime",
+				value: measures.datetime,
+				type : "Integer"
+			});
+			msg.push({
+				name : leaf + ".new",
+				value: 1,
+				type : "Integer"
+			});
+			var hasMeasure = false;
+			measures.measure.forEach( function( measure ) {
+				if( parameters[measure].rank ) {
+					hasMeasure = true;
+					var name = leaf + "param["+parameters[measure].rank+"]";
+					msg.push({
+						name : name + ".type",
+						value: parameters[measure].rank,
+						type : "Integer"
+					});
+					msg.push({
+						name : name + ".label",
+						value: parameters[measure].label[physioDOM.lang],
+						type : "String"
+					});
+					msg.push({
+						name : name + ".min",
+						value: parameters[measure].range.min,
+						type : "Double"
+					});
+					msg.push({
+						name : name + ".max",
+						value: parameters[measure].range.max,
+						type : "Double"
+					});
+					msg.push({
+						name : name + ".precision",
+						value: parameters[measure].precision?1:0,
+						type : "Integer"
+					});
+					if(parameters[measure].unit ) {
+						msg.push({
+							name : name + ".unit",
+							value: parameters[measure].unit,
+							type : "String"
+						});
+					}
+				}
+			});
+			if( hasMeasure ) {
+				queue.postMsg(msg)
+					.then(function () {
+						resolve(msg);
+					});
+			} else {
+				resolve([]);
+			}
+		});
+	}
+	
+	this.getMeasurePlan = function( date ) {
+		var queue = new Queue(this._id);
+		var name = "hhr['" + this._id + "']";
+		
+		var today = moment();
+		var endDate = moment().add(14,'d');
+		var dataProg = new DataProg( this._id );
+		var msgs = [];
+		var that = this;
+		
+		// ["General","HDIM"].map
+		
+		return new promise( function(resolve, reject) {
+			var promises = ["General","HDIM"].map(function (category) {
+				return dataProg.getCategory( category );
+			});
+			RSVP.all(promises)
+				.then(function ( results ) {
+					var progs = [];
+					results.forEach( function( list ) {
+						console.log( list );
+						progs = progs.concat(list);
+					});
+					progs.forEach(function (prog) {
+						var startDate, nextDate, firstDay, dat;
+						console.log(prog.ref + " ->");
+						switch (prog.frequency) {
+							case "daily":
+								startDate = moment().subtract(prog.repeat, 'd');
+								nextDate = moment(prog.startDate);
+								while (nextDate.unix() < startDate.unix()) {
+									nextDate.add(prog.repeat, 'd');
+								}
+								if (nextDate.unix() < endDate.unix()) {
+									do {
+										if (nextDate.unix() < endDate.unix() && nextDate.unix() >= today.unix()) {
+											msgs.push({ref: prog.ref, date: nextDate.unix()});
+										}
+										nextDate.add(prog.repeat, 'd');
+									} while (nextDate.unix() < endDate.unix());
+								}
+								break;
+							case "weekly":
+								startDate = moment().subtract(prog.repeat, 'w');
+								nextDate = moment(prog.startDate).day(prog.when.days[0]);
+								while (nextDate.unix() < startDate.unix()) {
+									nextDate.add(prog.repeat, 'w');
+								}
+								if (nextDate.unix() < endDate.unix()) {
+									do {
+										firstDay = moment.unix(nextDate.unix());
+										prog.when.days.forEach(function (day) {
+											firstDay.day(day);
+											console.log(firstDay.unix());
+											if (firstDay.unix() < endDate.unix() && firstDay.unix() >= today.unix()) {
+												msgs.push({ref: prog.ref, date: firstDay.unix()});
+											}
+										});
+										nextDate.add(prog.repeat, 'w');
+									} while (nextDate.unix() < endDate.unix());
+
+								}
+								break;
+							case "monthly":
+								startDate = moment().date(1).hour(0).minute(0).second(0);
+								nextDate = moment(prog.startDate).date(1).hour(0).minute(0).second(0);
+								while (nextDate.unix() < startDate.unix()) {
+									nextDate.add(prog.repeat, 'M');
+								}
+								logger.debug("nextDate", nextDate.format("L"));
+								if (nextDate.unix() < endDate.unix()) {
+									prog.when.days.forEach(function (day) {
+										if (day > 0) {
+											dat = moment.unix(nextDate.unix());
+											dat.day(day % 10);
+											dat.add(Math.floor(day / 10) - 1, 'w');
+										} else {
+											dat = moment.unix(nextDate.unix()).add(1, 'M').subtract(1, 'd');
+											dat.day(-day % 10);
+											dat.subtract(Math.floor(-day / 10) - 1, 'w');
+										}
+										if (dat.unix() < endDate.unix() && dat.unix() >= today.unix()) {
+											msgs.push({ref: prog.ref, date: dat.unix()});
+										}
+									});
+								}
+								break;
+						}
+					});
+					var results = {};
+					msgs.forEach(function (msg) {
+						if (results[msg.date]) {
+							results[msg.date].measure.push(msg.ref);
+						} else {
+							results[msg.date] = { datetime:msg.date, measure: [msg.ref] };
+						}
+					});
+					var measures = [];
+					for( var measure in results ) {
+						measures.push( results[measure] );
+					}
+					
+					var units;
+					physioDOM.Lists.getListItemsObj("units")
+						.then(function (results) {
+							units = results;
+							return physioDOM.Lists.getListItemsObj("parameters");
+						})
+						.then(function (parameters) {
+							physioDOM.Lists.getListItemsObj("parameters")
+								.then(function (parameters) {
+									var promises = measures.map(function (measure) {
+										return pushMeasure(queue, name+".measures["+measure.datetime+"]" , units, parameters, measure);
+									});
+									RSVP.all(promises)
+										.then(function (result) {
+											// resolve(msgs);
+											resolve(result);
+										});
+								});
+						});
+				});
+		});
+	};
+
+	function pushSymptom( queue, leaf, symptoms, measures ) {
+		logger.trace("pushSymptom");
+		return new promise( function(resolve,reject) {
+			var msg = [];
+			logger.debug( "measure", measures );
+			logger.debug( "symptoms", symptoms );
+
+			msg.push({
+				name : leaf + ".datetime",
+				value: measures.datetime,
+				type : "Integer"
+			});
+			msg.push({
+				name : leaf + ".new",
+				value: 1,
+				type : "Integer"
+			});
+			var hasMeasure = false;
+			measures.measure.forEach( function( measure ) {
+				if( symptoms[measure].rank ) {
+					hasMeasure = true;
+					var name = leaf + "scale["+symptoms[measure].rank+"]";
+					msg.push({
+						name : name + ".label",
+						value: symptoms[measure].label[physioDOM.lang],
+						type : "String"
+					});
+					msg.push({
+						name : name + ".lastValue",
+						value: 0,
+						type : "Double"
+					});
+				}
+			});
+			if( hasMeasure ) {
+				queue.postMsg(msg)
+					.then(function () {
+						resolve(msg);
+					});
+			} else {
+				resolve([]);
+			}
+		});
+	}
+
+	this.getSymptomsPlan = function() {
+		var queue = new Queue(this._id);
+		var name = "hhr['" + this._id + "']";
+
+		var today = moment();
+		var endDate = moment().add(14,'d');
+		var dataProg = new DataProg( this._id );
+		var msgs = [];
+
+		return new promise( function(resolve, reject) {
+			dataProg.getCategory("symptom")
+				.then(function (progs) {
+					progs.forEach(function (prog) {
+						var startDate, nextDate, firstDay, dat;
+						
+						switch (prog.frequency) {
+							case "daily":
+								startDate = moment().subtract(prog.repeat, 'd');
+								nextDate = moment(prog.startDate);
+								while (nextDate.unix() < startDate.unix()) {
+									nextDate.add(prog.repeat, 'd');
+								}
+								if (nextDate.unix() < endDate.unix()) {
+									do {
+										if (nextDate.unix() < endDate.unix() && nextDate.unix() >= today.unix()) {
+											msgs.push({ref: prog.ref, date: nextDate.unix()});
+										}
+										nextDate.add(prog.repeat, 'd');
+									} while (nextDate.unix() < endDate.unix());
+								}
+								break;
+							case "weekly":
+								startDate = moment().subtract(prog.repeat, 'w');
+								nextDate = moment(prog.startDate).day(prog.when.days[0]);
+								while (nextDate.unix() < startDate.unix()) {
+									nextDate.add(prog.repeat, 'w');
+								}
+								if (nextDate.unix() < endDate.unix()) {
+									do {
+										firstDay = moment.unix(nextDate.unix());
+										prog.when.days.forEach(function (day) {
+											firstDay.day(day);
+											
+											if (firstDay.unix() < endDate.unix() && firstDay.unix() >= today.unix()) {
+												msgs.push({ref: prog.ref, date: firstDay.unix()});
+											}
+										});
+										nextDate.add(prog.repeat, 'w');
+									} while (nextDate.unix() < endDate.unix());
+
+								}
+								break;
+							case "monthly":
+								startDate = moment().date(1).hour(0).minute(0).second(0);
+								nextDate = moment(prog.startDate).date(1).hour(0).minute(0).second(0);
+								while (nextDate.unix() < startDate.unix()) {
+									nextDate.add(prog.repeat, 'M');
+								}
+								
+								if (nextDate.unix() < endDate.unix()) {
+									prog.when.days.forEach(function (day) {
+										if (day > 0) {
+											dat = moment.unix(nextDate.unix());
+											dat.day(day % 10);
+											dat.add(Math.floor(day / 10) - 1, 'w');
+										} else {
+											dat = moment.unix(nextDate.unix()).add(1, 'M').subtract(1, 'd');
+											dat.day(-day % 10);
+											dat.subtract(Math.floor(-day / 10) - 1, 'w');
+										}
+										if (dat.unix() < endDate.unix() && dat.unix() >= today.unix()) {
+											msgs.push({ref: prog.ref, date: dat.unix()});
+										}
+									});
+								}
+								break;
+						}
+					});
+					var results = {};
+					msgs.forEach(function (msg) {
+						if (results[msg.date]) {
+							results[msg.date].measure.push(msg.ref);
+						} else {
+							results[msg.date] = { datetime:msg.date, measure: [msg.ref] };
+						}
+					});
+					var measures = [];
+					for( var measure in results ) {
+						measures.push( results[measure] );
+					}
+					// console.log( "symptoms",measures );
+					physioDOM.Lists.getListItemsObj("symptom")
+						.then(function (symptoms) {
+							var promises = measures.map(function (measure) { 
+								console.log("test");
+								return pushSymptom(queue, name+".symptom["+measure.datetime+"]" , symptoms, measure);
+							});
+							RSVP.all(promises)
+								.then(function (result) {
+									console.log("fini");
+									resolve(result);
+								});
+						});
+				});
+		});
+		
+	};
+	
+	function pushQuestionnaire(queue, name, quest, newFlag ) {
+		return new promise( function(resolve,reject) {
+			/*
+			 questionnaires[id].label
+			 questionnaires[id].new
+			 questionnaires[id].scores[id].datetime
+			 questionnaires[id].scores[id].value
+			 */
+			logger.debug("pushQuestionnaire",quest);
+			
+			var msg = [];
+			if (quest.TVLabel ) {
+				var leaf = name + ".questionnaires[" + quest.text + "]";
+
+				msg.push({
+					name : leaf + ".label",
+					value: quest.TVLabel,
+					type : "String"
+				});
+				msg.push({
+					name : leaf + ".new",
+					value: newFlag?1:0,
+					type : "Integer"
+				})
+				for (var i = 0, l = quest.history.length; i < l; i++) {
+					msg.push({
+						name : leaf + ".values[" + i + "].datetime",
+						value: moment(quest.history[i].datetime).unix(),
+						type : "Integer"
+					});
+					msg.push({
+						name : leaf + ".values[" + i + "].value",
+						value: quest.history[i].value,
+						type : "Double"
+					});
+				}
+				queue.postMsg(msg)
+					.then(function () {
+						resolve(msg);
+					});
+			} else {
+				resolve(msg);
+			}
+		});
+	}
+
+	function pushParam( queue, name,  param ) {
+		return new promise( function(resolve,reject) {
+			/*
+			 measuresHistory.params[id].label
+			 measuresHistory.params[id].type
+			 measuresHistory.params[id].precision
+			 measuresHistory.params[id].unit
+			 measuresHistory.params[id].values[id].datetime
+			 measuresHistory.params[id].values[id].value
+			 */
+			var msg = [];
+			if (param.rank) {
+				var leaf = name + ".measuresHistory.params[" + param.rank + "]";
+
+				msg.push({
+					name : leaf + ".label",
+					value: param.name,
+					type : "String"
+				});
+				msg.push({
+					name : leaf + ".type",
+					value: param.precision?"Double":"Integer",
+					type : "Integer"
+				});
+				msg.push({
+					name : leaf + ".precision",
+					value: param.precision,
+					type : "Integer"
+				});
+				msg.push({
+					name : leaf + ".unit",
+					value: param.unit,
+					type : "String"
+				});
+				logger.debug( "param "+param.text, param.history );
+				for (var i = 0, l = param.history.length; i < l; i++) {
+					msg.push({
+						name : leaf + ".values[" + i + "].datetime",
+						value: moment(param.history[i].datetime).unix(),
+						type : "Integer"
+					});
+					msg.push({
+						name : leaf + ".values[" + i + "].value",
+						value: param.history[i].value,
+						type : "Double"
+					});
+				}
+				queue.postMsg(msg)
+					.then(function () {
+						resolve(msg);
+					});
+			} else {
+				resolve(msg);
+			}
+		});
+	}
+
+	function pushSymptomsHistory( queue, name, symptom ) {
+		return new promise( function(resolve,reject) {
+			/*
+			 symptomsHistory.scales[id].label
+			 symptomsHistory.scales[id].values[id].datetime
+			 symptomsHistory.scales[id].values[id].value
+			 */
+			var msg = [];
+			if (symptom.rank) {
+				var leaf = name + ".symptomsHistory.scales[" + symptom.rank + "]";
+
+				msg.push({
+					name : leaf + ".label",
+					value: symptom.name,
+					type : "String"
+				});
+				for (var i = 0, l = symptom.history.length; i < l; i++) {
+					msg.push({
+						name : leaf + ".values[" + i + "].datetime",
+						value: moment(symptom.history[i].datetime).unix(),
+						type : "Integer"
+					});
+					msg.push({
+						name : leaf + ".values[" + i + "].value",
+						value: symptom.history[i].value,
+						type : "Double"
+					});
+				}
+				queue.postMsg(msg)
+					.then(function () {
+						resolve(msg);
+					});
+			} else {
+				resolve(msg);
+			}
+		});
+	}
+	
+	this.sendQuestionnaire = function( questionnaire, newFlag ) {
+		var that = this;
+
+		var queue = new Queue(this._id);
+		var name = "hhr['" + this._id + "']";
+
+		return new promise(function (resolve, reject) {
+			var msgs = [];
+			that.getHistoryDataList()
+				.then(function (history) {
+					var promises = history["questionnaire"].map(function (quest) {
+						return pushQuestionnaire(queue, quest);
+					});
+					RSVP.all(promises)
+						.then(function (results) {
+							logger.info("msgs", msgs.concat(results));
+							logger.debug("questionnaire history pushed");
+							resolve(msgs.concat(results));
+						});
+				});
+		});
+	}
+	
+	this.pushHistory = function() {
+		var that = this;
+		
+		var queue = new Queue(this._id);
+		var name = "hhr['" + this._id + "']";
+		
+		return new promise(function (resolve, reject) {
+			var msgs = [];
+			that.getHistoryDataList()
+				.then(function (history) {
+					var promises = history["General"].map(function (param) {
+						return pushParam(queue, name, param);
+					});
+					RSVP.all(promises)
+						.then(function (results) {
+							logger.debug("General history pushed");
+							msgs = msgs.concat(results);
+							logger.info("msgs", msgs);
+							var promises = history["HDIM"].map(function (param) {
+								return pushParam(queue, name, param);
+							});
+							return RSVP.all(promises);
+						})
+						.then(function (results) {
+							logger.debug("HDIM history pushed");
+							msgs = msgs.concat(results);
+							logger.info("msgs", msgs);
+							var promises = history["symptom"].map(function (param) {
+								return pushSymptomsHistory(queue, name, param);
+							});
+							return RSVP.all(promises);
+						})
+						.then(function (results) {
+							logger.debug("symptom history pushed");
+							msgs = msgs.concat(results);
+							logger.info("msgs", msgs);
+							var promises = history["questionnaire"].map(function (param) {
+								return pushQuestionnaire(queue, name, param);
+							});
+							return RSVP.all(promises);
+						})
+						.then(function (results) {
+							logger.info("msgs", msgs.concat(results));
+							logger.debug("Questionnaire history pushed");
+							resolve(msgs.concat(results));
+						});
+				});
+		});
+	};
+	
+	this.pushLastDHDFFQ = function( newFlag ) {
+		var that = this;
+		var queue = new Queue(this._id);
+		var leaf = "hhr['" + this._id + "'].dhdffq";
+		
+		return new promise( function(resolve, reject) {
+			var search = { category: "questionnaire", text: "DHD-FFQ", subject: that._id };
+			physioDOM.db.collection("dataRecordItems").find(search).sort({datetime: -1}).limit(1).toArray(function (err, quests) {
+				console.log(quests[0]);
+				if (quests.length) {
+					console.log( "Lang", physioDOM.lang );
+					var Questionnaire = require("./questionnaire.js");
+					var QuestionnaireAnswer = require("./questionnaireAnswer.js");
+					var questionnaire = new Questionnaire();
+					var answer = new QuestionnaireAnswer();
+					questionnaire.getByRef("DHD-FFQ")
+						.then( function(questionnaire) {
+							answer.getById(new ObjectID(quests[0].ref))
+								.then(function (answer) {
+									/*
+									dhdffq.advice
+									dhdffq.new
+									dhdffq.subscores[id].label
+									dhdffq.subscores[id].value%
+									*/
+									var msg = [];
+
+									msg.push({
+										name : leaf + ".advice",
+										value: quests[0].comment,
+										type : "String"
+									});
+									msg.push({
+										name : leaf + ".new",
+										value: newFlag?1:0,
+										type : "Integer"
+									});
+									for( var i= 0, l=answer.questions.length; i<l;i++) {
+										msg.push({
+											name : leaf + ".subscore["+i+"].label",
+											value: questionnaire.questions[i].label[physioDOM.lang],
+											type : "String"
+										});
+										msg.push({
+											name : leaf + ".subscore["+i+"].value",
+											value: answer.questions[i].choice,
+											type : "Integer"
+										});
+									}
+									queue.postMsg(msg)
+										.then(function () {
+											resolve(msg);
+										});
+								})
+								.catch(function (err) {
+									logger.error("cant get the answer");
+									resolve(false);
+								});
+						});
+				} else {
+					resolve(false);
+				}
+			});
+		});
+	};
 }
 
 module.exports = Beneficiary;

@@ -4,6 +4,7 @@
  */
 
 /* jslint node:true */
+/* global physioDOM */
 "use strict";
 
 var Logger = require("logger"),
@@ -55,12 +56,113 @@ var IQueue = {
 				.catch( function(err) {
 					res.send(500 || err.code, err.message );
 					next(false);
-				})
+				});
 		} catch(err) {
 			res.send(400);
-			return next(false);
+			next(false);
 		}
+	},
+	
+	history: function( req, res, next ) {
+		logger.trace("history");
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getHHR( req.session.beneficiary );
+			})
+			.then(function (beneficiary) {
+				if (beneficiary.biomasterStatus) {
+					return beneficiary.pushHistory();
+				} else {
+					return false;
+				}
+			})
+			.then(function( result ) {
+				logger.debug("end sending history");
+				if( result ) {
+					res.send(result);
+				} else {
+					res.send({ code:200, message:"biomaster not initialized"});
+				}
+				next();
+			});
+	},
+	
+	dhdffq: function( req, res, next ) {
+		logger.trace("dhdffq");
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getHHR( req.session.beneficiary );
+			})
+			.then(function (beneficiary) {
+				if (beneficiary.biomasterStatus) {
+					return beneficiary.pushLastDHDFFQ();
+				} else {
+					return false;
+				}
+			})
+			.then(function( result ) {
+				logger.debug("end dhdffq");
+				if( result ) {
+					res.send(result);
+				} else {
+					res.send({ code:200, message:"biomaster not initialized"});
+				}
+				next();
+			});
+	},
+	
+	measurePlan: function( req, res, next ) {
+		logger.trace("measurePlan");
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getHHR( req.session.beneficiary );
+			})
+			.then(function (beneficiary) {
+				if (beneficiary.biomasterStatus) {
+					return beneficiary.getMeasurePlan();
+				} else {
+					return false;
+				}
+			})
+			.then(function( result ) {
+				logger.debug("end measure plan");
+				if( result ) {
+					res.send(result);
+				} else {
+					res.send({ code:200, message:"biomaster not initialized"});
+				}
+				next();
+			});
+	},
+
+	symptomPlan: function( req, res, next ) {
+		logger.trace("symptomPlan");
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getHHR( req.session.beneficiary );
+			})
+			.then(function (beneficiary) {
+				if (beneficiary.biomasterStatus) {
+					return beneficiary.getSymptomsPlan();
+				} else {
+					return false;
+				}
+			})
+			.then(function( result ) {
+				logger.debug("end symptoms plan");
+				if( result ) {
+					res.send(result);
+				} else {
+					res.send({ code:200, message:"biomaster not initialized"});
+				}
+				next();
+			});
 	}
+	
 };
 
 module.exports = IQueue;

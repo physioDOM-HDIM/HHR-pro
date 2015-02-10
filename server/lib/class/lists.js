@@ -115,6 +115,28 @@ function Lists( ) {
 				} );
 		});
 	};
+
+	this.getListItemsObj = function( listName ) {
+		logger.trace("getListItemsArray", listName );
+		var that = this;
+		var results = {};
+		return new promise( function(resolve, reject) {
+			that.getList( listName )
+				.then( function(list) {
+					// logger.debug("list "+listName, list);
+					var i, key;
+					for(i=0; i< list.items.length; i++){
+						key = list.items[i].ref;
+						results[key] = list.items[i];
+					}
+					resolve(results);
+				})
+				.catch( function(err) {
+					logger.warning("list "+listName, err);
+					reject(err);
+				} );
+		});
+	};
 }
 
 module.exports = Lists;
