@@ -76,7 +76,44 @@ function Queue ( beneficiaryID ) {
 			});
 		});
 	};
-	
+
+	/**
+	 * push delete message array to the queue
+	 * @param msg
+	 * @returns {$$rsvp$promise$$default|RSVP.Promise|*|l|Dn}
+	 */
+	this.delMsg = function( msg ) {
+		var that = this;
+
+		return new promise( function( resolve, reject ) {
+			logger.trace("postMsg", msg);
+			physioDOM.Beneficiaries()
+				.then(function (beneficiaries) {
+					return beneficiaries.getHHR( that.subject );
+				})
+				.then(function (beneficiary) {
+					if (beneficiary.biomasterStatus) {
+						var post = {
+							"server" : physioDOM.config.server,
+							"subject": beneficiary._id,
+							"gateway": beneficiary.biomaster,
+							"method" : "DELETE",
+							"content": msg
+						};
+						that.send(post)
+							.finally(resolve);
+					} else {
+						resolve();
+					}
+				});
+		});
+	};
+
+	/**
+	 * push post message array to the queue
+	 * @param msg
+	 * @returns {$$rsvp$promise$$default|RSVP.Promise|*|l|Dn}
+	 */
 	this.postMsg = function( msg ) {
 		var that = this;
 
