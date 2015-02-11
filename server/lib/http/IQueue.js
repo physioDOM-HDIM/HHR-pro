@@ -161,6 +161,56 @@ var IQueue = {
 				}
 				next();
 			});
+	},
+	
+	physicalPlan: function( req, res, next) {
+		logger.trace("physicalPlan");
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getHHR( req.session.beneficiary );
+			})
+			.then(function (beneficiary) {
+				if (beneficiary.biomasterStatus) {
+					return beneficiary.physicalPlanToQueue();
+				}else {
+					return false;
+				}
+			})
+			.then(function( result ) {
+				logger.debug("end physical plan");
+				if( result ) {
+					res.send(result);
+				} else {
+					res.send({ code:200, message:"biomaster not initialized"});
+				}
+				next();
+			});
+	},
+
+	dietaryPlan: function( req, res, next) {
+		logger.trace("dietaryPlan");
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getHHR( req.session.beneficiary );
+			})
+			.then(function (beneficiary) {
+				if (beneficiary.biomasterStatus) {
+					return beneficiary.dietaryPlanToQueue();
+				}else {
+					return false;
+				}
+			})
+			.then(function( result ) {
+				logger.debug("end dieatry plan");
+				if( result ) {
+					res.send(result);
+				} else {
+					res.send({ code:200, message:"biomaster not initialized"});
+				}
+				next();
+			});
 	}
 	
 };

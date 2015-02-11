@@ -1902,6 +1902,143 @@ function Beneficiary( ) {
 			});
 		});
 	};
+
+	/**
+	 * Push a physical recommandation to the queue
+	 * 
+	 * @param {physicalPlan} physicalPlan
+	 * @param {boolean} newFlag
+	 * @returns {$$rsvp$promise$$default|RSVP.Promise|*|Dn}
+	 */
+	this.pushPhysicalPlanToQueue = function( physicalPlan, newFlag ) {
+		logger.trace("pushPhysicalPlanToQueue");
+
+		var queue = new Queue(this._id);
+		var name = "hhr['" + this._id + "']";
+
+		return new promise(function (resolve, reject) {
+			/*
+			 physical.new
+			 physical.history[id].datetime
+			 physical.history[id].description
+			 */
+			var msg = [];
+			if( newFlag ) {
+				msg.push({
+					name : leaf + ".new",
+					value: 1,
+					type : "Integer"
+				});
+			}
+			msg.push({
+				name : name + ".history['"+physicalPlan._id+"'].datetime",
+				value: moment(physicalPlan.datetime).unix(),
+				type : "Integer"
+			});
+			msg.push({
+				name : name + ".history['"+physicalPlan._id+"'].description",
+				value: physicalPlan.content,
+				type : "String"
+			});
+			queue.postMsg(msg)
+				.then(function () {
+					resolve(msg);
+				});
+		});
+	};
+
+	/**
+	 * push the whole physical plan and history to the queue
+	 * 
+	 * @returns {$$rsvp$promise$$default|RSVP.Promise|*|Dn}
+	 */
+	this.physicalPlanToQueue = function() {
+		var that = this;
+
+		return new promise(function (resolve, reject) {
+			var physicalPlan = new PhysicalPlan(new ObjectID(that._id));
+			physicalPlan.getItemsArray(1, 1000)
+				.then( function(results) {
+					var promises = results.map( function( physicalPlan) {
+						return that.pushPhysicalPlanToQueue(physicalPlan);
+					});
+					RSVP.all(promises)
+						.then( function( results) {
+							resolve(results);
+						});
+				});
+		});
+	};
+
+	/**
+	 * Push a dietary advice to the BOX
+	 * 
+	 * @param {dietaryPlan} dietaryPlan the recommandation to send
+	 * @param {boolean} newFlag  set to true if it's a new advice
+	 * @returns {$$rsvp$promise$$default|RSVP.Promise|*|Dn}
+	 */
+	this.pushDietaryPlanToQueue = function( dietaryPlan, newFlag ) {
+		logger.trace("pushDietaryPlanToQueue");
+		logger.debug(dietaryPlan);
+		var that = this;
+
+		var queue = new Queue(this._id);
+		var name = "hhr['" + this._id + "']";
+		
+		return new promise(function (resolve, reject) {
+			/*
+			 dietary.recommendations.new
+			 dietary.recommendations.history[id].datetime
+			 dietary.recommendations.history[id].description
+			 */
+			var msg = [];
+			if( newFlag ) {
+				msg.push({
+					name : name + ".new",
+					value: 1,
+					type : "Integer"
+				});
+			}
+			msg.push({
+				name : name + ".recommendations.history['"+dietaryPlan._id+"'].datetime",
+				value: moment(dietaryPlan.datetime).unix(),
+				type : "Integer"
+			});
+			msg.push({
+				name : name + ".recommendations.history['"+dietaryPlan._id+"'].description",
+				value: dietaryPlan.content,
+				type : "String"
+			});
+			logger.debug("msg to send", msg );
+			queue.postMsg(msg)
+				.then(function () {
+					resolve(msg);
+				});
+		});
+	}
+
+	/**
+	 * Push the whole dietary plan to the queue
+	 * 
+	 * @returns {$$rsvp$promise$$default|RSVP.Promise|*|Dn}
+	 */
+	this.dietaryPlanToQueue = function() {
+		var that = this;
+
+		return new promise(function (resolve, reject) {
+			var dietaryPlan = new DietaryPlan(new ObjectID(that._id));
+			dietaryPlan.getItemsArray(1, 1000)
+				.then( function(results) {
+					var promises = results.map( function( dietaryPlan) {
+						return that.pushDietaryPlanToQueue(dietaryPlan);
+					});
+					RSVP.all(promises)
+						.then( function( results) {
+							resolve(results);
+						});
+				});
+		});
+	};
 }
 
 module.exports = Beneficiary;

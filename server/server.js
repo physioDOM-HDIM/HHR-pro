@@ -417,6 +417,8 @@ server.get( '/api/queue/history', IQueue.history);
 server.get( '/api/queue/dhdffq', IQueue.dhdffq);
 server.get( '/api/queue/measurePlan', IQueue.measurePlan);
 server.get( '/api/queue/symptomPlan', IQueue.symptomPlan);
+server.get( '/api/queue/physicalPlan', IQueue.physicalPlan);
+server.get( '/api/queue/dietaryPlan', IQueue.dietaryPlan);
 
 // ===================================================
 //               Pages requests
