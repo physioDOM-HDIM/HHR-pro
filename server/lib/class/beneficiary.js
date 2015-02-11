@@ -22,6 +22,7 @@ var RSVP = require("rsvp"),
 	Events = require("./events"),
 	dbPromise = require("./database"),
 	Queue = require("./queue.js"),
+	Symptoms = require("./symptoms.js"),
 	moment = require("moment");
 
 var logger = new Logger("Beneficiary");
@@ -1344,7 +1345,13 @@ function Beneficiary( ) {
 			}
 		});
 	}
-	
+
+	/**
+	 * get the measure Plan and push it to the box
+	 * 
+	 * @param date
+	 * @returns {$$rsvp$promise$$default|RSVP.Promise|*|l|Dn}
+	 */
 	this.getMeasurePlan = function( date ) {
 		var queue = new Queue(this._id);
 		var name = "hhr['" + this._id + "']";
@@ -1470,6 +1477,50 @@ function Beneficiary( ) {
 		});
 	};
 
+	/**
+	 * Push a symptom Self to the queue
+	 * 
+	 * @param symptomSelf
+	 */
+	this.pushSymptomsSelfToQueue = function( symptomSelf ) {
+		var queue = new Queue(this._id);
+		var name = "hhr['" + this._id + "'].symptomsSelf";
+		
+		/*
+		 symptomsSelf.scales[id].label
+		 symptomsSelf.scales[id].lastValue
+		 */
+		var that = this;
+		
+		return new promise( function(resolve, reject) {
+			this.getHistoryDataList()
+				.then( resolve );
+		});
+		
+	};
+
+	/**
+	 * Push the whole symptoms self to queue
+	 */
+	this.symptomsSelfToQueue = function( ) {
+		var queue = new Queue(this._id);
+		var name = "hhr['" + this._id + "'].symptomsSelf";
+		var that = this;
+		logger.trace("symptomsSelfToQueue");
+		
+		var symptoms = new Symptoms( this );
+		
+		return new promise( function(resolve,reject) {
+			var msg = [];
+			queue.delMsg([ { branch : name} ])
+				.then(function () {
+					logger.trace("symptomsSelf cleared");
+					return symptoms.getHistoryList();
+				})
+				.then( resolve );
+		});
+	}
+
 	function pushSymptom( queue, leaf, symptoms, measures ) {
 		logger.trace("pushSymptom");
 		return new promise( function(resolve,reject) {
@@ -1515,6 +1566,11 @@ function Beneficiary( ) {
 		});
 	}
 
+	/**
+	 * Get the symptoms plan and push it to the box
+	 * 
+	 * @returns {$$rsvp$promise$$default|RSVP.Promise|*|l|Dn}
+	 */
 	this.getSymptomsPlan = function() {
 		var queue = new Queue(this._id);
 		var name = "hhr['" + this._id + "']";
@@ -1763,7 +1819,15 @@ function Beneficiary( ) {
 			}
 		});
 	}
-	
+
+	/**
+	 * Send a questionnaire history to the box
+	 * only questionnaire that have a TVLabel are pushed
+	 * 
+	 * @param questionnaire
+	 * @param newFlag
+	 * @returns {$$rsvp$promise$$default|RSVP.Promise|*|l|Dn}
+	 */
 	this.sendQuestionnaire = function( questionnaire, newFlag ) {
 		var that = this;
 
@@ -1779,14 +1843,18 @@ function Beneficiary( ) {
 					});
 					RSVP.all(promises)
 						.then(function (results) {
-							logger.info("msgs", msgs.concat(results));
 							logger.debug("questionnaire history pushed");
 							resolve(msgs.concat(results));
 						});
 				});
 		});
 	}
-	
+
+	/**
+	 * push measures history ( the last 5 measures of each parameters ) to the box
+	 * 
+	 * @returns {$$rsvp$promise$$default|RSVP.Promise|*|l|Dn}
+	 */
 	this.pushHistory = function() {
 		var that = this;
 		
@@ -1836,7 +1904,13 @@ function Beneficiary( ) {
 				});
 		});
 	};
-	
+
+	/**
+	 * Push the last DHD-FFQ (Eetscore) to the box
+	 * 
+	 * @param newFlag
+	 * @returns {$$rsvp$promise$$default|RSVP.Promise|*|l|Dn}
+	 */
 	this.pushLastDHDFFQ = function( newFlag ) {
 		var that = this;
 		var queue = new Queue(this._id);
@@ -1964,7 +2038,7 @@ function Beneficiary( ) {
 					});
 					RSVP.all(promises)
 						.then( function( results) {
-							resolve(results);
+							resolve( [].concat(results) );
 						});
 				});
 		});
@@ -1983,7 +2057,7 @@ function Beneficiary( ) {
 		var that = this;
 
 		var queue = new Queue(this._id);
-		var name = "hhr['" + this._id + "']";
+		var name = "hhr['" + this._id + "'].dietary";
 		
 		return new promise(function (resolve, reject) {
 			/*
@@ -2034,7 +2108,7 @@ function Beneficiary( ) {
 					});
 					RSVP.all(promises)
 						.then( function( results) {
-							resolve(results);
+							resolve([].concat(results));
 						});
 				});
 		});

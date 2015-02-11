@@ -138,6 +138,31 @@ var IQueue = {
 			});
 	},
 
+	symptomsSelf: function( req, res, next ) {
+		logger.trace("symptomsSelf");
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getHHR( req.session.beneficiary );
+			})
+			.then(function (beneficiary) {
+				if (beneficiary.biomasterStatus) {
+					return beneficiary.symptomsSelfToQueue();
+				} else {
+					return false;
+				}
+			})
+			.then(function( result ) {
+				logger.debug("end symptomsSelf");
+				if( result ) {
+					res.send(result);
+				} else {
+					res.send({ code:200, message:"biomaster not initialized"});
+				}
+				next();
+			});
+	},
+	
 	symptomPlan: function( req, res, next ) {
 		logger.trace("symptomPlan");
 

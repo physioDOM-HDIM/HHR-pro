@@ -419,6 +419,7 @@ server.get( '/api/queue/measurePlan', IQueue.measurePlan);
 server.get( '/api/queue/symptomPlan', IQueue.symptomPlan);
 server.get( '/api/queue/physicalPlan', IQueue.physicalPlan);
 server.get( '/api/queue/dietaryPlan', IQueue.dietaryPlan);
+server.get( '/api/queue/symptomsSelf', IQueue.symptomsSelf);
 
 // ===================================================
 //               Pages requests
