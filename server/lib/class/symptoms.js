@@ -63,7 +63,12 @@ function Symptoms( beneficiary ) {
 						if (err) {
 							throw err;
 						} else {
-							resolve(results);
+							results.forEach( function( item ) {
+								if( symptoms[item.text]) {
+									symptoms[item.text].history = item.history;
+								}
+							});
+							resolve(symptoms);
 						}
 					});
 				});

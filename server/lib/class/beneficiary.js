@@ -1483,18 +1483,33 @@ function Beneficiary( ) {
 	 * @param symptomSelf
 	 */
 	this.pushSymptomsSelfToQueue = function( symptomSelf ) {
-		var queue = new Queue(this._id);
-		var name = "hhr['" + this._id + "'].symptomsSelf";
+		logger.trace("pushSymptomsSelfToQueue");
 		
-		/*
-		 symptomsSelf.scales[id].label
-		 symptomsSelf.scales[id].lastValue
-		 */
+		var queue = new Queue(this._id);
+		var leaf = "hhr['" + this._id + "'].symptomsSelf.scale['"+symptomSelf.ref+"']";
 		var that = this;
 		
 		return new promise( function(resolve, reject) {
-			this.getHistoryDataList()
-				.then( resolve );
+			var msg = [];
+			if( !symptomSelf.active ) {
+				resolve(false);
+			}
+			msg.push({
+				name : leaf + ".label",
+				value: symptomSelf.label[physioDOM.lang] || symptomSelf.ref,
+				type : "String"
+			});
+			if( symptomSelf.history ) {
+				msg.push({
+					name: leaf + ".lastValue",
+					value: symptomSelf.history[0].value,
+					type: "Integer"
+				});
+			}
+			queue.postMsg(msg)
+				.then(function () {
+					resolve(msg);
+				});
 		});
 		
 	};
@@ -1517,7 +1532,17 @@ function Beneficiary( ) {
 					logger.trace("symptomsSelf cleared");
 					return symptoms.getHistoryList();
 				})
-				.then( resolve );
+				.then( function( list ) {
+					var promises = Object.keys(list).map(function (key ) {
+						var symptomSelf = list[key];
+						return that.pushSymptomsSelfToQueue( symptomSelf );
+					});
+					RSVP.all(promises)
+						.then(function (results) {
+							console.log("fini");
+							resolve(results);
+						});
+				});
 		});
 	}
 
