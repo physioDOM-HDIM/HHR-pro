@@ -24,7 +24,7 @@ var logger = new Logger("Messages");
  */
 function Messages( beneficiaryID ) {
 	this.subject = beneficiaryID;
-
+	console.log( "Messages", beneficiaryID );
 	/**
 	 * Create a new messages
 	 *
@@ -255,6 +255,48 @@ function Messages( beneficiaryID ) {
 							resolve( list );
 						});
 				});
+		});
+	};
+
+	this.getByID = function( msgID ) {
+		logger.trace("getByID", msgID );
+		return new promise( function(resolve, reject) {
+			physioDOM.db.collection("messages").findOne( { '_id': msgID }, function(err, result) {
+				if(err) {
+					logger.emergency("Database error");
+					throw err;
+				}
+				if( result ) {
+					resolve( result );
+				} else {
+					reject( { code:404, message:"message not found"} );
+				}
+			});
+		});
+	};
+	
+	/**
+	 * update the status of a message given by its msgID
+	 * 
+	 * @param msgID
+	 * @returns {$$rsvp$promise$$default|RSVP.Promise|*}
+	 */
+	this.updateStatus = function( msgID ) {
+		logger.trace("updateStatus", msgID );
+		var that = this;
+		return new promise( function(resolve, reject) {
+			that.getByID( msgID)
+				.then( function( message ) {
+					message.status = "read";
+					physioDOM.db.collection("messages").save( message, function(err, res ) {
+						if(err) {
+							logger.emergency("Database error");
+							throw err;
+						}
+						resolve( message );
+					});
+				})
+				.catch( reject );
 		});
 	};
 }
