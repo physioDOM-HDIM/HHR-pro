@@ -236,6 +236,35 @@ var IQueue = {
 				}
 				next();
 			});
+	},
+
+	/**
+	 * Receive a POST message from SServer
+	 * 
+	 * @param req  the POST request
+	 * @param res  response object
+	 * @param next restify callback
+	 */
+	receivedMsg: function( req, res, next ) {
+		logger.trace("receivedMsg");
+		
+		try {
+			var msg = JSON.parse(req.body.toString());
+			var queue = new Queue( new ObjectID(msg.message.hhr) );
+			queue.receivedMessages( msg )
+				.then( function() {
+					res.send(200, {code: 200, message: "received message type " + msg.type});
+					next();
+				})
+				.catch( function(err) {
+					logger.warning( err );
+					res.send( 500 );
+					next();
+				});
+		} catch( err ) {
+			res.send(405, { code:405, message:"bad json format"});
+			next();
+		}
 	}
 	
 };

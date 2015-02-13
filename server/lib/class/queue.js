@@ -9,6 +9,7 @@
 var promise = require("rsvp").Promise,
 	Logger = require("logger"),
 	request = require("request"),
+	ObjectID = require("mongodb").ObjectID,
 	moment = require("moment");
 
 var Beneficiary = require("./beneficiary.js");
@@ -31,7 +32,7 @@ function Queue ( beneficiaryID ) {
 					beneficiary.biomasterStatus = false;
 					return beneficiary.save();
 				})
-				.then( function( beneficiary) {
+				.then( function( beneficiary ) {
 					var msg = {
 						"server":  physioDOM.config.server,
 						"subject": beneficiary._id,
@@ -221,6 +222,39 @@ function Queue ( beneficiaryID ) {
 			]
 		};
 		return this.send(msg);
+	};
+	
+	this.receivedMessages = function( msg ) {
+		logger.trace("receivedMessages");
+		console.log(msg);
+		var that = this;
+		return new promise(function (resolve, reject) {
+			physioDOM.Beneficiaries()
+				.then(function (beneficiaries) {
+					return beneficiaries.getHHR( that.subject );
+				})
+				.then( function( beneficiary ) {
+					// console.log( beneficiary );
+					switch( msg.type ) {
+						case "messageRead":
+							var Messages = require('./messages.js');
+							var messages = new Messages( beneficiary._id );
+							messages.updateStatus( new ObjectID(msg.message.id) )
+								.then(resolve)
+								.catch(reject );
+							break;
+						case "symptomsSelf":
+						case "symptoms":
+						case "measures":
+							console.log("create a new dataRecord");
+							resolve();
+							break;
+						default:
+							console.log( "unknown type");
+							reject("unknown type");
+					}
+				});
+		});
 	};
 }
 

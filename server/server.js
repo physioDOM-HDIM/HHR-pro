@@ -180,12 +180,10 @@ server.use( function(req, res, next) {
 				.catch( function() {
 						logger.debug("remove cookie");
 						req.session = null;
-					
-						logger.debug("redirect");
 						cookies = new Cookies(req, res);
 						cookies.set('sessionID');
 						logger.debug("url", req.url);
-						if (req.url.match(/^(\/|\/api\/login|\/api\/logout|\/logout|\/api\/queue\/status)$/)) {
+						if (req.url.match(/^(\/|\/api\/login|\/api\/logout|\/logout|\/api\/queue\/(status|received))$/)) {
 							console.log("url match");
 							return next();
 						} else {
@@ -420,6 +418,8 @@ server.get( '/api/queue/symptomPlan', IQueue.symptomPlan);
 server.get( '/api/queue/physicalPlan', IQueue.physicalPlan);
 server.get( '/api/queue/dietaryPlan', IQueue.dietaryPlan);
 server.get( '/api/queue/symptomsSelf', IQueue.symptomsSelf);
+
+server.post('/api/queue/received', IQueue.receivedMsg);
 
 // ===================================================
 //               Pages requests
