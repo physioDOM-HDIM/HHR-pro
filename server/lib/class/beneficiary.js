@@ -1712,38 +1712,43 @@ function Beneficiary( ) {
 			 questionnaires[id].scores[id].datetime
 			 questionnaires[id].scores[id].value
 			 */
-			logger.debug("pushQuestionnaire",quest);
+			logger.trace("pushQuestionnaire",quest);
 			
 			var msg = [];
 			if (quest.TVLabel ) {
 				var leaf = name + ".questionnaires[" + quest.text + "]";
-
-				msg.push({
-					name : leaf + ".label",
-					value: quest.TVLabel,
-					type : "String"
-				});
-				msg.push({
-					name : leaf + ".new",
-					value: newFlag?1:0,
-					type : "Integer"
-				})
-				for (var i = 0, l = quest.history.length; i < l; i++) {
-					msg.push({
-						name : leaf + ".values[" + i + "].datetime",
-						value: moment(quest.history[i].datetime).unix(),
-						type : "Integer"
-					});
-					msg.push({
-						name : leaf + ".values[" + i + "].value",
-						value: quest.history[i].value,
-						type : "Double"
-					});
-				}
-				queue.postMsg(msg)
-					.then(function () {
-						resolve(msg);
-					});
+				
+				queue.delMsg([ { branch : leaf } ])
+					.then( function() {
+						logger.trace("questionnare "+ quest.text +" cleared");
+						
+						msg.push({
+							name: leaf + ".label",
+							value: quest.TVLabel,
+							type: "String"
+						});
+						msg.push({
+							name: leaf + ".new",
+							value: newFlag ? 1 : 0,
+							type: "Integer"
+						})
+						for (var i = 0, l = quest.history.length; i < l; i++) {
+							msg.push({
+								name: leaf + ".values[" + i + "].datetime",
+								value: moment(quest.history[i].datetime).unix(),
+								type: "Integer"
+							});
+							msg.push({
+								name: leaf + ".values[" + i + "].value",
+								value: quest.history[i].value,
+								type: "Double"
+							});
+						}
+						queue.postMsg(msg)
+							.then(function () {
+								resolve(msg);
+							});
+					})
 			} else {
 				resolve(msg);
 			}
