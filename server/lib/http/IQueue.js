@@ -65,14 +65,14 @@ var IQueue = {
 	
 	history: function( req, res, next ) {
 		logger.trace("history");
-
+		
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
 				return beneficiaries.getHHR( req.session.beneficiary );
 			})
 			.then(function (beneficiary) {
 				if (beneficiary.biomasterStatus) {
-					return beneficiary.pushHistory();
+					return beneficiary.pushHistory(req.params.category);
 				} else {
 					return false;
 				}

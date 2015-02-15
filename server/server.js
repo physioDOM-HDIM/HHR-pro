@@ -412,6 +412,7 @@ server.get( '/api/logout', logout);
 server.get( '/api/queue/init', IQueue.init );
 server.post('/api/queue/status', IQueue.status );
 server.get( '/api/queue/history', IQueue.history);
+server.get( '/api/queue/history/:category', IQueue.history);
 server.get( '/api/queue/dhdffq', IQueue.dhdffq);
 server.get( '/api/queue/measurePlan', IQueue.measurePlan);
 server.get( '/api/queue/symptomPlan', IQueue.symptomPlan);

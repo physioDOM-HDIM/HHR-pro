@@ -1880,57 +1880,117 @@ function Beneficiary( ) {
 		});
 	}
 
+	this.pushHistoryMeasures = function( history, queue, leaf ) {
+		return new promise( function( resolve, reject) {
+			var msgs = [];
+			
+			queue.delMsg([ { branch : leaf + ".measuresHistory"} ])
+				.then(function () {
+					logger.trace("symptomsHistory cleared");
+					var promises = history["General"].map(function (param) {
+						return pushParam(queue, leaf, param);
+					});
+					return RSVP.all(promises);
+				})
+				.then(function (results) {
+					logger.debug("General history pushed");
+					msgs = msgs.concat(results);
+					logger.info("msgs", msgs);
+					var promises = history["HDIM"].map(function (param) {
+						return pushParam(queue, leaf, param);
+					});
+					return RSVP.all(promises);
+				})
+				.then(function (results) {
+					logger.debug("HDIM history pushed");
+					msgs = msgs.concat(results);
+					resolve(msgs);
+				});
+		});
+	};
+
+	this.pushHistorySymptoms = function( history, queue, leaf ) {
+		logger.trace("pushHistorySymptoms");
+		
+		return new promise( function( resolve, reject) {
+			var msgs = [];
+			
+			queue.delMsg([ { branch : leaf + ".symptomsHistory"} ])
+				.then(function () {
+					logger.trace("symptoms history cleared");
+					var promises = history["symptom"].map(function (param) {
+						return pushSymptomsHistory(queue, leaf, param);
+					});
+					return RSVP.all(promises);
+				})
+				.then(function (results) {
+					logger.debug("symptom history pushed");
+					msgs = msgs.concat(results);
+					resolve(msgs);
+				});
+		});
+	};
+
+	this.pushHistoryQuestionnaires = function( history, queue, leaf ) {
+		return new promise( function( resolve, reject) {
+			var msgs = [];
+
+			var promises = history["questionnaire"].map(function (param) {
+				return pushQuestionnaire(queue, leaf, param);
+			});
+			RSVP.all(promises)
+				.then(function (results) {
+					msgs = msgs.concat(results);
+					resolve(msgs);
+				});
+		});
+	};
+	
 	/**
 	 * push measures history ( the last 5 measures of each parameters ) to the box
 	 * 
 	 * @returns {$$rsvp$promise$$default|RSVP.Promise|*|l|Dn}
 	 */
-	this.pushHistory = function() {
+	this.pushHistory = function( category ) {
 		var that = this;
 		
 		var queue = new Queue(this._id);
 		var name = "hhr['" + this._id + "']";
 		
+		console.log( "category ", category);
 		return new promise(function (resolve, reject) {
 			var msgs = [];
 			that.getHistoryDataList()
 				.then(function (history) {
-					var promises = history["General"].map(function (param) {
-						return pushParam(queue, name, param);
-					});
-					RSVP.all(promises)
-						.then(function (results) {
-							logger.debug("General history pushed");
-							msgs = msgs.concat(results);
-							logger.info("msgs", msgs);
-							var promises = history["HDIM"].map(function (param) {
-								return pushParam(queue, name, param);
-							});
-							return RSVP.all(promises);
-						})
-						.then(function (results) {
-							logger.debug("HDIM history pushed");
-							msgs = msgs.concat(results);
-							logger.info("msgs", msgs);
-							var promises = history["symptom"].map(function (param) {
-								return pushSymptomsHistory(queue, name, param);
-							});
-							return RSVP.all(promises);
-						})
-						.then(function (results) {
-							logger.debug("symptom history pushed");
-							msgs = msgs.concat(results);
-							logger.info("msgs", msgs);
-							var promises = history["questionnaire"].map(function (param) {
-								return pushQuestionnaire(queue, name, param);
-							});
-							return RSVP.all(promises);
-						})
-						.then(function (results) {
-							logger.info("msgs", msgs.concat(results));
-							logger.debug("Questionnaire history pushed");
-							resolve(msgs.concat(results));
-						});
+					switch( category ) {
+						case "measures":
+							that.pushHistoryMeasures( history, queue, name )
+								.then( resolve );
+							break;
+						case "symptoms":
+							that.pushHistorySymptoms( history, queue, name )
+								.then( resolve );
+							break;
+						case "questionnaires":
+							that.pushHistoryQuestionnaires( history, queue, name )
+								.then( resolve );
+							break;
+						default:
+							that.pushHistoryMeasures( history, queue, name )
+								.then( function( results ) {
+									msgs = msgs.concat(results);
+									return that.pushHistorySymptoms( history, queue, name )
+								})
+								.then( function( results ) {
+									msgs = msgs.concat(results);
+									return that.pushHistoryQuestionnaires( history, queue, name )
+								})
+								.then( function( results ) {
+									msgs = msgs.concat(results);
+									logger.info("msgs", msgs);
+									resolve( msgs );
+								});
+					}
 				});
 		});
 	};
