@@ -1821,7 +1821,7 @@ function Beneficiary( ) {
 			 */
 			var msg = [];
 			if (symptom.rank) {
-				var leaf = name + ".symptomsHistory.scales[" + symptom.rank + "]";
+				var leaf = name + ".symptomsHistory.scales['" + symptom.text + "']";
 
 				msg.push({
 					name : leaf + ".label",
