@@ -15,9 +15,29 @@ var promise = require("rsvp").Promise,
 var logger = new Logger("PhysicalPlan");
 
 function physicalPlan(beneficiaryID) {
-	this.subject = beneficiaryID;
+	this.beneficiary = beneficiaryID;
 
 	this.getItems = function( pg, offset, sort, sortDir, filter) {
+		logger.trace("getItems");
+		
+		pg = pg || 1;
+		offset = offset || 50;
+
+		var cursor = physioDOM.db.collection("physicalPlan").find();
+		var cursorSort = {};
+		if(sort) {
+			cursorSort[sort] = [-1,1].indexOf(sortDir)!==-1?sortDir:1;
+		} else {
+			cursorSort.datetime = -1;
+		}
+		logger.debug("test");
+		cursor = cursor.sort( cursorSort );
+		return dbPromise.getList(cursor, pg, offset);
+	};
+
+	this.getItemsArray = function( pg, offset, sort, sortDir, filter) {
+		logger.trace("getItemsArray");
+
 		pg = pg || 1;
 		offset = offset || 50;
 
@@ -29,14 +49,14 @@ function physicalPlan(beneficiaryID) {
 			cursorSort.datetime = -1;
 		}
 		cursor = cursor.sort( cursorSort );
-		return dbPromise.getList(cursor, pg, offset);
+		return dbPromise.getArray(cursor, pg, offset);
 	};
 
 	this.getLastOne = function() {
 		var that = this;
 		return new promise( function(resolve, reject) {
-			logger.trace("getLastOne", that.subject);
-			var search = { beneficiary: that.subject };
+			logger.trace("getLastOne", that.beneficiary);
+			var search = { beneficiary: that.beneficiary };
 
 			physioDOM.db.collection("physicalPlan").find(search).sort({datetime:-1}).limit(1).toArray( function (err, doc) {
 				if (err) {
@@ -69,7 +89,16 @@ function physicalPlan(beneficiaryID) {
 				if( isNaN(result)) {
 					that._id = result._id;
 				}
-				resolve(that);
+				physioDOM.Beneficiaries()
+					.then(function (beneficiaries) {
+						return beneficiaries.getHHR( that.beneficiary );
+					})
+					.then(function (beneficiary) {
+						beneficiary.pushPhysicalPlanToQueue( that, true );
+					})
+					.then( function(msg) {
+						resolve(that);
+					});
 			});
 		});
 	};

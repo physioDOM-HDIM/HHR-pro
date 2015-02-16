@@ -188,6 +188,33 @@ function Questionnaire( ) {
 		});
 	};
 
+	/**
+	 *
+	 * @param name
+	 * @returns {*|$$rsvp$promise$$default|RSVP.Promise}
+	 */
+	this.getByRef = function( name ) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace("getByRef", name);
+			physioDOM.db.collection("questionnaires").findOne({ name: name }, function (err, doc) {
+				if (err) {
+					logger.alert("Database Error");
+					throw err;
+				}
+				if(!doc) {
+					reject( {code:404, error:"not found"});
+				} else {
+					for (var prop in doc) {
+						if (doc.hasOwnProperty(prop)) {
+							that[prop] = doc[prop];
+						}
+					}
+					resolve(that);
+				}
+			});
+		});
+	};
 }
 
 module.exports = Questionnaire;

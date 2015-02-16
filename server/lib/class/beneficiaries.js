@@ -143,7 +143,13 @@ function Beneficiaries( ) {
 		var beneficiaryByID = new ObjectID(entryID);
 		var beneficiary = new Beneficiary();
 		return beneficiary.getAdminById(beneficiaryByID, session.person.item);
-	}
+	};
+	 
+	this.getHHR = function( beneficiaryByID ) {
+		logger.trace("getHHR", beneficiaryByID);
+		var beneficiary = new Beneficiary();
+		return beneficiary.getHHR( beneficiaryByID );
+	};
 
 	/**
 	 * remove a beneficiary

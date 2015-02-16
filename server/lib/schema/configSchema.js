@@ -6,6 +6,7 @@ var configSchema = {
 	properties  : {
 		"port" : {type: "integer", minimum: 8000, maximum: 8080, required: true},
 		"cache": {type: "boolean", default: true},
+		"server": { type:"string", required: true },
 		"mongo": {
 			type                  : "object",
 			properties            : {

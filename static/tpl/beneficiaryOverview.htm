@@ -113,6 +113,10 @@
 		</div>
 		{% if rights.write %}
 		<div class="row control">
+						<button class="red small" onclick="initQueue();">{{ "Init"|i18n }}</button>&nbsp;
+						{% if beneficiary.biomasterStatus %}
+							( initialized )
+			      {% endif %}
             <span class="spacer"></span>
             <a href="/beneficiary/update"><button class="green small">{{ "Edit"|i18n }}</button></a>
         </div>
