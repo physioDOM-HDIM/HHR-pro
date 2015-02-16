@@ -2201,6 +2201,32 @@ function Beneficiary( ) {
 				});
 		});
 	};
+	
+	this.pushFirstName = function() {
+		var that = this;
+
+		var queue = new Queue(this._id);
+		var name = "hhr['" + this._id + "'].firstName";
+		return new promise(function (resolve, reject) {
+			var msg = [];
+			msg.push({
+				name : name,
+				value: that.name.given || that.name.familly,
+				type : "String"
+			});
+			queue.postMsg(msg)
+				.then(function () {
+					resolve(msg);
+				});
+		});
+	};
+	
+	this.pushMessages = function() {
+		var that = this;
+
+		var messages = new Messages(this._id);
+		return messages.pushMessages();
+	};
 }
 
 module.exports = Beneficiary;
