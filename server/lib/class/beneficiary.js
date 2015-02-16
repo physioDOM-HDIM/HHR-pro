@@ -682,7 +682,7 @@ function Beneficiary( ) {
 	this.createDataRecord = function( dataRecordObj, professionalID) {
 		var that = this;
 		return new promise( function(resolve, reject) {
-			logger.trace("createDataRecord");
+			logger.trace("createDataRecord", dataRecordObj);
 			var dataRecord = new DataRecord();
 			dataRecord.setup(that._id, dataRecordObj, professionalID)
 				.then(function (dataRecord) {
@@ -1300,10 +1300,10 @@ function Beneficiary( ) {
 			measures.measure.forEach( function( measure ) {
 				if( parameters[measure].rank ) {
 					hasMeasure = true;
-					var name = leaf + "param["+parameters[measure].rank+"]";
+					var name = leaf + ".param['"+parameters[measure].ref+"']";
 					msg.push({
 						name : name + ".type",
-						value: parameters[measure].rank,
+						value: parseInt(parameters[measure].rank, 10),
 						type : "Integer"
 					});
 					msg.push({
@@ -1550,8 +1550,6 @@ function Beneficiary( ) {
 		logger.trace("pushSymptom");
 		return new promise( function(resolve,reject) {
 			var msg = [];
-			logger.debug( "measure", measures );
-			logger.debug( "symptoms", symptoms );
 
 			msg.push({
 				name : leaf + ".datetime",
@@ -1567,7 +1565,7 @@ function Beneficiary( ) {
 			measures.measure.forEach( function( measure ) {
 				if( symptoms[measure].rank ) {
 					hasMeasure = true;
-					var name = leaf + "scale["+symptoms[measure].rank+"]";
+					var name = leaf + "scale['"+symptoms[measure].ref+"']";
 					msg.push({
 						name : name + ".label",
 						value: symptoms[measure].label[physioDOM.lang],
@@ -1767,7 +1765,7 @@ function Beneficiary( ) {
 			 */
 			var msg = [];
 			if (param.rank) {
-				var leaf = name + ".measuresHistory.params[" + param.rank + "]";
+				var leaf = name + ".measuresHistory.params['" + param.text + "']";
 
 				msg.push({
 					name : leaf + ".label",
