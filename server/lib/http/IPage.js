@@ -80,7 +80,7 @@ function IPage() {
 	}
 
 	function convertDate(strDate) {
-		return strDate ? moment(strDate, "YYYY-MM-DD").format(moment.localeData(lang).longDateFormat("L")) : strDate;
+		return strDate ? moment(strDate, "YYYY-MM-DD").format(moment.localeData(lang==="en"?"en-gb":lang).longDateFormat("L")) : strDate;
 	}
 
 	function promiseList(listName) {
@@ -612,7 +612,7 @@ function IPage() {
 				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
 			})
 			.then( function( beneficiary ) {
-				moment.locale(req.cookies.lang=="en"?"en-gb":req.cookies.lang);
+				moment.locale(req.cookies.lang==="en"?"en-gb":req.cookies.lang);
 				data.beneficiary = beneficiary;
 				data.beneficiary.birthdate = moment(data.beneficiary.birthdate).format("L");
 				return beneficiary._id ? beneficiary.getProfessionals() : null;
