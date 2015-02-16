@@ -38,6 +38,7 @@ function Queue ( beneficiaryID ) {
 						"subject": beneficiary._id,
 						"gateway": beneficiary.biomaster,
 						"method": "DELETE",
+						"init":true,
 						"content": [
 							{"branch": "hhr['" + beneficiary._id + "']"}
 						]
@@ -158,14 +159,43 @@ function Queue ( beneficiaryID ) {
 					beneficiary.biomasterStatus = msg.status;
 					return beneficiary.save();
 				})
-				.then(function () {
+				.then(function (beneficiary) {
 					if( init ) {
 						logger.info("initialization");
 						// send firstname, messages, agenda, measurements, symptoms ...
+						beneficiary.pushFirstName()
+							.then( function() {
+								return beneficiary.pushMessages();
+							})
+							.then( function() {
+								return beneficiary.pushHistory();
+							})
+							.then ( function() {
+								return beneficiary.symptomsSelfToQueue();
+							})
+							.then( function() {
+								return beneficiary.pushLastDHDFFQ();
+							})
+							.then( function() {
+								return beneficiary.getMeasurePlan();
+							})
+							.then( function() {
+								return beneficiary.getSymptomsPlan();
+							})
+							.then( function() {
+								return beneficiary.physicalPlanToQueue();
+							})
+							.then( function() {
+								return beneficiary.dietaryPlanToQueue();
+							})
+							.then( function() {
+								logger.info("All data sent for ", beneficiary._id );
+								resolve()
+							});
 					} else {
 						logger.info("already initialized");
+						resolve();
 					}
-					resolve();
 				})
 				.catch( reject );
 		});
