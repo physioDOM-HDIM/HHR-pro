@@ -5,7 +5,8 @@ var utils = new Utils(),
 	idx = 0,
 	createdDataRecordID = null,
 	lists = {},
-	modified = false;
+	modified = false,
+	createdNew = false;
 
 infos.datasInit = null;
 
@@ -22,6 +23,11 @@ window.addEventListener("DOMContentLoaded", function () {
 
 window.addEventListener("beforeunload", function (e) {
 	var confirmationMessage;
+	if( createdNew ) {
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", "/api/queue/history", true);
+		xhr.send();
+	}
 	if (modified) {
 		confirmationMessage = document.querySelector("#unsave").innerHTML;
 		(e || window.event).returnValue = confirmationMessage;     //Gecko + IE
@@ -188,6 +194,7 @@ function update(dataRecordID) {
 			.then(function (response) {
 				updateSuccess();
 				modified = false;
+				createdNew = true;
 			}, function (error) {
 				errorOccured();
 				console.log("saveForm - error: ", error);
@@ -198,6 +205,7 @@ function update(dataRecordID) {
 			utils.promiseXHR("DELETE", "/api/beneficiary/datarecords/" + dataRecordID, 200)
 				.then(function (response) {
 					modified = false;
+					createdNew = true;
 					window.location.href = "/datarecord";
 				}, function (error) {
 					errorOccured();
@@ -247,6 +255,7 @@ function create() {
 				createdDataRecordID = record._id;
 				sourceID.disabled = true;
 				modified = false;
+				createdNew = true;
 			}, function (error) {
 				errorOccured();
 				console.log("saveForm - error: ", error);
