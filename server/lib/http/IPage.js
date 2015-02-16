@@ -1162,7 +1162,10 @@ function IPage() {
 					data.professionals = professionals;
 					data.view = 'create';
 					data.lang = lang;
-					// jsut for test, otherwise read locale from session
+					data.source = {
+						name : req.session.person.item.name,
+						_id : req.session.person.id
+					};
 
 					html = swig.renderFile(DOCUMENTROOT + '/static/tpl/dataRecordEdit.htm', data, function (err, output) {
 						if (err) {
