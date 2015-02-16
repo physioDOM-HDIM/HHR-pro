@@ -117,8 +117,14 @@ function IPage() {
 		
 		init(req);
 		
-		logger.trace("login page 2");
-		html = swig.renderFile(DOCUMENTROOT+'/static/index.htm', [], function(err, output) {
+		logger.trace("login page");
+		var pkg = require("../../../package.json");
+		var data = {
+			version: pkg.version,
+			lang: physioDOM.config.Lang,
+			queue: physioDOM.config.queue
+		}
+		html = swig.renderFile(DOCUMENTROOT+'/static/index.htm', data, function(err, output) {
 			if (err) {
 				console.log("error", err);
 				console.log("output", output);
