@@ -228,6 +228,7 @@ function Queue ( beneficiaryID ) {
 		logger.trace("receivedMessages");
 		console.log(msg);
 		var that = this;
+		var leaf = "hhr['"+ that.subject +"']";
 		return new promise(function (resolve, reject) {
 			physioDOM.Beneficiaries()
 				.then(function (beneficiaries) {
@@ -245,9 +246,63 @@ function Queue ( beneficiaryID ) {
 							break;
 						case "symptomsSelf":
 						case "symptoms":
+							var newDataRecord = { items: [] };
+							msg.message.scales.forEach( function( item ) {
+								newDataRecord.items.push( {
+									"text":item.id,
+									"value":item.value,
+									"category":"symptom"
+								});
+							});
+							beneficiary.createDataRecord( newDataRecord )
+								.then( function() {
+									// remove the measures
+									return that.delMsg([ { branch : leaf + "." + msg.type + "["+ msg.message.id+"]"} ]);
+								})
+								.then( function() {
+									// send new measures history
+									return beneficiary.pushHistory("symptoms");
+								})
+								.then( function() {
+									return beneficiary.symptomsSelfToQueue();
+								})
+								.then( function() {
+									resolve(newDataRecord);
+								})
+								.catch( function(err) {
+									logger.warning(err);
+									reject(err);
+								});;
+							break;
 						case "measures":
-							console.log("create a new dataRecord");
-							resolve();
+							var newDataRecord = { items: [] };
+							physioDOM.Lists.getListItemsObj("parameters")
+								.then( function( listItems) {
+									msg.message.params.forEach(function (item) {
+										newDataRecord.items.push({
+											"text": item.id,
+											"value": item.value,
+											"category": listItems[item.id].category,
+											"automatic": item.automatic
+										});
+									});
+									beneficiary.createDataRecord(newDataRecord)
+										.then(function () {
+											// remove the measures
+											return that.delMsg([{branch: leaf + ".measures[" + msg.message.id + "]"}]);
+										})
+										.then(function () {
+											// send new measures history
+											return beneficiary.pushHistory("measures");
+										})
+										.then(function () {
+											resolve(newDataRecord);
+										})
+										.catch( function(err) {
+											logger.warning(err);
+											reject(err);
+										});
+								});
 							break;
 						default:
 							console.log( "unknown type");
