@@ -284,7 +284,7 @@
 					<label>{{ "Come from"|i18n }}</label>
 					<select name="entry.comeFrom">
 						{% for item in destination.items %}
-						<option value="{{item.value}}">{{item.label}}</option>
+						<option value="{{item.value}}" {% if item.value===beneficiary.entry.comeFrom %}selected{% endif %}>{{item.label}}</option>
 						{% endfor %}
 					</select>
 				</div>
@@ -304,7 +304,7 @@
 					<label>{{ "Destination"|i18n }}</label>
 					<select name="entry.destination">
 						{% for item in destination.items %}
-						<option value="{{item.value}}">{{item.label}}</option>
+						<option value="{{item.value}}" {% if item.value===beneficiary.entry.destination %}selected{% endif %}>{{item.label}}</option>
 						{% endfor %}
 					</select>
 				</div>
