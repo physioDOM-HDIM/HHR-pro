@@ -361,7 +361,7 @@ function checkProfessionalsForm(backgroundTask) {
 
     var obj = [];
 
-    if (_dataObj.professionals) {
+    if (_dataObj && _dataObj.professionals) {
         _dataObj.professionals.map(function(item) {
             obj.push({
                 professionalID: item._id,
@@ -388,8 +388,8 @@ function checkDiagnosisForm() {
 function updateAll(obj) {
     console.log("updateAll", obj);
 
-    if (_dataObj && _dataObj._id) {
-        Utils.promiseXHR("PUT", "/api/beneficiaries/" + _dataObj._id, 200, JSON.stringify(obj)).then(function() {
+    if (obj._id) {
+        Utils.promiseXHR("PUT", "/api/beneficiaries/" + obj._id, 200, JSON.stringify(obj)).then(function() {
 			modified = false;
             new Modal('updateSuccess');
         }, function(error) {
@@ -400,6 +400,10 @@ function updateAll(obj) {
 }
 
 function checkAllForms(isValidate) {
+	var id = document.querySelector("form[name='beneficiary'] input[name='_id']").value;
+	if( !id ) {
+		return checkBeneficiaryForm(false);
+	}
     console.log("checkAllForms");
     var forms = document.querySelectorAll("form"),
         formsObj = {},
@@ -564,6 +568,7 @@ function updateBeneficiary(obj) {
             });
             //Display the delete button
             document.querySelector("#deleteBeneficiary").classList.remove("hidden");
+			document.querySelector("#hasPersonal").classList.remove("hidden");
             new Modal('createSuccess');
 
         }, function(error) {
@@ -680,7 +685,8 @@ function init() {
         id = document.querySelector("form[name='beneficiary'] input[name='_id']").value;
 
     if (id) {
-
+		document.querySelector("#hasPersonal").classList.remove("hidden");
+		
         promises = {
             beneficiary: Utils.promiseXHR("GET", "/api/beneficiaries/" + id, 200),
             professionals: Utils.promiseXHR("GET", "/api/beneficiaries/" + id + "/professionals", 200)
@@ -707,6 +713,8 @@ function init() {
         });
         //hide the delete button
         document.querySelector("#deleteBeneficiary").classList.add("hidden");
+		addTelecom();
+		addAddress();
     }
 
     promises = {
@@ -740,7 +748,7 @@ function init() {
     //Set placeholder for date input according to the local from lang cookie
     //TODO get lang cookie
     _langCookie = Cookies.get("lang");
-    _momentFormat = moment.localeData(_langCookie).longDateFormat("L");
+    _momentFormat = moment.localeData(_langCookie==="en"?"en_gb":_langCookie).longDateFormat("L");
     [].map.call(document.querySelectorAll(".date"), function(item) {
         item.setAttribute("placeholder", _momentFormat);
     });
