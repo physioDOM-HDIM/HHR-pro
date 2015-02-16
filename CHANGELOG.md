@@ -1,3 +1,21 @@
+__v0.0.10__
+
+Push to queue
+  
+  - init of a hhr
+  - push messages
+  - push symptoms assessments history
+  - push measaure history
+  - push symptoms assessements ( symptoms self )
+  - push questionnaires huistory
+  - push DHD-FFQ advice
+  - push firstname
+  - push dieatry plan
+  - push physical plan
+  - receive message read status
+  - receive symptoms assessments
+  - receive measures
+
 __v0.0.9__
 
  - Bug #191 
