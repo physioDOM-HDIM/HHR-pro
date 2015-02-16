@@ -49,7 +49,16 @@ Utils.prototype.findInObject = function(obj, item, value) {
  * getting Day name from Day Number
  */
 Utils.prototype.getDayName = function(day) {
-  return ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][day];
+	switch(infos.lang) {
+		case "en":
+			return ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][day];
+		case "fr":
+			return ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"][day];
+		case "nl":
+			return ["Zondag", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag"][day];
+		case "es":
+			return ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"][day];
+	}
 };
 
 /**

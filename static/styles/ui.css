@@ -429,7 +429,7 @@ i.icon {
 }
 
 .icon-delete {
-	background: url('../img/icons/delete.svg') no-repeat;
+	background: url('/img/icons/delete.svg') no-repeat;
 }
 
 .spacing-nobutton {

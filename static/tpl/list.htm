@@ -133,9 +133,24 @@
 				</div>
 			</div>
 			<div class="row">
+				{% raw %}{{#hasRank}}{% endraw %}
+				<div class="col">
+					<label>{{ "Rank"|i18n }}:</label>
+					<input type="number" name="{% raw %}items[{{idx}}].rank{% endraw %}" value="{% raw %}{{rank}}{% endraw %}" />
+				</div>
+				{% raw %}{{/hasRank}}{% endraw %}
 				<div class="col">
 					<label>{{ "Automatic input"|i18n }}:</label>
 					<input type="checkbox" name="{% raw %}items[{{idx}}].autoInput{% endraw %}" value="true" {%raw%}{{#autoInput}}checked{{/autoInput}}{%endraw%} />
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<label>{{ "Precision"|i18n }}:</label>
+					<input type="radio" name="{% raw %}items[{{idx}}].precision{% endraw %}" value="false" {%raw%}{{^precision}}checked{{/precision}}{% endraw %}/> {{ 'integer' | i18n }}
+				</div>
+				<div class="col">
+					<input type="radio" name="{% raw %}items[{{idx}}].precision{% endraw %}" value="true" {%raw%}{{#precision}}checked{{/precision}}{% endraw %}/> {{ 'decimal' | i18n }}
 				</div>
 			</div>
 			<div class="row">

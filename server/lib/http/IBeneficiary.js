@@ -76,11 +76,14 @@ var IBeneficiary = {
 		logger.trace("getBeneficiary");
 		physioDOM.Beneficiaries()
 			.then( function(beneficiaries) {
+				/*
 				if( req.params.entryID ) {
+					logger.debug("add beneficiary to session");
 					req.session.beneficiary = new ObjectID(req.params.entryID);
 					req.session.save();
 				}
-				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+				*/
+				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary || new ObjectID(req.params.entryID) );
 			})
 			.then( function(beneficiary) {
 				res.send( beneficiary );
@@ -536,6 +539,34 @@ var IBeneficiary = {
 			});
 	},
 
+	/**
+	 * Get the list of parameters with the last 5 measurements
+	 *
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	getHistoryDataList: function( req, res, next) {
+		logger.trace("getHistoryDataList");
+
+		var beneficiary;
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+			})
+			.then( function(selectedBeneficiary) {
+				beneficiary = selectedBeneficiary;
+				return beneficiary.getHistoryDataList( req.session.lang || physioDOM.lang );
+			}).then( function( graphList) {
+				res.send(graphList);
+				next();
+			})
+			.catch( function(err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+	
 	/**
 	 * 
 	 * @param req

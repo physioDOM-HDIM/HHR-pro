@@ -16,4 +16,17 @@ function init() {
 	});
 }
 
+function initQueue() {
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET','/api/queue/init', true );
+	xhr.onload = function() {
+		console.log( "init queue ");
+		console.log( this.responseText );
+	};
+	xhr.onerror = function() {
+		console.log( "init queue ");
+		console.log( this.responseText );
+	};
+	xhr.send();
+}
 window.addEventListener("polymer-ready", init, false);

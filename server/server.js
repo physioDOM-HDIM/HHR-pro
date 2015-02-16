@@ -20,6 +20,7 @@ var IDirectory = require('./lib/http/IDirectory'),
 	IQuestionnaire = require("./lib/http/IQuestionnaire"),
 	ICurrentStatus = require('./lib/http/ICurrentStatus'),
 	IMenu = require("./lib/http/IMenu"),
+	IQueue = require("./lib/http/IQueue"),
 	configSchema = require("./lib/schema/configSchema.js");
 
 var pkg     = require('../package.json');
@@ -59,6 +60,7 @@ if( program.config ) {
 		config.key = tmp.key;
 		config.cache = tmp.cache;
 		config.languages = tmp.languages;
+		config.server = tmp.server;
 	}
 } else {
 	logger.error("you must provide a config file");
@@ -149,24 +151,19 @@ server.use( function(req, res, next) {
 					.then(function (session) {
 						session.getPerson()
 							.then(function (session) {
-								// logger.debug("session", JSON.stringify(person,null,4));
-								// cb(null, session);
 								resolve(session);
 							})
 							.catch(function (err) {
 								logger.error("error", JSON.stringify(err, null, 4));
-								// cb(err, null);
 								reject(err);
 							});
 					})
 					.catch(function (err) {
 						logger.warning("error", err, cb);
-						// cb(err, null);
 						reject(err);
 					});
 			} else {
 				logger.warning("no session");
-				// cb(null, null);
 				reject();
 			}
 		});
@@ -183,13 +180,11 @@ server.use( function(req, res, next) {
 				.catch( function() {
 						logger.debug("remove cookie");
 						req.session = null;
-					
-						logger.debug("redirect");
 						cookies = new Cookies(req, res);
 						cookies.set('sessionID');
 						logger.debug("url", req.url);
-						if (req.url.match(/^(\/|\/api\/login|\/api\/logout|\/logout)$/)) {
-							// console.log("url match");
+						if (req.url.match(/^(\/|\/api\/login|\/api\/logout|\/logout|\/api\/queue\/(status|received))$/)) {
+							console.log("url match");
 							return next();
 						} else {
 							if (req.url.match(/^\/api/)) {
@@ -214,7 +209,7 @@ server.pre(restify.pre.userAgentConnection());
 server.use(function checkAcl(req, res, next) {
 	logger.trace("checkAcl",req.url);
 
-	if( req.url === "/" || req.url.match(/^(\/api|\/logout|\/directory|\/settings|\/questionnaires|\/admin)/) ) {
+	if( req.url === "/" || req.url.match(/^(\/api|\/logout|\/directory|\/settings|\/questionnaires|\/admin|\/beneficiaries|\/queue)/) ) {
 		return next();
 	} else {
 
@@ -327,8 +322,13 @@ server.del( '/api/beneficiaries/:entryID', IBeneficiary.deleteBeneficiary );
 server.get( '/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryProfessionals );
 server.post('/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryAddProfessional );
 server.del( '/api/beneficiaries/:entryID/professionals/:profID', IBeneficiary.beneficiaryDelProfessional );
+
+// graph Data
+server.get( '/api/beneficiary/graph', IBeneficiary.getGraphDataList );
+server.get( '/api/beneficiary/graph/:category/:paramName', IBeneficiary.getGraphData );
 server.get( '/api/beneficiaries/:entryID/graph', IBeneficiary.getGraphDataList );
 server.get( '/api/beneficiaries/:entryID/graph/:category/:paramName', IBeneficiary.getGraphData );
+server.get( '/api/beneficiary/history', IBeneficiary.getHistoryDataList );
 
 // use of the session to determine the selected beneficiary
 server.get( '/api/beneficiary', IBeneficiary.getBeneficiary  );
@@ -341,8 +341,6 @@ server.post('/api/beneficiary/thresholds', IBeneficiary.setThreshold);
 server.get( '/api/beneficiary/thresholds', IBeneficiary.getThreshold);
 server.del( '/api/beneficiary/datarecords/:dataRecordID', IBeneficiary.removeDataRecord );
 
-server.get( '/api/beneficiary/graph', IBeneficiary.getGraphDataList );
-server.get( '/api/beneficiary/graph/:category/:paramName', IBeneficiary.getGraphData );
 
 // messages to home
 server.get( '/api/beneficiary/messages', IBeneficiary.getMessages );
@@ -409,13 +407,28 @@ server.put( '/api/questionnaires/:entryID', IQuestionnaire.updateQuestionnaire);
 server.post('/api/login', apiLogin);
 server.get( '/api/logout', logout);
 
+// ===================================================
+//              Queue messages
+server.get( '/api/queue/init', IQueue.init );
+server.post('/api/queue/status', IQueue.status );
+server.get( '/api/queue/messages', IQueue.messages);
+server.get( '/api/queue/history', IQueue.history);
+server.get( '/api/queue/history/:category', IQueue.history);
+server.get( '/api/queue/dhdffq', IQueue.dhdffq);
+server.get( '/api/queue/measurePlan', IQueue.measurePlan);
+server.get( '/api/queue/symptomPlan', IQueue.symptomPlan);
+server.get( '/api/queue/physicalPlan', IQueue.physicalPlan);
+server.get( '/api/queue/dietaryPlan', IQueue.dietaryPlan);
+server.get( '/api/queue/symptomsSelf', IQueue.symptomsSelf);
+
+server.post('/api/queue/received', IQueue.receivedMsg);
 
 // ===================================================
 //               Pages requests
 server.get( '/logout', logout);
 
 server.get( '/beneficiaries', IPage.beneficiaries);
-server.get( '/beneficiary/create', IPage.beneficiaryCreate);
+server.get( '/beneficiaries/create', IPage.beneficiaryCreate);
 server.get( '/beneficiary/edit/:beneficiaryID', IPage.beneficiaryUpdate);
 server.get( '/beneficiary/update', IPage.beneficiaryUpdate );
 server.get( '/beneficiary/:beneficiaryID', IPage.beneficiaryOverview );
@@ -428,8 +441,9 @@ server.get( '/directory/:professionalID', IPage.directoryUpdate);
 server.get( '/settings/lists', IPage.lists);
 server.get( '/settings/lists/:listName', IPage.list);
 server.get( '/questionnaires', IPage.questionnaires);
-server.get( '/questionnaire/create', IPage.createQuestionnaire);
-server.get( '/questionnaire/edit/:questionnaireName', IPage.createQuestionnaire);
+server.get( '/questionnaires/create', IPage.createQuestionnaire);
+server.get( '/questionnaires/edit/:questionnaireName', IPage.createQuestionnaire);
+server.get( '/questionnaires/preview/:questionnaireName', IPage.questionnairePreview);
 server.get( '/questionnaire/:questionnaireName', IPage.questionnaireOverview);
 
 server.get( '/answers/:entryID', IPage.questionnaireAnswers);

@@ -9,6 +9,7 @@ window.addEventListener('DOMContentLoaded', function() {
 	initData();
 	document.addEventListener('change', function( evt ) {
 		modified = true;
+		document.querySelector("#saveBtn").disabled = false;
 	}, true );
 }, false);
 

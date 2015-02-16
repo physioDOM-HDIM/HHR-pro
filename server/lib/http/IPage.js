@@ -28,12 +28,7 @@ var Menu = require('../class/menu.js');
 var DOCUMENTROOT=require("path").join(__dirname,"../../../");
 
 var logger = new Logger("IPage");
-var i18n = new(require('i18n-2'))({
-	// setup some locales - other locales default to the first locale
-	devMode: true,
-	locales: ["en", "es", "nl", "fr"],
-	extension:".json"
-});
+var i18n;
 
 /**
  * IPage
@@ -46,6 +41,14 @@ function IPage() {
 	var lang;
 
 	function init(req) {
+		i18n = new(require('i18n-2'))({
+			// setup some locales - other locales default to the first locale
+			devMode: physioDOM.config.cache?false:true,
+			// locales: ["en", "es", "nl", "fr"],
+			locales: physioDOM.config.languages,
+			extension:".json"
+		});
+		
 		if(req.session) {
 			console.log("test");
 			lang = req.session.lang || req.cookies.lang || req.params.lang || physioDOM.lang;
@@ -55,9 +58,10 @@ function IPage() {
 		logger.info("lang", lang);
 		
 		i18n.setLocale(lang);
-		moment.locale(req.cookies.lang=="en"?"en-gb":req.cookies.lang)
+		moment.locale(req.cookies.lang=="en"?"en-gb":req.cookies.lang);
 		
-		swig.setDefaults( {cache: physioDOM.config.cache} );
+		// swig.setDefaults( {cache: physioDOM.config.cache?'memory':false} );
+		swig.setDefaults( { cache: false } );
 		swig.setFilter("i18n", function (input, idx) {
 			// console.log("input", input, idx);
 			return i18n.__(input);
@@ -113,19 +117,24 @@ function IPage() {
 		
 		init(req);
 		
-		logger.trace("login page 2");
-		html = swig.renderFile(DOCUMENTROOT+'/static/index.htm', [], function(err, output) {
+		var pkg = require("../../../package.json");
+		var data = {
+			version: pkg.version,
+			lang: physioDOM.config.Lang,
+			queue: physioDOM.config.queue
+		}
+		html = swig.renderFile(DOCUMENTROOT+'/static/index.htm', data, function(err, output) {
 			if (err) {
 				console.log("error", err);
 				console.log("output", output);
 				res.write(err);
 				res.end();
-				next();
+				next(false);
 			} else {
 				sendPage(output, res, next);
 			}
 		});
-	}
+	};
 	
 	/**
 	 * Main Layout
@@ -192,7 +201,9 @@ function IPage() {
 		var promises = [
 			"perimeter",
 			"job",
-			"role"
+			"role",
+			"organizationType",
+			"civility"
 		].map(promiseList);
 
 		new Menu().rights( req.session.role, data.rights.url )
@@ -220,7 +231,7 @@ function IPage() {
 				logger.error(err);
 				res.write(err);
 				res.end();
-				next();
+				next(false);
 			});
 	};
 
@@ -238,7 +249,8 @@ function IPage() {
 		init(req);
 		var data = {
 			admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
-			rights: { read:false, write:false, url: '/directory' }
+			rights: { read:false, write:false, url: '/directory' },
+			lang: physioDOM.lang
 		};
 
 		var promises = [
@@ -261,7 +273,6 @@ function IPage() {
 				lists.forEach(function(list) {
 					data[Object.keys(list)] = list[Object.keys(list)];
 				});
-				console.log( data.organizationType );
 				return physioDOM.Directory();
 			})
 			.then(function(directory) {
@@ -603,7 +614,7 @@ function IPage() {
 			.then( function( beneficiary ) {
 				moment.locale(req.cookies.lang=="en"?"en-gb":req.cookies.lang);
 				data.beneficiary = beneficiary;
-				data.beneficiary.birthdate = moment(data.beneficiary.birthdate).format("L")
+				data.beneficiary.birthdate = moment(data.beneficiary.birthdate).format("L");
 				return beneficiary._id ? beneficiary.getProfessionals() : null;
 			}).then(function(professionals){
 				if( professionals ){
@@ -750,7 +761,7 @@ function IPage() {
 	// -------------- Questionnaires pages ---------------------
 	
 	/**
-	 * Questionnaire
+	 * Questionnaires pages ( admin / coordinator only eyes )
 	 *
 	 * @param req
 	 * @param res
@@ -903,6 +914,58 @@ function IPage() {
 			});
 	};
 
+
+	/**
+	 * Questionnaire Preview
+	 * 
+	 * The questionnaire preview is shown only to admin and coordinators when editing a questionnaire
+	 *
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	this.questionnairePreview = function(req, res, next) {
+		logger.trace("questionnairePreview");
+		var html;
+
+		init(req);
+
+		var referer = URL.parse(req.headers.referer).pathname;
+		var admin = ['coordinator', 'administrator'].indexOf(req.session.role) !== -1 ? true : false;
+		var data = {
+			admin: admin,
+			rights: { read: admin, write:admin, url:referer },
+			preview: true
+		};
+
+		physioDOM.Questionnaires()
+			.then(function(questionnaires){
+				return questionnaires.getQuestionnaireByName(req.params.questionnaireName);
+			})
+			.then( function(questionnaire) {
+				data.questionnaire = questionnaire;
+				data.lang = lang;
+				//logger.debug("DATA", data);
+				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/questionnaireOverview.htm', data, function (err, output) {
+					if (err) {
+						console.log("error", err);
+						console.log("output", output);
+						res.write(err);
+						res.end();
+						next();
+					} else {
+						sendPage(output, res, next);
+					}
+				});
+			})
+			.catch( function(err) {
+				logger.error(err);
+				res.write(err);
+				res.end();
+				next();
+			});
+	};
+	
 	/**
 	 * Questionnaire answers page.
 	 * 
@@ -1096,7 +1159,6 @@ function IPage() {
 					return beneficiary.getProfessionals(jobFilter);
 				})
 				.then(function(professionals) {
-					console.log(professionals);
 					data.professionals = professionals;
 					data.view = 'create';
 					data.lang = lang;
@@ -1262,7 +1324,6 @@ function IPage() {
 				})
 				.then(function(result) {
 					data.session = result.session;
-					console.log(data.session);
 					return result.beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
 				})
 				.then(function (beneficiary) {
@@ -1413,7 +1474,7 @@ function IPage() {
 		logger.trace('currentHealthStatus', name);
 
 		init(req);
-		console.log( req.url )
+		
 		var data = {
 			admin: ['coordinator', 'administrator'].indexOf(req.session.role) !== -1 ? true : false,
 			rights: { read:false, write:false, url: req.url }
@@ -1704,7 +1765,8 @@ function IPage() {
 		init(req);
 		var data = {
 			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false,
-			rights: { read:false, write:false, url: '/agenda' }
+			rights: { read:false, write:false, url: '/agenda' },
+			lang : lang
 		};
 
 		new Menu().rights( req.session.role, data.rights.url )
@@ -1872,7 +1934,7 @@ function IPage() {
 
 		res.write(html);
 		res.end();
-		next();
+		next(false);
 	}
 }
 

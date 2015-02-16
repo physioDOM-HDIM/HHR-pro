@@ -14,6 +14,7 @@ var RSVP = require("rsvp"),
 	messageSchema = require("./../schema/messageSchema"),
 	moment = require("moment");
 
+var Queue = require("./queue.js");
 var logger = new Logger("Messages");
 
 /**
@@ -23,7 +24,7 @@ var logger = new Logger("Messages");
  */
 function Messages( beneficiaryID ) {
 	this.subject = beneficiaryID;
-
+	console.log( "Messages", beneficiaryID );
 	/**
 	 * Create a new messages
 	 *
@@ -51,7 +52,55 @@ function Messages( beneficiaryID ) {
 					that.status = "transmitting";
 					return that.save();
 				})
-				.then(resolve)
+				.then(function( message ) {
+					physioDOM.Directory()
+						.then( function( Directory) {
+							return Directory.getEntryByID( message.author.toString() );
+						})
+						.then( function( author ) {
+							var name = "hhr['" + that.subject + "'].message['" + message._id + "']";
+							var msg = [];
+							msg.push({
+								name : name + ".datetime",
+								value: moment(message.datetime).unix(),
+								type : "integer"
+							});
+							msg.push({
+								name : name + ".senderLastName",
+								value: author.name.family,
+								type : "string"
+							});
+							msg.push({
+								name : name + ".senderFirstName",
+								value: author.name.given,
+								type : "string"
+							});
+							msg.push({
+								name : name + ".title",
+								value: message.title,
+								type : "string"
+							});
+							msg.push({
+								name : name + ".contents",
+								value: message.content,
+								type : "string"
+							});
+							msg.push({
+								name : name + ".new",
+								value: 1,
+								type : "integer"
+							});
+							var queue = new Queue(that.subject);
+							queue.postMsg(msg)
+								.then(function () {
+									resolve(message);
+								});
+						})
+						.catch( function(err) {
+							logger.error(err);
+							resolve(message);
+						});
+				})
 				.catch(reject);
 		});
 	};
@@ -77,18 +126,16 @@ function Messages( beneficiaryID ) {
 					if( ["administrator","coordinator"].indexOf(session.role) !== -1) {
 						physioDOM.Beneficiaries()
 							.then(function (beneficiaries) {
-								console.log( "beneficiary ", that.subject );
 								return beneficiaries.getBeneficiaryByID( session, that.subject.toString() );
 							})
 							.then( function(beneficiary) {
 								return beneficiary.hasProfessional( new ObjectID(msg.author));
 							})
 							.then( function( hasProfessional ) {
-								console.log("professionals", hasProfessional );
 								if( hasProfessional ) {
 									resolve(msg);
 								} else {
-									reject({code:403, message:"you can't post a message with this author"} )
+									reject({code:403, message:"you can't post a message with this author"} );
 								}
 								
 							})
@@ -143,12 +190,10 @@ function Messages( beneficiaryID ) {
 			var search = { subject: that.subject };
 			
 			if(filter) {
-				console.log("filter", filter);
 				try {
 					var tmp  = JSON.parse(filter);
 					for( var prop in tmp) {
 						if(tmp.hasOwnProperty(prop)) {
-							console.log("prop",prop);
 							switch(prop) {
 								case "sender":
 									search.author = new ObjectID(tmp.sender);
@@ -212,6 +257,120 @@ function Messages( beneficiaryID ) {
 				});
 		});
 	};
+
+	this.getByID = function( msgID ) {
+		logger.trace("getByID", msgID );
+		return new promise( function(resolve, reject) {
+			physioDOM.db.collection("messages").findOne( { '_id': msgID }, function(err, result) {
+				if(err) {
+					logger.emergency("Database error");
+					throw err;
+				}
+				if( result ) {
+					resolve( result );
+				} else {
+					reject( { code:404, message:"message not found"} );
+				}
+			});
+		});
+	};
+	
+	/**
+	 * update the status of a message given by its msgID
+	 * 
+	 * @param msgID
+	 * @returns {$$rsvp$promise$$default|RSVP.Promise|*}
+	 */
+	this.updateStatus = function( msgID ) {
+		logger.trace("updateStatus", msgID );
+		var that = this;
+		return new promise( function(resolve, reject) {
+			that.getByID( msgID)
+				.then( function( message ) {
+					message.status = "read";
+					physioDOM.db.collection("messages").save( message, function(err, res ) {
+						if(err) {
+							logger.emergency("Database error");
+							throw err;
+						}
+						resolve( message );
+					});
+				})
+				.catch( reject );
+		});
+	};
+	
+	this.pushMessage = function( message ) {
+		var that = this;
+		
+		return new promise( function( resolve, reject) {
+			physioDOM.Directory()
+				.then(function (Directory) {
+					return Directory.getEntryByID(message.author.toString());
+				})
+				.then(function (author) {
+					var name = "hhr['" + that.subject + "'].message['" + message._id + "']";
+					var msg = [];
+					msg.push({
+						name: name + ".datetime",
+						value: moment(message.datetime).unix(),
+						type: "integer"
+					});
+					msg.push({
+						name: name + ".senderLastName",
+						value: author.name.family,
+						type: "string"
+					});
+					msg.push({
+						name: name + ".senderFirstName",
+						value: author.name.given,
+						type: "string"
+					});
+					msg.push({
+						name: name + ".title",
+						value: message.title,
+						type: "string"
+					});
+					msg.push({
+						name: name + ".contents",
+						value: message.content,
+						type: "string"
+					});
+					msg.push({
+						name: name + ".new",
+						value: 1,
+						type: "integer"
+					});
+					var queue = new Queue(that.subject);
+					queue.postMsg(msg)
+						.then(function () {
+							resolve(msg);
+						});
+				});
+		});
+	};
+	
+	this.pushMessages = function() {
+		var that = this;
+		
+		return new promise( function(resolve, reject) {
+			var search = {subject: that.subject};
+			var cursor = physioDOM.db.collection("messages").find(search);
+			var cursorSort = {datetime: -1};
+			cursor = cursor.sort(cursorSort);
+			dbPromise.getArray(cursor)
+				.then( function( messages ) {
+					var promises = messages.map( function( message ) {
+						return that.pushMessage( message );
+					});
+					return RSVP.all(promises)
+				})
+				.then( function( results ) {
+					console.log( results );
+					resolve(results);
+				});
+		});
+	}
 }
 
 module.exports = Messages;

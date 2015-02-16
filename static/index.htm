@@ -9,12 +9,12 @@
 	<meta name="apple-touch-fullscreen" content="yes">
 	<meta name="mobile-web-app-capable" content="yes">
 
-	<link rel="shortcut icon" sizes="196x196" href="img/physiodom_favico.png">
-	<link rel="icon" href="img/physiodom_favico.png">
-	<link rel="apple-touch-icon" href="img/physiodom_favico.png">
+	<link rel="shortcut icon" sizes="196x196" href="/img/physiodom_favico.png">
+	<link rel="icon" href="/img/physiodom_favico.png">
+	<link rel="apple-touch-icon" href="/img/physiodom_favico.png">
 	
-	<link rel="stylesheet" href="styles/ui.css">
-	<link rel="stylesheet" type="text/css" href="styles/login.css">
+	<link rel="stylesheet" href="/styles/ui.css">
+	<link rel="stylesheet" type="text/css" href="/styles/login.css">
 	
 	<script>
 		if(window.location !== window.parent.location ) {
@@ -25,12 +25,12 @@
 	
 	<style>
 		body { background: aliceblue; }
-		
 	</style>
+	
 </head>
 <body>
 	<div style="text-align: center; margin-top:50px">
-		<img src="img/physiodom_logo.png" id="logo" style="height:150px;">
+		<img src="/img/physiodom_logo.png" id="logo" style="height:150px;">
 	</div>
 	<div class="error">{{"Bad login or password"|i18n}}</div>
 	<div class="container" style="width:300px; background:#d6d6d6; margin-top:25px">
@@ -46,6 +46,12 @@
 		<div class="row">
 			<button class="blue" style="flex:1" onclick="login()" >{{"Sign in"|i18n}}</button>
 		</div>
+		<div class="row">&nbsp;</div>
+	</div>
+	<div class="container" style="width:300px; background:#d6d6d6; margin-top:25px">
+		<div class="row">&nbsp;</div>
+		<div class="row">version : {{version}}</div>
+		<div class="row">Default language: {{lang}}</div>
 		<div class="row">&nbsp;</div>
 	</div>
 	<script>
