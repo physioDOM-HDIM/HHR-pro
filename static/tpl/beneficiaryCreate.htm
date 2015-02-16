@@ -154,7 +154,7 @@
 		<div class="row">
 			<div class="col">
 				<label class="mandatory">{{ "Height"|i18n}} ({{"centimeters"|i18n }})</label>
-				<input type="text" name="size" value="{{beneficiary.size * 100}}" required/>
+				<input type="number" min="100" max="250" step="1" name="size" value="{{beneficiary.size * 100}}" required/>
 			</div>
 			<div class="col">
 				<label>{{ "Social ID"|i18n }}</label>
