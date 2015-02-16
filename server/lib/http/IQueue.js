@@ -63,6 +63,31 @@ var IQueue = {
 		}
 	},
 	
+	messages: function( req, res, next) {
+		logger.trace("messages");
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				return beneficiaries.getHHR( req.session.beneficiary );
+			})
+			.then(function (beneficiary) {
+				if (beneficiary.biomasterStatus) {
+					return beneficiary.pushMessages();
+				} else {
+					return false;
+				}
+			})
+			.then(function( result ) {
+				logger.debug("end sending messages");
+				if( result ) {
+					res.send(result);
+				} else {
+					res.send({ code:200, message:"biomaster not initialized"});
+				}
+				next();
+			});
+	},
+	
 	history: function( req, res, next ) {
 		logger.trace("history");
 		

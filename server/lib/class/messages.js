@@ -299,6 +299,78 @@ function Messages( beneficiaryID ) {
 				.catch( reject );
 		});
 	};
+	
+	this.pushMessage = function( message ) {
+		var that = this;
+		
+		return new promise( function( resolve, reject) {
+			physioDOM.Directory()
+				.then(function (Directory) {
+					return Directory.getEntryByID(message.author.toString());
+				})
+				.then(function (author) {
+					var name = "hhr['" + that.subject + "'].message['" + message._id + "']";
+					var msg = [];
+					msg.push({
+						name: name + ".datetime",
+						value: moment(message.datetime).unix(),
+						type: "integer"
+					});
+					msg.push({
+						name: name + ".senderLastName",
+						value: author.name.family,
+						type: "string"
+					});
+					msg.push({
+						name: name + ".senderFirstName",
+						value: author.name.given,
+						type: "string"
+					});
+					msg.push({
+						name: name + ".title",
+						value: message.title,
+						type: "string"
+					});
+					msg.push({
+						name: name + ".contents",
+						value: message.content,
+						type: "string"
+					});
+					msg.push({
+						name: name + ".new",
+						value: 1,
+						type: "integer"
+					});
+					var queue = new Queue(that.subject);
+					queue.postMsg(msg)
+						.then(function () {
+							resolve(msg);
+						});
+				});
+		});
+	};
+	
+	this.pushMessages = function() {
+		var that = this;
+		
+		return new promise( function(resolve, reject) {
+			var search = {subject: that.subject};
+			var cursor = physioDOM.db.collection("messages").find(search);
+			var cursorSort = {datetime: -1};
+			cursor = cursor.sort(cursorSort);
+			dbPromise.getArray(cursor)
+				.then( function( messages ) {
+					var promises = messages.map( function( message ) {
+						return that.pushMessage( message );
+					});
+					return RSVP.all(promises)
+				})
+				.then( function( results ) {
+					console.log( results );
+					resolve(results);
+				});
+		});
+	}
 }
 
 module.exports = Messages;

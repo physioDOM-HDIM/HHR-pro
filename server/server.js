@@ -411,6 +411,7 @@ server.get( '/api/logout', logout);
 //              Queue messages
 server.get( '/api/queue/init', IQueue.init );
 server.post('/api/queue/status', IQueue.status );
+server.get( '/api/queue/messages', IQueue.messages);
 server.get( '/api/queue/history', IQueue.history);
 server.get( '/api/queue/history/:category', IQueue.history);
 server.get( '/api/queue/dhdffq', IQueue.dhdffq);
