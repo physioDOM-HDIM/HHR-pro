@@ -1685,7 +1685,6 @@ function IPage() {
 				data.beneficiary = beneficiary;
 				data.lang = lang;
 				data.title = 'Questionnaires';
-				// jsut for test, otherwise read locale from session
 
 				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/prescriptionQuestionnaire.htm', data, function(err, output) {
 					if (err) {

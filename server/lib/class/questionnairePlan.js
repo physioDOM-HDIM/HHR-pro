@@ -58,15 +58,13 @@ function QuestionnairePlan( beneficiaryID ) {
 					});
 					RSVP.all(promises)
 						.then(function ( programmings ) {
-							logger.debug( programmings );
-							/*
 							var result = [];
-							programmings.forEach( 
-								function( questProg ) {
-									result.push(questProg);
-								});
-							*/
-							resolve(programmings);
+							// remove null value from the list
+							programmings.forEach( function( questProg ) {
+								if(questProg) { result.push(questProg); }
+							});
+							
+							resolve(result);
 						});
 				});
 		});
