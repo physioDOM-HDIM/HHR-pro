@@ -99,7 +99,6 @@ function physicalPlan(beneficiaryID) {
 					.then( function(msg) {
 						resolve(that);
 					});
-				resolve(that);
 			});
 		});
 	};

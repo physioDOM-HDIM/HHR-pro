@@ -2076,7 +2076,7 @@ function Beneficiary( ) {
 		logger.trace("pushPhysicalPlanToQueue");
 
 		var queue = new Queue(this._id);
-		var name = "hhr['" + this._id + "']";
+		var name = "hhr['" + this._id + "'].physical";
 
 		return new promise(function (resolve, reject) {
 			/*
@@ -2087,7 +2087,7 @@ function Beneficiary( ) {
 			var msg = [];
 			if( newFlag ) {
 				msg.push({
-					name : leaf + ".new",
+					name : name + ".new",
 					value: 1,
 					type : "Integer"
 				});
