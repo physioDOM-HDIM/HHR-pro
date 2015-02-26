@@ -50,7 +50,7 @@
 					<select name="source" id="provider">
 					<option value=""></option>
 							{% for item in professionals %}
-							<option value="{{item._id.toString()}}" >{{item.name.given}} {{item.name.family}}</option>
+							<option value="{{item._id.toString()}}" >{{item.name.family}} {{item.name.given}}</option>
 							{% endfor %}
 						</select>
 				</div>
@@ -105,7 +105,7 @@
 							{{ "From Home" |i18n}}
 						</div>
 						<div class="{% raw %}{{item.home? 'hide':'show'}}{% endraw %}">
-							{{ "Consultation" |i18n}}
+							{{ "From consultation" |i18n}}
 						</div>
 					</div>
 					<div class="col">{% raw %}{{item.source.name.family}} {{item.source.name.given}}{% endraw %}</div>

@@ -23,8 +23,7 @@
 	<zdk-panel heading="{{ 'Distance travelled' | i18n }}">
 		<form name="form" id="form" autocomplete="off" onsubmit="checkForm(); return false;">
 			<div class="row value-row">
-				<div class="value-name">{{'Number of steps (optional)'|i18n}}</div>
-				<input type="checkbox" name="stepsCheck" class="value-checkbox" {% if status.stepsCheck %}checked{% endif %} {% if status.validated %}disabled{% endif %} />
+				<div class="value-name">{{'Number of steps'|i18n}}</div>
 				<input type="number" step="1" min="0" name="stepsNumber" class="value-input" value="{{status.stepsNumber}}" {% if status.validated %}disabled{% endif %} />
 				<div class="value-unit">{{'steps per week'|i18n}}</div>
 			</div>

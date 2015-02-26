@@ -1,3 +1,18 @@
+__v0.0.11__
+
+  - update queue service
+  - Fix Bug #241
+  - Fix english (uk) date format
+  - Fix Bug #212
+  - Fix Bug #243
+  - Fix Bug #239
+  - Fix message title max length to 100 characters
+  - Fix Bug #131
+  - Fix Bug #235
+  - Fix Bug #228, #234
+  - Change label "Consultartion from" to "Consultation"
+  - Fix Bug #60
+
 __v0.0.10__
 
 Push to queue

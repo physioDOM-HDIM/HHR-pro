@@ -80,7 +80,7 @@ function IPage() {
 	}
 
 	function convertDate(strDate) {
-		return strDate ? moment(strDate, "YYYY-MM-DD").format(moment.localeData(lang).longDateFormat("L")) : strDate;
+		return strDate ? moment(strDate, "YYYY-MM-DD").format(moment.localeData(lang==="en"?"en-gb":lang).longDateFormat("L")) : strDate;
 	}
 
 	function promiseList(listName) {
@@ -612,7 +612,7 @@ function IPage() {
 				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
 			})
 			.then( function( beneficiary ) {
-				moment.locale(req.cookies.lang=="en"?"en-gb":req.cookies.lang);
+				moment.locale(req.cookies.lang==="en"?"en-gb":req.cookies.lang);
 				data.beneficiary = beneficiary;
 				data.beneficiary.birthdate = moment(data.beneficiary.birthdate).format("L");
 				return beneficiary._id ? beneficiary.getProfessionals() : null;
@@ -1162,7 +1162,10 @@ function IPage() {
 					data.professionals = professionals;
 					data.view = 'create';
 					data.lang = lang;
-					// jsut for test, otherwise read locale from session
+					data.source = {
+						name : req.session.person.item.name,
+						_id : req.session.person.id
+					};
 
 					html = swig.renderFile(DOCUMENTROOT + '/static/tpl/dataRecordEdit.htm', data, function (err, output) {
 						if (err) {
@@ -1682,7 +1685,6 @@ function IPage() {
 				data.beneficiary = beneficiary;
 				data.lang = lang;
 				data.title = 'Questionnaires';
-				// jsut for test, otherwise read locale from session
 
 				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/prescriptionQuestionnaire.htm', data, function(err, output) {
 					if (err) {

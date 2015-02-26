@@ -4,6 +4,7 @@
 
 {% block head %}
 {% parent %}
+<link rel="import" href="/bower_components/paper-dialog/paper-action-dialog.html">
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
 <script src="/tpl/beneficiaryOverview.js"></script>
 {% endblock %}
@@ -78,7 +79,7 @@
 			<label>{{ "Birth date"|i18n }} :</label><div>{{beneficiary.birthdate}}</div>
 		</div>
 		<div class="row">
-			<label>{{ "Size"|i18n }} :</label><div>{{(beneficiary.size+"").replace('.','')}}{{ "cm"|i18n }}</div>
+			<label>{{ "Height"|i18n }} :</label><div>{{(beneficiary.size+"").replace('.','')}}{{ "cm"|i18n }}</div>
 		</div>
 		<div class="row">
 			<label>{{ "Social id"|i18n }} : </label><div>{{beneficiary.socialID}}</div>
@@ -113,10 +114,10 @@
 		</div>
 		{% if rights.write %}
 		<div class="row control">
-						<button class="red small" onclick="initQueue();">{{ "Init"|i18n }}</button>&nbsp;
-						{% if beneficiary.biomasterStatus %}
-							( initialized )
-			      {% endif %}
+			{% if beneficiary.biomaster %}
+			<button class="red small" onclick="initQueue();">{{ "Init"|i18n }}</button>&nbsp;
+			{% if beneficiary.biomasterStatus %}( initialized ){% endif %}
+			{% endif %}
             <span class="spacer"></span>
             <a href="/beneficiary/update"><button class="green small">{{ "Edit"|i18n }}</button></a>
         </div>
@@ -273,6 +274,14 @@
 	{% endif %}
 	</div>
 </zdk-panel>
+
+<paper-action-dialog id="initDlg" heading="{{'Box initialization'|i18n}}" backdrop >
+	<p>The initialization of the box will reset all datas for the beneficiary. </p>
+	
+	<button affirmative style="border-radius: 2px;height: 30px;min-width: 100px;font-size: inherit;font-family: inherit;margin-left: 5px;border: none;box-sizing: border-box;">Decline</button>
+	<button affirmative style="border-radius: 2px;height: 30px;min-width: 100px;font-size: inherit;font-family: inherit;margin-left: 5px;border: none;box-sizing: border-box;" class="blue">Accept</button>
+</paper-action-dialog>
+
 <script>
 	parent.document.querySelector("#beneficiary a").innerHTML = '{{ beneficiary.name.family }} {{ beneficiary.name.given }}';
 	parent.highlight("/beneficiary/overview");

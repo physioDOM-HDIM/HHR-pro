@@ -253,7 +253,20 @@ function Queue ( beneficiaryID ) {
 		};
 		return this.send(msg);
 	};
-	
+
+	/**
+	 * Receive messages from the queue
+	 * 
+	 * there is 3 types of messages received from the queue
+	 *   - messages read status
+	 *   - statement of symptom assessment
+	 *   - statement of the measured parameters
+	 * 
+	 * statements create new beneficiary data record marked "From Home"
+	 * 
+	 * @param msg
+	 * @returns {*|RSVP.Promise}
+	 */
 	this.receivedMessages = function( msg ) {
 		logger.trace("receivedMessages");
 		console.log(msg);
@@ -266,6 +279,7 @@ function Queue ( beneficiaryID ) {
 				})
 				.then( function( beneficiary ) {
 					// console.log( beneficiary );
+					var newDataRecord = { home:true, items: [] };
 					switch( msg.type ) {
 						case "messageRead":
 							var Messages = require('./messages.js');
@@ -276,7 +290,6 @@ function Queue ( beneficiaryID ) {
 							break;
 						case "symptomsSelf":
 						case "symptoms":
-							var newDataRecord = { items: [] };
 							msg.message.scales.forEach( function( item ) {
 								newDataRecord.items.push( {
 									"text":item.id,
@@ -305,7 +318,6 @@ function Queue ( beneficiaryID ) {
 								});;
 							break;
 						case "measures":
-							var newDataRecord = { items: [] };
 							physioDOM.Lists.getListItemsObj("parameters")
 								.then( function( listItems) {
 									msg.message.params.forEach(function (item) {

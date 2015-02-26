@@ -28,7 +28,7 @@
 	<div class="row spaced-down">
 		<div class="col">
 			<label for="title">{{'Title'|i18n}} : </label>
-			<input type="text" id="title" name="title">
+			<input type="text" id="title" name="title" maxlength="100">
 		</div>
 		{% if session.role === 'coordinator' %}
 		<div class="col flex-right">

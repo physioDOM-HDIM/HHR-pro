@@ -108,11 +108,13 @@ function Beneficiaries( ) {
 			} else {
 				if (newBeneficiary) {
 					var entry = new Beneficiary();
-					return entry.setup(newBeneficiary)
+					entry.setup(newBeneficiary)
 						.then( function() {
 							entry.createEvent("Beneficiary","create");
 						})
-						.then(resolve)
+						.then( function() {
+							resolve(entry);
+						})
 						.catch(function (err) {
 							logger.alert("error ", err);
 							console.log(err);
