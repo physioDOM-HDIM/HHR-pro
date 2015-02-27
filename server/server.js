@@ -98,8 +98,6 @@ function responseLog(req, res) {
 }
 
 var physioDOM = new PhysioDOM( config );   // PhysioDOM object is global and so shared to all modules
-// @todo move database uri to a config file
-physioDOM.connect("mongodb://127.0.0.1/physioDOM");
 global.physioDOM = physioDOM;
 
 var server = restify.createServer({
@@ -488,10 +486,18 @@ server.get(/\/[^api|components\/]?$/, function(req, res, next) {
 
 server.get(/\/[^api\/]?.*/, serveStatic );
 
-server.listen(config.port, "127.0.0.1", function() {
-	logger.info('------------------------------------------------------------------');
-	logger.info(server.name + ' listening at '+ server.url);
-});
+// starts the server but before ensures that the db is open
+physioDOM.connect()
+	.then( function() {
+		server.listen(config.port, "127.0.0.1", function () {
+			logger.info('------------------------------------------------------------------');
+			logger.info(server.name + ' listening at ' + server.url);
+		});
+	})
+	.catch(function() {
+		logger.emergency("connection to database failed");
+		process.exit(1);
+	});
 
 function logout(req, res, next ) {
 	var cookies = new Cookies(req, res);
