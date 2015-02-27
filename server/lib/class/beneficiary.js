@@ -856,7 +856,7 @@ function Beneficiary( ) {
 							unitsData = {};
 
 						for (var i = 0; i < lists.length; i++) {
-							for (var y in lists[i].items) {
+							for (var y in lists[i].items) { // jshint ignore:line
 								var ref = lists[i].items[y].ref;
 
 								labels[ref] = lists[i].items[y].label[lang];
@@ -981,7 +981,7 @@ function Beneficiary( ) {
 							precisions = {};
 
 						for (var i = 0; i < lists.length; i++) {
-							for (var y in lists[i].items) {
+							for (var y in lists[i].items) { // jshint ignore:line
 								var ref = lists[i].items[y].ref;
 
 								labels[ref] = lists[i].items[y].label[lang];
@@ -1360,9 +1360,6 @@ function Beneficiary( ) {
 		var endDate = moment().add(14,'d');
 		var dataProg = new DataProg( this._id );
 		var msgs = [];
-		var that = this;
-		
-		// ["General","HDIM"].map
 		
 		return new promise( function(resolve, reject) {
 			var promises = ["General","HDIM"].map(function (category) {
@@ -1409,7 +1406,7 @@ function Beneficiary( ) {
 											if (firstDay.unix() < endDate.unix() && firstDay.unix() >= today.unix()) {
 												msgs.push({ref: prog.ref, date: firstDay.unix()});
 											}
-										});
+										}); // jshint ignore:line
 										nextDate.add(prog.repeat, 'w');
 									} while (nextDate.unix() < endDate.unix());
 
@@ -1441,17 +1438,17 @@ function Beneficiary( ) {
 								break;
 						}
 					});
-					var results = {};
+					var agenda = {};
 					msgs.forEach(function (msg) {
-						if (results[msg.date]) {
-							results[msg.date].measure.push(msg.ref);
+						if (agenda[msg.date]) {
+							agenda[msg.date].measure.push(msg.ref);
 						} else {
-							results[msg.date] = { datetime:msg.date, measure: [msg.ref] };
+							agenda[msg.date] = { datetime:msg.date, measure: [msg.ref] };
 						}
 					});
 					var measures = [];
-					for( var measure in results ) {
-						measures.push( results[measure] );
+					for( var measure in agenda ) { // jshint ignore:line
+						measures.push( agenda[measure] );
 					}
 					
 					var units;
@@ -1487,7 +1484,6 @@ function Beneficiary( ) {
 		
 		var queue = new Queue(this._id);
 		var leaf = "hhr[" + this._id + "].symptomsSelf.scale['"+symptomSelf.ref+"']";
-		var that = this;
 		
 		return new promise( function(resolve, reject) {
 			var msg = [];
@@ -1526,7 +1522,6 @@ function Beneficiary( ) {
 		var symptoms = new Symptoms( this );
 		
 		return new promise( function(resolve,reject) {
-			var msg = [];
 			queue.delMsg([ { branch : name} ])
 				.then(function () {
 					logger.trace("symptomsSelf cleared");
@@ -1539,12 +1534,11 @@ function Beneficiary( ) {
 					});
 					RSVP.all(promises)
 						.then(function (results) {
-							console.log("fini");
 							resolve(results);
 						});
 				});
 		});
-	}
+	};
 
 	function pushSymptom( queue, leaf, symptoms, measures ) {
 		logger.trace("pushSymptom");
@@ -1640,7 +1634,7 @@ function Beneficiary( ) {
 											if (firstDay.unix() < endDate.unix() && firstDay.unix() >= today.unix()) {
 												msgs.push({ref: prog.ref, date: firstDay.unix()});
 											}
-										});
+										}); // jshint ignore:line
 										nextDate.add(prog.repeat, 'w');
 									} while (nextDate.unix() < endDate.unix());
 
@@ -1729,7 +1723,7 @@ function Beneficiary( ) {
 							name: leaf + ".new",
 							value: newFlag ? 1 : 0,
 							type: "Integer"
-						})
+						});
 						for (var i = 0, l = quest.history.length; i < l; i++) {
 							msg.push({
 								name: leaf + ".values[" + i + "].datetime",
@@ -1746,7 +1740,7 @@ function Beneficiary( ) {
 							.then(function () {
 								resolve(msg);
 							});
-					})
+					});
 			} else {
 				resolve(msg);
 			}
@@ -1866,7 +1860,7 @@ function Beneficiary( ) {
 			var msgs = [];
 			that.getHistoryDataList()
 				.then(function (history) {
-					var promises = history["questionnaire"].map(function (quest) {
+					var promises = history.questionnaire.map(function (quest) {
 						return pushQuestionnaire(queue, name, quest);
 					});
 					RSVP.all(promises)
@@ -1876,7 +1870,7 @@ function Beneficiary( ) {
 						});
 				});
 		});
-	}
+	};
 
 	this.pushHistoryMeasures = function( history, queue, leaf ) {
 		return new promise( function( resolve, reject) {
@@ -1933,7 +1927,7 @@ function Beneficiary( ) {
 		return new promise( function( resolve, reject) {
 			var msgs = [];
 
-			var promises = history["questionnaire"].map(function (param) {
+			var promises = history.questionnaire.map(function (param) {
 				return pushQuestionnaire(queue, leaf, param);
 			});
 			RSVP.all(promises)
@@ -2142,7 +2136,6 @@ function Beneficiary( ) {
 	this.pushDietaryPlanToQueue = function( dietaryPlan, newFlag ) {
 		logger.trace("pushDietaryPlanToQueue");
 		logger.debug(dietaryPlan);
-		var that = this;
 
 		var queue = new Queue(this._id);
 		var name = "hhr[" + this._id + "].dietary";
@@ -2177,7 +2170,7 @@ function Beneficiary( ) {
 					resolve(msg);
 				});
 		});
-	}
+	};
 
 	/**
 	 * Push the whole dietary plan to the queue
@@ -2222,8 +2215,6 @@ function Beneficiary( ) {
 	};
 	
 	this.pushMessages = function() {
-		var that = this;
-
 		var messages = new Messages(this._id);
 		return messages.pushMessages();
 	};
