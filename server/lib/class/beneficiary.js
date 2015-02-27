@@ -1486,7 +1486,7 @@ function Beneficiary( ) {
 		logger.trace("pushSymptomsSelfToQueue");
 		
 		var queue = new Queue(this._id);
-		var leaf = "hhr['" + this._id + "'].symptomsSelf.scale['"+symptomSelf.ref+"']";
+		var leaf = "hhr[" + this._id + "].symptomsSelf.scale['"+symptomSelf.ref+"']";
 		var that = this;
 		
 		return new promise( function(resolve, reject) {
@@ -1519,7 +1519,7 @@ function Beneficiary( ) {
 	 */
 	this.symptomsSelfToQueue = function( ) {
 		var queue = new Queue(this._id);
-		var name = "hhr['" + this._id + "'].symptomsSelf";
+		var name = "hhr[" + this._id + "].symptomsSelf";
 		var that = this;
 		logger.trace("symptomsSelfToQueue");
 		
@@ -1565,7 +1565,7 @@ function Beneficiary( ) {
 			measures.measure.forEach( function( measure ) {
 				if( symptoms[measure].rank ) {
 					hasMeasure = true;
-					var name = leaf + "scale['"+symptoms[measure].ref+"']";
+					var name = leaf + "scale["+symptoms[measure].ref+"]";
 					msg.push({
 						name : name + ".label",
 						value: symptoms[measure].label[physioDOM.lang],
@@ -1765,7 +1765,7 @@ function Beneficiary( ) {
 			 */
 			var msg = [];
 			if (param.rank) {
-				var leaf = name + ".measuresHistory.params['" + param.text + "']";
+				var leaf = name + ".measuresHistory.params[" + param.text + "]";
 
 				msg.push({
 					name : leaf + ".label",
@@ -1819,7 +1819,7 @@ function Beneficiary( ) {
 			 */
 			var msg = [];
 			if (symptom.rank) {
-				var leaf = name + ".symptomsHistory.scales['" + symptom.text + "']";
+				var leaf = name + ".symptomsHistory.scales[" + symptom.text + "]";
 
 				msg.push({
 					name : leaf + ".label",
@@ -1860,14 +1860,14 @@ function Beneficiary( ) {
 		var that = this;
 
 		var queue = new Queue(this._id);
-		var name = "hhr['" + this._id + "']";
+		var name = "hhr[" + this._id + "]";
 
 		return new promise(function (resolve, reject) {
 			var msgs = [];
 			that.getHistoryDataList()
 				.then(function (history) {
 					var promises = history["questionnaire"].map(function (quest) {
-						return pushQuestionnaire(queue, quest);
+						return pushQuestionnaire(queue, name, quest);
 					});
 					RSVP.all(promises)
 						.then(function (results) {
@@ -1916,7 +1916,7 @@ function Beneficiary( ) {
 			queue.delMsg([ { branch : leaf + ".symptomsHistory"} ])
 				.then(function () {
 					logger.trace("symptoms history cleared");
-					var promises = history["symptom"].map(function (param) {
+					var promises = history.symptom.map(function (param) {
 						return pushSymptomsHistory(queue, leaf, param);
 					});
 					return RSVP.all(promises);
@@ -1953,7 +1953,7 @@ function Beneficiary( ) {
 		var that = this;
 		
 		var queue = new Queue(this._id);
-		var name = "hhr['" + this._id + "']";
+		var name = "hhr[" + this._id + "]";
 		
 		console.log( "category ", category);
 		return new promise(function (resolve, reject) {
@@ -1977,11 +1977,11 @@ function Beneficiary( ) {
 							that.pushHistoryMeasures( history, queue, name )
 								.then( function( results ) {
 									msgs = msgs.concat(results);
-									return that.pushHistorySymptoms( history, queue, name )
+									return that.pushHistorySymptoms( history, queue, name );
 								})
 								.then( function( results ) {
 									msgs = msgs.concat(results);
-									return that.pushHistoryQuestionnaires( history, queue, name )
+									return that.pushHistoryQuestionnaires( history, queue, name );
 								})
 								.then( function( results ) {
 									msgs = msgs.concat(results);
@@ -2076,7 +2076,7 @@ function Beneficiary( ) {
 		logger.trace("pushPhysicalPlanToQueue");
 
 		var queue = new Queue(this._id);
-		var name = "hhr['" + this._id + "'].physical";
+		var name = "hhr[" + this._id + "].physical";
 
 		return new promise(function (resolve, reject) {
 			/*
@@ -2093,12 +2093,12 @@ function Beneficiary( ) {
 				});
 			}
 			msg.push({
-				name : name + ".history['"+physicalPlan._id+"'].datetime",
+				name : name + ".history["+physicalPlan._id+"].datetime",
 				value: moment(physicalPlan.datetime).unix(),
 				type : "Integer"
 			});
 			msg.push({
-				name : name + ".history['"+physicalPlan._id+"'].description",
+				name : name + ".history["+physicalPlan._id+"].description",
 				value: physicalPlan.content,
 				type : "String"
 			});
@@ -2145,7 +2145,7 @@ function Beneficiary( ) {
 		var that = this;
 
 		var queue = new Queue(this._id);
-		var name = "hhr['" + this._id + "'].dietary";
+		var name = "hhr[" + this._id + "].dietary";
 		
 		return new promise(function (resolve, reject) {
 			/*
@@ -2162,12 +2162,12 @@ function Beneficiary( ) {
 				});
 			}
 			msg.push({
-				name : name + ".recommendations.history['"+dietaryPlan._id+"'].datetime",
+				name : name + ".recommendations.history["+dietaryPlan._id+"].datetime",
 				value: moment(dietaryPlan.datetime).unix(),
 				type : "Integer"
 			});
 			msg.push({
-				name : name + ".recommendations.history['"+dietaryPlan._id+"'].description",
+				name : name + ".recommendations.history["+dietaryPlan._id+"].description",
 				value: dietaryPlan.content,
 				type : "String"
 			});
@@ -2206,7 +2206,7 @@ function Beneficiary( ) {
 		var that = this;
 
 		var queue = new Queue(this._id);
-		var name = "hhr['" + this._id + "'].firstName";
+		var name = "hhr[" + this._id + "].firstName";
 		return new promise(function (resolve, reject) {
 			var msg = [];
 			msg.push({
