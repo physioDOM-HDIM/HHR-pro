@@ -11,6 +11,7 @@ var promise = require("rsvp").Promise,
 	Logger = require("logger"),
 	ObjectID = require("mongodb").ObjectID,
 	directorySchema = require("./../schema/directorySchema"),
+	soap = require("soap"),
 	md5 = require('MD5');
 
 var logger = new Logger("Professional");
@@ -354,6 +355,61 @@ function Professional() {
 					});
 				})
 				.catch( reject );
+		});
+	};
+	
+	this.createCert = function(requester, sessionids) {
+		var that = this;
+
+		logger.trace("createCert", requester, sessionids );
+		return new promise( function(resolve, reject) {
+			that.getAccount()
+				.then( function(account) {
+					var email;
+					that.telecom.forEach( function( item ) {
+						if( !email && item.system === "email") {
+							email = item.value;
+						}
+					});
+					
+					var certRequest = {
+						certrequest: {
+							Application       : "secureapp21.idshost.fr",
+							Requester         : requester,
+							AuthCookie        : sessionids,
+							OrganizationUnit  : "User",
+							Owner             : "03" + email,
+							Identifier        : account.login,
+							Privilege         : 255,
+							Profile           : 0,
+							Duration          : 365,
+							AuthenticationMask: 8,
+							Number            : 3,
+							Comment           : "Create certificate for " + email
+						}
+					};
+					// resolve( certRequest);
+					logger.debug("certRequest", certRequest);
+					
+					var url = 'http://api.idshost.priv/pki.wsdl';
+					soap.createClient(url, function (err, client) {
+						if (err) {
+							logger.alert("error ", err);
+							throw err;
+					 	}
+					 	logger.debug("certRequest", certRequest);
+
+					 	client.CertRequest(certRequest, function (err, result) {
+							if (err) {
+								console.error(err);
+								throw err;
+							} else {
+								console.log(result);
+								resolve( result );
+							}
+						});
+					});
+				});
 		});
 	};
 }
