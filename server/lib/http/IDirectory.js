@@ -210,6 +210,44 @@ var IDirectory = {
 				res.send(err.code || 400, err );
 				next(false);
 			});
+	},
+
+	createCert: function (req, res, next) {
+		logger.trace("createCert");
+
+		// logger.debug("headers", req.headers);
+		
+		physioDOM.Directory()
+			.then(function (directory) {
+				return directory.getEntryByID(req.params.entryID);
+			})
+			.then(function (professional) {
+				var cookies = new Cookies(req, res);
+				return professional.createCert(req.headers["ids-user"], cookies.get("sessionids") );
+			})
+			.then(function ( certResp ) {
+				res.send( certResp );
+				next(false);
+			});
+	},
+
+	revoqCert: function (req, res, next) {
+		logger.trace("createCert");
+
+		// logger.debug("headers", req.headers);
+
+		physioDOM.Directory()
+			.then(function (directory) {
+				return directory.getEntryByID(req.params.entryID);
+			})
+			.then(function (professional) {
+				var cookies = new Cookies(req, res);
+				return professional.revoqCert(req.headers["ids-user"], cookies.get("sessionids") );
+			})
+			.then(function ( certResp ) {
+				res.send( certResp );
+				next(false);
+			});
 	}
 };
 

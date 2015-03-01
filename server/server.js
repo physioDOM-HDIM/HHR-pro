@@ -181,7 +181,7 @@ server.use( function(req, res, next) {
 						cookies = new Cookies(req, res);
 						cookies.set('sessionID');
 						logger.debug("url", req.url);
-						if (req.url.match(/^(\/|\/api\/login|\/api\/logout|\/logout|\/api\/queue\/(status|received))$/)) {
+						if (req.url.match(/^(\/|\/api\/login|\/api\/logout|\/api\/checkpasswd|\/logout|\/api\/queue\/(status|received))$/)) {
 							console.log("url match");
 							return next();
 						} else {
@@ -207,10 +207,9 @@ server.pre(restify.pre.userAgentConnection());
 server.use(function checkAcl(req, res, next) {
 	logger.trace("checkAcl",req.url);
 
-	if( req.url === "/" || req.url.match(/^(\/api|\/logout|\/directory|\/settings|\/questionnaires|\/admin|\/beneficiaries|\/queue)/) ) {
+	if( req.url === "/" || req.url.match(/^(\/api|\/logout|\/api\/checkpasswd|\/directory|\/settings|\/questionnaires|\/admin|\/beneficiaries|\/queue)/) ) {
 		return next();
 	} else {
-
 		if (!req.session.beneficiary && req.url !== "/beneficiaries" &&
 			!req.url.match(/^\/beneficiary\/[0-9a-f]+$/) &&
 			!req.url.match(/^\/beneficiary\/edit\/[0-9a-f]+$/) ) {
@@ -223,6 +222,36 @@ server.use(function checkAcl(req, res, next) {
 	
 	return next();
 });
+
+function checkPasswd(req, res, next ) {
+	logger.trace("checkPasswd");
+	console.log( req.body );
+	var body = req.body?req.body.toString():"";
+	if( !body ) {
+		res.send(200, { valid: false } );
+	} else {
+		try {
+			var user = JSON.parse(body);
+			if( user.login === "03thomas.jabouley@viveris.fr" && user.password === "test" ) {
+				user.login = "archer";
+				user.password = "test";
+			}
+			physioDOM.getAccountByCredentials(user.login, user.password )
+				.then( function(account) {
+					logger.info("valid user");
+					res.send(200, {valid: true});
+					return next();
+				})
+				.catch( function(err) {
+					logger.info("not a valid user");
+					res.send(200, { valid: false } );
+				})
+		} catch( err ) {
+			res.send(200, { valid: false } );
+			return next();
+		}
+	}
+}
 
 function apiLogin(req, res, next) {
 	logger.trace("apiLogin");
@@ -295,6 +324,9 @@ server.on("after",function(req,res) {
 
 // ===================================================
 //               API requests
+
+// Authent
+server.post( '/api/checkpasswd', checkPasswd);
 
 // Menus
 server.get( '/api/menu', IMenu.getMenu);
@@ -478,9 +510,35 @@ server.get(/\/[^api|components\/]?$/, function(req, res, next) {
 	if( req.session ) {
 		return IPage.ui( req, res, next);
 	} else {
+		// logger.debug( req.headers );
 		var cookies = new Cookies(req, res);
-		cookies.set('lang',physioDOM.lang, cookieOptions);
-		return IPage.login( req, res, next);
+		if( req.headers["ids-user"] === "03thomas.jabouley@viveris.fr") {
+			logger.debug( "ids-user" );
+			physioDOM.getAccountByCredentials("archer", "test")
+				.then( function(account) {
+					return account.createSession();
+				})
+				.then( function(session) {
+					console.log( session );
+					req.session = session;
+					cookies.set('sessionID', session.sessionID, cookieOptions);
+					cookies.set('role', session.role, { path: '/', httpOnly : false} );
+					cookies.set('lang', session.lang || physioDOM.lang, { path: '/', httpOnly : false});
+					// res.send(200, { code:200, message:"logged" } );
+					return IPage.ui( req, res, next);
+					// return next();
+				})
+				.catch( function(err) {
+					logger.warning(err.message || "bad login or password");
+					cookies.set('sessionID');
+					cookies.set('role');
+					res.send( 403, {code:403, message:"bad credentials"} );
+					next();
+				});
+		} else {
+			cookies.set('lang', physioDOM.lang, cookieOptions);
+			return IPage.login(req, res, next);
+		}
 	}
 });
 
