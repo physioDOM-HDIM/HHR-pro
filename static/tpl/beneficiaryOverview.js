@@ -17,6 +17,11 @@ function init() {
 }
 
 function initQueue() {
+	/*
+	var dlg = document.querySelector("#initDlg");
+	dlg.toggle();
+	*/
+	
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET','/api/queue/init', true );
 	xhr.onload = function() {
