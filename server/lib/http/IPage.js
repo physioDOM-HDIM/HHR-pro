@@ -154,6 +154,7 @@ function IPage() {
 				// logger.debug("menu",req.session.role, menu);
 				var data = {
 					admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
+					idsUser: req.headers["ids-user"] || "",
 					items: menu
 				};
 

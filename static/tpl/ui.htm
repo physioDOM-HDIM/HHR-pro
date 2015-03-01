@@ -147,7 +147,16 @@
 	<div class="beneficiary">{{"Beneficiary"|i18n}}<br>
 		<label id="beneficiary"><a href="/beneficiary/overview" target="main">-</a></label>
 	</div>
+	{% if idsUser %}
+	<form method="post" id="disconnect" action="/disconnect">
+		<input id="requester" name="requester" type="hidden" value="{{idsUser}}"/>
+	</form>
+	<div class="professional">{{account.firstname}}. {{account.lastname}}<br/>
+		<a href="javascript:document.getElementById('disconnect').submit()">{{"Disconnect"|i18n}}</a>
+	</div>
+	{% else %}
 	<div class="professional">{{account.firstname}}. {{account.lastname}}<br/><a href="/logout">{{"Disconnect"|i18n}}</a></div>
+	{% endif %}
 </core-toolbar>
 
 <core-drawer-panel responsiveWidth="992px">
