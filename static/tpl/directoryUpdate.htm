@@ -253,6 +253,9 @@
                     <label>{{ "Active"|i18n }}:</label>
                     <input type="checkbox" name="active" class="account-activation" {% if professional && professional.active===true %}checked{% endif %}/>
                 </div>
+	            <div class="row">
+		            <button type="button" class="blue" id="createCert">Generate certificate</button>
+	            </div>
                 {% else %}
                     <input type="checkbox" name="active" class="hidden" checked />
                 {% endif %}

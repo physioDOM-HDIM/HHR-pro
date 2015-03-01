@@ -257,6 +257,21 @@ function checkPassword () {
     accountActivation.checked = (password.value === checkPassword.value && passwordRegex.test(checkPassword.value));
 }
 
+function createCert() {
+	var obj = form2js(document.forms["directoryForm"]);
+	Utils.promiseXHR("GET", "/api/directory/" + obj._id+ "/cert", 200)
+		.then(function(response) {
+			console.log( "certCreate", response );
+		}, function(error) {
+			new Modal('errorOccured');
+			console.log("createCert - error: ", error);
+		});
+}
+
+function revoqCert() {
+	
+}
+
 function init() {
     console.log("init");
 	
@@ -271,6 +286,7 @@ function init() {
         document.querySelector('.account-password').value = passwordPlaceholder;
         document.querySelector('.account-check-password').value = passwordPlaceholder;
     }
+	document.querySelector("button#createCert").addEventListener("click", createCert, false);
 }
 
 window.addEventListener("beforeunload", function( e) {
