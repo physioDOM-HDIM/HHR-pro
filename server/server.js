@@ -343,6 +343,8 @@ server.put( '/api/directory/:entryID', IDirectory.updateEntry );
 server.del( '/api/directory/:entryID', IDirectory.deleteEntry );
 server.post('/api/directory/:entryID/account', IDirectory.accountUpdate );
 server.get( '/api/directory/:entryID/account', IDirectory.account );
+server.get( '/api/directory/:entryID/cert', IDirectory.createCert );
+server.del( '/api/directory/:entryID/cert', IDirectory.revoqCert );
 
 server.get( '/api/beneficiaries', IBeneficiary.getBeneficiaries);   // get beneficiaries list
 server.post('/api/beneficiaries', IBeneficiary.createBeneficiary);
