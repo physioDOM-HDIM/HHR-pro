@@ -1,3 +1,11 @@
+__v0.0.12__
+
+  - Adds an agenda to repeatedly update beneficiaries measures and symptoms plans
+  - update history on set-top box when creating a new data record
+  - remove double-quote in messages for SServer
+  - update menu
+  - display questionnaire label in the questionnaires prescription page
+  
 __v0.0.11__
 
   - update queue service
@@ -10,7 +18,7 @@ __v0.0.11__
   - Fix Bug #131
   - Fix Bug #235
   - Fix Bug #228, #234
-  - Change label "Consultartion from" to "Consultation"
+  - Change label "Consultation from" to "Consultation"
   - Fix Bug #60
 
 __v0.0.10__
