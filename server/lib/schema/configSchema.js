@@ -29,6 +29,7 @@ var configSchema = {
 			required   : true
 		},
 		"languages": { type:"array", description:"array of all supported languages"},
+		"agenda": { type:"integer", description:"interval in minutes to send measures and symptoms plans"},
 		"key"  : {
 			type       : "string",
 			pattern    : "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$",
