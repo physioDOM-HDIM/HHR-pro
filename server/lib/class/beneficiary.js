@@ -912,6 +912,8 @@ function Beneficiary( ) {
 				.catch( reject );
 		});
 	};
+	
+	
 	this.getHistoryDataList = function( lang ) {
 		var that = this;
 
@@ -1757,6 +1759,7 @@ function Beneficiary( ) {
 			 measuresHistory.params[id].values[id].datetime
 			 measuresHistory.params[id].values[id].value
 			 */
+			
 			var msg = [];
 			if (param.rank) {
 				var leaf = name + ".measuresHistory.params[" + param.text + "]";
@@ -1781,7 +1784,7 @@ function Beneficiary( ) {
 					value: param.unit,
 					type : "String"
 				});
-				logger.debug( "param "+param.text, param.history );
+				
 				for (var i = 0, l = param.history.length; i < l; i++) {
 					msg.push({
 						name : leaf + ".values[" + i + "].datetime",
@@ -1949,25 +1952,28 @@ function Beneficiary( ) {
 		var queue = new Queue(this._id);
 		var name = "hhr[" + this._id + "]";
 		
-		console.log( "category ", category);
 		return new promise(function (resolve, reject) {
 			var msgs = [];
 			that.getHistoryDataList()
 				.then(function (history) {
 					switch( category ) {
 						case "measures":
+							logger.trace("pushHistory measures");
 							that.pushHistoryMeasures( history, queue, name )
 								.then( resolve );
 							break;
 						case "symptoms":
+							logger.trace("pushHistory symptoms");
 							that.pushHistorySymptoms( history, queue, name )
 								.then( resolve );
 							break;
 						case "questionnaires":
+							logger.trace("pushHistory questionnaires");
 							that.pushHistoryQuestionnaires( history, queue, name )
 								.then( resolve );
 							break;
 						default:
+							logger.trace("pushHistory all");
 							that.pushHistoryMeasures( history, queue, name )
 								.then( function( results ) {
 									msgs = msgs.concat(results);
@@ -1981,6 +1987,10 @@ function Beneficiary( ) {
 									msgs = msgs.concat(results);
 									logger.info("msgs", msgs);
 									resolve( msgs );
+								})
+								.catch( function(err) {
+									logger.warning(err);
+									reject( err );
 								});
 					}
 				});
@@ -1998,6 +2008,7 @@ function Beneficiary( ) {
 		var queue = new Queue(this._id);
 		var leaf = "hhr['" + this._id + "'].dhdffq";
 		
+		logger.trace("pushLastDHDFFQ");
 		return new promise( function(resolve, reject) {
 			var search = { category: "questionnaire", text: "DHD-FFQ", subject: that._id };
 			physioDOM.db.collection("dataRecordItems").find(search).sort({datetime: -1}).limit(1).toArray(function (err, quests) {
