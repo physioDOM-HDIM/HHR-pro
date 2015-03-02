@@ -298,15 +298,20 @@ var IBeneficiary = {
 	 */
 	newDataRecord: function(req,res, next) {
 		logger.trace("newDataRecord");
+		
+		var beneficiary, dataRecord;
+		
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
 				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
 			})
-			.then(function (beneficiary) {
+			.then(function (beneficiaryRes) {
+				beneficiary = beneficiaryRes;
 				var dataRecord = JSON.parse( req.body );
 				return beneficiary.createDataRecord( dataRecord, req.session.person.id );
 			})
-			.then( function( dataRecord) {
+			.then( function( result ) {
+				dataRecord = result;
 				res.send( dataRecord );
 				next();
 			})
@@ -344,15 +349,22 @@ var IBeneficiary = {
 			.then( function( dataRecord ) {
 				return dataRecord.getComplete();
 			})
-			.then(function(completeDataRecord) {
+			.then(function( completeDataRecord ) {
 				res.send(completeDataRecord);
 				logger.trace(completeDataRecord._id, req.session.person.id);
 				return beneficiary.createEvent('Data record', 'update', new ObjectID(completeDataRecord._id), req.session.person.id);
+			})
+			.then( function() {
+				return beneficiary.pushLastDHDFFQ();
+			})
+			.then( function() {
+				return beneficiary.pushHistory();
 			})
 			.then(function() {
 				next();
 			})
 			.catch( function(err) {
+				console.log( err );
 				res.send(err.code || 400, err);
 				next(false);
 			});

@@ -9,6 +9,8 @@ var restify = require("restify"),
 	Cookies = require("cookies"),
 	Logger  = require("logger"),
 	I18n    = require("i18n-2"),
+	Agenda = require("agenda"),
+	RSVP = require("rsvp"),
 	promise = require("rsvp").Promise,
 	PhysioDOM = require("./lib/class/physiodom");
 
@@ -61,6 +63,7 @@ if( program.config ) {
 		config.cache = tmp.cache;
 		config.languages = tmp.languages;
 		config.server = tmp.server;
+		config.agenda = tmp.agenda;
 	}
 } else {
 	logger.error("you must provide a config file");
@@ -98,7 +101,8 @@ function responseLog(req, res) {
 }
 
 var physioDOM = new PhysioDOM( config );   // PhysioDOM object is global and so shared to all modules
-global.physioDOM = physioDOM;
+global.physioDOM = physioDOM;              // set the object global
+var agenda = new Agenda({db: { address: config.mongouri }});
 
 var server = restify.createServer({
 	name:    pkg.name,
@@ -494,8 +498,47 @@ physioDOM.connect()
 			logger.info(server.name + ' listening at ' + server.url);
 		});
 	})
+	.then( function() {
+		agenda.purge( function(err, numRemoved) {
+			agenda.define('push plans', function (job, done) {
+				// push measures plan and symptoms plan for all active beneficiary
+				var beneficiaries;
+				physioDOM.Beneficiaries()
+					.then( function( res ) {
+						beneficiaries = res;
+						return beneficiaries.getAllActiveHHR();
+					})
+					.then( function( activeBeneficiaries) {
+						var promises = activeBeneficiaries.map( function(beneficiary) {
+							return new promise( function( resolve, reject) {
+								beneficiaries.getHHR( beneficiary._id )
+									.then( function( beneficiary) {
+										beneficiary.getSymptomsPlan()
+											.then(function () {
+												return beneficiary.getMeasurePlan();
+											})
+											.then(resolve);
+									});
+							});
+						});
+						
+						RSVP.all( promises )
+							.then( function() {
+								done();
+							});
+					});
+			});
+
+			agenda.every(config.agenda + ' minutes', 'push plans');
+		});
+			
+		agenda.start();
+	})
 	.catch(function() {
+		logger.info('==================================================================');
 		logger.emergency("connection to database failed");
+		logger.emergency("HHR-Pro instance not started");
+		logger.info('==================================================================');
 		process.exit(1);
 	});
 

@@ -687,9 +687,15 @@ function Beneficiary( ) {
 			dataRecord.setup(that._id, dataRecordObj, professionalID)
 				.then(function (dataRecord) {
 					return that.createEvent('Data record', 'create', dataRecord._id, professionalID)
-						.then( function() {
-							return that.getCompleteDataRecordByID(dataRecord._id);
-						});
+				})
+				.then( function() {
+					return that.pushLastDHDFFQ();
+				})
+				.then( function() {
+					return that.pushHistory();
+				})
+				.then( function() {
+					return that.getCompleteDataRecordByID(dataRecord._id);
 				})
 				.then(resolve)
 				.catch(reject);
@@ -912,6 +918,8 @@ function Beneficiary( ) {
 				.catch( reject );
 		});
 	};
+	
+	
 	this.getHistoryDataList = function( lang ) {
 		var that = this;
 
@@ -1346,13 +1354,39 @@ function Beneficiary( ) {
 		});
 	}
 
+	this.dropMeasurePlan = function() {
+		var queue = new Queue(this._id);
+		var name = "hhr['" + this._id + "']";
+		var that = this;
+		
+		logger.trace("dropMeasurePlan");
+		return new promise( function(resolve, reject) {
+			physioDOM.db.collection("agendaMeasure").find({subject: that._id}).toArray(function (err, list) {
+				var promises = list.map(function (measure) {
+					console.log( measure );
+					var msg = [];
+					msg.push({
+						branch: name + ".measures[" + measure.datetime + "]"
+					});
+					return queue.delMsg(msg);
+				});
+				RSVP.all(promises)
+					.then(function() {
+						physioDOM.db.collection("agendaMeasure").drop( function(err, res) {
+							resolve();
+						});
+					});
+			});
+		});
+	};
+	
 	/**
 	 * get the measure Plan and push it to the box
 	 * 
 	 * @param date
 	 * @returns {$$rsvp$promise$$default|RSVP.Promise|*|l|Dn}
 	 */
-	this.getMeasurePlan = function( date ) {
+	this.getMeasurePlan = function( ) {
 		var queue = new Queue(this._id);
 		var name = "hhr['" + this._id + "']";
 		
@@ -1360,113 +1394,138 @@ function Beneficiary( ) {
 		var endDate = moment().add(14,'d');
 		var dataProg = new DataProg( this._id );
 		var msgs = [];
+		var that = this;
 		
 		return new promise( function(resolve, reject) {
 			var promises = ["General","HDIM"].map(function (category) {
 				return dataProg.getCategory( category );
 			});
-			RSVP.all(promises)
-				.then(function ( results ) {
-					var progs = [];
-					results.forEach( function( list ) {
-						console.log( list );
-						progs = progs.concat(list);
-					});
-					progs.forEach(function (prog) {
-						var startDate, nextDate, firstDay, dat;
-						console.log(prog.ref + " ->");
-						switch (prog.frequency) {
-							case "daily":
-								startDate = moment().subtract(prog.repeat, 'd');
-								nextDate = moment(prog.startDate);
-								while (nextDate.unix() < startDate.unix()) {
-									nextDate.add(prog.repeat, 'd');
-								}
-								if (nextDate.unix() < endDate.unix()) {
-									do {
-										if (nextDate.unix() < endDate.unix() && nextDate.unix() >= today.unix()) {
-											msgs.push({ref: prog.ref, date: nextDate.unix()});
-										}
-										nextDate.add(prog.repeat, 'd');
-									} while (nextDate.unix() < endDate.unix());
-								}
-								break;
-							case "weekly":
-								startDate = moment().subtract(prog.repeat, 'w');
-								nextDate = moment(prog.startDate).day(prog.when.days[0]);
-								while (nextDate.unix() < startDate.unix()) {
-									nextDate.add(prog.repeat, 'w');
-								}
-								if (nextDate.unix() < endDate.unix()) {
-									do {
-										firstDay = moment.unix(nextDate.unix());
-										prog.when.days.forEach(function (day) {
-											firstDay.day(day);
-											console.log(firstDay.unix());
-											if (firstDay.unix() < endDate.unix() && firstDay.unix() >= today.unix()) {
-												msgs.push({ref: prog.ref, date: firstDay.unix()});
-											}
-										}); // jshint ignore:line
-										nextDate.add(prog.repeat, 'w');
-									} while (nextDate.unix() < endDate.unix());
 
-								}
-								break;
-							case "monthly":
-								startDate = moment().date(1).hour(0).minute(0).second(0);
-								nextDate = moment(prog.startDate).date(1).hour(0).minute(0).second(0);
-								while (nextDate.unix() < startDate.unix()) {
-									nextDate.add(prog.repeat, 'M');
-								}
-								logger.debug("nextDate", nextDate.format("L"));
-								if (nextDate.unix() < endDate.unix()) {
-									prog.when.days.forEach(function (day) {
-										if (day > 0) {
-											dat = moment.unix(nextDate.unix());
-											dat.day(day % 10);
-											dat.add(Math.floor(day / 10) - 1, 'w');
-										} else {
-											dat = moment.unix(nextDate.unix()).add(1, 'M').subtract(1, 'd');
-											dat.day(-day % 10);
-											dat.subtract(Math.floor(-day / 10) - 1, 'w');
-										}
-										if (dat.unix() < endDate.unix() && dat.unix() >= today.unix()) {
-											msgs.push({ref: prog.ref, date: dat.unix()});
-										}
-									});
-								}
-								break;
-						}
-					});
-					var agenda = {};
-					msgs.forEach(function (msg) {
-						if (agenda[msg.date]) {
-							agenda[msg.date].measure.push(msg.ref);
-						} else {
-							agenda[msg.date] = { datetime:msg.date, measure: [msg.ref] };
-						}
-					});
-					var measures = [];
-					for( var measure in agenda ) { // jshint ignore:line
-						measures.push( agenda[measure] );
-					}
-					
-					var units;
-					physioDOM.Lists.getListItemsObj("units")
+			that.dropMeasurePlan()
+				.then( function() {
+					RSVP.all(promises)
 						.then(function (results) {
-							units = results;
-							return physioDOM.Lists.getListItemsObj("parameters");
-						})
-						.then(function (parameters) {
-							physioDOM.Lists.getListItemsObj("parameters")
+							var progs = [];
+							results.forEach(function (list) {
+								progs = progs.concat(list);
+							});
+							progs.forEach(function (prog) {
+								var startDate, nextDate, firstDay, dat;
+								switch (prog.frequency) {
+									case "daily":
+										startDate = moment().subtract(prog.repeat, 'd');
+										nextDate = moment(prog.startDate).hour(12).minute(0).second(0);
+										while (nextDate.unix() < startDate.unix()) {
+											nextDate.add(prog.repeat, 'd');
+										}
+										if (nextDate.unix() < endDate.unix()) {
+											do {
+												if (nextDate.unix() < endDate.unix() && nextDate.unix() >= today.unix()) {
+													msgs.push({ref: prog.ref, date: nextDate.unix()});
+												}
+												nextDate.add(prog.repeat, 'd');
+											} while (nextDate.unix() < endDate.unix());
+										}
+										break;
+									case "weekly":
+										startDate = moment().subtract(prog.repeat, 'w');
+										nextDate = moment(prog.startDate).day(prog.when.days[0]).hour(12).minute(0).second(0);
+										while (nextDate.unix() < startDate.unix()) {
+											nextDate.add(prog.repeat, 'w');
+										}
+										if (nextDate.unix() < endDate.unix()) {
+											do {
+												firstDay = moment.unix(nextDate.unix());
+												prog.when.days.forEach(function (day) {
+													firstDay.day(day);
+													if (firstDay.unix() < endDate.unix() && firstDay.unix() >= today.unix()) {
+														msgs.push({ref: prog.ref, date: firstDay.unix()});
+													}
+												}); // jshint ignore:line
+												nextDate.add(prog.repeat, 'w');
+											} while (nextDate.unix() < endDate.unix());
+
+										}
+										break;
+									case "monthly":
+										startDate = moment().date(1).hour(12).minute(0).second(0);
+										nextDate = moment(prog.startDate).date(1).hour(12).minute(0).second(0);
+										while (nextDate.unix() < startDate.unix()) {
+											nextDate.add(prog.repeat, 'M');
+										}
+										logger.debug("nextDate", nextDate.format("L"));
+										if (nextDate.unix() < endDate.unix()) {
+											prog.when.days.forEach(function (day) {
+												if (day > 0) {
+													dat = moment.unix(nextDate.unix());
+													dat.day(day % 10);
+													dat.add(Math.floor(day / 10) - 1, 'w');
+												} else {
+													dat = moment.unix(nextDate.unix()).add(1, 'M').subtract(1, 'd');
+													dat.day(-day % 10);
+													dat.subtract(Math.floor(-day / 10) - 1, 'w');
+												}
+												if (dat.unix() < endDate.unix() && dat.unix() >= today.unix()) {
+													msgs.push({ref: prog.ref, date: dat.unix()});
+												}
+											});
+										}
+										break;
+								}
+							});
+							var agenda = {};
+							msgs.forEach(function (msg) {
+								if (agenda[msg.date]) {
+									agenda[msg.date].measure.push(msg.ref);
+								} else {
+									agenda[msg.date] = {
+										datetime: msg.date,
+										measure : [msg.ref],
+										date    : moment.unix(msg.date).toISOString()
+									};
+								}
+							});
+							var measures = [];
+							for (var measure in agenda) { // jshint ignore:line
+								measures.push(agenda[measure]);
+							}
+
+							var units;
+							physioDOM.Lists.getListItemsObj("units")
+								.then(function (results) {
+									units = results;
+									return physioDOM.Lists.getListItemsObj("parameters");
+								})
 								.then(function (parameters) {
-									var promises = measures.map(function (measure) {
-										return pushMeasure(queue, name+".measures["+measure.datetime+"]" , units, parameters, measure);
-									});
-									RSVP.all(promises)
-										.then(function (result) {
-											// resolve(msgs);
-											resolve(result);
+									physioDOM.Lists.getListItemsObj("parameters")
+										.then(function (parameters) {
+											var promises = measures.map(function (measure) {
+												return new promise(function (resolve, reject) {
+													console.log(JSON.stringify(measure, "", 4));
+													measure.subject = that._id;
+
+													pushMeasure(queue, name + ".measures[" + measure.datetime + "]", units, parameters, measure)
+														.then(function (msg) {
+															if (msg.length) {
+																physioDOM.db.collection("agendaMeasure").save(measure, function (err, doc) {
+																	resolve(msg);
+																});
+															} else {
+																resolve(msg);
+															}
+														});
+												});
+											});
+											RSVP.all(promises)
+												.then(function (result) {
+													var res = [];
+													result.forEach(function (item) {
+														if (item.length > 0) {
+															res.push(item);
+														}
+													});
+													resolve(res);
+												});
 										});
 								});
 						});
@@ -1583,6 +1642,31 @@ function Beneficiary( ) {
 		});
 	}
 
+	this.dropSymptomsPlan = function() {
+		var queue = new Queue(this._id);
+		var name = "hhr['" + this._id + "']";
+		var that = this;
+
+		logger.trace("dropSymptomsPlan");
+		return new promise( function(resolve, reject) {
+			physioDOM.db.collection("agendaSymptoms").find({subject: that._id}).toArray(function (err, list) {
+				var promises = list.map(function (Symptom) {
+					var msg = [];
+					msg.push({
+						branch: name + ".Symptoms[" + Symptom.datetime + "]"
+					});
+					return queue.delMsg(msg);
+				});
+				RSVP.all(promises)
+					.then(function() {
+						physioDOM.db.collection("agendaSymptoms").drop( function(err, res) {
+							resolve();
+						});
+					});
+			});
+		});
+	};
+	
 	/**
 	 * Get the symptoms plan and push it to the box
 	 * 
@@ -1596,9 +1680,13 @@ function Beneficiary( ) {
 		var endDate = moment().add(14,'d');
 		var dataProg = new DataProg( this._id );
 		var msgs = [];
+		var that = this;
 
 		return new promise( function(resolve, reject) {
-			dataProg.getCategory("symptom")
+			that.dropSymptomsPlan()
+				.then( function() {
+					return dataProg.getCategory("symptom");
+				})
 				.then(function (progs) {
 					progs.forEach(function (prog) {
 						var startDate, nextDate, firstDay, dat;
@@ -1606,7 +1694,7 @@ function Beneficiary( ) {
 						switch (prog.frequency) {
 							case "daily":
 								startDate = moment().subtract(prog.repeat, 'd');
-								nextDate = moment(prog.startDate);
+								nextDate = moment(prog.startDate).hour(12).minute(0).second(0);
 								while (nextDate.unix() < startDate.unix()) {
 									nextDate.add(prog.repeat, 'd');
 								}
@@ -1621,7 +1709,7 @@ function Beneficiary( ) {
 								break;
 							case "weekly":
 								startDate = moment().subtract(prog.repeat, 'w');
-								nextDate = moment(prog.startDate).day(prog.when.days[0]);
+								nextDate = moment(prog.startDate).day(prog.when.days[0]).hour(12).minute(0).second(0);
 								while (nextDate.unix() < startDate.unix()) {
 									nextDate.add(prog.repeat, 'w');
 								}
@@ -1641,8 +1729,8 @@ function Beneficiary( ) {
 								}
 								break;
 							case "monthly":
-								startDate = moment().date(1).hour(0).minute(0).second(0);
-								nextDate = moment(prog.startDate).date(1).hour(0).minute(0).second(0);
+								startDate = moment().date(1).hour(12).minute(0).second(0);
+								nextDate = moment(prog.startDate).date(1).hour(12).minute(0).second(0);
 								while (nextDate.unix() < startDate.unix()) {
 									nextDate.add(prog.repeat, 'M');
 								}
@@ -1671,7 +1759,11 @@ function Beneficiary( ) {
 						if (results[msg.date]) {
 							results[msg.date].measure.push(msg.ref);
 						} else {
-							results[msg.date] = { datetime:msg.date, measure: [msg.ref] };
+							results[msg.date] = { 
+								datetime:msg.date, 
+								measure: [msg.ref] ,
+								date    : moment.unix(msg.date).toISOString()
+							};
 						}
 					});
 					var measures = [];
@@ -1681,10 +1773,29 @@ function Beneficiary( ) {
 					// console.log( "symptoms",measures );
 					physioDOM.Lists.getListItemsObj("symptom")
 						.then(function (symptoms) {
+							var promises = measures.map(function (measure) {
+								return new promise(function (resolve, reject) {
+									console.log(JSON.stringify(measure, "", 4));
+									measure.subject = that._id;
+
+									pushSymptom(queue, name + ".symptom[" + measure.datetime + "]", symptoms, measure)
+										.then(function (msg) {
+											if (msg.length) {
+												physioDOM.db.collection("agendaSymptoms").save(measure, function (err, doc) {
+													resolve(msg);
+												});
+											} else {
+												resolve(msg);
+											}
+										});
+								});
+							});
+							/*
 							var promises = measures.map(function (measure) { 
 								console.log("test");
 								return pushSymptom(queue, name+".symptom["+measure.datetime+"]" , symptoms, measure);
 							});
+							*/
 							RSVP.all(promises)
 								.then(function (result) {
 									console.log("fini");
@@ -1757,6 +1868,7 @@ function Beneficiary( ) {
 			 measuresHistory.params[id].values[id].datetime
 			 measuresHistory.params[id].values[id].value
 			 */
+			
 			var msg = [];
 			if (param.rank) {
 				var leaf = name + ".measuresHistory.params[" + param.text + "]";
@@ -1781,7 +1893,7 @@ function Beneficiary( ) {
 					value: param.unit,
 					type : "String"
 				});
-				logger.debug( "param "+param.text, param.history );
+				
 				for (var i = 0, l = param.history.length; i < l; i++) {
 					msg.push({
 						name : leaf + ".values[" + i + "].datetime",
@@ -1949,25 +2061,28 @@ function Beneficiary( ) {
 		var queue = new Queue(this._id);
 		var name = "hhr[" + this._id + "]";
 		
-		console.log( "category ", category);
 		return new promise(function (resolve, reject) {
 			var msgs = [];
 			that.getHistoryDataList()
 				.then(function (history) {
 					switch( category ) {
 						case "measures":
+							logger.trace("pushHistory measures");
 							that.pushHistoryMeasures( history, queue, name )
 								.then( resolve );
 							break;
 						case "symptoms":
+							logger.trace("pushHistory symptoms");
 							that.pushHistorySymptoms( history, queue, name )
 								.then( resolve );
 							break;
 						case "questionnaires":
+							logger.trace("pushHistory questionnaires");
 							that.pushHistoryQuestionnaires( history, queue, name )
 								.then( resolve );
 							break;
 						default:
+							logger.trace("pushHistory all");
 							that.pushHistoryMeasures( history, queue, name )
 								.then( function( results ) {
 									msgs = msgs.concat(results);
@@ -1981,6 +2096,10 @@ function Beneficiary( ) {
 									msgs = msgs.concat(results);
 									logger.info("msgs", msgs);
 									resolve( msgs );
+								})
+								.catch( function(err) {
+									logger.warning(err);
+									reject( err );
 								});
 					}
 				});
@@ -1998,6 +2117,7 @@ function Beneficiary( ) {
 		var queue = new Queue(this._id);
 		var leaf = "hhr['" + this._id + "'].dhdffq";
 		
+		logger.trace("pushLastDHDFFQ");
 		return new promise( function(resolve, reject) {
 			var search = { category: "questionnaire", text: "DHD-FFQ", subject: that._id };
 			physioDOM.db.collection("dataRecordItems").find(search).sort({datetime: -1}).limit(1).toArray(function (err, quests) {
