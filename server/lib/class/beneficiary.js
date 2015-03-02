@@ -687,9 +687,15 @@ function Beneficiary( ) {
 			dataRecord.setup(that._id, dataRecordObj, professionalID)
 				.then(function (dataRecord) {
 					return that.createEvent('Data record', 'create', dataRecord._id, professionalID)
-						.then( function() {
-							return that.getCompleteDataRecordByID(dataRecord._id);
-						});
+				})
+				.then( function() {
+					return that.pushLastDHDFFQ();
+				})
+				.then( function() {
+					return that.pushHistory();
+				})
+				.then( function() {
+					return that.getCompleteDataRecordByID(dataRecord._id);
 				})
 				.then(resolve)
 				.catch(reject);
