@@ -85,15 +85,10 @@ function Beneficiaries( ) {
 		return dbPromise.getList(cursor, pg, offset);
 	};
 	
-	this.getBeneficiariesAdmin = function( pg, offset, sort, sortDir, filter) {
-		logger.trace("getBeneficiariesAdmin");
+	this.getAllActiveHHR = function() {
+		var search = { active:true, biomasterStatus: true };
 		var cursor = physioDOM.db.collection("beneficiaries").find(search);
-		if(sort) {
-			var cursorSort = {};
-			cursorSort[sort] = [-1,1].indexOf(sortDir)!==-1?sortDir:1;
-			cursor = cursor.sort( cursorSort );
-		}
-		return dbPromise.getList(cursor, pg, offset);
+		return dbPromise.getArray(cursor);
 	};
 
 	/**

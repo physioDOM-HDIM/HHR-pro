@@ -1,7 +1,7 @@
 {
   "name": "PhysioDOM-server",
   "preferGlobal": false,
-  "version": "0.0.11",
+  "version": "0.0.12",
   "author": "Telecom Sante <tech@telecomsante.com>",
   "contributors": [
     {
@@ -11,7 +11,7 @@
   ],
   "description": "A web portal for professionnal",
   "scripts": {
-    "preinstall":"npm install ./install/logger-v1.1.0.tar.gz",
+    "preinstall": "npm install ./install/logger-v1.1.0.tar.gz",
     "install": "bower install; node install/install.js",
     "start": "supervisor -w package.json,config.json,server/ -- server/server.js -c config.json 2>&1 > log/app.log",
     "test": "node ./test/index.js"
@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "MD5": "~1.2.1",
+    "agenda": "^0.6.28",
     "commander": "~2.1.0",
     "cookies": "~0.5.0",
     "i18n-2": "~0.4.6",
