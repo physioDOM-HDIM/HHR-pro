@@ -998,7 +998,7 @@ function Beneficiary( ) {
 								precisions[ref] = lists[i].items[y].precision ? 1 : 0;
 								for(var z in units.items) {
 									if(units.items[z].ref === lists[i].items[y].units) {
-										unitsData[ref] = units.items[z].label[lang];
+										unitsData[ref] = units.items[z].label[lang || physioDOM.lang] || units.items[z].label.en;
 									}
 								}
 							}
@@ -1870,7 +1870,7 @@ function Beneficiary( ) {
 		});
 	}
 
-	function pushParam( queue, name,  param, units ) {
+	function pushParam( queue, name,  param ) {
 		return new promise( function(resolve,reject) {
 			/*
 			 measuresHistory.params[id].label
@@ -1883,7 +1883,6 @@ function Beneficiary( ) {
 			
 			var msg = [];
 			if (param.rank) {
-				logger.info( "param", param);
 				var leaf = name + ".measuresHistory.params[" + param.text + "]";
 
 				msg.push({
@@ -1901,21 +1900,13 @@ function Beneficiary( ) {
 					value: param.precision,
 					type : "Integer"
 				});
-				/*
-				if(parameters[measure].unity && parameters[measure].unity !== 'NONE'  ) {
+				if( param.unit.length ) {
 					msg.push({
-						name : name + ".unit",
-						value: units[ parameters[measure].unity ].label[physioDOM.lang] || units[ parameters[measure].unity ].label.en,
+						name : leaf + ".unit",
+						value: param.unit,
 						type : "String"
 					});
 				}
-				*/
-				msg.push({
-					name : leaf + ".unit",
-					value: param.unit,
-					type : "String"
-				});
-				
 				for (var i = 0, l = param.history.length; i < l; i++) {
 					msg.push({
 						name : leaf + ".values[" + i + "].datetime",
@@ -2013,18 +2004,14 @@ function Beneficiary( ) {
 			queue.delMsg([ { branch : leaf + ".measuresHistory"} ])
 				.then(function () {
 					logger.trace("measuresHistory cleared");
-					return physioDOM.Lists.getListItemsObj("units");
-				})
-				.then(function (units) {
 					var promises = history["General"].map(function (param) {
-						return pushParam(queue, leaf, param, units);
+						return pushParam(queue, leaf, param);
 					});
 					return RSVP.all(promises);
 				})
 				.then(function (results) {
 					logger.debug("General history pushed");
 					msgs = msgs.concat(results);
-					logger.info("msgs", msgs);
 					var promises = history["HDIM"].map(function (param) {
 						return pushParam(queue, leaf, param);
 					});
@@ -2119,7 +2106,6 @@ function Beneficiary( ) {
 								})
 								.then( function( results ) {
 									msgs = msgs.concat(results);
-									logger.info("msgs", msgs);
 									resolve( msgs );
 								})
 								.catch( function(err) {
