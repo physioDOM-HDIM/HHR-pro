@@ -1870,7 +1870,7 @@ function Beneficiary( ) {
 		});
 	}
 
-	function pushParam( queue, name,  param ) {
+	function pushParam( queue, name,  param, units ) {
 		return new promise( function(resolve,reject) {
 			/*
 			 measuresHistory.params[id].label
@@ -1883,6 +1883,7 @@ function Beneficiary( ) {
 			
 			var msg = [];
 			if (param.rank) {
+				logger.info( "param", param);
 				var leaf = name + ".measuresHistory.params[" + param.text + "]";
 
 				msg.push({
@@ -1900,6 +1901,15 @@ function Beneficiary( ) {
 					value: param.precision,
 					type : "Integer"
 				});
+				/*
+				if(parameters[measure].unity && parameters[measure].unity !== 'NONE'  ) {
+					msg.push({
+						name : name + ".unit",
+						value: units[ parameters[measure].unity ].label[physioDOM.lang] || units[ parameters[measure].unity ].label.en,
+						type : "String"
+					});
+				}
+				*/
 				msg.push({
 					name : leaf + ".unit",
 					value: param.unit,
@@ -2002,9 +2012,12 @@ function Beneficiary( ) {
 			
 			queue.delMsg([ { branch : leaf + ".measuresHistory"} ])
 				.then(function () {
-					logger.trace("symptomsHistory cleared");
+					logger.trace("measuresHistory cleared");
+					return physioDOM.Lists.getListItemsObj("units");
+				})
+				.then(function (units) {
 					var promises = history["General"].map(function (param) {
-						return pushParam(queue, leaf, param);
+						return pushParam(queue, leaf, param, units);
 					});
 					return RSVP.all(promises);
 				})
