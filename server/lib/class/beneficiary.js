@@ -1410,52 +1410,57 @@ function Beneficiary( ) {
 								progs = progs.concat(list);
 							});
 							progs.forEach(function (prog) {
-								var startDate, nextDate, firstDay, dat;
+								var startDate, nextDate, firstDay, dat, closeDate;
 								switch (prog.frequency) {
 									case "daily":
 										startDate = moment().subtract(prog.repeat, 'd');
 										nextDate = moment(prog.startDate).hour(12).minute(0).second(0);
+										closeDate = moment(prog.endDate).hour(12).minute(0).second(0);
+										closeDate = closeDate.unix() < endDate.unix() ? closeDate:endDate;
 										while (nextDate.unix() < startDate.unix()) {
 											nextDate.add(prog.repeat, 'd');
 										}
-										if (nextDate.unix() < endDate.unix()) {
+										if (nextDate.unix() <= closeDate.unix()) {
 											do {
-												logger.trace( nextDate.unix(), endDate.unix() );
-												if (nextDate.unix() < endDate.unix() && nextDate.unix() > today.unix()) {
+												if (nextDate.unix() <= closeDate.unix() && nextDate.unix() > today.unix()) {
 													msgs.push({ref: prog.ref, date: nextDate.unix()});
 												}
 												nextDate.add(prog.repeat, 'd');
-											} while (nextDate.unix() < endDate.unix());
+											} while (nextDate.unix() <= closeDate.unix());
 										}
 										break;
 									case "weekly":
 										startDate = moment().subtract(prog.repeat, 'w');
 										nextDate = moment(prog.startDate).day(prog.when.days[0]).hour(12).minute(0).second(0);
+										closeDate = moment(prog.endDate).hour(12).minute(0).second(0);
+										closeDate = closeDate.unix() < endDate.unix() ? closeDate:endDate;
 										while (nextDate.unix() < startDate.unix()) {
 											nextDate.add(prog.repeat, 'w');
 										}
-										if (nextDate.unix() < endDate.unix()) {
+										if (nextDate.unix() <= closeDate.unix()) {
 											do {
 												firstDay = moment.unix(nextDate.unix());
 												prog.when.days.forEach(function (day) {
 													firstDay.day(day);
-													if (firstDay.unix() < endDate.unix() && firstDay.unix() >= today.unix()) {
+													if (firstDay.unix() <= closeDate.unix() && firstDay.unix() > today.unix()) {
 														msgs.push({ref: prog.ref, date: firstDay.unix()});
 													}
 												}); // jshint ignore:line
 												nextDate.add(prog.repeat, 'w');
-											} while (nextDate.unix() < endDate.unix());
+											} while (nextDate.unix() <= closeDate.unix());
 
 										}
 										break;
 									case "monthly":
 										startDate = moment().date(1).hour(12).minute(0).second(0);
 										nextDate = moment(prog.startDate).date(1).hour(12).minute(0).second(0);
+										closeDate = moment(prog.endDate).hour(12).minute(0).second(0);
+										closeDate = closeDate.unix() < endDate.unix() ? closeDate:endDate;
 										while (nextDate.unix() < startDate.unix()) {
 											nextDate.add(prog.repeat, 'M');
 										}
 										logger.debug("nextDate", nextDate.format("L"));
-										if (nextDate.unix() < endDate.unix()) {
+										if (nextDate.unix() <= closeDate.unix()) {
 											prog.when.days.forEach(function (day) {
 												if (day > 0) {
 													dat = moment.unix(nextDate.unix());
@@ -1466,7 +1471,7 @@ function Beneficiary( ) {
 													dat.day(-day % 10);
 													dat.subtract(Math.floor(-day / 10) - 1, 'w');
 												}
-												if (dat.unix() < endDate.unix() && dat.unix() >= today.unix()) {
+												if (dat.unix() <= closeDate.unix() && dat.unix() > today.unix()) {
 													msgs.push({ref: prog.ref, date: dat.unix()});
 												}
 											});
@@ -1677,8 +1682,8 @@ function Beneficiary( ) {
 		var queue = new Queue(this._id);
 		var name = "hhr[" + this._id + "]";
 
-		var today = moment();
-		var endDate = moment().add(14,'d');
+		var today = moment().hour(12).minute(0).second(0);
+		var endDate = moment().add(14,'d').hour(12).minute(0).second(0);
 		var dataProg = new DataProg( this._id );
 		var msgs = [];
 		var that = this;
@@ -1690,53 +1695,59 @@ function Beneficiary( ) {
 				})
 				.then(function (progs) {
 					progs.forEach(function (prog) {
-						var startDate, nextDate, firstDay, dat;
+						var startDate, nextDate, firstDay, dat, closeDate;
 						
 						switch (prog.frequency) {
 							case "daily":
 								startDate = moment().subtract(prog.repeat, 'd');
 								nextDate = moment(prog.startDate).hour(12).minute(0).second(0);
+								closeDate = moment(prog.endDate).hour(12).minute(0).second(0);
+								closeDate = closeDate.unix() < endDate.unix() ? closeDate:endDate;
 								while (nextDate.unix() < startDate.unix()) {
 									nextDate.add(prog.repeat, 'd');
 								}
-								if (nextDate.unix() < endDate.unix()) {
+								if (nextDate.unix() <= closeDate.unix()) {
 									do {
-										if (nextDate.unix() < endDate.unix() && nextDate.unix() >= today.unix()) {
+										if (nextDate.unix() <= closeDate.unix() && nextDate.unix() > today.unix()) {
 											msgs.push({ref: prog.ref, date: nextDate.unix()});
 										}
 										nextDate.add(prog.repeat, 'd');
-									} while (nextDate.unix() < endDate.unix());
+									} while (nextDate.unix() <= closeDate.unix());
 								}
 								break;
 							case "weekly":
 								startDate = moment().subtract(prog.repeat, 'w');
 								nextDate = moment(prog.startDate).day(prog.when.days[0]).hour(12).minute(0).second(0);
+								closeDate = moment(prog.endDate).hour(12).minute(0).second(0);
+								closeDate = closeDate.unix() < endDate.unix() ? closeDate:endDate;
 								while (nextDate.unix() < startDate.unix()) {
 									nextDate.add(prog.repeat, 'w');
 								}
-								if (nextDate.unix() < endDate.unix()) {
+								if (nextDate.unix() <= closeDate.unix()) {
 									do {
 										firstDay = moment.unix(nextDate.unix());
 										prog.when.days.forEach(function (day) {
 											firstDay.day(day);
 											
-											if (firstDay.unix() < endDate.unix() && firstDay.unix() >= today.unix()) {
+											if (firstDay.unix() <= closeDate.unix() && firstDay.unix() > today.unix()) {
 												msgs.push({ref: prog.ref, date: firstDay.unix()});
 											}
 										}); // jshint ignore:line
 										nextDate.add(prog.repeat, 'w');
-									} while (nextDate.unix() < endDate.unix());
+									} while (nextDate.unix() <= closeDate.unix());
 
 								}
 								break;
 							case "monthly":
 								startDate = moment().date(1).hour(12).minute(0).second(0);
 								nextDate = moment(prog.startDate).date(1).hour(12).minute(0).second(0);
+								closeDate = moment(prog.endDate).hour(12).minute(0).second(0);
+								closeDate = closeDate.unix() < endDate.unix() ? closeDate:endDate;
 								while (nextDate.unix() < startDate.unix()) {
 									nextDate.add(prog.repeat, 'M');
 								}
 								
-								if (nextDate.unix() < endDate.unix()) {
+								if (nextDate.unix() <= closeDate.unix()) {
 									prog.when.days.forEach(function (day) {
 										if (day > 0) {
 											dat = moment.unix(nextDate.unix());
@@ -1747,7 +1758,7 @@ function Beneficiary( ) {
 											dat.day(-day % 10);
 											dat.subtract(Math.floor(-day / 10) - 1, 'w');
 										}
-										if (dat.unix() < endDate.unix() && dat.unix() >= today.unix()) {
+										if (dat.unix() <= closeDate.unix() && dat.unix() > today.unix()) {
 											msgs.push({ref: prog.ref, date: dat.unix()});
 										}
 									});
