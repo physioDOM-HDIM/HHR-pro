@@ -2301,7 +2301,7 @@ function Beneficiary( ) {
 		var that = this;
 
 		return new promise(function (resolve, reject) {
-			var dietaryPlan = new DietaryPlan(new ObjectID(that._id));
+			var dietaryPlan = new DietaryPlan( that._id );
 			dietaryPlan.getItemsArray(1, 1000)
 				.then( function(results) {
 					var promises = results.map( function( dietaryPlan) {
