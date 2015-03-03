@@ -1415,7 +1415,7 @@ function Beneficiary( ) {
 									case "daily":
 										startDate = moment().subtract(prog.repeat, 'd');
 										nextDate = moment(prog.startDate).hour(12).minute(0).second(0);
-										closeDate = moment(prog.endDate).hour(12).minute(0).second(0);
+										closeDate = prog.endDate?moment(prog.endDate).hour(12).minute(0).second(0):endDate;
 										closeDate = closeDate.unix() < endDate.unix() ? closeDate:endDate;
 										while (nextDate.unix() < startDate.unix()) {
 											nextDate.add(prog.repeat, 'd');
@@ -1432,7 +1432,7 @@ function Beneficiary( ) {
 									case "weekly":
 										startDate = moment().subtract(prog.repeat, 'w');
 										nextDate = moment(prog.startDate).day(prog.when.days[0]).hour(12).minute(0).second(0);
-										closeDate = moment(prog.endDate).hour(12).minute(0).second(0);
+										closeDate = prog.endDate?moment(prog.endDate).hour(12).minute(0).second(0):endDate;
 										closeDate = closeDate.unix() < endDate.unix() ? closeDate:endDate;
 										while (nextDate.unix() < startDate.unix()) {
 											nextDate.add(prog.repeat, 'w');
@@ -1454,7 +1454,7 @@ function Beneficiary( ) {
 									case "monthly":
 										startDate = moment().date(1).hour(12).minute(0).second(0);
 										nextDate = moment(prog.startDate).date(1).hour(12).minute(0).second(0);
-										closeDate = moment(prog.endDate).hour(12).minute(0).second(0);
+										closeDate = prog.endDate?moment(prog.endDate).hour(12).minute(0).second(0):endDate;
 										closeDate = closeDate.unix() < endDate.unix() ? closeDate:endDate;
 										while (nextDate.unix() < startDate.unix()) {
 											nextDate.add(prog.repeat, 'M');
@@ -1701,7 +1701,7 @@ function Beneficiary( ) {
 							case "daily":
 								startDate = moment().subtract(prog.repeat, 'd');
 								nextDate = moment(prog.startDate).hour(12).minute(0).second(0);
-								closeDate = moment(prog.endDate).hour(12).minute(0).second(0);
+								closeDate = prog.endDate?moment(prog.endDate).hour(12).minute(0).second(0):endDate;
 								closeDate = closeDate.unix() < endDate.unix() ? closeDate:endDate;
 								while (nextDate.unix() < startDate.unix()) {
 									nextDate.add(prog.repeat, 'd');
@@ -1718,7 +1718,7 @@ function Beneficiary( ) {
 							case "weekly":
 								startDate = moment().subtract(prog.repeat, 'w');
 								nextDate = moment(prog.startDate).day(prog.when.days[0]).hour(12).minute(0).second(0);
-								closeDate = moment(prog.endDate).hour(12).minute(0).second(0);
+								closeDate = prog.endDate?moment(prog.endDate).hour(12).minute(0).second(0):endDate;
 								closeDate = closeDate.unix() < endDate.unix() ? closeDate:endDate;
 								while (nextDate.unix() < startDate.unix()) {
 									nextDate.add(prog.repeat, 'w');
@@ -1741,7 +1741,7 @@ function Beneficiary( ) {
 							case "monthly":
 								startDate = moment().date(1).hour(12).minute(0).second(0);
 								nextDate = moment(prog.startDate).date(1).hour(12).minute(0).second(0);
-								closeDate = moment(prog.endDate).hour(12).minute(0).second(0);
+								closeDate = prog.endDate?moment(prog.endDate).hour(12).minute(0).second(0):endDate;
 								closeDate = closeDate.unix() < endDate.unix() ? closeDate:endDate;
 								while (nextDate.unix() < startDate.unix()) {
 									nextDate.add(prog.repeat, 'M');
