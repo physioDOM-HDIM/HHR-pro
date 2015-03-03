@@ -1390,8 +1390,8 @@ function Beneficiary( ) {
 		var queue = new Queue(this._id);
 		var name = "hhr[" + this._id + "]";
 		
-		var today = moment();
-		var endDate = moment().add(14,'d');
+		var today = moment().hour(12).minute(0).second(0);
+		var endDate = moment().add(14,'d').hour(12).minute(0).second(0);
 		var dataProg = new DataProg( this._id );
 		var msgs = [];
 		var that = this;
@@ -1420,7 +1420,8 @@ function Beneficiary( ) {
 										}
 										if (nextDate.unix() < endDate.unix()) {
 											do {
-												if (nextDate.unix() < endDate.unix() && nextDate.unix() >= today.unix()) {
+												logger.trace( nextDate.unix(), endDate.unix() );
+												if (nextDate.unix() < endDate.unix() && nextDate.unix() > today.unix()) {
 													msgs.push({ref: prog.ref, date: nextDate.unix()});
 												}
 												nextDate.add(prog.repeat, 'd');
