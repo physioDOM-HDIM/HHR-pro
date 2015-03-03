@@ -20,7 +20,7 @@ function Queue ( beneficiaryID ) {
 	this.subject = beneficiaryID;
 	
 	this.init = function() {
-		logger.trace("init hhr");
+		logger.trace("init hhr", this.subject );
 		var that = this;
 		
 		return new promise( function( resolve, reject ) {
