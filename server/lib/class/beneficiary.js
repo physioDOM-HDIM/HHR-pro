@@ -2232,7 +2232,7 @@ function Beneficiary( ) {
 		var that = this;
 
 		return new promise(function (resolve, reject) {
-			var physicalPlan = new PhysicalPlan(new ObjectID(that._id));
+			var physicalPlan = new PhysicalPlan(that._id);
 			physicalPlan.getItemsArray(1, 1000)
 				.then( function(results) {
 					var promises = results.map( function( physicalPlan) {
