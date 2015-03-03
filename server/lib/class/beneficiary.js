@@ -1334,10 +1334,10 @@ function Beneficiary( ) {
 						value: parameters[measure].precision?1:0,
 						type : "Integer"
 					});
-					if(parameters[measure].unit ) {
+					if(parameters[measure].unity && parameters[measure].unity !== 'NONE'  ) {
 						msg.push({
 							name : name + ".unit",
-							value: parameters[measure].unit,
+							value: units[ parameters[measure].unity ].label[physioDOM.lang] || units[ parameters[measure].unity ].label.en,
 							type : "String"
 						});
 					}
