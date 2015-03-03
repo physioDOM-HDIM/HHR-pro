@@ -1356,7 +1356,7 @@ function Beneficiary( ) {
 
 	this.dropMeasurePlan = function() {
 		var queue = new Queue(this._id);
-		var name = "hhr['" + this._id + "']";
+		var name = "hhr[" + this._id + "]";
 		var that = this;
 		
 		logger.trace("dropMeasurePlan");
@@ -1388,7 +1388,7 @@ function Beneficiary( ) {
 	 */
 	this.getMeasurePlan = function( ) {
 		var queue = new Queue(this._id);
-		var name = "hhr['" + this._id + "']";
+		var name = "hhr[" + this._id + "]";
 		
 		var today = moment();
 		var endDate = moment().add(14,'d');
@@ -1644,7 +1644,7 @@ function Beneficiary( ) {
 
 	this.dropSymptomsPlan = function() {
 		var queue = new Queue(this._id);
-		var name = "hhr['" + this._id + "']";
+		var name = "hhr[" + this._id + "]";
 		var that = this;
 
 		logger.trace("dropSymptomsPlan");
@@ -1674,7 +1674,7 @@ function Beneficiary( ) {
 	 */
 	this.getSymptomsPlan = function() {
 		var queue = new Queue(this._id);
-		var name = "hhr['" + this._id + "']";
+		var name = "hhr[" + this._id + "]";
 
 		var today = moment();
 		var endDate = moment().add(14,'d');
@@ -2115,7 +2115,7 @@ function Beneficiary( ) {
 	this.pushLastDHDFFQ = function( newFlag ) {
 		var that = this;
 		var queue = new Queue(this._id);
-		var leaf = "hhr['" + this._id + "'].dhdffq";
+		var leaf = "hhr[" + this._id + "].dhdffq";
 		
 		logger.trace("pushLastDHDFFQ");
 		return new promise( function(resolve, reject) {

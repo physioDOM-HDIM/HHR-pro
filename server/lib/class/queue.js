@@ -40,7 +40,7 @@ function Queue ( beneficiaryID ) {
 						"method": "DELETE",
 						"init":true,
 						"content": [
-							{"branch": "hhr['" + beneficiary._id + "']"}
+							{"branch": "hhr[" + beneficiary._id + "]"}
 						]
 					};
 					logger.debug("msg", msg);
@@ -271,7 +271,7 @@ function Queue ( beneficiaryID ) {
 		logger.trace("receivedMessages");
 		console.log(msg);
 		var that = this;
-		var leaf = "hhr['"+ that.subject +"']";
+		var leaf = "hhr["+ that.subject +"]";
 		return new promise(function (resolve, reject) {
 			physioDOM.Beneficiaries()
 				.then(function (beneficiaries) {
