@@ -42,7 +42,8 @@ function physicalPlan(beneficiaryID) {
 		pg = pg || 1;
 		offset = offset || 50;
 
-		var cursor = physioDOM.db.collection("physicalPlan").find();
+		var search = { beneficiary : this.beneficiary };
+		var cursor = physioDOM.db.collection("physicalPlan").find( search );
 		var cursorSort = {};
 		if(sort) {
 			cursorSort[sort] = [-1,1].indexOf(sortDir)!==-1?sortDir:1;
