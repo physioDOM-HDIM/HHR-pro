@@ -2056,7 +2056,9 @@ function Beneficiary( ) {
 			});
 			RSVP.all(promises)
 				.then(function (results) {
-					msgs = msgs.concat(results);
+					results.forEach( function( res ) {
+						if( res.length ) { msgs.push(res); }
+					});
 					resolve(msgs);
 				});
 		});
