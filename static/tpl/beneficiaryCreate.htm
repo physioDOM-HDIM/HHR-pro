@@ -124,9 +124,9 @@
 		<div class="row">
 			<label class="mandatory">{{ "Civility" | i18n }}</label>
 			<input name="gender" type="radio" value="M" {% if beneficiary.gender=='M' %}checked{% endif %} required>
-			<label for="Male">{{ "Male"|i18n }}</label>
+			<label for="Male">{{ "Man"|i18n }}</label>
 			<input name="gender" type="radio" value="F" {% if beneficiary.gender=='F' %}checked{% endif %} required>
-			<label for="Female">{{ "Female"|i18n }}</label>
+			<label for="Female">{{ "Woman"|i18n }}</label>
 		</div>
 		<div class="row">
 			<label class="mandatory">{{ "Last name"|i18n }}</label>
@@ -532,8 +532,8 @@
 			</tsante-list>
 		</div>
 		<div class="modalButtonContainer">
-			<button class="red" onclick="closeProfessionals()">{{ "Close"|i18n }}</button>
-			<button class="green" onclick="addProfessionals()">{{ "Back"|i18n }}</button>
+			<button class="red" onclick="closeProfessionals()">{{ "Cancel"|i18n }}</button>
+			<button class="green" onclick="addProfessionals()">{{ "Save"|i18n }}</button>
 		</div>
 	</div>
 </zdk-modal>
