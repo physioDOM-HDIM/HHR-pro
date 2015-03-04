@@ -96,7 +96,6 @@ function Lists( ) {
 		return new promise( function(resolve, reject) {
 			that.getList(listName, lang)
 				.then( function(list) {
-					// logger.debug("list "+listName, list);
 					var i, key, obj = {};
 	 				for(i=0; i<list.items.length; i++){
 	 					key = list.items[i].ref;
