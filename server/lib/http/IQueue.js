@@ -183,6 +183,7 @@ var IQueue = {
 	
 	measurePlan: function( req, res, next ) {
 		var hhr = req.params.hhr?new ObjectID(req.params.hhr):null || req.session.beneficiary;
+		var force = req.params.force !== null && req.params.force !== "true" ?false:true;
 		logger.trace("measurePlan", hhr);
 
 		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
@@ -200,7 +201,7 @@ var IQueue = {
 				})
 				.then(function (beneficiary) {
 					if (beneficiary.biomasterStatus) {
-						return beneficiary.getMeasurePlan();
+						return beneficiary.getMeasurePlan( force );
 					} else {
 						return false;
 					}
@@ -255,6 +256,7 @@ var IQueue = {
 	
 	symptomPlan: function( req, res, next ) {
 		var hhr = req.params.hhr?new ObjectID(req.params.hhr):null || req.session.beneficiary;
+		var force = req.params.force !== null && req.params.force !== "true" ?false:true;
 		logger.trace("symptomPlan", hhr);
 
 		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
@@ -272,7 +274,7 @@ var IQueue = {
 				})
 				.then(function (beneficiary) {
 					if (beneficiary.biomasterStatus) {
-						return beneficiary.getSymptomsPlan();
+						return beneficiary.getSymptomsPlan( force );
 					} else {
 						return false;
 					}
