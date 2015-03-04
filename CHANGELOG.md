@@ -1,3 +1,33 @@
+__v0.0.13__
+
+  - Fix push message to the queue
+    - remove quotes
+    - Fix send units
+    - Fix agenda of data prescription
+  - Fixed bugs
+    - #73 : Directory CSV export 
+    - #74 : non specifié
+    - #78 : Erreur sauvegarde mail ( Directory )
+    - #88 : Signalement perte de saisie
+    - #95 : Message erreur incomplet sur erreur de date de naissance ( beneficiary create )
+    - #100 : Tri de la liste des professionels attachés à un beneficiare
+    - #112 : Directory create plantage sur civilité et organisation
+    - #113 : Controle d'intégrité ( suppression d'un professionel attaché à des beneficiares )
+    - #119 : Liste à compléter
+    - #147 : Filtre sur les beneficiares
+    - #180 : Listes vides
+    - #181 : Bouton menu
+    - #182 : Uniformaisation des champs date ( prescription of data monitoring )
+    - #187 : chanmp demande trop petit ( non spécifie )
+    - #189 : Bouton validate
+    - #197 : Current health status well being problème de formulaire
+    - #204 : Eetscore manquant
+    - #206 : Synthèse des résultats : pas de tri
+    - #224 : Nutritional status label au lieu de la référence
+    - #232 : organizationType en double
+    - #246 : Affichage des seuils dans le graphe ( non reproduit )
+    - #238 : Taille des messages to home
+    
 __v0.0.12__
 
   - Adds an agenda to repeatedly update beneficiaries measures and symptoms plans

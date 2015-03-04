@@ -99,13 +99,11 @@ function Menu() {
 				if( role ) { 
 					search['rights.'+role] = { '$gt':0 };
 				}
-				logger.debug( 'search', search );
 				var cursor = physioDOM.db.collection("menus").find( search ).sort({index:1});
 				database.getArray(cursor)
 					.then( function(items) {
 						var count = items.length;
 						menu = items;
-						logger.debug("count", count );
 						if( count === 0 ) {
 							resolve(menu);
 						} else {
@@ -194,7 +192,6 @@ function Menu() {
 			updatedEntry._id = that._id;
 			checkSchema(updatedEntry)
 				.then(function (updatedEntry) {
-					logger.debug('Schema is valid');
 					for (var key in updatedEntry) {
 						if (key !== '_id' && updatedEntry.hasOwnProperty(key)) {
 							that[key] = updatedEntry[key];

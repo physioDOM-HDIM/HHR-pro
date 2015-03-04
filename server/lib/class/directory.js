@@ -105,8 +105,6 @@ function Directory( ) {
 		logger.trace("getList");
 		return new promise( function(resolve, reject) {
 			physioDOM.db.collection("professionals").find({}).sort({ "name.family":1}).toArray(function(err, list) {
-				console.log(err);
-				console.log(list);
 				resolve(list);
 			});
 		});
@@ -171,7 +169,7 @@ function Directory( ) {
 		function deleteProfessional( professionalID) {
 			return new promise( function(resolve, reject) {
 
-				physioDOM.db.collection("beneficiaries").update( { 'professionals.professionalID': professionalID }, { '$pull': { professionals : { professionalID: professionalID } } }, { multi:true }, function(err) {
+				physioDOM.db.collection("beneficiaries").update( { 'professionals.professionalID': professionalID.toString() }, { '$pull': { professionals : { professionalID: professionalID.toString() } } }, { multi:true }, function(err) {
 					if(err) {
 						console.log(err);
 					} else {

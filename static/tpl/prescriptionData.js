@@ -52,6 +52,11 @@ var init = function () {
 
 		var dataItem = lists.dataprog[i],
 			param = utils.findInObject(lists.parameters.items, 'ref', dataItem.ref);
+
+		moment.locale( infos.lang==="en"?"en_gb":infos.lang );
+		dataItem.startDate = moment(dataItem.startDate).format("L");
+		dataItem.endDate = moment(dataItem.endDate).format("L");
+		
 		if (dataItem.repeat > 1) {
 			dataItem.freqRepeat = true;
 		}

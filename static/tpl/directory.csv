@@ -1,7 +1,7 @@
-Name, Gender/Organisation, job, role, Contact, active, address
+Name; Gender/Organisation; job; role; Contact; active; address
 {% for directory in directoryList -%}
 
-	{{- directory.name.family }} {{ directory.name.given- }},
+	{{- directory.name.family }} {{ directory.name.given- }};
 
 	{%- if directory.gender -%}
 		{{- directory.gender -}}
@@ -9,17 +9,17 @@ Name, Gender/Organisation, job, role, Contact, active, address
 		{{- organizationTypeList[directory.organizationType][lang] -}}
 	{%- else -%}
 		{{- directory.organizationType -}}
-	{%- endif -%},
+	{%- endif -%};
 
 	{%- if jobList[directory.job] -%}
 		{{- jobList[directory.job][lang] -}}
 	{%- else -%}
 		{{- directory.job -}}
-	{%- endif -%},
+	{%- endif -%};
 
 	{%- if directory.role -%}
 		{{- directory.role -}}
-	{%- endif -%},"
+	{%- endif -%};"
 
 	{%- for com in directory.telecom -%}
 		{{- com.system+" " -}}
@@ -29,13 +29,13 @@ Name, Gender/Organisation, job, role, Contact, active, address
 		 {{- ": "+com.value -}}
 		{%- if !loop.last %}
 {% endif -%}
-	{%- endfor -%}",
+	{%- endfor -%}";
 
 	{%- if directory.active -%}
 		{{- "Yes" -}}
 	{%- else -%}
 		{{- "No" -}}
-	{%- endif -%},"
+	{%- endif -%};"
 
 	{%- for line in directory.address.line -%}
 		{{- line }}

@@ -58,7 +58,7 @@ function Messages( beneficiaryID ) {
 							return Directory.getEntryByID( message.author.toString() );
 						})
 						.then( function( author ) {
-							var name = "hhr['" + that.subject + "'].message['" + message._id + "']";
+							var name = "hhr[" + that.subject + "].messages[" + message._id + "]";
 							var msg = [];
 							msg.push({
 								name : name + ".datetime",

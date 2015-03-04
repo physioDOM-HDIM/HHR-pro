@@ -20,7 +20,7 @@ function Queue ( beneficiaryID ) {
 	this.subject = beneficiaryID;
 	
 	this.init = function() {
-		logger.trace("init hhr");
+		logger.trace("init hhr", this.subject );
 		var that = this;
 		
 		return new promise( function( resolve, reject ) {
@@ -40,7 +40,7 @@ function Queue ( beneficiaryID ) {
 						"method": "DELETE",
 						"init":true,
 						"content": [
-							{"branch": "hhr['" + beneficiary._id + "']"}
+							{"branch": "hhr[" + beneficiary._id + "]"}
 						]
 					};
 					logger.debug("msg", msg);
@@ -177,10 +177,10 @@ function Queue ( beneficiaryID ) {
 								return beneficiary.pushLastDHDFFQ();
 							})
 							.then( function() {
-								return beneficiary.getMeasurePlan();
+								return beneficiary.getMeasurePlan(true);
 							})
 							.then( function() {
-								return beneficiary.getSymptomsPlan();
+								return beneficiary.getSymptomsPlan(true);
 							})
 							.then( function() {
 								return beneficiary.physicalPlanToQueue();
@@ -271,7 +271,7 @@ function Queue ( beneficiaryID ) {
 		logger.trace("receivedMessages");
 		console.log(msg);
 		var that = this;
-		var leaf = "hhr['"+ that.subject +"']";
+		var leaf = "hhr["+ that.subject +"]";
 		return new promise(function (resolve, reject) {
 			physioDOM.Beneficiaries()
 				.then(function (beneficiaries) {

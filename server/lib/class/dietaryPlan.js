@@ -23,7 +23,8 @@ function dietaryPlan(beneficiaryID) {
 		pg = pg || 1;
 		offset = offset || 50;
 
-		var cursor = physioDOM.db.collection("dietaryPlan").find();
+		var search = { beneficiary: this.beneficiary };
+		var cursor = physioDOM.db.collection("dietaryPlan").find( search );
 		var cursorSort = {};
 		if(sort) {
 			cursorSort[sort] = [-1,1].indexOf(sortDir)!==-1?sortDir:1;
@@ -40,7 +41,8 @@ function dietaryPlan(beneficiaryID) {
 		pg = pg || 1;
 		offset = offset || 50;
 
-		var cursor = physioDOM.db.collection("dietaryPlan").find();
+		var search = { beneficiary: this.beneficiary };
+		var cursor = physioDOM.db.collection("dietaryPlan").find( search );
 		var cursorSort = {};
 		if(sort) {
 			cursorSort[sort] = [-1,1].indexOf(sortDir)!==-1?sortDir:1;

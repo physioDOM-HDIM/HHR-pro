@@ -85,12 +85,24 @@ function Beneficiaries( ) {
 		return dbPromise.getList(cursor, pg, offset);
 	};
 	
-	this.getAllActiveHHR = function() {
+	this.getAllActiveHHR = function(pg, offset) {
 		var search = { active:true, biomasterStatus: true };
 		var cursor = physioDOM.db.collection("beneficiaries").find(search);
 		return dbPromise.getArray(cursor);
 	};
-
+	
+	this.getAllActiveHHRList = function(pg, offset) {
+		logger.trace("getBeneficiaries");
+		
+		if(!pg || pg < 1) { pg = 1; }
+		if(!offset) { offset = 20; }
+		var search = { active:true, biomaster: { '$exists':1, '$ne':"" } };
+		var cursor = physioDOM.db.collection("beneficiaries").find(search);
+		var cursorSort = { "name.family": 1 };
+		cursor = cursor.sort( cursorSort );
+		return dbPromise.getList(cursor, pg, offset);
+	};
+	
 	/**
 	 * Only coordinators or administrators are allowed to create new beneficiary
 	 */

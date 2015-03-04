@@ -307,7 +307,6 @@ server.get( '/api/menu', IMenu.getMenu);
 server.put( '/api/rights', IMenu.putRights);
 
 server.get( '/api/directory/export', ICSV.getDirectory);
-
 server.get( '/api/directory', IDirectory.getEntries);
 server.post('/api/directory', IDirectory.createEntry);
 server.get( '/api/directory/:entryID', IDirectory.getEntry );
@@ -411,19 +410,30 @@ server.get( '/api/logout', logout);
 
 // ===================================================
 //              Queue messages
-server.get( '/api/queue/init', IQueue.init );
-server.post('/api/queue/status', IQueue.status );
-server.get( '/api/queue/messages', IQueue.messages);
-server.get( '/api/queue/history', IQueue.history);
-server.get( '/api/queue/history/:category', IQueue.history);
-server.get( '/api/queue/dhdffq', IQueue.dhdffq);
-server.get( '/api/queue/measurePlan', IQueue.measurePlan);
-server.get( '/api/queue/symptomPlan', IQueue.symptomPlan);
-server.get( '/api/queue/physicalPlan', IQueue.physicalPlan);
-server.get( '/api/queue/dietaryPlan', IQueue.dietaryPlan);
-server.get( '/api/queue/symptomsSelf', IQueue.symptomsSelf);
+server.get( '/api/hhr',                          IBeneficiary.getHHRs );
+server.get( '/api/queue/init',                   IQueue.init );
+server.post('/api/queue/status',                 IQueue.status );
+server.get( '/api/queue/messages',               IQueue.messages);
+server.get( '/api/queue/history',                IQueue.history);
+server.get( '/api/queue/history/:category',      IQueue.history);
+server.get( '/api/queue/dhdffq',                 IQueue.dhdffq);
+server.get( '/api/queue/measurePlan',            IQueue.measurePlan);
+server.get( '/api/queue/symptomPlan',            IQueue.symptomPlan);
+server.get( '/api/queue/physicalPlan',           IQueue.physicalPlan);
+server.get( '/api/queue/dietaryPlan',            IQueue.dietaryPlan);
+server.get( '/api/queue/symptomsSelf',           IQueue.symptomsSelf);
+server.post('/api/queue/received',               IQueue.receivedMsg);
 
-server.post('/api/queue/received', IQueue.receivedMsg);
+server.get( '/api/queue/:hhr/init',              IQueue.init );
+server.get( '/api/queue/:hhr/messages',          IQueue.messages);
+server.get( '/api/queue/:hhr/history',           IQueue.history);
+server.get( '/api/queue/:hhr/history/:category', IQueue.history);
+server.get( '/api/queue/:hhr/dhdffq',            IQueue.dhdffq);
+server.get( '/api/queue/:hhr/measurePlan',       IQueue.measurePlan);
+server.get( '/api/queue/:hhr/symptomPlan',       IQueue.symptomPlan);
+server.get( '/api/queue/:hhr/physicalPlan',      IQueue.physicalPlan);
+server.get( '/api/queue/:hhr/dietaryPlan',       IQueue.dietaryPlan);
+server.get( '/api/queue/:hhr/symptomsSelf',      IQueue.symptomsSelf);
 
 // ===================================================
 //               Pages requests
@@ -496,41 +506,40 @@ physioDOM.connect()
 		server.listen(config.port, "127.0.0.1", function () {
 			logger.info('------------------------------------------------------------------');
 			logger.info(server.name + ' listening at ' + server.url);
+			logger.info("config\n", JSON.stringify(config,"",4) );
+			logger.info('------------------------------------------------------------------');
 		});
 	})
 	.then( function() {
-		agenda.purge( function(err, numRemoved) {
-			agenda.define('push plans', function (job, done) {
-				// push measures plan and symptoms plan for all active beneficiary
-				var beneficiaries;
-				physioDOM.Beneficiaries()
-					.then( function( res ) {
-						beneficiaries = res;
-						return beneficiaries.getAllActiveHHR();
-					})
-					.then( function( activeBeneficiaries) {
-						var promises = activeBeneficiaries.map( function(beneficiary) {
-							return new promise( function( resolve, reject) {
-								beneficiaries.getHHR( beneficiary._id )
-									.then( function( beneficiary) {
-										beneficiary.getSymptomsPlan()
-											.then(function () {
-												return beneficiary.getMeasurePlan();
-											})
-											.then(resolve);
-									});
-							});
+		agenda.define('push plans', function (job, done) {
+			// push measures plan and symptoms plan for all active beneficiary
+			var beneficiaries;
+			physioDOM.Beneficiaries()
+				.then( function( res ) {
+					beneficiaries = res;
+					return beneficiaries.getAllActiveHHR();
+				})
+				.then( function( activeBeneficiaries) {
+					var promises = activeBeneficiaries.map( function(beneficiary) {
+						return new promise( function( resolve, reject) {
+							beneficiaries.getHHR( beneficiary._id )
+								.then( function( beneficiary) {
+									beneficiary.getSymptomsPlan(false)
+										.then(function () {
+											return beneficiary.getMeasurePlan(false);
+										})
+										.then(resolve);
+								});
 						});
-						
-						RSVP.all( promises )
-							.then( function() {
-								done();
-							});
 					});
-			});
-
-			agenda.every(config.agenda + ' minutes', 'push plans');
+					
+					RSVP.all( promises )
+						.then( function() {
+							done();
+						});
+				});
 		});
+		agenda.every(config.agenda + ' minutes', 'push plans');
 			
 		agenda.start();
 	})
@@ -556,7 +565,7 @@ function logout(req, res, next ) {
 				// res.send(200);
 				res.send(403, { error:403, message:"no session"} );
 			} else {
-				logger.debug("redirect to /")
+				logger.debug("redirect to /");
 				res.header('Location', '/');
 				res.send(302);
 			}
