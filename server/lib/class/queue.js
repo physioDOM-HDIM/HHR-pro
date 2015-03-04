@@ -177,10 +177,10 @@ function Queue ( beneficiaryID ) {
 								return beneficiary.pushLastDHDFFQ();
 							})
 							.then( function() {
-								return beneficiary.getMeasurePlan();
+								return beneficiary.getMeasurePlan(true);
 							})
 							.then( function() {
-								return beneficiary.getSymptomsPlan();
+								return beneficiary.getSymptomsPlan(true);
 							})
 							.then( function() {
 								return beneficiary.physicalPlanToQueue();
