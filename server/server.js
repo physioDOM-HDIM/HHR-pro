@@ -425,6 +425,16 @@ server.get( '/api/queue/dietaryPlan',            IQueue.dietaryPlan);
 server.get( '/api/queue/symptomsSelf',           IQueue.symptomsSelf);
 server.post('/api/queue/received',               IQueue.receivedMsg);
 
+server.get( '/api/queue/:hhr/init',              IQueue.init );
+server.get( '/api/queue/:hhr/messages',          IQueue.messages);
+server.get( '/api/queue/:hhr/history',           IQueue.history);
+server.get( '/api/queue/:hhr/history/:category', IQueue.history);
+server.get( '/api/queue/:hhr/dhdffq',            IQueue.dhdffq);
+server.get( '/api/queue/:hhr/measurePlan',       IQueue.measurePlan);
+server.get( '/api/queue/:hhr/symptomPlan',       IQueue.symptomPlan);
+server.get( '/api/queue/:hhr/physicalPlan',      IQueue.physicalPlan);
+server.get( '/api/queue/:hhr/dietaryPlan',       IQueue.dietaryPlan);
+server.get( '/api/queue/:hhr/symptomsSelf',      IQueue.symptomsSelf);
 
 // ===================================================
 //               Pages requests
