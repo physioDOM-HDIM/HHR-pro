@@ -507,6 +507,8 @@ physioDOM.connect()
 		server.listen(config.port, "127.0.0.1", function () {
 			logger.info('------------------------------------------------------------------');
 			logger.info(server.name + ' listening at ' + server.url);
+			logger.info("config\n", JSON.stringify(config,"",4) );
+			logger.info('------------------------------------------------------------------');
 		});
 	})
 	.then( function() {
