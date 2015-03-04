@@ -307,7 +307,6 @@ server.get( '/api/menu', IMenu.getMenu);
 server.put( '/api/rights', IMenu.putRights);
 
 server.get( '/api/directory/export', ICSV.getDirectory);
-
 server.get( '/api/directory', IDirectory.getEntries);
 server.post('/api/directory', IDirectory.createEntry);
 server.get( '/api/directory/:entryID', IDirectory.getEntry );
@@ -512,38 +511,35 @@ physioDOM.connect()
 		});
 	})
 	.then( function() {
-		agenda.purge( function(err, numRemoved) {
-			agenda.define('push plans', function (job, done) {
-				// push measures plan and symptoms plan for all active beneficiary
-				var beneficiaries;
-				physioDOM.Beneficiaries()
-					.then( function( res ) {
-						beneficiaries = res;
-						return beneficiaries.getAllActiveHHR();
-					})
-					.then( function( activeBeneficiaries) {
-						var promises = activeBeneficiaries.map( function(beneficiary) {
-							return new promise( function( resolve, reject) {
-								beneficiaries.getHHR( beneficiary._id )
-									.then( function( beneficiary) {
-										beneficiary.getSymptomsPlan()
-											.then(function () {
-												return beneficiary.getMeasurePlan();
-											})
-											.then(resolve);
-									});
-							});
+		agenda.define('push plans', function (job, done) {
+			// push measures plan and symptoms plan for all active beneficiary
+			var beneficiaries;
+			physioDOM.Beneficiaries()
+				.then( function( res ) {
+					beneficiaries = res;
+					return beneficiaries.getAllActiveHHR();
+				})
+				.then( function( activeBeneficiaries) {
+					var promises = activeBeneficiaries.map( function(beneficiary) {
+						return new promise( function( resolve, reject) {
+							beneficiaries.getHHR( beneficiary._id )
+								.then( function( beneficiary) {
+									beneficiary.getSymptomsPlan(false)
+										.then(function () {
+											return beneficiary.getMeasurePlan(false);
+										})
+										.then(resolve);
+								});
 						});
-						
-						RSVP.all( promises )
-							.then( function() {
-								done();
-							});
 					});
-			});
-
-			agenda.every(config.agenda + ' minutes', 'push plans');
+					
+					RSVP.all( promises )
+						.then( function() {
+							done();
+						});
+				});
 		});
+		agenda.every(config.agenda + ' minutes', 'push plans');
 			
 		agenda.start();
 	})
@@ -569,7 +565,7 @@ function logout(req, res, next ) {
 				// res.send(200);
 				res.send(403, { error:403, message:"no session"} );
 			} else {
-				logger.debug("redirect to /")
+				logger.debug("redirect to /");
 				res.header('Location', '/');
 				res.send(302);
 			}
