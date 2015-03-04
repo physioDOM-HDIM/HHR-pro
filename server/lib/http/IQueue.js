@@ -30,6 +30,10 @@ var IQueue = {
 		var hhr = req.params.hhr?new ObjectID(req.params.hhr):null || req.session.beneficiary;
 		logger.trace("symptomPlan", hhr);
 
+		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
+			res.send(403, { code:403, message:"you have no write to access this request"});
+			return next(false);
+		}
 		if(!hhr) {
 			res.send(404, { code:404, message:"empty hhr"});
 			return next();
@@ -73,6 +77,11 @@ var IQueue = {
 		var hhr = req.params.hhr?new ObjectID(req.params.hhr):null || req.session.beneficiary;
 		logger.trace("messages", hhr);
 
+		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
+			res.send(403, { code:403, message:"you have no write to access this request"});
+			return next(false);
+		}
+		
 		if(!hhr) {
 			res.send(404, { code:404, message:"empty hhr"});
 			return next();
@@ -104,6 +113,11 @@ var IQueue = {
 		var hhr = req.params.hhr?new ObjectID(req.params.hhr):null || req.session.beneficiary;
 		logger.trace("history", hhr);
 
+		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
+			res.send(403, { code:403, message:"you have no write to access this request"});
+			return next(false);
+		}
+		
 		if(!hhr) {
 			res.send(404, { code:404, message:"empty hhr"});
 			return next();
@@ -135,6 +149,11 @@ var IQueue = {
 		var hhr = req.params.hhr?new ObjectID(req.params.hhr):null || req.session.beneficiary;
 		logger.trace("dhdffq", hhr);
 
+		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
+			res.send(403, { code:403, message:"you have no write to access this request"});
+			return next(false);
+		}
+		
 		if(!hhr) {
 			res.send(404, { code:404, message:"empty hhr"});
 			return next();
@@ -166,6 +185,11 @@ var IQueue = {
 		var hhr = req.params.hhr?new ObjectID(req.params.hhr):null || req.session.beneficiary;
 		logger.trace("measurePlan", hhr);
 
+		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
+			res.send(403, { code:403, message:"you have no write to access this request"});
+			return next(false);
+		}
+		
 		if(!hhr) {
 			res.send(404, { code:404, message:"empty hhr"});
 			return next();
@@ -197,6 +221,11 @@ var IQueue = {
 		var hhr = req.params.hhr?new ObjectID(req.params.hhr):null || req.session.beneficiary;
 		logger.trace("symptomsSelf", hhr);
 
+		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
+			res.send(403, { code:403, message:"you have no write to access this request"});
+			return next(false);
+		}
+		
 		if(!hhr) {
 			res.send(404, { code:404, message:"empty hhr"});
 			return next();
@@ -228,6 +257,11 @@ var IQueue = {
 		var hhr = req.params.hhr?new ObjectID(req.params.hhr):null || req.session.beneficiary;
 		logger.trace("symptomPlan", hhr);
 
+		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
+			res.send(403, { code:403, message:"you have no write to access this request"});
+			return next(false);
+		}
+		
 		if(!hhr) {
 			res.send(404, { code:404, message:"empty hhr"});
 			return next();
@@ -259,6 +293,11 @@ var IQueue = {
 		var hhr = req.params.hhr?new ObjectID(req.params.hhr):null || req.session.beneficiary;
 		logger.trace("physicalPlan", hhr);
 
+		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
+			res.send(403, { code:403, message:"you have no write to access this request"});
+			return next(false);
+		}
+		
 		if(!hhr) {
 			res.send(404, { code:404, message:"empty hhr"});
 			return next();
@@ -290,6 +329,11 @@ var IQueue = {
 		var hhr = req.params.hhr?new ObjectID(req.params.hhr):null || req.session.beneficiary;
 		logger.trace("dietaryPlan", hhr);
 
+		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
+			res.send(403, { code:403, message:"you have no write to access this request"});
+			return next(false);
+		}
+		
 		if(!hhr) {
 			res.send(404, { code:404, message:"empty hhr"});
 			return next();
