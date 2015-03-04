@@ -1556,7 +1556,7 @@ function Beneficiary( ) {
 		logger.trace("pushSymptomsSelfToQueue");
 		
 		var queue = new Queue(this._id);
-		var leaf = "hhr[" + this._id + "].symptomsSelf.scale['"+symptomSelf.ref+"']";
+		var leaf = "hhr[" + this._id + "].symptomsSelf.scale["+symptomSelf.ref+"]";
 		
 		return new promise( function(resolve, reject) {
 			var msg = [];
