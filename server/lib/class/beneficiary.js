@@ -247,7 +247,6 @@ function Beneficiary( ) {
 			logger.trace("checkSchema");
 			var check = beneficiarySchema.validator.validate( entry, { "$ref":"/Beneficiary"} );
 			if( check.errors.length ) {
-				// console.log(JSON.stringify(check.errors,null,4));
 				return reject( { error:"bad format", detail: check.errors } );
 			} else {
 				return resolve(entry);
@@ -455,11 +454,9 @@ function Beneficiary( ) {
 					var indx = -1;
 					that.professionals.forEach( function( item, i ) {
 						if ( item.professionalID.toString() === professional._id.toString() ) {
-							// console.log("professional found");
 							indx = i;
 						}
 					});
-					// console.log("indx", indx);
 					if(indx !== -1) {
 						that.professionals[indx] = {professionalID: professional._id, referent: referent || false};
 					} else {
@@ -747,7 +744,6 @@ function Beneficiary( ) {
 					}
 					for (var prop in updatedThresholds) {
 						if (thresholdResult.hasOwnProperty(prop)) {
-							// console.log("test ", Object.keys(updatedThresholds[prop]));
 							if (JSON.stringify(Object.keys(updatedThresholds[prop])) === JSON.stringify(['min', 'max'])) {
 								that.threshold[prop] = updatedThresholds[prop];
 							} else {
@@ -1289,96 +1285,119 @@ function Beneficiary( ) {
 		});
 	};
 
-	function pushMeasure( queue, leaf, units, parameters, measures ) {
-		return new promise( function(resolve,rejet) {
-			var msg = [];
-			// logger.debug( "measure", measures );
-			// logger.debug( "parameters", parameters );
-			msg.push({
-				name : leaf + ".datetime",
-				value: measures.datetime,
-				type : "Integer"
-			});
-			msg.push({
-				name : leaf + ".new",
-				value: 1,
-				type : "Integer"
-			});
-			var hasMeasure = false;
-			measures.measure.forEach( function( measure ) {
-				if( parameters[measure].rank ) {
-					hasMeasure = true;
-					var name = leaf + ".param['"+parameters[measure].ref+"']";
-					msg.push({
-						name : name + ".type",
-						value: parseInt(parameters[measure].rank, 10),
-						type : "Integer"
-					});
-					msg.push({
-						name : name + ".label",
-						value: parameters[measure].label[physioDOM.lang],
-						type : "String"
-					});
-					msg.push({
-						name : name + ".min",
-						value: parameters[measure].range.min,
-						type : "Double"
-					});
-					msg.push({
-						name : name + ".max",
-						value: parameters[measure].range.max,
-						type : "Double"
-					});
-					msg.push({
-						name : name + ".precision",
-						value: parameters[measure].precision?1:0,
-						type : "Integer"
-					});
-					if(parameters[measure].unity && parameters[measure].unity !== 'NONE'  ) {
+	function pushMeasure( queue, hhr, units, parameters, measures, force ) {
+		force = force?force:false;
+		logger.trace("pushMeasure");
+		
+		return new promise( function(resolve,reject) {
+			var leaf = "hhr[" + hhr + "].measures[" + measures.datetime + "]";
+			physioDOM.db.collection("agendaMeasure").findOne({
+				subject : hhr,
+				datetime: measures.datetime
+			}, function (err, doc) {
+				var msg = [];
+				msg.push({
+					name : leaf + ".datetime",
+					value: measures.datetime,
+					type : "Integer"
+				});
+				msg.push({
+					name : leaf + ".new",
+					value: 1,
+					type : "Integer"
+				});
+				var hasMeasure = false;
+				measures.measure.forEach(function (measure) {
+					if (parameters[measure].rank) {
+						hasMeasure = true;
+						var name = leaf + ".param[" + parameters[measure].ref + "]";
 						msg.push({
-							name : name + ".unit",
-							value: units[ parameters[measure].unity ].label[physioDOM.lang] || units[ parameters[measure].unity ].label.en,
+							name : name + ".type",
+							value: parseInt(parameters[measure].rank, 10),
+							type : "Integer"
+						});
+						msg.push({
+							name : name + ".label",
+							value: parameters[measure].label[physioDOM.lang],
 							type : "String"
 						});
+						msg.push({
+							name : name + ".min",
+							value: parameters[measure].range.min,
+							type : "Double"
+						});
+						msg.push({
+							name : name + ".max",
+							value: parameters[measure].range.max,
+							type : "Double"
+						});
+						msg.push({
+							name : name + ".precision",
+							value: parameters[measure].precision ? 1 : 0,
+							type : "Integer"
+						});
+						if (parameters[measure].unity && parameters[measure].unity !== 'NONE') {
+							msg.push({
+								name : name + ".unit",
+								value: units[parameters[measure].unity].label[physioDOM.lang] || units[parameters[measure].unity].label.en,
+								type : "String"
+							});
+						}
 					}
+				});
+				
+				function postMsg(msg) {
+					return new promise( function( resolve, reject ) {
+						queue.postMsg(msg)
+							.then(function () {
+								var data = {
+									datetime: measures.datetime,
+									subject : hhr,
+									items   : msg
+								};
+								physioDOM.db.collection("agendaMeasure").save(data, function (err, doc) {
+									resolve(msg);
+								});
+							});
+					});
+				}
+				
+				function delMsg() {
+					return new promise( function( resolve, reject ) {
+						queue.delMsg([{branch: leaf}])
+							.then(function () {
+								var data = {
+									datetime: measures.datetime,
+									subject : hhr
+								};
+								physioDOM.db.collection("agendaMeasure").remove(data, function (err, nb) {
+									resolve();
+								});
+							});
+					});
+				}
+				
+				if (hasMeasure) {
+					if( doc ) {
+						if(JSON.stringify(doc.items) === JSON.stringify(msg) && !force ) {
+							resolve([]);
+						} else {
+							delMsg()
+								.then( function() {
+									return postMsg(msg);
+								})
+								.then( resolve );
+						}
+					} else {
+						postMsg(msg)
+							.then( resolve );
+					}
+				} else {
+					resolve([]);
 				}
 			});
-			if( hasMeasure ) {
-				queue.postMsg(msg)
-					.then(function () {
-						resolve(msg);
-					});
-			} else {
-				resolve([]);
-			}
 		});
 	}
-
-	this.dropMeasurePlan = function() {
-		var queue = new Queue(this._id);
-		var name = "hhr[" + this._id + "]";
-		var that = this;
-		
-		logger.trace("dropMeasurePlan");
-		return new promise( function(resolve, reject) {
-			physioDOM.db.collection("agendaMeasure").find({subject: that._id}).toArray(function (err, list) {
-				var promises = list.map(function (measure) {
-					console.log( measure );
-					var msg = [];
-					msg.push({
-						branch: name + ".measures[" + measure.datetime + "]"
-					});
-					return queue.delMsg(msg);
-				});
-				RSVP.all(promises)
-					.then(function() {
-						physioDOM.db.collection("agendaMeasure").drop( function(err, res) {
-							resolve();
-						});
-					});
-			});
-		});
-	};
 	
 	/**
 	 * get the measure Plan and push it to the box
@@ -1386,9 +1405,8 @@ function Beneficiary( ) {
 	 * @param date
 	 * @returns {$$rsvp$promise$$default|RSVP.Promise|*|l|Dn}
 	 */
-	this.getMeasurePlan = function( ) {
+	this.getMeasurePlan = function( force ) {
 		var queue = new Queue(this._id);
-		var name = "hhr[" + this._id + "]";
 		
 		var today = moment().hour(12).minute(0).second(0);
 		var endDate = moment().add(14,'d').hour(12).minute(0).second(0);
@@ -1401,137 +1419,127 @@ function Beneficiary( ) {
 				return dataProg.getCategory( category );
 			});
 
-			that.dropMeasurePlan()
-				.then( function() {
-					RSVP.all(promises)
+			RSVP.all(promises)
+				.then(function (results) {
+					var progs = [];
+					results.forEach(function (list) {
+						progs = progs.concat(list);
+					});
+					progs.forEach(function (prog) {
+						var startDate, nextDate, firstDay, dat, closeDate;
+						switch (prog.frequency) {
+							case "daily":
+								startDate = moment().subtract(prog.repeat, 'd');
+								nextDate = moment(prog.startDate).hour(12).minute(0).second(0);
+								closeDate = prog.endDate?moment(prog.endDate).hour(12).minute(0).second(0):endDate;
+								closeDate = closeDate.unix() < endDate.unix() ? closeDate:endDate;
+								while (nextDate.unix() < startDate.unix()) {
+									nextDate.add(prog.repeat, 'd');
+								}
+								if (nextDate.unix() <= closeDate.unix()) {
+									do {
+										if (nextDate.unix() <= closeDate.unix() && nextDate.unix() > today.unix()) {
+											msgs.push({ref: prog.ref, date: nextDate.unix()});
+										}
+										nextDate.add(prog.repeat, 'd');
+									} while (nextDate.unix() <= closeDate.unix());
+								}
+								break;
+							case "weekly":
+								startDate = moment().subtract(prog.repeat, 'w');
+								nextDate = moment(prog.startDate).day(prog.when.days[0]).hour(12).minute(0).second(0);
+								closeDate = prog.endDate?moment(prog.endDate).hour(12).minute(0).second(0):endDate;
+								closeDate = closeDate.unix() < endDate.unix() ? closeDate:endDate;
+								while (nextDate.unix() < startDate.unix()) {
+									nextDate.add(prog.repeat, 'w');
+								}
+								if (nextDate.unix() <= closeDate.unix()) {
+									do {
+										firstDay = moment.unix(nextDate.unix());
+										prog.when.days.forEach(function (day) {
+											firstDay.day(day);
+											if (firstDay.unix() <= closeDate.unix() && firstDay.unix() > today.unix()) {
+												msgs.push({ref: prog.ref, date: firstDay.unix()});
+											}
+										}); // jshint ignore:line
+										nextDate.add(prog.repeat, 'w');
+									} while (nextDate.unix() <= closeDate.unix());
+
+								}
+								break;
+							case "monthly":
+								startDate = moment().date(1).hour(12).minute(0).second(0);
+								nextDate = moment(prog.startDate).date(1).hour(12).minute(0).second(0);
+								closeDate = prog.endDate?moment(prog.endDate).hour(12).minute(0).second(0):endDate;
+								closeDate = closeDate.unix() < endDate.unix() ? closeDate:endDate;
+								while (nextDate.unix() < startDate.unix()) {
+									nextDate.add(prog.repeat, 'M');
+								}
+								logger.debug("nextDate", nextDate.format("L"));
+								if (nextDate.unix() <= closeDate.unix()) {
+									prog.when.days.forEach(function (day) {
+										if (day > 0) {
+											dat = moment.unix(nextDate.unix());
+											dat.day(day % 10);
+											dat.add(Math.floor(day / 10) - 1, 'w');
+										} else {
+											dat = moment.unix(nextDate.unix()).add(1, 'M').subtract(1, 'd');
+											dat.day(-day % 10);
+											dat.subtract(Math.floor(-day / 10) - 1, 'w');
+										}
+										if (dat.unix() <= closeDate.unix() && dat.unix() > today.unix()) {
+											msgs.push({ref: prog.ref, date: dat.unix()});
+										}
+									});
+								}
+								break;
+						}
+					});
+					var agenda = {};
+					msgs.forEach(function (msg) {
+						if (agenda[msg.date]) {
+							agenda[msg.date].measure.push(msg.ref);
+						} else {
+							agenda[msg.date] = {
+								datetime: msg.date,
+								measure : [msg.ref],
+								date    : moment.unix(msg.date).toISOString()
+							};
+						}
+					});
+					var measures = [];
+					for (var measure in agenda) { // jshint ignore:line
+						measures.push(agenda[measure]);
+					}
+
+					var units;
+					physioDOM.Lists.getListItemsObj("units")
 						.then(function (results) {
-							var progs = [];
-							results.forEach(function (list) {
-								progs = progs.concat(list);
-							});
-							progs.forEach(function (prog) {
-								var startDate, nextDate, firstDay, dat, closeDate;
-								switch (prog.frequency) {
-									case "daily":
-										startDate = moment().subtract(prog.repeat, 'd');
-										nextDate = moment(prog.startDate).hour(12).minute(0).second(0);
-										closeDate = prog.endDate?moment(prog.endDate).hour(12).minute(0).second(0):endDate;
-										closeDate = closeDate.unix() < endDate.unix() ? closeDate:endDate;
-										while (nextDate.unix() < startDate.unix()) {
-											nextDate.add(prog.repeat, 'd');
-										}
-										if (nextDate.unix() <= closeDate.unix()) {
-											do {
-												if (nextDate.unix() <= closeDate.unix() && nextDate.unix() > today.unix()) {
-													msgs.push({ref: prog.ref, date: nextDate.unix()});
-												}
-												nextDate.add(prog.repeat, 'd');
-											} while (nextDate.unix() <= closeDate.unix());
-										}
-										break;
-									case "weekly":
-										startDate = moment().subtract(prog.repeat, 'w');
-										nextDate = moment(prog.startDate).day(prog.when.days[0]).hour(12).minute(0).second(0);
-										closeDate = prog.endDate?moment(prog.endDate).hour(12).minute(0).second(0):endDate;
-										closeDate = closeDate.unix() < endDate.unix() ? closeDate:endDate;
-										while (nextDate.unix() < startDate.unix()) {
-											nextDate.add(prog.repeat, 'w');
-										}
-										if (nextDate.unix() <= closeDate.unix()) {
-											do {
-												firstDay = moment.unix(nextDate.unix());
-												prog.when.days.forEach(function (day) {
-													firstDay.day(day);
-													if (firstDay.unix() <= closeDate.unix() && firstDay.unix() > today.unix()) {
-														msgs.push({ref: prog.ref, date: firstDay.unix()});
-													}
-												}); // jshint ignore:line
-												nextDate.add(prog.repeat, 'w');
-											} while (nextDate.unix() <= closeDate.unix());
-
-										}
-										break;
-									case "monthly":
-										startDate = moment().date(1).hour(12).minute(0).second(0);
-										nextDate = moment(prog.startDate).date(1).hour(12).minute(0).second(0);
-										closeDate = prog.endDate?moment(prog.endDate).hour(12).minute(0).second(0):endDate;
-										closeDate = closeDate.unix() < endDate.unix() ? closeDate:endDate;
-										while (nextDate.unix() < startDate.unix()) {
-											nextDate.add(prog.repeat, 'M');
-										}
-										logger.debug("nextDate", nextDate.format("L"));
-										if (nextDate.unix() <= closeDate.unix()) {
-											prog.when.days.forEach(function (day) {
-												if (day > 0) {
-													dat = moment.unix(nextDate.unix());
-													dat.day(day % 10);
-													dat.add(Math.floor(day / 10) - 1, 'w');
-												} else {
-													dat = moment.unix(nextDate.unix()).add(1, 'M').subtract(1, 'd');
-													dat.day(-day % 10);
-													dat.subtract(Math.floor(-day / 10) - 1, 'w');
-												}
-												if (dat.unix() <= closeDate.unix() && dat.unix() > today.unix()) {
-													msgs.push({ref: prog.ref, date: dat.unix()});
-												}
-											});
-										}
-										break;
-								}
-							});
-							var agenda = {};
-							msgs.forEach(function (msg) {
-								if (agenda[msg.date]) {
-									agenda[msg.date].measure.push(msg.ref);
-								} else {
-									agenda[msg.date] = {
-										datetime: msg.date,
-										measure : [msg.ref],
-										date    : moment.unix(msg.date).toISOString()
-									};
-								}
-							});
-							var measures = [];
-							for (var measure in agenda) { // jshint ignore:line
-								measures.push(agenda[measure]);
-							}
-
-							var units;
-							physioDOM.Lists.getListItemsObj("units")
-								.then(function (results) {
-									units = results;
-									return physioDOM.Lists.getListItemsObj("parameters");
-								})
+							units = results;
+							return physioDOM.Lists.getListItemsObj("parameters");
+						})
+						.then(function (parameters) {
+							physioDOM.Lists.getListItemsObj("parameters")
 								.then(function (parameters) {
-									physioDOM.Lists.getListItemsObj("parameters")
-										.then(function (parameters) {
-											var promises = measures.map(function (measure) {
-												return new promise(function (resolve, reject) {
-													console.log(JSON.stringify(measure, "", 4));
-													measure.subject = that._id;
+									var promises = measures.map(function (measure) {
+										return new promise(function (resolve, reject) {
+											measure.subject = that._id;
 
-													pushMeasure(queue, name + ".measures[" + measure.datetime + "]", units, parameters, measure)
-														.then(function (msg) {
-															if (msg.length) {
-																physioDOM.db.collection("agendaMeasure").save(measure, function (err, doc) {
-																	resolve(msg);
-																});
-															} else {
-																resolve(msg);
-															}
-														});
+											pushMeasure(queue, that._id, units, parameters, measure, force )
+												.then(function (msg) {
+													resolve(msg);
 												});
+										});
+									});
+									RSVP.all(promises)
+										.then(function (result) {
+											var res = [];
+											result.forEach(function (item) {
+												if (item.length > 0) {
+													res.push(item);
+												}
 											});
-											RSVP.all(promises)
-												.then(function (result) {
-													var res = [];
-													result.forEach(function (item) {
-														if (item.length > 0) {
-															res.push(item);
-														}
-													});
-													resolve(res);
-												});
+											resolve(res);
 										});
 								});
 						});
@@ -1605,82 +1613,106 @@ function Beneficiary( ) {
 		});
 	};
 
-	function pushSymptom( queue, leaf, symptoms, measures ) {
+	function pushSymptom( queue, hhr, symptoms, measures, force ) {
 		logger.trace("pushSymptom");
+		force = force?force:false;
+		
 		return new promise( function(resolve,reject) {
-			var msg = [];
+			var leaf = "hhr[" + hhr + "].symptoms[" + measures.datetime + "]";
+			physioDOM.db.collection("agendaSymptoms").findOne({
+				subject : hhr,
+				datetime: measures.datetime
+			}, function (err, doc) {
+				var msg = [];
 
-			msg.push({
-				name : leaf + ".datetime",
-				value: measures.datetime,
-				type : "Integer"
-			});
-			msg.push({
-				name : leaf + ".new",
-				value: 1,
-				type : "Integer"
-			});
-			var hasMeasure = false;
-			measures.measure.forEach( function( measure ) {
-				if( symptoms[measure].rank ) {
-					hasMeasure = true;
-					var name = leaf + "scale["+symptoms[measure].ref+"]";
-					msg.push({
-						name : name + ".label",
-						value: symptoms[measure].label[physioDOM.lang],
-						type : "String"
-					});
-					msg.push({
-						name : name + ".lastValue",
-						value: 0,
-						type : "Double"
+				msg.push({
+					name : leaf + ".datetime",
+					value: measures.datetime,
+					type : "Integer"
+				});
+				msg.push({
+					name : leaf + ".new",
+					value: 1,
+					type : "Integer"
+				});
+				var hasMeasure = false;
+				measures.measure.forEach(function (measure) {
+					if (symptoms[measure].rank) {
+						hasMeasure = true;
+						var name = leaf + "scale[" + symptoms[measure].ref + "]";
+						msg.push({
+							name : name + ".label",
+							value: symptoms[measure].label[physioDOM.lang],
+							type : "String"
+						});
+						msg.push({
+							name : name + ".lastValue",
+							value: 0,
+							type : "Double"
+						});
+					}
+				});
+
+				function postMsg(msg) {
+					return new promise(function (resolve, reject) {
+						queue.postMsg(msg)
+							.then(function () {
+								var data = {
+									datetime: measures.datetime,
+									subject : hhr,
+									items   : msg
+								};
+								physioDOM.db.collection("agendaSymptoms").save(data, function (err, doc) {
+									resolve(msg);
+								});
+							});
 					});
 				}
-			});
-			if( hasMeasure ) {
-				queue.postMsg(msg)
-					.then(function () {
-						resolve(msg);
+
+				function delMsg() {
+					return new promise(function (resolve, reject) {
+						queue.delMsg([{branch: leaf}])
+							.then(function () {
+								var data = {
+									datetime: measures.datetime,
+									subject : hhr
+								};
+								physioDOM.db.collection("agendaSymptoms").remove(data, function (err, nb) {
+									resolve();
+								});
+							});
 					});
-			} else {
-				resolve([]);
-			}
+				}
+
+				if (hasMeasure) {
+					if (doc) {
+						if (JSON.stringify(doc.items) === JSON.stringify(msg) && !force) {
+							resolve([]);
+						} else {
+							delMsg()
+								.then(function () {
+									return postMsg(msg);
+								})
+								.then(resolve);
+						}
+					} else {
+						postMsg(msg)
+							.then(resolve);
+					}
+				} else {
+					resolve([]);
+				}
+			});
 		});
 	}
-
-	this.dropSymptomsPlan = function() {
-		var queue = new Queue(this._id);
-		var name = "hhr[" + this._id + "]";
-		var that = this;
-
-		logger.trace("dropSymptomsPlan");
-		return new promise( function(resolve, reject) {
-			physioDOM.db.collection("agendaSymptoms").find({subject: that._id}).toArray(function (err, list) {
-				var promises = list.map(function (Symptom) {
-					var msg = [];
-					msg.push({
-						branch: name + ".Symptoms[" + Symptom.datetime + "]"
-					});
-					return queue.delMsg(msg);
-				});
-				RSVP.all(promises)
-					.then(function() {
-						physioDOM.db.collection("agendaSymptoms").drop( function(err, res) {
-							resolve();
-						});
-					});
-			});
-		});
-	};
 	
 	/**
 	 * Get the symptoms plan and push it to the box
 	 * 
 	 * @returns {$$rsvp$promise$$default|RSVP.Promise|*|l|Dn}
 	 */
-	this.getSymptomsPlan = function() {
+	this.getSymptomsPlan = function( force ) {
 		var queue = new Queue(this._id);
-		var name = "hhr[" + this._id + "]";
 
 		var today = moment().hour(12).minute(0).second(0);
 		var endDate = moment().add(14,'d').hour(12).minute(0).second(0);
@@ -1689,10 +1721,7 @@ function Beneficiary( ) {
 		var that = this;
 
 		return new promise( function(resolve, reject) {
-			that.dropSymptomsPlan()
-				.then( function() {
-					return dataProg.getCategory("symptom");
-				})
+			dataProg.getCategory("symptom")
 				.then(function (progs) {
 					progs.forEach(function (prog) {
 						var startDate, nextDate, firstDay, dat, closeDate;
@@ -1782,41 +1811,32 @@ function Beneficiary( ) {
 					for( var measure in results ) {
 						measures.push( results[measure] );
 					}
-					// console.log( "symptoms",measures );
+					
 					physioDOM.Lists.getListItemsObj("symptom")
 						.then(function (symptoms) {
 							var promises = measures.map(function (measure) {
 								return new promise(function (resolve, reject) {
-									console.log(JSON.stringify(measure, "", 4));
 									measure.subject = that._id;
 
-									pushSymptom(queue, name + ".symptom[" + measure.datetime + "]", symptoms, measure)
+									pushSymptom(queue, that._id, symptoms, measure, force)
 										.then(function (msg) {
-											if (msg.length) {
-												physioDOM.db.collection("agendaSymptoms").save(measure, function (err, doc) {
-													resolve(msg);
-												});
-											} else {
-												resolve(msg);
-											}
+											resolve(msg);
 										});
 								});
 							});
-							/*
-							var promises = measures.map(function (measure) { 
-								console.log("test");
-								return pushSymptom(queue, name+".symptom["+measure.datetime+"]" , symptoms, measure);
-							});
-							*/
 							RSVP.all(promises)
 								.then(function (result) {
-									console.log("fini");
-									resolve(result);
+									var res = [];
+									result.forEach(function (item) {
+										if (item.length > 0) {
+											res.push(item);
+										}
+									});
+									resolve(res);
 								});
 						});
 				});
 		});
-		
 	};
 	
 	function pushQuestionnaire(queue, name, quest, newFlag ) {
@@ -2134,9 +2154,7 @@ function Beneficiary( ) {
 		return new promise( function(resolve, reject) {
 			var search = { category: "questionnaire", text: "DHD-FFQ", subject: that._id };
 			physioDOM.db.collection("dataRecordItems").find(search).sort({datetime: -1}).limit(1).toArray(function (err, quests) {
-				console.log(quests[0]);
 				if (quests.length) {
-					console.log( "Lang", physioDOM.lang );
 					var Questionnaire = require("./questionnaire.js");
 					var QuestionnaireAnswer = require("./questionnaireAnswer.js");
 					var questionnaire = new Questionnaire();
