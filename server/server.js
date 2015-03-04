@@ -411,19 +411,20 @@ server.get( '/api/logout', logout);
 
 // ===================================================
 //              Queue messages
-server.get( '/api/queue/init', IQueue.init );
-server.post('/api/queue/status', IQueue.status );
-server.get( '/api/queue/messages', IQueue.messages);
-server.get( '/api/queue/history', IQueue.history);
-server.get( '/api/queue/history/:category', IQueue.history);
-server.get( '/api/queue/dhdffq', IQueue.dhdffq);
-server.get( '/api/queue/measurePlan', IQueue.measurePlan);
-server.get( '/api/queue/symptomPlan', IQueue.symptomPlan);
-server.get( '/api/queue/physicalPlan', IQueue.physicalPlan);
-server.get( '/api/queue/dietaryPlan', IQueue.dietaryPlan);
-server.get( '/api/queue/symptomsSelf', IQueue.symptomsSelf);
+server.get( '/api/hhr',                          IBeneficiary.getHHRs );
+server.get( '/api/queue/init',                   IQueue.init );
+server.post('/api/queue/status',                 IQueue.status );
+server.get( '/api/queue/messages',               IQueue.messages);
+server.get( '/api/queue/history',                IQueue.history);
+server.get( '/api/queue/history/:category',      IQueue.history);
+server.get( '/api/queue/dhdffq',                 IQueue.dhdffq);
+server.get( '/api/queue/measurePlan',            IQueue.measurePlan);
+server.get( '/api/queue/symptomPlan',            IQueue.symptomPlan);
+server.get( '/api/queue/physicalPlan',           IQueue.physicalPlan);
+server.get( '/api/queue/dietaryPlan',            IQueue.dietaryPlan);
+server.get( '/api/queue/symptomsSelf',           IQueue.symptomsSelf);
+server.post('/api/queue/received',               IQueue.receivedMsg);
 
-server.post('/api/queue/received', IQueue.receivedMsg);
 
 // ===================================================
 //               Pages requests
