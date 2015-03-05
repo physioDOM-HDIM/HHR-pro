@@ -1,3 +1,10 @@
+__v0.0.13-1__
+
+  - Fix Date in prescription data
+  - Fix queue message for symptoms
+  - Fix queue message for symptoms self
+  - Fix queue measures and symptoms plan : remove unused dates
+  
 __v0.0.13__
 
   - Fix push message to the queue
