@@ -1639,7 +1639,7 @@ function Beneficiary( ) {
 				measures.measure.forEach(function (measure) {
 					if (symptoms[measure].rank) {
 						hasMeasure = true;
-						var name = leaf + "scale[" + symptoms[measure].ref + "]";
+						var name = leaf + ".scale[" + symptoms[measure].ref + "]";
 						msg.push({
 							name : name + ".label",
 							value: symptoms[measure].label[physioDOM.lang],
