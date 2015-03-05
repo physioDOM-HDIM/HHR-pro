@@ -140,11 +140,11 @@
 	<div class="row">
 		<div class="col vert">
 			<label>{{"Start date"|i18n}}</label>
-			<zdk-input-date name="startDate" value="{% raw %}{{data.startDate}}{% endraw %}" style="z-index:100" required></zdk-input-date>
+			<zdk-input-date i18n="{% raw %}{{data.i18n}}{% endraw %}" name="startDate" value="{% raw %}{{data.startDate}}{% endraw %}" style="z-index:100" required></zdk-input-date>
 		</div>
 		<div class="col vert">
 			<label>{{"End date"|i18n}}</label>
-			<zdk-input-date name="endDate" value="{% raw %}{{data.endDate}}{% endraw %}" style="z-index:100"></zdk-input-date>
+			<zdk-input-date i18n="{% raw %}{{data.i18n}}{% endraw %}" name="endDate" value="{% raw %}{{data.endDate}}{% endraw %}" style="z-index:100"></zdk-input-date>
 		</div>
 	</div>
 	<div id="dateError" class="row hidden">
