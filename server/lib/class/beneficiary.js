@@ -1398,6 +1398,45 @@ function Beneficiary( ) {
 			});
 		});
 	}
+
+	/**
+	 * remove from agendaMeasure all measures that are not in measures
+	 * 
+	 * @param queue    the queue object
+	 * @param hhr      the current beneficiary
+	 * @param measures the current measures array
+	 * @returns {*|RSVP.Promise}
+	 */
+	function removeMeasures(queue, hhr, measures) {
+		return new promise( function(resolve, reject) {
+			logger.trace("removeMeasures");
+			var datetimes = [];
+			measures.forEach( function( measure ) {
+				datetimes.push( measure.datetime );
+			});
+			var search = { subject: hhr, datetime: { '$nin': datetimes, '$gt': moment().hour(12).minute(0).second(0).unix() } };
+			physioDOM.db.collection("agendaMeasure").find( search ).toArray( function(err, items ) {
+				if( !items.length ) {
+					resolve();
+				} else {
+					logger.info("to remove", items );
+					var promises = items.map( function(item) {
+						return new promise( function(done, reject) {
+							var leaf = "hhr[" + hhr + "].measures[" + item.datetime + "]";
+							queue.delMsg([{branch: leaf}])
+								.then( function() {
+									physioDOM.db.collection("agendaMeasure").remove(item, function (err, nb) {
+										done();
+									});
+								});
+						});
+					});
+					RSVP.all(promises)
+						.then( resolve );
+				}
+			});
+		});
+	}
 	
 	/**
 	 * get the measure Plan and push it to the box
@@ -1511,35 +1550,37 @@ function Beneficiary( ) {
 					for (var measure in agenda) { // jshint ignore:line
 						measures.push(agenda[measure]);
 					}
-
-					var units;
-					physioDOM.Lists.getListItemsObj("units")
-						.then(function (results) {
-							units = results;
-							return physioDOM.Lists.getListItemsObj("parameters");
-						})
-						.then(function (parameters) {
-							physioDOM.Lists.getListItemsObj("parameters")
+					removeMeasures(queue, that._id, measures)
+						.then( function() {
+							var units;
+							physioDOM.Lists.getListItemsObj("units")
+								.then(function (results) {
+									units = results;
+									return physioDOM.Lists.getListItemsObj("parameters");
+								})
 								.then(function (parameters) {
-									var promises = measures.map(function (measure) {
-										return new promise(function (resolve, reject) {
-											measure.subject = that._id;
+									physioDOM.Lists.getListItemsObj("parameters")
+										.then(function (parameters) {
+											var promises = measures.map(function (measure) {
+												return new promise(function (resolve, reject) {
+													measure.subject = that._id;
 
-											pushMeasure(queue, that._id, units, parameters, measure, force )
-												.then(function (msg) {
-													resolve(msg);
+													pushMeasure(queue, that._id, units, parameters, measure, force)
+														.then(function (msg) {
+															resolve(msg);
+														});
 												});
-										});
-									});
-									RSVP.all(promises)
-										.then(function (result) {
-											var res = [];
-											result.forEach(function (item) {
-												if (item.length > 0) {
-													res.push(item);
-												}
 											});
-											resolve(res);
+											RSVP.all(promises)
+												.then(function (result) {
+													var res = [];
+													result.forEach(function (item) {
+														if (item.length > 0) {
+															res.push(item);
+														}
+													});
+													resolve(res);
+												});
 										});
 								});
 						});
@@ -1705,6 +1746,45 @@ function Beneficiary( ) {
 			});
 		});
 	}
+
+	/**
+	 * remove from agendaSymptoms all symptoms assessments that are not in symptoms
+	 *
+	 * @param queue    the queue object
+	 * @param hhr      the current beneficiary
+	 * @param measures the current measures array
+	 * @returns {*|RSVP.Promise}
+	 */
+	function removeSymptomsPlan(queue, hhr, symptoms) {
+		return new promise( function(resolve, reject) {
+			logger.trace("removeSymptomsPlan");
+			var datetimes = [];
+			symptoms.forEach( function( symptom ) {
+				datetimes.push( symptom.datetime );
+			});
+			var search = { subject: hhr, datetime: { '$nin': datetimes, '$gt': moment().hour(12).minute(0).second(0).unix() } };
+			physioDOM.db.collection("agendaSymptoms").find( search ).toArray( function(err, items ) {
+				if( !items.length ) {
+					resolve();
+				} else {
+					logger.info("to remove ", items.length );
+					var promises = items.map( function(item) {
+						return new promise( function(done, reject) {
+							var leaf = "hhr[" + hhr + "].symptoms[" + item.datetime + "]";
+							queue.delMsg([{branch: leaf}])
+								.then( function() {
+									physioDOM.db.collection("agendaSymptoms").remove(item, function (err, nb) {
+										done();
+									});
+								});
+						});
+					});
+					RSVP.all(promises)
+						.then( resolve );
+				}
+			});
+		});
+	}
 	
 	/**
 	 * Get the symptoms plan and push it to the box
@@ -1811,28 +1891,30 @@ function Beneficiary( ) {
 					for( var measure in results ) {
 						measures.push( results[measure] );
 					}
-					
-					physioDOM.Lists.getListItemsObj("symptom")
-						.then(function (symptoms) {
-							var promises = measures.map(function (measure) {
-								return new promise(function (resolve, reject) {
-									measure.subject = that._id;
+					removeSymptomsPlan(queue, that._id, measures )
+						.then( function() {
+							physioDOM.Lists.getListItemsObj("symptom")
+								.then(function (symptoms) {
+									var promises = measures.map(function (measure) {
+										return new promise(function (resolve, reject) {
+											measure.subject = that._id;
 
-									pushSymptom(queue, that._id, symptoms, measure, force)
-										.then(function (msg) {
-											resolve(msg);
+											pushSymptom(queue, that._id, symptoms, measure, force)
+												.then(function (msg) {
+													resolve(msg);
+												});
 										});
-								});
-							});
-							RSVP.all(promises)
-								.then(function (result) {
-									var res = [];
-									result.forEach(function (item) {
-										if (item.length > 0) {
-											res.push(item);
-										}
 									});
-									resolve(res);
+									RSVP.all(promises)
+										.then(function (result) {
+											var res = [];
+											result.forEach(function (item) {
+												if (item.length > 0) {
+													res.push(item);
+												}
+											});
+											resolve(res);
+										});
 								});
 						});
 				});
