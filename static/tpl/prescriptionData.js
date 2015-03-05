@@ -176,10 +176,10 @@ function showForm(ref) {
 		dataItem = utils.findInObject(lists.dataprog, 'ref', ref);
 		param = utils.findInObject(lists.parameters.items, 'ref', ref);
 		moment.locale( infos.lang==="en"?"en_gb":infos.lang );
-		if( dataItem.endDate ) {
+		if( dataItem.endDate && !dataItem.endDate.match(/^\d{4}-\d{2}-\d{2}$/g) ) {
 			dataItem.endDate = moment(dataItem.endDate, moment.localeData().longDateFormat("L") ).format("YYYY-MM-DD"); 
 		}
-		if( dataItem.startDate ) {
+		if( dataItem.startDate && !dataItem.startDate.match(/^\d{4}-\d{2}-\d{2}$/g) ) {
 			dataItem.startDate = moment(dataItem.startDate, moment.localeData().longDateFormat("L") ).format("YYYY-MM-DD");
 		}
 		dataItem.i18n = infos.lang==="en"?"en_gb":infos.lang;
