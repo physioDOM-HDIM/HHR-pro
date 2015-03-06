@@ -511,35 +511,37 @@ physioDOM.connect()
 		});
 	})
 	.then( function() {
-		agenda.define('push plans', function (job, done) {
-			// push measures plan and symptoms plan for all active beneficiary
-			var beneficiaries;
-			physioDOM.Beneficiaries()
-				.then( function( res ) {
-					beneficiaries = res;
-					return beneficiaries.getAllActiveHHR();
-				})
-				.then( function( activeBeneficiaries) {
-					var promises = activeBeneficiaries.map( function(beneficiary) {
-						return new promise( function( resolve, reject) {
-							beneficiaries.getHHR( beneficiary._id )
-								.then( function( beneficiary) {
-									beneficiary.getSymptomsPlan(false)
-										.then(function () {
-											return beneficiary.getMeasurePlan(false);
-										})
-										.then(resolve);
-								});
+		agenda.purge( function(err, numRemoved) {
+			agenda.define('push plans', function (job, done) {
+				// push measures plan and symptoms plan for all active beneficiary
+				var beneficiaries;
+				physioDOM.Beneficiaries()
+					.then(function (res) {
+						beneficiaries = res;
+						return beneficiaries.getAllActiveHHR();
+					})
+					.then(function (activeBeneficiaries) {
+						var promises = activeBeneficiaries.map(function (beneficiary) {
+							return new promise(function (resolve, reject) {
+								beneficiaries.getHHR(beneficiary._id)
+									.then(function (beneficiary) {
+										beneficiary.getSymptomsPlan(false)
+											.then(function () {
+												return beneficiary.getMeasurePlan(false);
+											})
+											.then(resolve);
+									});
+							});
 						});
+
+						RSVP.all(promises)
+							.then(function () {
+								done();
+							});
 					});
-					
-					RSVP.all( promises )
-						.then( function() {
-							done();
-						});
-				});
+			});
+			agenda.every(config.agenda + ' minutes', 'push plans');
 		});
-		agenda.every(config.agenda + ' minutes', 'push plans');
 			
 		agenda.start();
 	})
