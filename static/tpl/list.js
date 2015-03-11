@@ -20,7 +20,7 @@ window.addEventListener('DOMContentLoaded', function() {
             return Utils.promiseXHR("GET", "/api/lists/job");
         })
         .then( function(response) {
-            var listName = document.querySelector('#list-name').innerText;
+            var listName = document.querySelector('#list-name').value;
             jobs = JSON.parse(response);
             return Utils.promiseXHR("GET", "/api/lists/"+listName);
         })
