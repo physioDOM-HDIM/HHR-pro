@@ -269,7 +269,7 @@ function closeForm() {
 
 var saveData = function () {
 	modified = true;
-	var data = form2js(document.forms.dataprog),
+	var data = form2js( document.querySelector("form[name=dataprog]") ),
 		param = utils.findInObject(lists.parameters.items, 'ref', data.ref),
 		dataprog = {};
 
@@ -288,7 +288,7 @@ var saveData = function () {
 		dataprog.repeat = parseInt(data.repeat, 10);
 	}
 
-	var inputStartDate = document.forms.dataprog.querySelector("zdk-input-date[name=startDate]"),
+	var inputStartDate = document.querySelector("form[name=dataprog]").querySelector("zdk-input-date[name=startDate]"),
 		frequencyChoice = document.forms.dataprog.querySelector(".frequency-choice"),
 		daysSelection = document.forms.dataprog.querySelector(".days");
 

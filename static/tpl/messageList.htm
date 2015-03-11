@@ -1,7 +1,5 @@
 {% extends './page.htm' %}
-
 {% block title %}{{'Message to Home' | i18n }}{% endblock %}
-
 {% block head %}
 {% parent %}
 
@@ -10,6 +8,7 @@
 <script src="/tpl/messageList.js"></script>
 <link rel="stylesheet" href="/styles/message.css">
 
+<script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
 <script src="/bower_components/zdk-calendar/form2js.js"></script>
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
 <link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
@@ -19,9 +18,7 @@
 {% block content %}
 
 <div class="row title">
-<label class="title">
-	{{ "Message to Home"|i18n }}
-</label>
+	<label class="title">{{ "Message to Home"|i18n }}</label>
 </div>
 
 <zdk-panel heading="{{'Filter'|i18n}} / {{'Sort'|i18n}}" collapsable="true" collapsed="false">
@@ -54,15 +51,15 @@
 
 			<div class="row spaced">
 				<div class="col">
-					<label class="collabel" for="startDate">{{ "Since"|i18n }} : </label>
+					<label class="collabel" >{{ "Since"|i18n }} : </label>
 					<div class="colcontent">
-						<zdk-input-date class="startDate" name="startDate" style="z-index:100"></zdk-input-date>
+						<zdk-input-date class="startDate" name="startDate" i18n="{% if lang=='en' %}en_gb{% else %}{{lang}}{% endif %}" style="z-index:100"></zdk-input-date>
 					</div>
 				</div>
 				<div class="col">
-					<label class="collabel" for="stopDate">{{ "To"|i18n }}: </label>
+					<label class="collabel" >{{ "To"|i18n }}: </label>
 					<div class="colcontent">
-						<zdk-input-date class="stopDate" name="stopDate" style="z-index:100"></zdk-input-date>
+						<zdk-input-date class="stopDate" name="stopDate" i18n="{% if lang=='en' %}en_gb{% else %}{{lang}}{% endif %}" style="z-index:100"></zdk-input-date>
 					</div>
 				</div>
 			</div>
@@ -84,8 +81,7 @@
 					<label>{{ "Sort"|i18n }}:</label>
 					<select name="sort">
 						<option value="datetime" selected>{{ "Date"|i18n }}</option>
-						<option value="source">{{ "Status"|i18n }}</option>
-						<!-- <option value="home">{{ "Sender"|i18n }}</option> -->
+						<option value="status">{{ "Status"|i18n }}</option>
 					</select>
 				</div>
 				<div class="col">
@@ -103,7 +99,6 @@
 			</div>
 		</form>
 	</div>
-
 </zdk-panel>
 
 {% if rights.write %}
@@ -113,39 +108,38 @@
 </div>
 {% endif %}
 
-<tsante-list url="/api/beneficiary/messages" pg="1" offset="25" auto="true" autoRender="false" unresolved id="tsanteList">
-<template is="auto-binding" repeat="{% raw %}{{item in list.items}}{% endraw %}">
-	<div class="item">
-		<div class="row">
-			<h3 style="margin: 0.2em;">{% raw %}{{item.title}}{% endraw %}</h3>
-			<div class="spacer"></div>
-			<button type="button" class="blue small" onclick="showDetail(this)">
-				<span class="detail-show">{{"Show Detail"|i18n}}</span>
-				<span class="detail-hide hidden">{{"Hide Detail"|i18n}}</span>
-			</button>
-		</div>
-		<div class="row spacing-around">
-			<div class="col" style="display: block;">
-				<div class="bold">{% raw %}{{ item.datetime }}{% endraw %}</div>
-				<div>&nbsp;{% raw %}{{ item.from }}{% endraw %}</div>
+<tsante-list url="/api/beneficiary/messages" pg="1" offset="25" auto="true" autoRender="false" id="tsanteList">
+	<template is="auto-binding" repeat="{% raw %}{{item in list.items}}{% endraw %}">
+		<div class="item">
+			<div class="row">
+				<h3 style="margin: 0.2em;">{% raw %}{{item.title}}{% endraw %}</h3>
+				<div class="spacer"></div>
+				<button type="button" class="blue small" onclick="showDetail(this)">
+					<span class="detail-show">{{"Show Detail"|i18n}}</span>
+					<span class="detail-hide hidden">{{"Hide Detail"|i18n}}</span>
+				</button>
 			</div>
-			<div class="col">{{"send by"|i18n}}: {% raw %}{{item.author.name.family}} {{item.author.name.given}}{% endraw %}</div>
-			<div class="col">{{"status"|i18n}}: {% raw %}{{item.status}}{% endraw %}</div>
-		</div>
-		<div class="row message-detail hidden">
-			<div style="display:block">
-			{% raw %}
-			<template repeat="{{ line in item.content }}">
-				<div>{{line}}</div>
-			</template>
-			{% endraw %}
+			<div class="row spacing-around">
+				<div class="col" style="display: block;">
+					<div class="bold">{% raw %}{{ item.datetime }}{% endraw %}</div>
+					<div>&nbsp;{% raw %}{{ item.from }}{% endraw %}</div>
+				</div>
+				<div class="col">{{"send by"|i18n}}: {% raw %}{{item.author.name.family}} {{item.author.name.given}}{% endraw %}</div>
+				<div class="col">{{"status"|i18n}}: {% raw %}{{item.status}}{% endraw %}</div>
+			</div>
+			<div class="row message-detail hidden">
+				<div style="display:block">
+					{% raw %}
+					<template repeat="{{ line in item.content }}">
+						<div>{{line}}</div>
+					</template>
+					{% endraw %}
+				</div>
 			</div>
 		</div>
-	</div>
-	
-</template>
+	</template>
 </tsante-list>
 
-{% include 'modal.htm' %}
+{% include './modal.htm' %}
 
 {% endblock %}

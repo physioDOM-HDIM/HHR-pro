@@ -2,6 +2,8 @@
 {% block title %}{{'Prescritption of data monitoring'|i18n}}{% endblock %}
 {% block head %}
 {% parent %}
+<link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
+
 <script src="/bower_components/mustache/mustache.js"></script>
 <script src="/bower_components/rsvp/rsvp.min.js"></script>
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
@@ -10,7 +12,6 @@
 <script src="/scripts/modal.js"></script>
 <script src="/tpl/prescriptionData.js"></script>
 
-<link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
 <link rel="stylesheet" href="/styles/prescriptionData.css">
 {% endblock %}
 
@@ -43,12 +44,12 @@
 <script type="template" id="tpl-dataprog">
 	{% raw %}
 	{{#param}}
-	<div class="row">
+	<div class="row h1">
 		<div class="col05 bold data-text">{{labelLang}}</div>
 	</div>
 	{{/param}}
 	{% endraw %}
-	<div class="row">
+	<div class="row h1">
 		<div class="col05"></div>
 		<div class="col">
 			<label>{{"Start date"|i18n}}</label><span>{% raw %}{{ data.startDate }}{% endraw %}</span>
@@ -58,7 +59,7 @@
 		</div>
 	</div>
 
-	<div class="row">
+	<div class="row h1">
 		<div class="col05"></div>
 		<div class="col">
 			<label>
@@ -96,7 +97,7 @@
 	</div>
 	
 	{% raw %}{{#data.hasMoreDetail}}{% endraw %}
-	<div class="row">
+	<div class="row h1">
 		<div class="col05"></div>
 		<div class="col">
 			{% raw %}{{#data.when.weekFirst}}{% endraw %}{{"The first"|i18n}}{% raw %}{{/data.when.weekFirst}}{% endraw %}
@@ -111,7 +112,7 @@
 	</div>
 	{% raw %}{{/data.hasMoreDetail}}{% endraw %}
 	
-	<div class="row control">
+	<div class="row h1 control">
 		<span class="spacer"></span>
 		{% if rights.write %}
 		<button type="button" onclick="showForm('{% raw %}{{data.ref}}{% endraw %}')" class="small blue">{{"Edit"|i18n}}</button>
@@ -124,7 +125,7 @@
 <script type="template" id="tpl-form">
 	<h2>{{title}}</h2>
 	
-	<div class="row">
+	<div class="row h1">
 		<label>{{"Type of data"|i18n}}</label>
 
 		<select name="ref" onchange="updateParam(this)" id="ref-select">
@@ -137,7 +138,7 @@
 
 	</div>
 
-	<div class="row">
+	<div class="row h1">
 		<div class="col vert">
 			<label>{{"Start date"|i18n}}</label>
 			<zdk-input-date i18n="{% raw %}{{data.i18n}}{% endraw %}" name="startDate" value="{% raw %}{{data.startDate}}{% endraw %}" style="z-index:100" required></zdk-input-date>
@@ -147,17 +148,17 @@
 			<zdk-input-date i18n="{% raw %}{{data.i18n}}{% endraw %}" name="endDate" value="{% raw %}{{data.endDate}}{% endraw %}" style="z-index:100"></zdk-input-date>
 		</div>
 	</div>
-	<div id="dateError" class="row hidden">
+	<div id="dateError" class="row h1 hidden">
 		<div style="text-align:center;width:100%;color:red">
 		{{"The end date must be greater than the start date" | i18n}}
 		</div>
 	</div>
 
-	<div class="row">
+	<div class="row h1">
 		<label>{{"Frequency"|i18n}}</label>
 	</div>
 
-	<div class="row frequency-choice">
+	<div class="row h1 frequency-choice">
 		<input type="radio" name="frequency" onchange="showOptions('monthly')" value="monthly" 
 		       {% raw %}{{#getFrequencyDefault}}monthly{{/getFrequencyDefault}}{% endraw %}><label>{{"Monthly"|i18n}}</label>
 		<input type="radio" name="frequency" onchange="showOptions('weekly')" value="weekly" 
@@ -181,16 +182,16 @@
 </script>
 
 <script type="template" id="tpl-option-daily">
-	<div class="row">
+	<div class="row h1">
 		{{"Every"|i18n}} <input type="number" name="repeat" class="option-repeat" value="{% raw %}{{data.repeat}}{% endraw %}"> {{"Day"|i18n}}
 	</div>
 </script>
 
 <script type="template" id="tpl-option-weekly">
-	<div class="row">
+	<div class="row h1">
 		{{"Every"|i18n}} <input type="number" name="repeat" class="option-repeat" value="{% raw %}{{data.repeat}}{% endraw %}"> {{"Week"|i18n}}
 	</div>
-	<div class="row days" >
+	<div class="row days h1" >
 		<input type="checkbox" name="when.days[]" value="1" {% raw %}{{#getDaysDefault}}1{{/getDaysDefault}}{% endraw %}/>{{"Mon"|i18n}}
 		<input type="checkbox" name="when.days[]" value="2" {% raw %}{{#getDaysDefault}}2{{/getDaysDefault}}{% endraw %}/>{{"Tue"|i18n}}
 		<input type="checkbox" name="when.days[]" value="3" {% raw %}{{#getDaysDefault}}3{{/getDaysDefault}}{% endraw %}/>{{"Wed"|i18n}}
@@ -205,7 +206,7 @@
 	<div class="row">
 		{{"Every"|i18n}} <input type="number" name="repeat" class="option-repeat" value="{% raw %}{{data.repeat}}{% endraw %}"> {{"Month"|i18n}}
 	</div>
-	<div class="row">
+	<div class="row h1">
 		<select name="when.week" class="spacing-around">
 			<option value="1" {% raw %}{{#getWeekDefault}}1{{/getWeekDefault}}{% endraw %}>{{"first"|i18n}}</option>
 			<option value="2" {% raw %}{{#getWeekDefault}}2{{/getWeekDefault}}{% endraw %}>{{"second"|i18n}}</option>
@@ -213,13 +214,13 @@
 			<option value="4" {% raw %}{{#getWeekDefault}}4{{/getWeekDefault}}{% endraw %}>{{"fourth"|i18n}}</option>
 		</select> {{'week'|i18n}}
 	</div>
-	<div class="row">
+	<div class="row h1">
 		{{"from the"|i18n}} <select name="when.order" class="spacing-around">
 			<option value="1"  {% raw %}{{#getStartDefault}}1{{/getStartDefault}}{% endraw %}>{{"beginning"|i18n}}</option>
 			<option value="-1" {% raw %}{{#getStartDefault}}-1{{/getStartDefault}}{% endraw %}>{{"end"|i18n}}</option>
 		</select> {{"of the month"|i18n}}
 	</div>
-	<div class="row days">
+	<div class="row days h1">
 		<input type="checkbox" name="when.days[]" value="1" {% raw %}{{#getDaysDefault}}1{{/getDaysDefault}}{% endraw %}/>{{"Mon"|i18n}}&nbsp;&nbsp;
 		<input type="checkbox" name="when.days[]" value="2" {% raw %}{{#getDaysDefault}}2{{/getDaysDefault}}{% endraw %}/>{{"Tue"|i18n}}&nbsp;&nbsp;
 		<input type="checkbox" name="when.days[]" value="3" {% raw %}{{#getDaysDefault}}3{{/getDaysDefault}}{% endraw %}/>{{"Wed"|i18n}}&nbsp;&nbsp;
