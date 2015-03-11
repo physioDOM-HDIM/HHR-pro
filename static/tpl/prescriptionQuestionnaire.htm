@@ -1,18 +1,19 @@
 {% extends './page.htm' %}
-{% block title %}{{title}}{% endblock %}
+{% block title %}{{title|i18n}}{% endblock %}
 {% block head %}
 {% parent %}
 <script src="/bower_components/mustache/mustache.js"></script>
 <script src="/bower_components/rsvp/rsvp.min.js"></script>
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
 <script src="/bower_components/zdk-calendar/form2js.js"></script>
+<link   rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
 <script src="/scripts/utils.js"></script>
 <script src="/scripts/modal.js"></script>
 <script src="/tpl/prescriptionQuestionnaire.js"></script>
 
-<link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
 <link rel="stylesheet" href="/styles/icons.css">
 <link rel="stylesheet" href="/styles/prescriptionData.css">
+
 {% endblock %}
 
 {% block content %}
@@ -22,7 +23,7 @@
 <div class="hidden" id="unsave">{{"You have unsaved data"|i18n}}</div>
 <div class="row title">
     <label class="title">
-        {{title}}
+        {{title|i18n}}
     </label>
 </div>
 
@@ -39,50 +40,53 @@
 
 <script type="template" id="tpl-questionnaire-prog">
 	{% raw %}{{#data}}{% endraw %}
-	<div data-index="{% raw %}{{idx}}{% endraw %}">
+	<div data-index="{% raw %}{{idx}}{% endraw %}" id="{% raw %}{{ref}}{% endraw %}">
 		{% raw %}
 		<input type="hidden" name="questionnaire[{{idx}}].ref" value="{{ref}}">
 		{% endraw %}
-	<div class="row">
-		<div class="col bold data-text">{% raw %}{{labelLang}}{% endraw %}</div>
-	</div>
-	<div class="row">
-		<div class="col" style="padding-left:50px">
-			<label>{{"Frequency"|i18n}}</label>
-			{% raw %}
-			<input type="text" name="questionnaire[{{idx}}].frequency" value="{{frequency}}"/>
-			{% endraw %}
+		<div class="row">
+			<div class="col bold data-text">{% raw %}{{labelLang}}{% endraw %}</div>
 		</div>
-	</div>
-	<div class="row">
-		<div class="col" style="padding-left:50px">
-			<label>{{"Comment"|i18n}}</label>
-			{% raw %}
-			<input type="text" name="questionnaire[{{idx}}].comment" value="{{comment}}">
-			{% endraw %}
-		</div>
-	</div>
-	<div class="row">
-		<div class="col" style="padding-left:50px">
-			<label>{{"Dates"|i18n}}</label>
-			<ul class="dates-list">
+		<div class="row">
+			<div class="col" style="padding-left:50px">
+				<label>{{"Frequency"|i18n}}</label>
 				{% raw %}
-				{{#date}}
-					{{#setAddedDate}}{{.}}{{/setAddedDate}}
-				{{/date}}
+				<input type="text" name="questionnaire[{{idx}}].frequency" value="{{frequency}}"/>
 				{% endraw %}
-			</ul>
+			</div>
 		</div>
-	</div>
-	{% if rights.write %}
-	<div class="row">
-		<div class="col vert" style="padding-left:50px">
-			<label></label>
-			<zdk-input-date id="date" name="newDate" value="" style="z-index:100" i18n="{% if lang=='en' %}en_gb{% else %}{{lang}}{% endif %}"></zdk-input-date>
-			<button type="button" class="small blue" onclick="addDate(this, {% raw %}{{idx}}{% endraw %})">{{'Add'|i18n}}</button>
+		<div class="row">
+			<div class="col" style="padding-left:50px">
+				<label>{{"Comment"|i18n}}</label>
+				{% raw %}
+				<input type="text" name="questionnaire[{{idx}}].comment" value="{{comment}}">
+				{% endraw %}
+			</div>
 		</div>
-	</div>
+		<div class="row">
+			<div class="col" style="padding-left:50px">
+				<label>{{"Dates"|i18n}}</label>
+				<ul class="dates-list">
+					{% raw %}
+					{{#date}}
+						{{#setAddedDate}}{{.}}{{/setAddedDate}}
+					{{/date}}
+					{% endraw %}
+				</ul>
+			</div>
+		</div>
+		{% if rights.write %}
+		<div class="row">
+			<div class="col vert" style="padding-left:50px">
+				<label></label>
+				{% raw %}
+				<zdk-input-date id="{{ref}}" name="newDate" value="" style="z-index:100" i18n="{{lang}}"></zdk-input-date>
+				{% endraw %}
+				<button type="button" class="small blue" onclick="addDate('{% raw %}{{ref}}{% endraw %}', {% raw %}{{idx}}{% endraw %})">{{'Add'|i18n}}</button>
+			</div>
+		</div>
 	{% endif %}
+	</div>
 	<hr>
 	{% raw %}{{/data}}{% endraw %}
 </script>
