@@ -1,4 +1,7 @@
-var Utils = new Utils();
+"use strict";
+
+var Utils = new Utils(),
+	infos = {};
 
 function paginate(init, params) {
     var listPagerElt = document.querySelector("tsante-list");
@@ -21,8 +24,8 @@ function getBaseURL(url) {
 }
 
 function getParams() {
-    var filterForm = document.forms.filter,
-        orderForm = document.forms.order,
+    var filterForm = document.querySelector('form[name=filter]'),
+        orderForm = document.querySelector('form[name=order]'),
         objFilter = form2js(filterForm),
         objOrder = form2js(orderForm),
         params = "";
@@ -60,7 +63,6 @@ function validFilter() {
 }
 
 function init() {
-    // need to set the locale for moment ( read from cookie lang or default get the language from navigator )
     var listPager = document.querySelector('tsante-list');
     listPager.addEventListener('tsante-response', function(data) {
         var list = data.detail.list;
@@ -76,10 +78,15 @@ function init() {
 }
 window.addEventListener("polymer-ready", init, false);
 
+window.addEventListener("DOMContentLoaded", function() {
+	infos.lang = Cookies.get("lang");
+	moment.locale( infos.lang==="en"?"en_gb":infos.lang );
+}, false );
+
 var showDetail = function(elt) {
 	var message = elt.parentNode.parentNode,
 		messageDetail = message.querySelector('.message-detail'),
-		detailShow = elt.querySelector('.detail-show');
+		detailShow = elt.querySelector('.detail-show'),
 		detailHide = elt.querySelector('.detail-hide');
 
 	//toggle elements
