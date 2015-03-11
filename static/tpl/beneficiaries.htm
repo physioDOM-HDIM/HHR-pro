@@ -91,7 +91,7 @@
 	
 	<tsante-list url="/api/beneficiaries" pg="1" offset="25" auto="true" unresolved id="tsanteList">
 		<template is="auto-binding" repeat="{% raw %}{{item in list.items}}{% endraw %}">
-			<div class="item">
+			<div class="item" style="height:70px">
 				<div class="row">
 					<div style="-webkit-flex:1; -ms-flex:1; flex:1;" class="{% raw %}{{item.activeClass}}{% endraw %}">
 							<div>
