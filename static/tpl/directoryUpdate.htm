@@ -37,7 +37,7 @@
     <div class="row">
         <input type="hidden" name="telecom[{%raw%}{{indx}}{%endraw%}].use" value="work">
         <div class="col">
-            <label>{{"System"|i18n}} :</label>
+            <label>{{"Type"|i18n}} :</label>
             <select name="telecom[{%raw%}{{indx}}{%endraw%}].system" style="min-width: 150px;" onchange="checkEmailTypeValidation(this)">
                 {% for item in system.items %}
                 <option value="{{item.value}}" {{telecom_system_selected}}>{{item.label}}</option>
@@ -48,7 +48,7 @@
     <div class="row">
         <div class="col">
             <label>{{"Value"|i18n}} :</label>
-            <input name="telecom[{%raw%}{{indx}}{%endraw%}].value" type="{%raw%}{{telecom_email_type_default}}{%endraw%}" class="text" />
+            <input name="telecom[{%raw%}{{indx}}{%endraw%}].value" required type="{%raw%}{{telecom_email_type_default}}{%endraw%}" class="text" />
         </div>
         <div>
             <span class="spacer"></span>
@@ -98,14 +98,14 @@
                     </div>
                     <div class="row">
                         <label class="mandatory">{{"Civility"|i18n}} :</label>
-                        <input type="radio" name="gender" value="M" {% if professional.gender == 'M' %}checked{% endif %} />{{"Man"|i18n}}
+                        <input type="radio" name="gender" value="M" required {% if professional.gender == 'M' %}checked{% endif %} />{{"Man"|i18n}}
                         <input type="radio" name="gender" value="F" {% if professional.gender == 'F' %}checked{% endif %} />{{"Woman"|i18n}}
                     </div>
                     <div class="row">
                         <label class="mandatory">{{ "Job" | i18n }} :</label>
                         <select name="job" required>
                             {% for item in job.items %}
-                            <option value="{{item.value}}" {% if  professional.job == item.value %}selected{% endif %}>{{item.label}}</option>
+                            <option value="{% if item.value!='NONE' %}{{item.value}}{% endif %}" {% if  professional.job == item.value %}selected{% endif %}>{{item.label}}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -117,7 +117,7 @@
 			            <label class="mandatory">{{"Organization type"|i18n}} :</label>
 			            <select name="organizationType" required>
 				            {% for item in organizationType.items %}
-				            <option value="{{item.value}}" {% if professional.organizationType == item.value %}selected{% endif %}>{{item.label}}</option>
+				            <option value="{% if item.value!='NONE' %}{{item.value}}{% endif %}" {% if professional.organizationType == item.value %}selected{% endif %}>{{item.label}}</option>
 				            {% endfor %}
 			            </select>
 		            </div>
@@ -127,7 +127,7 @@
                     <label class="mandatory">{{ "Role" | i18n }}:</label>
                     <select name="role" required>
                         {% for item in role.items %}
-                        <option value="{{item.value}}" {% if professional.role == item.value %}selected{% endif %}>{{item.label}}</option>
+                        <option value="{% if item.value!='NONE' %}{{item.value}}{% endif %}" {% if professional.role == item.value %}selected{% endif %}>{{item.label}}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -152,21 +152,18 @@
 	            <span style="color:tomato">{{"An email address is mandatory"|i18n}}</span>
                 {% if !professional.telecom %}
                 <div class="telecomContainer">
-                    <div class="row">
+                    <div class="row" style="height:35px">
                         <input type="hidden" name="telecom[0].use" value="work">
                         <div class="col">
                             <label>{{"Type"|i18n}} :</label>
-                            <select name="telecom[0].system" onchange="checkEmailTypeValidation(this)" required>
-                                {% for item in system.items %}
-                                <option value="{{item.value}}" {% if item.value=='email' %}selected{% endif %}>{{item.label}}</option>
-                                {% endfor %}
-                            </select>
+	                        <input type="hidden"  name="telecom[0].system" value="email">
+	                        <label>{{"email"|i18n}}</label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
-                            <label>{{"Value"|i18n}} :</label>
-                            <input name="telecom[0].value" value="" type="email" />
+                            <label class="mandatory">{{"Value"|i18n}} :</label>
+                            <input name="telecom[0].value" value="" type="email" required />
                         </div>
                         <div>
                             <span class="spacer"></span>
@@ -197,7 +194,7 @@
 	                    <div class="row">
 	                        <div class="col">
 	                            <label>{{"Value"|i18n}} :</label>
-	                            <input name="telecom[{{loop.index}}].value" value="{{entry.value}}" type="{% if entry.system=='email' %}email{% else %}text{% endif %}" />
+	                            <input name="telecom[{{loop.index}}].value" value="{{entry.value}}" required type="{% if entry.system=='email' %}email{% else %}text{% endif %}" />
 	                        </div>
 	                        <div>
 	                            <span class="spacer"></span>
@@ -263,18 +260,21 @@
             <br />
             <div class="row">
                 <span class="spacer"></span>
-            <div class="buttonContainer">
-                {% if professional._id && sessionID.toString() !== professional._id.toString() %}
-                <button id="deleteItem" class="red" type="button" onclick="confirmDelete()">{{"Delete"|i18n}}</button>
-                {% endif %}
-                <button type="button" class="blue" onclick="modified=false; window.history.back()">{{"Cancel"|i18n}}</button>
-                {% if professional._id %}
-                <button id="saveItemBtn" class="green">{{"Save"|i18n}}</button>
-                {% else %}
-                <button id="createItemBtn" class="green">{{"Create"|i18n}}</button>
-                {% endif %}
+	            <div class="buttonContainer">
+	                {% if professional._id && sessionID.toString() !== professional._id.toString() %}
+	                <button id="deleteItem" class="red" type="button" onclick="confirmDelete()">{{"Delete"|i18n}}</button>
+	                {% endif %}
+	                <button type="button" class="blue" onclick="modified=false; window.history.back()">{{"Cancel"|i18n}}</button>
+	                {% if professional._id %}
+	                <button id="saveItemBtn" class="green">{{"Save"|i18n}}</button>
+	                {% else %}
+	                <button id="createItemBtn" class="green">{{"Create"|i18n}}</button>
+	                {% endif %}
+	            </div>
             </div>
-            </div>
+	        {% if professional.nb %}
+	        <div class="row">Nota : this professional has {{professional.nb}} {% if professional.nb == 1 %}beneficiary{% else %}beneficiaries{% endif %} affected</div>
+	        {% endif %}
         </form>
     </div>
 

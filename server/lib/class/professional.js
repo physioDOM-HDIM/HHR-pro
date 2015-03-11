@@ -52,11 +52,25 @@ function Professional() {
 							that[prop] = doc[prop];
 						}
 					}
-					resolve(that);
+					that.getBeneficiariesCount()
+						.then( function(nb) {
+							that.nb = nb;
+							resolve(that);
+						});
 				}
 			});
 		});
 	};
+	
+	this.getBeneficiariesCount = function() {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			physioDOM.db.collection("beneficiaries").count( { 'professionals.professionalID' : that._id.toString() }, function(err, nb ) {
+				logger.info("count",nb);
+				resolve(nb);
+			});
+		});
+	}
 
 	/**
 	 * Special Access for creating/updating an entry
@@ -99,12 +113,17 @@ function Professional() {
 		var that = this;
 		return new promise( function(resolve, reject) {
 			logger.trace("save");
+			delete that.nb;
 			physioDOM.db.collection("professionals").save( that, function(err, result) {
 				if(err) { throw err; }
 				if( isNaN(result)) {
 					that._id = result._id;
 				}
-				resolve(that);
+				that.getBeneficiariesCount()
+					.then( function(nb) {
+						that.nb = nb;
+						resolve(that);
+					});
 			});
 		});
 	};

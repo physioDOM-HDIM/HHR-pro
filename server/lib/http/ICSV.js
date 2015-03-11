@@ -55,8 +55,8 @@ var ICSV = {
 					res.setHeader('Content-disposition', 'attachment; filename=directory.csv');
 					res.setHeader('Content-type', 'text/csv');
 
-					console.log(err);
-					console.log(output);
+					//console.log(err);
+					//console.log(output);
 
 					res.send(output);
 					next();

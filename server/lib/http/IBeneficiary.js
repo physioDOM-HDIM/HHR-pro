@@ -8,7 +8,9 @@
 
 var Logger = require("logger"),
 	ObjectID = require("mongodb").ObjectID,
-	DataRecords = require("../class/dataRecords");
+	DataRecords = require("../class/dataRecords"),
+	RSVP = require("rsvp"),
+	promise = require("rsvp").Promise;
 var CurrentStatus = require('../class/currentStatus');
 var logger = new Logger("IBeneficiary");
 
@@ -48,6 +50,46 @@ var IBeneficiary = {
 			});
 	},
 
+	/**
+	 * get the list of HHR ( beneficiaries that have an assigned box and are active
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	getHHRs : function(req, res, next) {
+		logger.trace("getBeneficiaries");
+		// logger.debug(req.session?"session "+ JSON.stringify(req.session,null,4) : "no session");
+		var pg = parseInt(req.params.pg,10) || 1;
+		var offset = parseInt(req.params.offset,10) || 20;
+
+		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
+			res.send(403, { code:403, message:"you have no write to access this request"});
+			next(false);
+		} else {
+			physioDOM.Beneficiaries()
+				.then(function (beneficiaries) {
+					return beneficiaries.getAllActiveHHRList(pg, offset);
+				})
+				.then(function (list) {
+					list.items.forEach(function (item, i) {
+						var tmp = {};
+						tmp._id = item._id;
+						tmp.biomaster = item.biomaster;
+						tmp.biomasterStatus = item.biomasterStatus;
+						tmp.beneficiary = item.name.family + " " + item.name.given;
+						list.items[i] = tmp;
+					});
+					res.send(list);
+					next();
+				})
+				.catch(function (err) {
+					res.send(err.code || 400, err);
+					next(false);
+				});
+		}
+	},
+	
 	createBeneficiary: function(req, res, next ) {
 		logger.trace("createBeneficiary");
 		physioDOM.Beneficiaries()
@@ -298,15 +340,20 @@ var IBeneficiary = {
 	 */
 	newDataRecord: function(req,res, next) {
 		logger.trace("newDataRecord");
+		
+		var beneficiary, dataRecord;
+		
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
 				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
 			})
-			.then(function (beneficiary) {
+			.then(function (beneficiaryRes) {
+				beneficiary = beneficiaryRes;
 				var dataRecord = JSON.parse( req.body );
 				return beneficiary.createDataRecord( dataRecord, req.session.person.id );
 			})
-			.then( function( dataRecord) {
+			.then( function( result ) {
+				dataRecord = result;
 				res.send( dataRecord );
 				next();
 			})
@@ -344,15 +391,22 @@ var IBeneficiary = {
 			.then( function( dataRecord ) {
 				return dataRecord.getComplete();
 			})
-			.then(function(completeDataRecord) {
+			.then(function( completeDataRecord ) {
 				res.send(completeDataRecord);
 				logger.trace(completeDataRecord._id, req.session.person.id);
 				return beneficiary.createEvent('Data record', 'update', new ObjectID(completeDataRecord._id), req.session.person.id);
+			})
+			.then( function() {
+				return beneficiary.pushLastDHDFFQ();
+			})
+			.then( function() {
+				return beneficiary.pushHistory();
 			})
 			.then(function() {
 				next();
 			})
 			.catch( function(err) {
+				console.log( err );
 				res.send(err.code || 400, err);
 				next(false);
 			});

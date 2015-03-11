@@ -50,7 +50,6 @@ function IPage() {
 		});
 		
 		if(req.session) {
-			console.log("test");
 			lang = req.session.lang || req.cookies.lang || req.params.lang || physioDOM.lang;
 		} else {
 			lang = req.cookies.lang || req.params.lang || physioDOM.lang;

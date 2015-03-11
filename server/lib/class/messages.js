@@ -58,7 +58,7 @@ function Messages( beneficiaryID ) {
 							return Directory.getEntryByID( message.author.toString() );
 						})
 						.then( function( author ) {
-							var name = "hhr['" + that.subject + "'].message['" + message._id + "']";
+							var name = "hhr[" + that.subject + "].messages[" + message._id + "]";
 							var msg = [];
 							msg.push({
 								name : name + ".datetime",
@@ -309,7 +309,7 @@ function Messages( beneficiaryID ) {
 					return Directory.getEntryByID(message.author.toString());
 				})
 				.then(function (author) {
-					var name = "hhr['" + that.subject + "'].message['" + message._id + "']";
+					var name = "hhr[" + that.subject + "].messages[" + message._id + "]";
 					var msg = [];
 					msg.push({
 						name: name + ".datetime",
@@ -363,7 +363,7 @@ function Messages( beneficiaryID ) {
 					var promises = messages.map( function( message ) {
 						return that.pushMessage( message );
 					});
-					return RSVP.all(promises)
+					return RSVP.all(promises);
 				})
 				.then( function( results ) {
 					console.log( results );

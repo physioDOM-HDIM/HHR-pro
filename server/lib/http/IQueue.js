@@ -27,19 +27,29 @@ var IQueue = {
 	 * @param next
 	 */
 	init: function( req, res, next ) {
-		logger.trace("init hhr", req.session.beneficiary );
-		
-		var queue = new Queue( req.session.beneficiary );
-		queue.init( )
-			.then( function ( response ) {
-				res.send(200);
-				next();
-			})
-			.catch( function(err) {
-				logger.error("error ",err);
-				res.send(err.code || 400, err);
-				next(false);
-			});
+		var hhr = req.params.hhr?new ObjectID(req.params.hhr):null || req.session.beneficiary;
+		logger.trace("symptomPlan", hhr);
+
+		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
+			res.send(403, { code:403, message:"you have no write to access this request"});
+			return next(false);
+		}
+		if(!hhr) {
+			res.send(404, { code:404, message:"empty hhr"});
+			return next();
+		} else {
+			var queue = new Queue(hhr);
+			queue.init()
+				.then(function (response) {
+					res.send(200, { code:200, message:"init for "+ hhr +" sent"});
+					next();
+				})
+				.catch(function (err) {
+					logger.error("error ", err);
+					res.send(err.code || 400, err);
+					next(false);
+				});
+		}
 	},
 	
 	status: function( req, res, next ) {
@@ -64,203 +74,293 @@ var IQueue = {
 	},
 	
 	messages: function( req, res, next) {
-		logger.trace("messages");
+		var hhr = req.params.hhr?new ObjectID(req.params.hhr):null || req.session.beneficiary;
+		logger.trace("messages", hhr);
 
-		physioDOM.Beneficiaries()
-			.then(function (beneficiaries) {
-				return beneficiaries.getHHR( req.session.beneficiary );
-			})
-			.then(function (beneficiary) {
-				if (beneficiary.biomasterStatus) {
-					return beneficiary.pushMessages();
-				} else {
-					return false;
-				}
-			})
-			.then(function( result ) {
-				logger.debug("end sending messages");
-				if( result ) {
-					res.send(result);
-				} else {
-					res.send({ code:200, message:"biomaster not initialized"});
-				}
-				next();
-			});
+		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
+			res.send(403, { code:403, message:"you have no write to access this request"});
+			return next(false);
+		}
+		
+		if(!hhr) {
+			res.send(404, { code:404, message:"empty hhr"});
+			return next();
+		} else {
+			physioDOM.Beneficiaries()
+				.then(function (beneficiaries) {
+					return beneficiaries.getHHR(hhr);
+				})
+				.then(function (beneficiary) {
+					if (beneficiary.biomasterStatus) {
+						return beneficiary.pushMessages();
+					} else {
+						return false;
+					}
+				})
+				.then(function (result) {
+					logger.debug("end sending messages");
+					if (result) {
+						res.send(result);
+					} else {
+						res.send({code: 200, message: "biomaster not initialized"});
+					}
+					next();
+				});
+		}
 	},
 	
 	history: function( req, res, next ) {
-		logger.trace("history");
+		var hhr = req.params.hhr?new ObjectID(req.params.hhr):null || req.session.beneficiary;
+		logger.trace("history", hhr);
+
+		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
+			res.send(403, { code:403, message:"you have no write to access this request"});
+			return next(false);
+		}
 		
-		physioDOM.Beneficiaries()
-			.then(function (beneficiaries) {
-				return beneficiaries.getHHR( req.session.beneficiary );
-			})
-			.then(function (beneficiary) {
-				if (beneficiary.biomasterStatus) {
-					return beneficiary.pushHistory(req.params.category);
-				} else {
-					return false;
-				}
-			})
-			.then(function( result ) {
-				logger.debug("end sending history");
-				if( result ) {
-					res.send(result);
-				} else {
-					res.send({ code:200, message:"biomaster not initialized"});
-				}
-				next();
-			});
+		if(!hhr) {
+			res.send(404, { code:404, message:"empty hhr"});
+			return next();
+		} else {
+			physioDOM.Beneficiaries()
+				.then(function (beneficiaries) {
+					return beneficiaries.getHHR(hhr);
+				})
+				.then(function (beneficiary) {
+					if (beneficiary.biomasterStatus) {
+						return beneficiary.pushHistory(req.params.category);
+					} else {
+						return false;
+					}
+				})
+				.then(function (result) {
+					logger.debug("end sending history");
+					if (result) {
+						res.send(result);
+					} else {
+						res.send({code: 200, message: "biomaster not initialized"});
+					}
+					next();
+				});
+		}
 	},
 	
 	dhdffq: function( req, res, next ) {
-		logger.trace("dhdffq");
+		var hhr = req.params.hhr?new ObjectID(req.params.hhr):null || req.session.beneficiary;
+		logger.trace("dhdffq", hhr);
 
-		physioDOM.Beneficiaries()
-			.then(function (beneficiaries) {
-				return beneficiaries.getHHR( req.session.beneficiary );
-			})
-			.then(function (beneficiary) {
-				if (beneficiary.biomasterStatus) {
-					return beneficiary.pushLastDHDFFQ();
-				} else {
-					return false;
-				}
-			})
-			.then(function( result ) {
-				logger.debug("end dhdffq");
-				if( result ) {
-					res.send(result);
-				} else {
-					res.send({ code:200, message:"biomaster not initialized"});
-				}
-				next();
-			});
+		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
+			res.send(403, { code:403, message:"you have no write to access this request"});
+			return next(false);
+		}
+		
+		if(!hhr) {
+			res.send(404, { code:404, message:"empty hhr"});
+			return next();
+		} else {
+			physioDOM.Beneficiaries()
+				.then(function (beneficiaries) {
+					return beneficiaries.getHHR(hhr);
+				})
+				.then(function (beneficiary) {
+					if (beneficiary.biomasterStatus) {
+						return beneficiary.pushLastDHDFFQ();
+					} else {
+						return false;
+					}
+				})
+				.then(function (result) {
+					logger.debug("end dhdffq");
+					if (result) {
+						res.send(result);
+					} else {
+						res.send({code: 200, message: "biomaster not initialized"});
+					}
+					next();
+				});
+		}
 	},
 	
 	measurePlan: function( req, res, next ) {
-		logger.trace("measurePlan");
+		var hhr = req.params.hhr?new ObjectID(req.params.hhr):null || req.session.beneficiary;
+		var force = req.params.force !== null && req.params.force !== "true" ?false:true;
+		logger.trace("measurePlan", hhr);
 
-		physioDOM.Beneficiaries()
-			.then(function (beneficiaries) {
-				return beneficiaries.getHHR( req.session.beneficiary );
-			})
-			.then(function (beneficiary) {
-				if (beneficiary.biomasterStatus) {
-					return beneficiary.getMeasurePlan();
-				} else {
-					return false;
-				}
-			})
-			.then(function( result ) {
-				logger.debug("end measure plan");
-				if( result ) {
-					res.send(result);
-				} else {
-					res.send({ code:200, message:"biomaster not initialized"});
-				}
-				next();
-			});
+		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
+			res.send(403, { code:403, message:"you have no write to access this request"});
+			return next(false);
+		}
+		
+		if(!hhr) {
+			res.send(404, { code:404, message:"empty hhr"});
+			return next();
+		} else {
+			physioDOM.Beneficiaries()
+				.then(function (beneficiaries) {
+					return beneficiaries.getHHR(hhr);
+				})
+				.then(function (beneficiary) {
+					if (beneficiary.biomasterStatus) {
+						return beneficiary.getMeasurePlan( force );
+					} else {
+						return false;
+					}
+				})
+				.then(function (result) {
+					logger.debug("end measure plan");
+					if (result) {
+						res.send(result);
+					} else {
+						res.send({code: 200, message: "biomaster not initialized"});
+					}
+					next();
+				});
+		}
 	},
 
 	symptomsSelf: function( req, res, next ) {
-		logger.trace("symptomsSelf");
+		var hhr = req.params.hhr?new ObjectID(req.params.hhr):null || req.session.beneficiary;
+		logger.trace("symptomsSelf", hhr);
 
-		physioDOM.Beneficiaries()
-			.then(function (beneficiaries) {
-				return beneficiaries.getHHR( req.session.beneficiary );
-			})
-			.then(function (beneficiary) {
-				if (beneficiary.biomasterStatus) {
-					return beneficiary.symptomsSelfToQueue();
-				} else {
-					return false;
-				}
-			})
-			.then(function( result ) {
-				logger.debug("end symptomsSelf");
-				if( result ) {
-					res.send(result);
-				} else {
-					res.send({ code:200, message:"biomaster not initialized"});
-				}
-				next();
-			});
+		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
+			res.send(403, { code:403, message:"you have no write to access this request"});
+			return next(false);
+		}
+		
+		if(!hhr) {
+			res.send(404, { code:404, message:"empty hhr"});
+			return next();
+		} else {
+			physioDOM.Beneficiaries()
+				.then(function (beneficiaries) {
+					return beneficiaries.getHHR(hhr);
+				})
+				.then(function (beneficiary) {
+					if (beneficiary.biomasterStatus) {
+						return beneficiary.symptomsSelfToQueue();
+					} else {
+						return false;
+					}
+				})
+				.then(function (result) {
+					logger.debug("end symptomsSelf");
+					if (result) {
+						res.send(result);
+					} else {
+						res.send({code: 200, message: "biomaster not initialized"});
+					}
+					next();
+				});
+		}
 	},
 	
 	symptomPlan: function( req, res, next ) {
-		logger.trace("symptomPlan");
+		var hhr = req.params.hhr?new ObjectID(req.params.hhr):null || req.session.beneficiary;
+		var force = req.params.force !== null && req.params.force !== "true" ?false:true;
+		logger.trace("symptomPlan", hhr);
 
-		physioDOM.Beneficiaries()
-			.then(function (beneficiaries) {
-				return beneficiaries.getHHR( req.session.beneficiary );
-			})
-			.then(function (beneficiary) {
-				if (beneficiary.biomasterStatus) {
-					return beneficiary.getSymptomsPlan();
-				} else {
-					return false;
-				}
-			})
-			.then(function( result ) {
-				logger.debug("end symptoms plan");
-				if( result ) {
-					res.send(result);
-				} else {
-					res.send({ code:200, message:"biomaster not initialized"});
-				}
-				next();
-			});
+		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
+			res.send(403, { code:403, message:"you have no write to access this request"});
+			return next(false);
+		}
+		
+		if(!hhr) {
+			res.send(404, { code:404, message:"empty hhr"});
+			return next();
+		} else {
+			physioDOM.Beneficiaries()
+				.then(function (beneficiaries) {
+					return beneficiaries.getHHR(hhr);
+				})
+				.then(function (beneficiary) {
+					if (beneficiary.biomasterStatus) {
+						return beneficiary.getSymptomsPlan( force );
+					} else {
+						return false;
+					}
+				})
+				.then(function (result) {
+					logger.debug("end symptoms plan");
+					if (result) {
+						res.send(result);
+					} else {
+						res.send({code: 200, message: "biomaster not initialized"});
+					}
+					next();
+				});
+		}
 	},
 	
 	physicalPlan: function( req, res, next) {
-		logger.trace("physicalPlan");
+		var hhr = req.params.hhr?new ObjectID(req.params.hhr):null || req.session.beneficiary;
+		logger.trace("physicalPlan", hhr);
 
-		physioDOM.Beneficiaries()
-			.then(function (beneficiaries) {
-				return beneficiaries.getHHR( req.session.beneficiary );
-			})
-			.then(function (beneficiary) {
-				if (beneficiary.biomasterStatus) {
-					return beneficiary.physicalPlanToQueue();
-				}else {
-					return false;
-				}
-			})
-			.then(function( result ) {
-				logger.debug("end physical plan");
-				if( result ) {
-					res.send(result);
-				} else {
-					res.send({ code:200, message:"biomaster not initialized"});
-				}
-				next();
-			});
+		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
+			res.send(403, { code:403, message:"you have no write to access this request"});
+			return next(false);
+		}
+		
+		if(!hhr) {
+			res.send(404, { code:404, message:"empty hhr"});
+			return next();
+		} else {
+			physioDOM.Beneficiaries()
+				.then(function (beneficiaries) {
+					return beneficiaries.getHHR(hhr);
+				})
+				.then(function (beneficiary) {
+					if (beneficiary.biomasterStatus) {
+						return beneficiary.physicalPlanToQueue();
+					} else {
+						return false;
+					}
+				})
+				.then(function (result) {
+					logger.debug("end physical plan");
+					if (result) {
+						res.send(result);
+					} else {
+						res.send({code: 200, message: "biomaster not initialized"});
+					}
+					next();
+				});
+		}
 	},
 
 	dietaryPlan: function( req, res, next) {
-		logger.trace("dietaryPlan");
+		var hhr = req.params.hhr?new ObjectID(req.params.hhr):null || req.session.beneficiary;
+		logger.trace("dietaryPlan", hhr);
 
-		physioDOM.Beneficiaries()
-			.then(function (beneficiaries) {
-				return beneficiaries.getHHR( req.session.beneficiary );
-			})
-			.then(function (beneficiary) {
-				if (beneficiary.biomasterStatus) {
-					return beneficiary.dietaryPlanToQueue();
-				}else {
-					return false;
-				}
-			})
-			.then(function( result ) {
-				logger.debug("end dieatry plan");
-				if( result ) {
-					res.send(result);
-				} else {
-					res.send({ code:200, message:"biomaster not initialized"});
-				}
-				next();
-			});
+		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
+			res.send(403, { code:403, message:"you have no write to access this request"});
+			return next(false);
+		}
+		
+		if(!hhr) {
+			res.send(404, { code:404, message:"empty hhr"});
+			return next();
+		} else {
+			physioDOM.Beneficiaries()
+				.then(function (beneficiaries) {
+					return beneficiaries.getHHR(hhr);
+				})
+				.then(function (beneficiary) {
+					if (beneficiary.biomasterStatus) {
+						return beneficiary.dietaryPlanToQueue();
+					} else {
+						return false;
+					}
+				})
+				.then(function (result) {
+					logger.debug("end dieatry plan");
+					if (result) {
+						res.send(result);
+					} else {
+						res.send({code: 200, message: "biomaster not initialized"});
+					}
+					next();
+				});
+		}
 	},
 
 	/**

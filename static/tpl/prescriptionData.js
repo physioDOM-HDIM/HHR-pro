@@ -52,6 +52,10 @@ var init = function () {
 
 		var dataItem = lists.dataprog[i],
 			param = utils.findInObject(lists.parameters.items, 'ref', dataItem.ref);
+		
+		dataItem.startDate = moment(dataItem.startDate).format("L");
+		dataItem.endDate = moment(dataItem.endDate).format("L");
+		
 		if (dataItem.repeat > 1) {
 			dataItem.freqRepeat = true;
 		}
@@ -171,6 +175,14 @@ function showForm(ref) {
 	if (ref) {
 		dataItem = utils.findInObject(lists.dataprog, 'ref', ref);
 		param = utils.findInObject(lists.parameters.items, 'ref', ref);
+		moment.locale( infos.lang==="en"?"en_gb":infos.lang );
+		if( dataItem.endDate && !dataItem.endDate.match(/^\d{4}-\d{2}-\d{2}$/g) ) {
+			dataItem.endDate = moment(dataItem.endDate, moment.localeData().longDateFormat("L") ).format("YYYY-MM-DD"); 
+		}
+		if( dataItem.startDate && !dataItem.startDate.match(/^\d{4}-\d{2}-\d{2}$/g) ) {
+			dataItem.startDate = moment(dataItem.startDate, moment.localeData().longDateFormat("L") ).format("YYYY-MM-DD");
+		}
+		dataItem.i18n = infos.lang==="en"?"en_gb":infos.lang;
 	}
 
 	var dataModel = {
@@ -355,6 +367,7 @@ window.addEventListener("DOMContentLoaded", function () {
 	infos.category = document.querySelector('.param-category').textContent;
 	infos.paramList = document.querySelector('.param-list').textContent;
 	infos.lang = Cookies.get("lang");
+	moment.locale( infos.lang==="en"?"en_gb":infos.lang );
 	getList();
 }, false);
 
