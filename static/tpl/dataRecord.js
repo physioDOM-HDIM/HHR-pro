@@ -21,8 +21,8 @@ function paginate(init, params) {
 }
 
 function getParams() {
-    var filterForm = document.forms.filter,
-        orderForm = document.forms.order,
+    var filterForm = document.querySelector('form[name=filter]'),
+        orderForm = document.querySelector('form[name=order]'),
         objFilter = form2js(filterForm),
         objOrder = form2js(orderForm),
         params = "";
