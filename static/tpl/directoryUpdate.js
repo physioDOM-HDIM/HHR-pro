@@ -194,15 +194,20 @@ function updateItem(obj) {
             tabPromises.push(Utils.promiseXHR("POST", "/api/directory/" + data._id + "/account", 200, JSON.stringify(accountData)));
         }
 
-        RSVP.all(tabPromises).then(function() {
-            new Modal('updateSuccess', function() {
-				modified = false;
-                window.history.back();
-            });
-        }).catch(function(error) {
-            new Modal('errorOccured');
-            console.log("updateItem - error: ", error);
-        });
+        RSVP.all(tabPromises)
+			.then(function() {
+            	new Modal('updateSuccess', function() {
+					modified = false;
+                	window.history.back();
+            	});
+        	}).catch(function(error) {
+				if( error.status === 405 && error.responseText === '{"code":405,"message":"email address already used"}') {
+					new Modal('emailAlreadyUsed');
+				} else {
+					new Modal('errorOccured');
+				}
+            	console.log("updateItem - error: ", error);
+        	});
     } else {
         var callSuccess = function() {
             new Modal('createSuccess', function() {
@@ -224,7 +229,11 @@ function updateItem(obj) {
 					callSuccess();
 				}
 			}).catch(function(error) {
-				new Modal('errorOccured');
+				if( error.status === 405 && error.responseText === '{"code":405,"message":"email address already used"}') {
+					new Modal('emailAlreadyUsed');
+				} else {
+					new Modal('errorOccured');
+				}
 				console.log("updateItem - error: ", error);
 			});
     }

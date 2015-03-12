@@ -204,20 +204,42 @@ function Professional() {
 			checkSchema( newEntry )
 				.then( checkUniq )
 				.then( function(entry) {
-					for( var key in newEntry ) {
-						if(newEntry.hasOwnProperty(key)) {
-							switch(key) {
-								case "name":
-									that.name = newEntry.name;
-									that.name.family = capitalize(that.name.family);
-									that.name.given = capitalize(that.name.given);
-									break;
-								default:
-									that[key] = newEntry[key];
+					return new promise( function( resolve, reject) {
+						for (var key in newEntry) {
+							if (newEntry.hasOwnProperty(key)) {
+								switch (key) {
+									case "name":
+										that.name = newEntry.name;
+										that.name.family = capitalize(that.name.family);
+										that.name.given = capitalize(that.name.given);
+										break;
+									default:
+										that[key] = newEntry[key];
+								}
 							}
 						}
-					}
-					return that.save();
+						var search = {
+							telecom: {
+								'$elemMatch': {
+									system: "email",
+									value : that.getEmail()
+								}
+							},
+							_id    : {
+								'$ne': that._id
+							}
+						};
+						physioDOM.db.collection("professionals").count(search, function (err, nb) {
+							if (nb === 0) {
+								that.save()
+									.then(resolve)
+									.catch(reject);
+							} else {
+								logger.warning("email address already used", that.getEmail());
+								reject({code: 405, message: "email address already used"});
+							}
+						});
+					});
 				})
 				.then( resolve )
 				.catch( reject );
@@ -264,32 +286,56 @@ function Professional() {
 			checkSchema( updatedItem )
 				.then( checkUniq )
 				.then( function(entry) {
-					var key;
-					for( key in entry ) {
-						if(entry.hasOwnProperty(key) && ["_id","account"].indexOf(key) === -1) {
-							if( key==="active" && entry.active === true && that.active !== entry.active && !that.account ) {
-								that.active = false;
-							} else {
-								that[key] = entry[key];
-								switch(key) {
-									case "name":
-										that.name.family = capitalize(that.name.family);
-										if( that.name.given ) {
-											that.name.given = capitalize(that.name.given);
-										}
-										break;
-									default:
+					return new promise( function( resolve, reject) {
+						var key;
+						for (key in entry) {
+							if (entry.hasOwnProperty(key) && ["_id", "account"].indexOf(key) === -1) {
+								if (key === "active" && entry.active === true && that.active !== entry.active && !that.account) {
+									that.active = false;
+								} else {
+									that[key] = entry[key];
+									switch (key) {
+										case "name":
+											if (that.name.family) {
+												that.name.family = capitalize(that.name.family);
+											}
+											if (that.name.given) {
+												that.name.given = capitalize(that.name.given);
+											}
+											break;
+										default:
+									}
 								}
 							}
 						}
-					}
 
-					for( key in that ) {
-						if(that.hasOwnProperty(key) && typeof that[key] !== "function" && !entry.hasOwnProperty(key)) {
-							delete that[key];
+						for (key in that) {
+							if (that.hasOwnProperty(key) && typeof that[key] !== "function" && !entry.hasOwnProperty(key)) {
+								delete that[key];
+							}
 						}
-					}
-					return that.save();
+						var search = {
+							telecom: {
+								'$elemMatch': {
+									system: "email",
+									value : that.getEmail()
+								}
+							},
+							_id    : {
+								'$ne': that._id
+							}
+						};
+						physioDOM.db.collection("professionals").count(search, function (err, nb) {
+							if (nb === 0) {
+								that.save()
+									.then( resolve )
+									.catch( reject );
+							} else {
+								logger.warning("email address already used", that.getEmail() );
+								reject({code: 405, message: "email address already used"});
+							}
+						});
+					});
 				})
 				.then( function(professional) {
 					return professional.getAccount();
