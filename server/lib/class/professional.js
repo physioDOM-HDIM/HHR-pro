@@ -66,7 +66,6 @@ function Professional() {
 		var that = this;
 		return new promise( function(resolve, reject) {
 			physioDOM.db.collection("beneficiaries").count( { 'professionals.professionalID' : that._id.toString() }, function(err, nb ) {
-				logger.info("count",nb);
 				resolve(nb);
 			});
 		});
