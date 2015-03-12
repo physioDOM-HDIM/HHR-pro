@@ -291,7 +291,9 @@ function init() {
         document.querySelector('.account-password').value = passwordPlaceholder;
         document.querySelector('.account-check-password').value = passwordPlaceholder;
     }
-	document.querySelector("button#createCert").addEventListener("click", createCert, false);
+	if( document.querySelector("button#createCert") ) {
+		document.querySelector("button#createCert").addEventListener("click", createCert, false);
+	}
 }
 
 window.addEventListener("beforeunload", function( e) {
