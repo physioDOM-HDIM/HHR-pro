@@ -161,7 +161,7 @@ function updateItem(obj) {
     // remove uneeded fields
     delete obj.checkAccountPassword;  // move to check
     accountData = obj.account?obj.account:null;
-    if( accountData && !( accountData.login && accountData.password )) {
+    if( accountData && !( ( accountData.login || accountData.IDS==="true" ) && accountData.password )) {
         accountData = null;
     }
 
@@ -276,14 +276,34 @@ function createCert() {
 	Utils.promiseXHR("GET", "/api/directory/" + obj._id+ "/cert", 200)
 		.then(function(response) {
 			console.log( "certCreate", response );
+			var account = JSON.parse( response );
+			var OTP = document.querySelector("span#OTP");
+			if( OTP ) {
+				OTP.innerHTML = account.OTP;
+			}
+			document.querySelector("button#revokeCert").classList.remove("hidden");
+			document.querySelector("button#createCert").classList.add("hidden");
 		}, function(error) {
 			new Modal('errorOccured');
 			console.log("createCert - error: ", error);
 		});
 }
 
-function revoqCert() {
-	
+function revokeCert() {
+	var obj = form2js(document.forms["directoryForm"]);
+	Utils.promiseXHR("DELETE", "/api/directory/" + obj._id+ "/cert", 200)
+		.then(function(response) {
+			console.log( "certRevoke", response );
+			var OTP = document.querySelector("span#OTP");
+			if( OTP ) {
+				OTP.innerHTML = "";
+			}
+			document.querySelector("button#revokeCert").classList.add("hidden");
+			document.querySelector("button#createCert").classList.remove("hidden");
+		}, function(error) {
+			new Modal('errorOccured');
+			console.log("revokeCert - error: ", error);
+		});
 }
 
 function init() {
@@ -302,6 +322,9 @@ function init() {
     }
 	if( document.querySelector("button#createCert") ) {
 		document.querySelector("button#createCert").addEventListener("click", createCert, false);
+	}
+	if( document.querySelector("button#revokeCert") ) {
+		document.querySelector("button#revokeCert").addEventListener("click", revokeCert, false);
 	}
 }
 

@@ -267,6 +267,7 @@ function IPage() {
 			.then( function( _rights ) {
 				data.rights = _rights;
 				data.rights.read = data.rights.write;
+				data.IDS = physioDOM.config.IDS && req.headers["ids-user"];
 				return RSVP.all(promises);
 			})
 			.then(function(lists) {

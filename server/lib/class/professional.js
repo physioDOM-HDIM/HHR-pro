@@ -12,6 +12,7 @@ var promise = require("rsvp").Promise,
 	ObjectID = require("mongodb").ObjectID,
 	directorySchema = require("./../schema/directorySchema"),
 	soap = require("soap"),
+	Cookies = require("cookies"),
 	md5 = require('MD5');
 
 var logger = new Logger("Professional");
@@ -378,6 +379,16 @@ function Professional() {
 		});
 	};
 
+	this.getEmail = function() {
+		var email = "";
+		this.telecom.forEach( function(item) {
+			if( !email && item.system === "email") {
+				email = item.value;
+			}
+		});
+		return email;
+	};
+	
 	/**
 	 * @method accountUpdate
 	 * 
@@ -389,10 +400,15 @@ function Professional() {
 	this.accountUpdate = function( accountData ) {
 		var that = this;
 		return new promise( function(resolve, reject) {
+			logger.trace( "accountUpdate" );
 			that.getAccount()
 				.then( function(account) {
-					logger.trace("account");
-					if (!accountData.login || !accountData.password) {
+					logger.trace("account", accountData );
+					if ( accountData.IDS==="true" ) {
+						// keep the old login if exists
+						accountData.login = account.login;
+					}
+					if (!(accountData.login || accountData.IDS==="true" ) || !accountData.password) {
 						return reject({error: "account data incomplete"});
 					}
 					var newAccount = {
@@ -400,6 +416,7 @@ function Professional() {
 						password: md5(accountData.password),
 						active  : that.active,
 						role    : that.role,
+						email   : that.getEmail(),
 						person  : {
 							id        : that._id,
 							collection: "professionals"
@@ -407,7 +424,10 @@ function Professional() {
 					};
 					if( account && account._id) {
 						newAccount._id = account._id;
-					} 
+						newAccount.OTP = account.OTP?account.OTP:false;
+					} else {
+						newAccount.OTP = false;
+					}
 					physioDOM.db.collection("account").save(newAccount, function (err, result) {
 						if(err) { throw err; }
 						if( isNaN(result)) {
@@ -415,35 +435,36 @@ function Professional() {
 						}
 						that.account = newAccount._id;
 						that.active = true;
-						resolve(that.save());
+						that.save()
+							.then( function( professional ) {
+								logger.info("professional saved",newAccount.OTP );
+								resolve(professional, newAccount.OTP );
+							})
+							.catch( reject );
 					});
 				})
 				.catch( reject );
 		});
 	};
 	
-	this.createCert = function(requester, sessionids) {
+	this.createCert = function(req, res) {
 		var that = this;
-
-		logger.trace("createCert", requester, sessionids );
+		
 		return new promise( function(resolve, reject) {
+			logger.trace("createCert" );
 			that.getAccount()
 				.then( function(account) {
-					var email;
-					that.telecom.forEach( function( item ) {
-						if( !email && item.system === "email") {
-							email = item.value;
-						}
-					});
+					var email = that.getEmail();
+					var cookies = new Cookies(req, res);
 					
 					var certRequest = {
 						certrequest: {
-							Application       : "secureapp21.idshost.fr",
-							Requester         : requester,
-							AuthCookie        : sessionids,
+							Application       : physioDOM.config.IDS.appName,
+							Requester         : req.headers["ids-user"],
+							AuthCookie        : cookies.get("sessionids"),
 							OrganizationUnit  : "User",
 							Owner             : "03" + email,
-							Identifier        : account.login,
+							Identifier        : email,
 							Privilege         : 255,
 							Profile           : 0,
 							Duration          : 365,
@@ -452,86 +473,94 @@ function Professional() {
 							Comment           : "Create certificate for " + email
 						}
 					};
-					// resolve( certRequest);
-					logger.debug("certRequest", certRequest);
 					
-					var url = 'http://api.idshost.priv/pki.wsdl';
-					soap.createClient(url, function (err, client) {
+					/*
+					logger.info("certRequest", certRequest);
+					logger.info( account );
+					resolve(account);
+					*/
+					
+					var wsdl = 'http://api.idshost.priv/pki.wsdl';
+					soap.createClient(wsdl, function (err, client) {
 						if (err) {
 							logger.alert("error ", err);
 							throw err;
 					 	}
-					 	logger.debug("certRequest", certRequest);
 
 					 	client.CertRequest(certRequest, function (err, result) {
 							if (err) {
-								console.error(err);
 								throw err;
 							} else {
-								console.log(result);
-								resolve( result );
+								logger.info("certResponse", result);
+								account.OTP = result.certresponse.OTP;
+					 			physioDOM.db.collection("account").save(account, function(err, result) {
+									if(err) {
+										reject(err);
+									} else {
+										resolve(account);
+									}
+								});
 							}
 						});
 					});
-				});
+				})
+				.catch( reject );
 		});
 	};
 
-	this.revoqCert = function(requester, sessionids) {
+	this.revokeCert = function(req, res) {
 		var that = this;
-
-		logger.trace("createCert", requester, sessionids );
+		logger.trace("revokeCert" );
+		
 		return new promise( function(resolve, reject) {
 			that.getAccount()
 				.then( function(account) {
-					var email;
-					that.telecom.forEach( function( item ) {
-						if( !email && item.system === "email") {
-							email = item.value;
-						}
-					});
+					var cookies = new Cookies(req, res);
+					var email = that.getEmail();
 					
-					resolve();
-					/*
-					var certRequest = {
-						certrequest: {
-							Application       : "secureapp21.idshost.fr",
-							Requester         : requester,
-							AuthCookie        : sessionids,
+					var CertRevocate = {
+						certRevocateRequest : {
+							Application       : physioDOM.config.IDS.appName,
+							Requester         : req.headers["ids-user"],
+							AuthCookie        : cookies.get("sessionids"),
 							OrganizationUnit  : "User",
 							Owner             : "03" + email,
-							Identifier        : account.login,
-							Privilege         : 255,
-							Profile           : 0,
-							Duration          : 365,
-							AuthenticationMask: 8,
-							Number            : 3,
-							Comment           : "Create certificate for " + email
+							Index             : -1,
+							Comment           : "Revoke all certificates for " + email
 						}
-					};
-					// resolve( certRequest);
-					logger.debug("certRequest", certRequest);
+					};	
 
-					var url = 'http://api.idshost.priv/pki.wsdl';
-					soap.createClient(url, function (err, client) {
-						if (err) {
-							logger.alert("error ", err);
-							throw err;
+					/*
+					logger.debug("certRequest", CertRevocate);
+					resolve( account );
+					*/
+					
+					var wsdl = 'http://api.idshost.priv/pki.wsdl';
+					soap.createClient(wsdl, function (err, client) {
+						if(err) {
+							logger.alert(err);
+							res.send(400, { code:400, message:err });
+							return next(false);
 						}
-						logger.debug("certRequest", certRequest);
-
-						client.CertRequest(certRequest, function (err, result) {
+						
+						client.CertRevocate(CertRevocate, function (err, result ) {
 							if (err) {
-								console.error(err);
 								throw err;
 							} else {
-								console.log(result);
-								resolve( result );
-							}
+								logger.info("certRevokeResponse", result);
+								account.OTP = false;
+								physioDOM.db.collection("account").save(account, function(err, result) {
+									if(err) {
+										reject(err);
+									} else {
+										resolve(account);
+									}
+								});
+					 		}
 						});
 					});
-					*/
-				});
+				})
+				.catch( reject );
 		});
 	};
 }

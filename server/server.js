@@ -23,7 +23,6 @@ var IDirectory = require('./lib/http/IDirectory'),
 	ICurrentStatus = require('./lib/http/ICurrentStatus'),
 	IMenu = require("./lib/http/IMenu"),
 	IQueue = require("./lib/http/IQueue"),
-	ICert = require("./lib/http/ICert.js"),
 	ILogIDS = require("./lib/http/ILogIDS.js"),
 	configSchema = require("./lib/schema/configSchema.js");
 
@@ -235,6 +234,17 @@ server.use(function checkAcl(req, res, next) {
 	return next();
 });
 
+/**
+ * checkPasswd
+ *
+ * this method is called by the SOAPservice
+ * Check if a user has an account on this HHR-Pro instance
+ * if true send { valid:true } else { valid:false }
+ * 
+ * @param req    request object
+ * @param res    response object
+ * @param next   callback
+ */
 function checkPasswd(req, res, next ) {
 	logger.trace("checkPasswd");
 	console.log( req.body );
@@ -244,20 +254,31 @@ function checkPasswd(req, res, next ) {
 	} else {
 		try {
 			var user = JSON.parse(body);
-			if( user.login === "03thomas.jabouley@viveris.fr" && user.password === "test" ) {
+			if( user.login === "03thomas.jabouley@viveris.fr" ) {
 				user.login = "archer";
 				user.password = "test";
+				physioDOM.getAccountByCredentials(user.login, user.password )
+					.then( function(account) {
+						logger.info("valid user");
+						res.send(200, {valid: true});
+						return next();
+					})
+					.catch( function(err) {
+						logger.info("not a valid user");
+						res.send(200, { valid: false } );
+					});
+			} else {
+				physioDOM.getAccountByIDSCredentials(user.login, user.password)
+					.then(function (account) {
+						logger.info("valid user");
+						res.send(200, {valid: true});
+						return next();
+					})
+					.catch(function (err) {
+						logger.info("not a valid user");
+						res.send(200, {valid: false});
+					})
 			}
-			physioDOM.getAccountByCredentials(user.login, user.password )
-				.then( function(account) {
-					logger.info("valid user");
-					res.send(200, {valid: true});
-					return next();
-				})
-				.catch( function(err) {
-					logger.info("not a valid user");
-					res.send(200, { valid: false } );
-				})
 		} catch( err ) {
 			res.send(200, { valid: false } );
 			return next();
@@ -536,6 +557,7 @@ server.get(/\/[^api|components\/]?$/, function(req, res, next) {
 	} else {
 		// logger.debug( req.headers );
 		var cookies = new Cookies(req, res);
+		
 		if( req.headers["ids-user"] === "03thomas.jabouley@viveris.fr") {
 			logger.debug( "ids-user" );
 			physioDOM.getAccountByCredentials("archer", "test")
@@ -548,9 +570,26 @@ server.get(/\/[^api|components\/]?$/, function(req, res, next) {
 					cookies.set('sessionID', session.sessionID, cookieOptions);
 					cookies.set('role', session.role, { path: '/', httpOnly : false} );
 					cookies.set('lang', session.lang || physioDOM.lang, { path: '/', httpOnly : false});
-					// res.send(200, { code:200, message:"logged" } );
 					return IPage.ui( req, res, next);
-					// return next();
+				})
+				.catch( function(err) {
+					logger.warning(err.message || "bad login or password");
+					cookies.set('sessionID');
+					cookies.set('role');
+					res.send( 403, {code:403, message:"bad credentials"} );
+					next();
+				});
+		} else if ( req.headers["ids-user"] ) {
+			physioDOM.getAccountByIDSUser( req.headers["ids-user"] )
+				.then( function(account) {
+					return account.createSession();
+				}).then( function(session) {
+					console.log( session );
+					req.session = session;
+					cookies.set('sessionID', session.sessionID, cookieOptions);
+					cookies.set('role', session.role, { path: '/', httpOnly : false} );
+					cookies.set('lang', session.lang || physioDOM.lang, { path: '/', httpOnly : false});
+					return IPage.ui( req, res, next);
 				})
 				.catch( function(err) {
 					logger.warning(err.message || "bad login or password");

@@ -15,6 +15,7 @@
  */
 	
 var Logger = require("logger"),
+	promise = require("rsvp").Promise,
 	Cookies = require("cookies");
 var logger = new Logger("IDirectory");
 
@@ -162,6 +163,8 @@ var IDirectory = {
 	 * @param next
 	 */
 	accountUpdate: function(req, res, next) {
+		var professional;
+		
 		try {
 			var account = JSON.parse(req.body);
 		} catch( err ) {
@@ -172,14 +175,30 @@ var IDirectory = {
 				.then(function (directory) {
 					return directory.getEntryByID(req.params.entryID);
 				})
-				.then(function (professional) {
+				.then(function (_professional) {
+					professional = _professional;
 					return professional.accountUpdate(account);
 				})
-				.then( function(professional) {
+				.then( function(professional, OTP) {
+					return new promise( function( resolve, reject) {
+						logger.info("account updated");
+						if( !OTP && req.headers["ids-user"]) {
+							logger.alert( "create cert" );
+							professional.createCert( req, res )
+								.then( resolve )
+								.catch( reject );
+						} else {
+							resolve();
+						}
+					});
+				})
+				.then( function() {
 					res.send(professional);  // updated professional
 					next();
 				})
 				.catch(function (err) {
+					logger.error( err.stack );
+					res.send(400, { code:400, messages: err.error });
 					next(false);
 				});
 		}
@@ -215,37 +234,60 @@ var IDirectory = {
 	createCert: function (req, res, next) {
 		logger.trace("createCert");
 
-		// logger.debug("headers", req.headers);
+		var professional;
 		
 		physioDOM.Directory()
 			.then(function (directory) {
 				return directory.getEntryByID(req.params.entryID);
 			})
-			.then(function (professional) {
-				var cookies = new Cookies(req, res);
-				return professional.createCert(req.headers["ids-user"], cookies.get("sessionids") );
+			.then(function (_professional) {
+				professional = _professional;
+				return professional.getAccount();
 			})
-			.then(function ( certResp ) {
-				res.send( certResp );
+			.then( function(account) {
+				if(account.OTP) {
+					logger.info("revoke cert first");
+				}
+				return professional.createCert(req, res );
+			})
+			.then(function ( account ) {
+				logger.info("receive account", account );
+				res.send( account );
+				next();
+			})
+			.catch(function(err) {
+				logger.warning("Error when creating certificate");
+				logger.warning(err.stack);
+				res.send(400, { code:400, message:"Error when creating certificate"});
 				next(false);
 			});
 	},
 
 	revoqCert: function (req, res, next) {
-		logger.trace("createCert");
+		logger.trace("revoqCert");
 
-		// logger.debug("headers", req.headers);
+		var professional;
 
 		physioDOM.Directory()
 			.then(function (directory) {
 				return directory.getEntryByID(req.params.entryID);
 			})
-			.then(function (professional) {
-				var cookies = new Cookies(req, res);
-				return professional.revoqCert(req.headers["ids-user"], cookies.get("sessionids") );
+			.then(function ( _professional ) {
+				professional = _professional;
+				return professional.getAccount();
 			})
-			.then(function ( certResp ) {
-				res.send( certResp );
+			.then( function(account) {
+				return professional.revokeCert(req, res );
+			})
+			.then(function ( account ) {
+				logger.info("receive account", account );
+				res.send( account );
+				next();
+			})
+			.catch(function(err) {
+				logger.warning("Error certificate revocation");
+				logger.warning(err.stack);
+				res.send(400, { code:400, message:"Error certificate revocation"});
 				next(false);
 			});
 	}
