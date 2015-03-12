@@ -43,6 +43,13 @@ var configSchema = {
 				port    : {type: "integer", default: 9000, minimum: 9000, maximum: 9100}
 			},
 			"additionalProperties": false
+		},
+		"IDS": {
+			type:"object",
+			properties: {
+				ip    :   {type: "string", required: true},
+				appName : {type: "string", required: true}
+			}
 		}
 	}
 };

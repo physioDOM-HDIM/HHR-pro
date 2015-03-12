@@ -23,6 +23,8 @@ var IDirectory = require('./lib/http/IDirectory'),
 	ICurrentStatus = require('./lib/http/ICurrentStatus'),
 	IMenu = require("./lib/http/IMenu"),
 	IQueue = require("./lib/http/IQueue"),
+	ICert = require("./lib/http/ICert.js"),
+	ILogIDS = require("./lib/http/ILogIDS.js"),
 	configSchema = require("./lib/schema/configSchema.js");
 
 var pkg     = require('../package.json');
@@ -58,7 +60,6 @@ if( program.config ) {
 		config.port = program.port || tmp.port;
 		config.Lang = tmp.Lang;
 		config.mongouri = "mongodb://"+tmp.mongo.ip+"/"+tmp.mongo.db;
-		config.queue = tmp.queue.protocol+"://"+tmp.queue.ip+":"+tmp.queue.port;
 		config.key = tmp.key;
 		config.cache = tmp.cache;
 		config.languages = tmp.languages;
@@ -67,6 +68,10 @@ if( program.config ) {
 		if( tmp.queue ) {
 			config.queue = tmp.queue.protocol+"://"+tmp.queue.ip+":"+tmp.queue.port;
 		}
+		if( tmp.IDS ) {
+			config.IDS = tmp.IDS;
+		}
+		
 	}
 } else {
 	logger.error("you must provide a config file");
