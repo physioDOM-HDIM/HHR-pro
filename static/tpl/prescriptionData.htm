@@ -135,8 +135,23 @@
 			{{/paramList}}
 			{% endraw %}
 		</select>
-
 	</div>
+
+	{% raw %}
+	{{#hasThresholds}}
+	{% endraw %}
+	<div class="row h1">
+		<label>{{"Seuil min"|i18n}}</label>
+		<input type="number" value="" name="threshold.min" class="min-threshold">
+	</div>
+
+	<div class="row h1">
+		<label>{{"Seuil max"|i18n}}</label>
+		<input type="number" value="" name="threshold.max" class="max-threshold">
+	</div>
+	{% raw %}
+	{{/hasThresholds}}
+	{% endraw %}
 
 	<div class="row h1">
 		<div class="col vert">

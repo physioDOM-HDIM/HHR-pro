@@ -13,7 +13,7 @@ var getList = function () {
 	var promises = {
 		dataprog: utils.promiseXHR("GET", "/api/beneficiary/dataprog/" + ( infos.category || infos.paramList ), 200),
 		parameterList: utils.promiseXHR("GET", "/api/lists/" + infos.paramList, 200),
-		// thresholds: utils.promiseXHR("GET", "/api/beneficiary/thresholds", 200)
+		thresholds: utils.promiseXHR("GET", "/api/beneficiary/thresholds", 200)
 	};
 
 	RSVP.hash(promises).then(function (results) {
@@ -24,7 +24,7 @@ var getList = function () {
 				return item.category === infos.category;
 			});
 		}
-		// lists.thresholds = JSON.parse(results.thresholds);
+		lists.thresholds = JSON.parse(results.thresholds);
 
 		for (var i = 0, leni = lists.parameters.items.length; i < leni; i++) {
 			lists.parameters.items[i].labelLang = lists.parameters.items[i].label[infos.lang] || lists.parameters.items[i].ref;
@@ -121,16 +121,14 @@ var init = function () {
 var updateParam = function (elt) {
 	var container = elt.parentNode.parentNode,
 		ref = elt.value,
-		param = utils.findInObject(lists.parameters.items, 'ref', ref);
-	// minContainer = container.querySelector('.min-threshold'),
-	// maxContainer = container.querySelector('.max-threshold'),
+		param = lists.thresholds[ref],
+		min = container.querySelector('.min-threshold'),
+		max = container.querySelector('.max-threshold');
 
-	/*
-	 if(param.threshold) {
-	 minContainer.innerText = param.threshold.min;
-	 maxContainer.innerText = param.threshold.max;
+	 if(param && min && max) {
+	 	min.value = param.min;
+	 	max.value = param.max;
 	 }
-	 */
 };
 
 var showOptions = function (frequency, dataModel) {
@@ -189,6 +187,7 @@ function showForm(ref) {
 		paramList: lists.parameters.items,
 		param: param,
 		data: dataItem,
+		hasThresholds: infos.category,
 		selection: function () {
 			return function (val, render) {
 				if (ref === render(val)) {
@@ -271,8 +270,15 @@ var saveData = function () {
 	modified = true;
 	var data = form2js( document.querySelector("form[name=dataprog]") ),
 		param = utils.findInObject(lists.parameters.items, 'ref', data.ref),
-		dataprog = {};
+		dataprog = {},
+		thresholds = {};
 
+	//preparing threshold data to save
+	thresholds[data.ref] = {};
+	thresholds[data.ref].min = parseFloat(data.threshold.min);
+	thresholds[data.ref].max = parseFloat(data.threshold.max);
+
+	//preparing dataprescription
 	dataprog.ref = data.ref;
 	dataprog.category = infos.category || infos.paramList;
 	dataprog.startDate = data.startDate;
@@ -333,17 +339,26 @@ var saveData = function () {
 		}
 	}
 
-	utils.promiseXHR('POST', '/api/beneficiary/dataprog', 200, JSON.stringify(dataprog)).then(function () {
-		window.location.href = "/prescription/" + ( infos.category || infos.paramList ).toLowerCase();
-		/*
-		 new Modal('createSuccess', function() {
-		 window.location.href = "/prescription/"+ ( infos.category || infos.paramList ).toLowerCase();
-		 });
-		 */
-	}, function (error) {
-		new Modal('errorOccured');
-		console.log("saveData - error: ", error);
-	});
+	utils.promiseXHR("POST", "/api/beneficiary/thresholds", 200, JSON.stringify(thresholds)).then(function(response) {
+
+       	utils.promiseXHR('POST', '/api/beneficiary/dataprog', 200, JSON.stringify(dataprog)).then(function () {
+			window.location.href = "/prescription/" + ( infos.category || infos.paramList ).toLowerCase();
+			/*
+			 new Modal('createSuccess', function() {
+			 window.location.href = "/prescription/"+ ( infos.category || infos.paramList ).toLowerCase();
+			 });
+			 */
+		}, function (error) {
+			new Modal('errorOccured');
+			console.log("saveData - error: ", error);
+		});
+
+    }, function(error) {
+    	new Modal('errorOccured');
+
+    });
+
+	
 };
 
 
@@ -370,16 +385,3 @@ window.addEventListener("DOMContentLoaded", function () {
 	moment.locale( infos.lang==="en"?"en_gb":infos.lang );
 	getList();
 }, false);
-
-window.addEventListener("beforeunload", function(e) {
-	if( modified ) {
-		console.log( "send prescription agenda");
-		var xhr = new XMLHttpRequest();
-		if( category ) {
-			xhr.open("GET", "/api/queue/measurePlan", true);
-		} else {
-			xhr.open("GET", "/api/queue/symptomPlan", true);
-		}
-		xhr.send();
-	}
-});
