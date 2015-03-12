@@ -306,5 +306,14 @@
 	"Diagnosis": "Diagnosis",
 	"Associated diagnosis": "Associated diagnosis",
 	"Edit professionals": "Edit professionals",
-	"Choose your referent and check professionals you want to add": "Choose your referent and check professionals you want to add"
+	"Choose your referent and check professionals you want to add": "Choose your referent and check professionals you want to add",
+	"From consultation": "From consultation",
+	"Withdrawal code": "Withdrawal code",
+	"Nota": "Nota",
+	"this professional has": "this professional has",
+	"beneficiary": "beneficiary",
+	"affected": "affected",
+	"Error in form validation": "Error in form validation",
+	"Conflict error": "Conflict error",
+	"The email address is already used": "The email address is already used"
 }
