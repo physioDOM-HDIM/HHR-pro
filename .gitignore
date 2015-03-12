@@ -12,3 +12,5 @@ nginx.conf
 install.json~
 physiodom.telecomsante.com~
 config.json
+**/._*
+.idea
