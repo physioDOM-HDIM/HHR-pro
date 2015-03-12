@@ -57,25 +57,30 @@ function Queue ( beneficiaryID ) {
 	
 	this.send = function( msg ) {
 		return new promise( function( resolve, reject ) {
-			logger.trace("send to queue");
-			request( {
-				url: physioDOM.config.queue+"/msg",
-				method:"POST",
-				headers: { "content-type":"text/plain"},
-				body: JSON.stringify(msg)
-			}, function(err, resp, body) {
-				if( err || resp.statusCode === 500) {
-					logger.warning("error 500 for gateway ",msg.gateway);
-					reject(msg);
-				} else {
-					if( resp.statusCode === 400 ) {
-						logger.warning("error 400 for gateway ",msg.gateway);
+			if( !physioDOM.config.queue ) {
+				logger.info("no queue is available");
+				resolve( msg );
+			} else {
+				logger.trace("send to queue");
+				request({
+					url    : physioDOM.config.queue + "/msg",
+					method : "POST",
+					headers: {"content-type": "text/plain"},
+					body   : JSON.stringify(msg)
+				}, function (err, resp, body) {
+					if (err || resp.statusCode === 500) {
+						logger.warning("error 500 for gateway ", msg.gateway);
+						reject(msg);
+					} else {
+						if (resp.statusCode === 400) {
+							logger.warning("error 400 for gateway ", msg.gateway);
+						}
+						msg.send = moment.utc().toISOString();
+						msg.code = resp.statusCode;
+						resolve(msg);
 					}
-					msg.send = moment.utc().toISOString();
-					msg.code = resp.statusCode;
-					resolve(msg);
-				}
-			});
+				});
+			}
 		});
 	};
 
@@ -144,10 +149,15 @@ function Queue ( beneficiaryID ) {
 	};
 	
 	this.status = function( msg ) {
-		logger.trace("receive status", msg);
 		var that = this;
 		var init = false;
 		return new promise( function(resolve, reject) {
+			if( !physioDOM.config.queue ) {
+				logger.info("no queue is available");
+				resolve()
+			}
+			logger.trace("receive status", msg);
+			
 			physioDOM.Beneficiaries()
 				.then(function (beneficiaries) {
 					return beneficiaries.getHHR( that.subject );
