@@ -40,7 +40,9 @@
             <label>{{"Type"|i18n}} :</label>
             <select name="telecom[{%raw%}{{indx}}{%endraw%}].system" style="min-width: 150px;" onchange="checkEmailTypeValidation(this)">
                 {% for item in system.items %}
+	            {% if item.value !== "email" %}
                 <option value="{{item.value}}" {{telecom_system_selected}}>{{item.label}}</option>
+	            {% endif %}
                 {% endfor %}
             </select>
         </div>
@@ -185,8 +187,10 @@
 		                        {% else %}
 	                            <select name="telecom[{{loop.index}}].system" style="min-width: 150px;" onchange="checkEmailTypeValidation(this)" required>
 	                                {% for item in system.items %}
+		                            {% if item.value !== "email" %}
 	                                <option value="{{item.value}}" {% if entry.system==item.value %}selected{% endif %}>{{item.label}}</option>
-	                                {% endfor %}
+	                                {% endif %}
+		                            {% endfor %}
 	                            </select>
 		                        {% endif %}
 	                        </div>
