@@ -173,7 +173,12 @@ function updateItem(obj) {
     delete data.account;
     data.active = data.active?true:false;
     data.organization = data.organization?true:false;
-    
+    if( !data.organization ) {
+		delete data.organizationType;
+	} else {
+		delete data.job;
+	}
+	
     // check address
     if( !(data.address.line && data.address.zip && data.address.city) ) {
         delete data.address;
