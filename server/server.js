@@ -58,7 +58,6 @@ if( program.config ) {
 		config.port = program.port || tmp.port;
 		config.Lang = tmp.Lang;
 		config.mongouri = "mongodb://"+tmp.mongo.ip+"/"+tmp.mongo.db;
-		config.queue = tmp.queue.protocol+"://"+tmp.queue.ip+":"+tmp.queue.port;
 		config.key = tmp.key;
 		config.cache = tmp.cache;
 		config.languages = tmp.languages;
