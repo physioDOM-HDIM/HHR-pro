@@ -1,3 +1,7 @@
+__v0.0.14__
+
+  - IDS login and certificates management
+
 __v0.0.13-1__
 
   - Fix Date in prescription data
