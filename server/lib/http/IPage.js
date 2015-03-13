@@ -153,6 +153,7 @@ function IPage() {
 				// logger.debug("menu",req.session.role, menu);
 				var data = {
 					admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
+					idsUser: req.headers["ids-user"] || "",
 					items: menu
 				};
 
@@ -266,6 +267,7 @@ function IPage() {
 			.then( function( _rights ) {
 				data.rights = _rights;
 				data.rights.read = data.rights.write;
+				data.IDS = physioDOM.config.IDS && req.headers["ids-user"];
 				return RSVP.all(promises);
 			})
 			.then(function(lists) {
@@ -575,7 +577,8 @@ function IPage() {
 
 		var data = {
 			admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
-			rights: { read:false, write:false, url: '/beneficiary/overview' }
+			rights: { read:false, write:false, url: '/beneficiary/overview' },
+			queue: physioDOM.config.queue ?true:false
 		};
 		
 		var promisesArray = [

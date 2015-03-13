@@ -142,10 +142,11 @@ module.exports.account = {
 	"type":"object",
 	"properties": {
 		"_id":      { type:"string" },
-		"login":    { type:"string", required:true },
+		"login":    { type:"string" },
 		"password": { type:"string", required: true },
 		"active":   { type:"boolean" },
 		"role":     { type:"string", "enum": role },
+		"email":    { type:"string", format: "email" },
 		"person": {
 			"ID": { type:"object", "description":"object id" },
 			"type" : { type:"string", description:"collection name" }

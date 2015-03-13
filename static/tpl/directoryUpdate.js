@@ -161,7 +161,7 @@ function updateItem(obj) {
     // remove uneeded fields
     delete obj.checkAccountPassword;  // move to check
     accountData = obj.account?obj.account:null;
-    if( accountData && !( accountData.login && accountData.password )) {
+    if( accountData && !( ( accountData.login || accountData.IDS==="true" ) && accountData.password )) {
         accountData = null;
     }
 
@@ -194,15 +194,20 @@ function updateItem(obj) {
             tabPromises.push(Utils.promiseXHR("POST", "/api/directory/" + data._id + "/account", 200, JSON.stringify(accountData)));
         }
 
-        RSVP.all(tabPromises).then(function() {
-            new Modal('updateSuccess', function() {
-				modified = false;
-                window.history.back();
-            });
-        }).catch(function(error) {
-            new Modal('errorOccured');
-            console.log("updateItem - error: ", error);
-        });
+        RSVP.all(tabPromises)
+			.then(function() {
+            	new Modal('updateSuccess', function() {
+					modified = false;
+                	window.history.back();
+            	});
+        	}).catch(function(error) {
+				if( error.status === 405 && error.responseText === '{"code":405,"message":"email address already used"}') {
+					new Modal('emailAlreadyUsed');
+				} else {
+					new Modal('errorOccured');
+				}
+            	console.log("updateItem - error: ", error);
+        	});
     } else {
         var callSuccess = function() {
             new Modal('createSuccess', function() {
@@ -224,7 +229,11 @@ function updateItem(obj) {
 					callSuccess();
 				}
 			}).catch(function(error) {
-				new Modal('errorOccured');
+				if( error.status === 405 && error.responseText === '{"code":405,"message":"email address already used"}') {
+					new Modal('emailAlreadyUsed');
+				} else {
+					new Modal('errorOccured');
+				}
 				console.log("updateItem - error: ", error);
 			});
     }
@@ -262,6 +271,41 @@ function checkPassword () {
     accountActivation.checked = (password.value === checkPassword.value && passwordRegex.test(checkPassword.value));
 }
 
+function createCert() {
+	var obj = form2js(document.forms["directoryForm"]);
+	Utils.promiseXHR("GET", "/api/directory/" + obj._id+ "/cert", 200)
+		.then(function(response) {
+			console.log( "certCreate", response );
+			var account = JSON.parse( response );
+			var OTP = document.querySelector("span#OTP");
+			if( OTP ) {
+				OTP.innerHTML = account.OTP;
+			}
+			document.querySelector("button#revokeCert").classList.remove("hidden");
+			document.querySelector("button#createCert").classList.add("hidden");
+		}, function(error) {
+			new Modal('errorOccured');
+			console.log("createCert - error: ", error);
+		});
+}
+
+function revokeCert() {
+	var obj = form2js(document.forms["directoryForm"]);
+	Utils.promiseXHR("DELETE", "/api/directory/" + obj._id+ "/cert", 200)
+		.then(function(response) {
+			console.log( "certRevoke", response );
+			var OTP = document.querySelector("span#OTP");
+			if( OTP ) {
+				OTP.innerHTML = "";
+			}
+			document.querySelector("button#revokeCert").classList.add("hidden");
+			document.querySelector("button#createCert").classList.remove("hidden");
+		}, function(error) {
+			new Modal('errorOccured');
+			console.log("revokeCert - error: ", error);
+		});
+}
+
 function init() {
     console.log("init");
 	
@@ -276,6 +320,12 @@ function init() {
         document.querySelector('.account-password').value = passwordPlaceholder;
         document.querySelector('.account-check-password').value = passwordPlaceholder;
     }
+	if( document.querySelector("button#createCert") ) {
+		document.querySelector("button#createCert").addEventListener("click", createCert, false);
+	}
+	if( document.querySelector("button#revokeCert") ) {
+		document.querySelector("button#revokeCert").addEventListener("click", revokeCert, false);
+	}
 }
 
 window.addEventListener("beforeunload", function( e) {
