@@ -40,7 +40,9 @@
             <label>{{"Type"|i18n}} :</label>
             <select name="telecom[{%raw%}{{indx}}{%endraw%}].system" style="min-width: 150px;" onchange="checkEmailTypeValidation(this)">
                 {% for item in system.items %}
+	            {% if item.value !== "email" %}
                 <option value="{{item.value}}" {{telecom_system_selected}}>{{item.label}}</option>
+	            {% endif %}
                 {% endfor %}
             </select>
         </div>
@@ -185,8 +187,10 @@
 		                        {% else %}
 	                            <select name="telecom[{{loop.index}}].system" style="min-width: 150px;" onchange="checkEmailTypeValidation(this)" required>
 	                                {% for item in system.items %}
+		                            {% if item.value !== "email" %}
 	                                <option value="{{item.value}}" {% if entry.system==item.value %}selected{% endif %}>{{item.label}}</option>
-	                                {% endfor %}
+	                                {% endif %}
+		                            {% endfor %}
 	                            </select>
 		                        {% endif %}
 	                        </div>
@@ -229,10 +233,19 @@
                 </div>
             </zdk-panel>
             <zdk-panel heading="{{'Account' |i18n}}" collapsable="false" collapsed="false">
+	            {% if !IDS %}
+	            <input type="hidden" name="account.IDS" value="false">
                 <div class="row">
                     <label>{{"Login"|i18n}} :</label>
                     <input type="text" name="account.login" value="{{professional.account.login}}" />
                 </div>
+	            {% else %}
+	            <input type="hidden" name="account.IDS" value="true">
+	            <div class="row">
+		            <label>{{"Login"|i18n}} :</label>
+		            <span>On IDS, the identifier is the mail address</span>
+	            </div>
+	            {% endif %}
                 <div class="row">
                     <label>{{"Change password"|i18n}} :</label>
                     <input type="password" name="account.password" class="account-password" onkeyup="checkPassword(this)" />
@@ -250,6 +263,17 @@
                     <label>{{ "Active"|i18n }}:</label>
                     <input type="checkbox" name="active" class="account-activation" {% if professional && professional.active===true %}checked{% endif %}/>
                 </div>
+	                {% if IDS %}
+	                <div class="row">
+		                <label>{{ "Withdrawal code"|i18n }} : </label>
+		                <span style="font-weight:bold" id="OTP">{% if professional.account.OTP %}{{professional.account.OTP }}{% endif %}</span>
+	                </div>
+	                <div class="row">
+		                <span class="spacer"></span>
+		                <button type="button" class="red {% if !professional.account.OTP %}hidden{% endif %}" id="revokeCert">Revoke certificate</button>
+		                <button type="button" class="blue {% if professional.account.OTP %}hidden{% endif %}" id="createCert">Generate certificate</button>
+	                </div>
+	                {% endif %}
                 {% else %}
                     <input type="checkbox" name="active" class="hidden" checked />
                 {% endif %}
@@ -270,7 +294,7 @@
 	            </div>
             </div>
 	        {% if professional.nb %}
-	        <div class="row">Nota : this professional has {{professional.nb}} {% if professional.nb == 1 %}beneficiary{% else %}beneficiaries{% endif %} affected</div>
+	        <div class="row"><b>{{ "Nota"|i18n }} :</b> {{"this professional has"|i18n}} {{professional.nb}} {% if professional.nb == 1 %}{{"beneficiary"|i18n}}{% else %}{{"beneficiaries"|i18n}}{% endif %} {{"affected"|i18n}}</div>
 	        {% endif %}
         </form>
     </div>

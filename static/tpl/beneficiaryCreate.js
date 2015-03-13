@@ -485,7 +485,7 @@ function checkAllForms(isValidate) {
     mixin(formsObj, obj);
 
     //TODO: add request for account
-    console.log("formsObj", formsObj);
+    // console.log("formsObj", formsObj);
     if (isValidate) {
         formsObj.validate = true;
     }

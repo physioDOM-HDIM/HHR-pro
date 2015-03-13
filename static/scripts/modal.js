@@ -107,6 +107,17 @@ function Modal (type, callback) {
         }]
     };
 
+	content.emailAlreadyUsed = {
+		title: "trad_errorFormConflict",
+		content: "trad_error_email_used",
+		buttons: [{
+			id: "trad_ok",
+			action: function() {
+				self.closeModal();
+			}
+		}]
+	};
+	
     content.errorDateRequired = {
         title: "trad_errorFormValidation",
         content: "trad_error_date",

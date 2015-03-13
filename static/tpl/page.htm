@@ -22,16 +22,27 @@
 	<script src="/bower_components/mustache/mustache.js"></script>
 	<script src="/bower_components/cookies-js/dist/cookies.min.js"></script>
 	<script src="/scripts/common.js"></script>
+
+	{% block head %}
+	<link rel="import" href="/bower_components/tsante-listpager/tsante-listpager.html">
+	<link rel="import" href="/bower_components/zdk-panel/zdk-panel.html">
+	<link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
+	{% endblock %}
+</head>
+<body unresolved>
+	<div class="main">
+		{% block content %}{% endblock %}
+	</div>
 	
 	<script>
 		window.addEventListener("DOMContentLoaded", initFrame, false);
-
+		
 		function initFrame() {
 			if(!parent) return;
-
+			
 			if(parent.setTitle) {
 				parent.setTitle();
-
+				
 				var nav = parent.document.querySelector("[drawer]");
 				if (window.innerWidth < 993 && nav.classList.contains("show")) {
 					parent.toggleNav();
@@ -62,21 +73,11 @@
 	</script>
 	{% else %}
 	<script>
-		if( window.parent.highlight) {
+		if( window.parent.highlight ) {
 			parent.highlight('{{rights.url}}');
 		}
 	</script>
 	{% endif %}
 
-	{% block head %}
-	<link rel="import" href="/bower_components/tsante-listpager/tsante-listpager.html">
-	<link rel="import" href="/bower_components/zdk-panel/zdk-panel.html">
-	<link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
-	{% endblock %}
-</head>
-<body unresolved>
-	<div class="main">
-		{% block content %}{% endblock %}
-	</div>
 </body>
 </html>

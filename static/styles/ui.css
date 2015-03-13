@@ -321,6 +321,7 @@ a.button.small {
 	font-size: 75%;
 	/* height: 75%; */
 	height: 19px;
+	line-height:19px;
 	box-sizing: border-box;
 }
 a.button.small {

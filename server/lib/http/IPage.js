@@ -153,6 +153,7 @@ function IPage() {
 				// logger.debug("menu",req.session.role, menu);
 				var data = {
 					admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
+					idsUser: req.headers["ids-user"] || "",
 					items: menu
 				};
 
@@ -266,6 +267,7 @@ function IPage() {
 			.then( function( _rights ) {
 				data.rights = _rights;
 				data.rights.read = data.rights.write;
+				data.IDS = physioDOM.config.IDS && req.headers["ids-user"];
 				return RSVP.all(promises);
 			})
 			.then(function(lists) {
@@ -575,7 +577,8 @@ function IPage() {
 
 		var data = {
 			admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
-			rights: { read:false, write:false, url: '/beneficiary/overview' }
+			rights: { read:false, write:false, url: '/beneficiary/overview' },
+			queue: physioDOM.config.queue ?true:false
 		};
 		
 		var promisesArray = [
@@ -1247,10 +1250,10 @@ function IPage() {
 
 		init(req);
 		var data = {
-			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false,
+			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1? true : false ,
 			rights: { read:false, write:false, url: '/message' }
 		};
-
+		
 		if( !req.session.beneficiary ) {
 			// logger.debug("no beneficiary selected");
 			res.header('Location', '/beneficiaries');
@@ -1260,6 +1263,7 @@ function IPage() {
 			new Menu().rights( req.session.role, data.rights.url )
 				.then( function( _rights ) {
 					data.rights = _rights;
+					data.lang = lang;
 					return physioDOM.Beneficiaries();
 				})
 				.then(function (beneficiaries) {
@@ -1272,7 +1276,6 @@ function IPage() {
 					if (professionalList) {
 						data.professionalList = professionalList;
 					}
-					data.lang = lang;
 
 					html = swig.renderFile(DOCUMENTROOT + '/static/tpl/messageList.htm', data, function (err, output) {
 						if (err) {

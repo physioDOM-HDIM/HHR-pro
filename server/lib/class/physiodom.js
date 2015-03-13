@@ -149,6 +149,7 @@ function PhysioDOM( config ) {
 	 * @returns {promise}
 	 */
 	this.getAccountByCredentials = function(login, passwd) {
+		logger.trace("getAccountByCredentials", login, passwd );
 		var search = { login:login, '$or' : [ { password:md5(passwd) }, { tmpPasswd:md5(passwd) } ] };
 		var that = this;
 		return new promise( function(resolve, reject) {
@@ -163,6 +164,47 @@ function PhysioDOM( config ) {
 		});
 	};
 
+	/**
+	 *
+	 * @param login
+	 * @param passwd
+	 * @returns {promise}
+	 */
+	this.getAccountByIDSCredentials = function(login, passwd) {
+		logger.trace("getAccountByIDSCredentials", login, passwd );
+		// remove the '03' from the beginning 
+		var email = login.slice(2);
+		var search = { email:email, '$or' : [ { password:md5(passwd) }, { tmpPasswd:md5(passwd) } ] };
+		var that = this;
+		return new promise( function(resolve, reject) {
+			that.db.collection("account").findOne(search, function (err, record) {
+				if(err) { throw err; }
+				if(!record) {
+					reject({code:404, msg:"Account not found"});
+				} else {
+					resolve(new Account(record));
+				}
+			});
+		});
+	};
+	
+	this.getAccountByIDSUser = function( IDSuser ) {
+		logger.trace("getAccountByIDSUser", IDSuser);
+		var email = IDSuser.slice(2);
+		var search = { email:email };
+		var that = this;
+		return new promise( function(resolve, reject) {
+			that.db.collection("account").findOne(search, function (err, record) {
+				if(err) { throw err; }
+				if(!record) {
+					reject({code:404, msg:"Account not found"});
+				} else {
+					resolve(new Account(record));
+				}
+			});
+		});
+	}
+	
 	/**
 	 * 
 	 * @param sessionID

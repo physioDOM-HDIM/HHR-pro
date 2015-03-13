@@ -11,6 +11,8 @@ var promise = require("rsvp").Promise,
 	Logger = require("logger"),
 	ObjectID = require("mongodb").ObjectID,
 	directorySchema = require("./../schema/directorySchema"),
+	soap = require("soap"),
+	Cookies = require("cookies"),
 	md5 = require('MD5');
 
 var logger = new Logger("Professional");
@@ -65,7 +67,6 @@ function Professional() {
 		var that = this;
 		return new promise( function(resolve, reject) {
 			physioDOM.db.collection("beneficiaries").count( { 'professionals.professionalID' : that._id.toString() }, function(err, nb ) {
-				logger.info("count",nb);
 				resolve(nb);
 			});
 		});
@@ -204,20 +205,42 @@ function Professional() {
 			checkSchema( newEntry )
 				.then( checkUniq )
 				.then( function(entry) {
-					for( var key in newEntry ) {
-						if(newEntry.hasOwnProperty(key)) {
-							switch(key) {
-								case "name":
-									that.name = newEntry.name;
-									that.name.family = capitalize(that.name.family);
-									that.name.given = capitalize(that.name.given);
-									break;
-								default:
-									that[key] = newEntry[key];
+					return new promise( function( resolve, reject) {
+						for (var key in newEntry) {
+							if (newEntry.hasOwnProperty(key)) {
+								switch (key) {
+									case "name":
+										that.name = newEntry.name;
+										that.name.family = capitalize(that.name.family);
+										that.name.given = capitalize(that.name.given);
+										break;
+									default:
+										that[key] = newEntry[key];
+								}
 							}
 						}
-					}
-					return that.save();
+						var search = {
+							telecom: {
+								'$elemMatch': {
+									system: "email",
+									value : that.getEmail()
+								}
+							},
+							_id    : {
+								'$ne': that._id
+							}
+						};
+						physioDOM.db.collection("professionals").count(search, function (err, nb) {
+							if (nb === 0) {
+								that.save()
+									.then(resolve)
+									.catch(reject);
+							} else {
+								logger.warning("email address already used", that.getEmail());
+								reject({code: 405, message: "email address already used"});
+							}
+						});
+					});
 				})
 				.then( resolve )
 				.catch( reject );
@@ -264,32 +287,56 @@ function Professional() {
 			checkSchema( updatedItem )
 				.then( checkUniq )
 				.then( function(entry) {
-					var key;
-					for( key in entry ) {
-						if(entry.hasOwnProperty(key) && ["_id","account"].indexOf(key) === -1) {
-							if( key==="active" && entry.active === true && that.active !== entry.active && !that.account ) {
-								that.active = false;
-							} else {
-								that[key] = entry[key];
-								switch(key) {
-									case "name":
-										that.name.family = capitalize(that.name.family);
-										if( that.name.given ) {
-											that.name.given = capitalize(that.name.given);
-										}
-										break;
-									default:
+					return new promise( function( resolve, reject) {
+						var key;
+						for (key in entry) {
+							if (entry.hasOwnProperty(key) && ["_id", "account"].indexOf(key) === -1) {
+								if (key === "active" && entry.active === true && that.active !== entry.active && !that.account) {
+									that.active = false;
+								} else {
+									that[key] = entry[key];
+									switch (key) {
+										case "name":
+											if (that.name.family) {
+												that.name.family = capitalize(that.name.family);
+											}
+											if (that.name.given) {
+												that.name.given = capitalize(that.name.given);
+											}
+											break;
+										default:
+									}
 								}
 							}
 						}
-					}
 
-					for( key in that ) {
-						if(that.hasOwnProperty(key) && typeof that[key] !== "function" && !entry.hasOwnProperty(key)) {
-							delete that[key];
+						for (key in that) {
+							if (that.hasOwnProperty(key) && typeof that[key] !== "function" && !entry.hasOwnProperty(key)) {
+								delete that[key];
+							}
 						}
-					}
-					return that.save();
+						var search = {
+							telecom: {
+								'$elemMatch': {
+									system: "email",
+									value : that.getEmail()
+								}
+							},
+							_id    : {
+								'$ne': that._id
+							}
+						};
+						physioDOM.db.collection("professionals").count(search, function (err, nb) {
+							if (nb === 0) {
+								that.save()
+									.then( resolve )
+									.catch( reject );
+							} else {
+								logger.warning("email address already used", that.getEmail() );
+								reject({code: 405, message: "email address already used"});
+							}
+						});
+					});
 				})
 				.then( function(professional) {
 					return professional.getAccount();
@@ -332,6 +379,16 @@ function Professional() {
 		});
 	};
 
+	this.getEmail = function() {
+		var email = "";
+		this.telecom.forEach( function(item) {
+			if( !email && item.system === "email") {
+				email = item.value;
+			}
+		});
+		return email;
+	};
+	
 	/**
 	 * @method accountUpdate
 	 * 
@@ -343,10 +400,15 @@ function Professional() {
 	this.accountUpdate = function( accountData ) {
 		var that = this;
 		return new promise( function(resolve, reject) {
+			logger.trace( "accountUpdate" );
 			that.getAccount()
 				.then( function(account) {
-					logger.trace("account");
-					if (!accountData.login || !accountData.password) {
+					logger.trace("account", accountData );
+					if ( accountData.IDS==="true" ) {
+						// keep the old login if exists
+						accountData.login = account.login;
+					}
+					if (!(accountData.login || accountData.IDS==="true" ) || !accountData.password) {
 						return reject({error: "account data incomplete"});
 					}
 					var newAccount = {
@@ -354,6 +416,7 @@ function Professional() {
 						password: md5(accountData.password),
 						active  : that.active,
 						role    : that.role,
+						email   : that.getEmail(),
 						person  : {
 							id        : that._id,
 							collection: "professionals"
@@ -361,7 +424,10 @@ function Professional() {
 					};
 					if( account && account._id) {
 						newAccount._id = account._id;
-					} 
+						newAccount.OTP = account.OTP?account.OTP:false;
+					} else {
+						newAccount.OTP = false;
+					}
 					physioDOM.db.collection("account").save(newAccount, function (err, result) {
 						if(err) { throw err; }
 						if( isNaN(result)) {
@@ -369,7 +435,129 @@ function Professional() {
 						}
 						that.account = newAccount._id;
 						that.active = true;
-						resolve(that.save());
+						that.save()
+							.then( function( professional ) {
+								logger.info("professional saved",newAccount.OTP );
+								resolve(professional, newAccount.OTP );
+							})
+							.catch( reject );
+					});
+				})
+				.catch( reject );
+		});
+	};
+	
+	this.createCert = function(req, res) {
+		var that = this;
+		
+		return new promise( function(resolve, reject) {
+			logger.trace("createCert" );
+			that.getAccount()
+				.then( function(account) {
+					var email = that.getEmail();
+					var cookies = new Cookies(req, res);
+					
+					var certRequest = {
+						certrequest: {
+							Application       : physioDOM.config.IDS.appName,
+							Requester         : req.headers["ids-user"],
+							AuthCookie        : cookies.get("sessionids"),
+							OrganizationUnit  : "User",
+							Owner             : "03" + email,
+							Identifier        : email,
+							Privilege         : 255,
+							Profile           : 0,
+							Duration          : 365,
+							AuthenticationMask: 8,
+							Number            : 3,
+							Comment           : "Create certificate for " + email
+						}
+					};
+					
+					/*
+					logger.info("certRequest", certRequest);
+					logger.info( account );
+					resolve(account);
+					*/
+					
+					var wsdl = 'http://api.idshost.priv/pki.wsdl';
+					soap.createClient(wsdl, function (err, client) {
+						if (err) {
+							logger.alert("error ", err);
+							throw err;
+					 	}
+
+					 	client.CertRequest(certRequest, function (err, result) {
+							if (err) {
+								throw err;
+							} else {
+								logger.info("certResponse", result);
+								account.OTP = result.certresponse.OTP;
+					 			physioDOM.db.collection("account").save(account, function(err, result) {
+									if(err) {
+										reject(err);
+									} else {
+										resolve(account);
+									}
+								});
+							}
+						});
+					});
+				})
+				.catch( reject );
+		});
+	};
+
+	this.revokeCert = function(req, res) {
+		var that = this;
+		logger.trace("revokeCert" );
+		
+		return new promise( function(resolve, reject) {
+			that.getAccount()
+				.then( function(account) {
+					var cookies = new Cookies(req, res);
+					var email = that.getEmail();
+					
+					var CertRevocate = {
+						certRevocateRequest : {
+							Application       : physioDOM.config.IDS.appName,
+							Requester         : req.headers["ids-user"],
+							AuthCookie        : cookies.get("sessionids"),
+							OrganizationUnit  : "User",
+							Owner             : "03" + email,
+							Index             : -1,
+							Comment           : "Revoke all certificates for " + email
+						}
+					};	
+
+					/*
+					logger.debug("certRequest", CertRevocate);
+					resolve( account );
+					*/
+					
+					var wsdl = 'http://api.idshost.priv/pki.wsdl';
+					soap.createClient(wsdl, function (err, client) {
+						if(err) {
+							logger.alert(err);
+							res.send(400, { code:400, message:err });
+							return next(false);
+						}
+						
+						client.CertRevocate(CertRevocate, function (err, result ) {
+							if (err) {
+								throw err;
+							} else {
+								logger.info("certRevokeResponse", result);
+								account.OTP = false;
+								physioDOM.db.collection("account").save(account, function(err, result) {
+									if(err) {
+										reject(err);
+									} else {
+										resolve(account);
+									}
+								});
+					 		}
+						});
 					});
 				})
 				.catch( reject );

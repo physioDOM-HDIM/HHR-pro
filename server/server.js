@@ -23,6 +23,7 @@ var IDirectory = require('./lib/http/IDirectory'),
 	ICurrentStatus = require('./lib/http/ICurrentStatus'),
 	IMenu = require("./lib/http/IMenu"),
 	IQueue = require("./lib/http/IQueue"),
+	ILogIDS = require("./lib/http/ILogIDS.js"),
 	configSchema = require("./lib/schema/configSchema.js");
 
 var pkg     = require('../package.json');
@@ -58,12 +59,18 @@ if( program.config ) {
 		config.port = program.port || tmp.port;
 		config.Lang = tmp.Lang;
 		config.mongouri = "mongodb://"+tmp.mongo.ip+"/"+tmp.mongo.db;
-		config.queue = tmp.queue.protocol+"://"+tmp.queue.ip+":"+tmp.queue.port;
 		config.key = tmp.key;
 		config.cache = tmp.cache;
 		config.languages = tmp.languages;
 		config.server = tmp.server;
 		config.agenda = tmp.agenda;
+		if( tmp.queue ) {
+			config.queue = tmp.queue.protocol+"://"+tmp.queue.ip+":"+tmp.queue.port;
+		}
+		if( tmp.IDS ) {
+			config.IDS = tmp.IDS;
+		}
+		
 	}
 } else {
 	logger.error("you must provide a config file");
@@ -185,7 +192,7 @@ server.use( function(req, res, next) {
 						cookies = new Cookies(req, res);
 						cookies.set('sessionID');
 						logger.debug("url", req.url);
-						if (req.url.match(/^(\/|\/api\/login|\/api\/logout|\/logout|\/api\/queue\/(status|received))$/)) {
+						if (req.url.match(/^(\/|\/api\/login|\/api\/logout|\/api\/checkpasswd|\/logout|\/api\/queue\/(status|received))$/)) {
 							console.log("url match");
 							return next();
 						} else {
@@ -211,10 +218,9 @@ server.pre(restify.pre.userAgentConnection());
 server.use(function checkAcl(req, res, next) {
 	logger.trace("checkAcl",req.url);
 
-	if( req.url === "/" || req.url.match(/^(\/api|\/logout|\/directory|\/settings|\/questionnaires|\/admin|\/beneficiaries|\/queue)/) ) {
+	if( req.url === "/" || req.url.match(/^(\/api|\/logout|\/api\/checkpasswd|\/directory|\/settings|\/questionnaires|\/admin|\/beneficiaries|\/queue)/) ) {
 		return next();
 	} else {
-
 		if (!req.session.beneficiary && req.url !== "/beneficiaries" &&
 			!req.url.match(/^\/beneficiary\/[0-9a-f]+$/) &&
 			!req.url.match(/^\/beneficiary\/edit\/[0-9a-f]+$/) ) {
@@ -227,6 +233,58 @@ server.use(function checkAcl(req, res, next) {
 	
 	return next();
 });
+
+/**
+ * checkPasswd
+ *
+ * this method is called by the SOAPservice
+ * Check if a user has an account on this HHR-Pro instance
+ * if true send { valid:true } else { valid:false }
+ * 
+ * @param req    request object
+ * @param res    response object
+ * @param next   callback
+ */
+function checkPasswd(req, res, next ) {
+	logger.trace("checkPasswd");
+	console.log( req.body );
+	var body = req.body?req.body.toString():"";
+	if( !body ) {
+		res.send(200, { valid: false } );
+	} else {
+		try {
+			var user = JSON.parse(body);
+			if( user.login === "03thomas.jabouley@viveris.fr" ) {
+				user.login = "archer";
+				user.password = "test";
+				physioDOM.getAccountByCredentials(user.login, user.password )
+					.then( function(account) {
+						logger.info("valid user");
+						res.send(200, {valid: true});
+						return next();
+					})
+					.catch( function(err) {
+						logger.info("not a valid user");
+						res.send(200, { valid: false } );
+					});
+			} else {
+				physioDOM.getAccountByIDSCredentials(user.login, user.password)
+					.then(function (account) {
+						logger.info("valid user");
+						res.send(200, {valid: true});
+						return next();
+					})
+					.catch(function (err) {
+						logger.info("not a valid user");
+						res.send(200, {valid: false});
+					})
+			}
+		} catch( err ) {
+			res.send(200, { valid: false } );
+			return next();
+		}
+	}
+}
 
 function apiLogin(req, res, next) {
 	logger.trace("apiLogin");
@@ -295,10 +353,300 @@ server.opts(/\.*/,function (req, res, next) {
 
 server.on("after",function(req,res) {
 	responseLog(req,res);
+
+	if( physioDOM.config.IDS && req.headers["ids-user"] ) {
+		var patientID, msg;
+		switch (req.route.path) {
+			case '/api/beneficiaries' :
+				switch (req.method) {
+					case "POST":
+						patientID = "";
+						msg = "create a new beneficiary";
+						break;
+				}
+				break;
+			case '/api/beneficiary' :
+			case '/api/beneficiaries/:entryID':
+				switch (req.method) {
+					case "GET":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "consult the beneficiary overview";
+						break;
+					case "PUT":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "modify the beneficiary overview";
+						break;
+					case "DELETE":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "delete the beneficiary";
+						break;
+				}
+				break;
+			case '/api/beneficiary/professionals':
+			case '/api/beneficiaries/:entryID/professionals' :
+				switch (req.method) {
+					case "GET":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "get list of professionals attached to the beneficiary";
+						break;
+					case "POST":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "update list of professionals attached to the beneficiary";
+						break;
+				}
+				break;
+			case '/api/beneficiaries/:entryID/professionals/:profID' :
+				switch (req.method) {
+					case "DELETE":
+						patientID = req.params.entryID;
+						msg = "remove a professional attached to the beneficiary";
+						break;
+						break;
+				}
+				break;
+			case '/api/beneficiary/graph':
+			case '/api/beneficiaries/:entryID/graph':
+				switch (req.method) {
+					case "GET":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "get list of parameters for graph";
+						break;
+				}
+				break;
+			case '/api/beneficiary/graph/:category/:paramName' :
+			case '/api/beneficiaries/:entryID/graph/:category/:paramName' :
+				switch (req.method) {
+					case "GET":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "get measures for the parameters " + req.params.paramName + " for graph";
+						break;
+				}
+				break;
+			case '/api/beneficiary/history':
+				switch (req.method) {
+					case "GET":
+						patientID = req.session.beneficiary;
+						msg = "get the synthesys table for all measured parameters";
+						break;
+				}
+				break;
+			case '/api/beneficiary/datarecords':
+				switch (req.method) {
+					case "GET":
+						patientID = req.session.beneficiary;
+						msg = "get list of data records";
+						break;
+				}
+				break;
+			case '/api/beneficiary/datarecords/:dataRecordID' :
+				switch (req.method) {
+					case "GET":
+						patientID = req.session.beneficiary;
+						msg = "get a the datarecord " + req.params.dataRecordID;
+						break;
+					case "PUT":
+						patientID = req.session.beneficiary;
+						msg = "modify the datarecord " + req.params.dataRecordID;
+				}
+				break;
+			case '/api/beneficiary/datarecord' :
+				switch (req.method) {
+					case "POST":
+						patientID = req.session.beneficiary;
+						msg = "create a new the datarecord ";
+						break;
+				}
+				break;
+			case '/api/beneficiary/thresholds' :
+				switch (req.method) {
+					case "GET":
+						patientID = req.session.beneficiary;
+						msg = "get the thresholds list ";
+						break;
+					case "POST":
+						patientID = req.session.beneficiary;
+						msg = "update the thresholds list ";
+						break;
+				}
+				break;
+			case '/api/beneficiary/messages' :
+			case '/api/beneficiaries/:entryID/messages' :
+				switch (req.method) {
+					case "GET":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "Get list of messages";
+						break;
+					case "POST":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "Create a new message";
+						break;
+				}
+				break;
+			case '/api/beneficiary/dataprog':
+			case '/api/beneficiaries/:entryID/dataprog' :
+				switch (req.method) {
+					case "POST":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "create a data monitoring prescription";
+						break;
+				}
+				break;
+			case '/api/beneficiary/dataprog/:category' :
+			case '/api/beneficiaries/:entryID/dataprog/:category' :
+				switch (req.method) {
+					case "GET":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "Get list of data monitoring prescription ( category :" + req.params.category + " )";
+						break;
+				}
+				break;
+			case '/api/beneficiary/dataprog/:dataProgItemID' :
+			case '/api/beneficiaries/:entryID/dataprog/:dataProgItemID' :
+				switch (req.method) {
+					case "DELETE":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "remove a data monitoring prescription";
+						break;
+				}
+				break;
+			case '/api/beneficiary/current/:name' :
+				switch (req.method) {
+					case "GET":
+						patientID = req.session.beneficiary;
+						msg = "get the initial health status (" + req.params.name + ")";
+						break;
+					case "PUT":
+						patientID = req.session.beneficiary;
+						msg = "create the initial health status (" + req.params.name + ")";
+						break;
+				}
+				break;
+			case '/api/beneficiary/questionnaires/:entryID/answers' :
+				switch (req.method) {
+					case "POST":
+						patientID = req.session.beneficiary;
+						msg = "answer of the questionnaire (" + req.params.entryID + ")";
+						break;
+				}
+				break;
+			case '/api/beneficiary/events' :
+				switch (req.method) {
+					case "GET":
+						patientID = req.session.beneficiary;
+						msg = "Get list of events";
+						break;
+				}
+				break;
+			case '/api/beneficiary/dietary-plan' :
+				switch (req.method) {
+					case "GET":
+						patientID = req.session.beneficiary;
+						msg = "view the current dietary plan advice";
+						break;
+					case "POST":
+						patientID = req.session.beneficiary;
+						msg = "update the dietary plan advice";
+						break;
+				}
+				break;
+			case '/api/beneficiary/dietary-plans' :
+				switch (req.method) {
+					case "GET":
+						patientID = req.session.beneficiary;
+						msg = "view the history of dietary plan advices";
+						break;
+				}
+				break;
+			case '/api/beneficiary/physical-plan':
+				switch (req.method) {
+					case "GET":
+						patientID = req.session.beneficiary;
+						msg = "view the current physical plan advice";
+						break;
+					case "POST":
+						patientID = req.session.beneficiary;
+						msg = "update the physical plan advice";
+						break;
+				}
+				break;
+			case '/api/beneficiary/physical-plans':
+				switch (req.method) {
+					case "GET":
+						patientID = req.session.beneficiary;
+						msg = "view the history of physical plan advices";
+						break;
+				}
+				break;
+			case '/api/beneficiary/questprog' :
+			case '/api/beneficiaries/:entryID/questprog' :
+				switch (req.method) {
+					case "GET":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "view the questionnaires prescriptions";
+						break;
+					case "PUT":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "update questionnaires prescriptions";
+						break;
+				}
+				break;
+			case '/api/beneficiary/questprog/:ref' :
+			case '/api/beneficiaries/:entryID/questprog/:ref':
+				switch (req.method) {
+					case "POST":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "create a questionnaire prescription";
+						break;
+					case "DELETE":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "remove a questionnaire prescription";
+						break;
+				}
+				break;
+			case '/beneficiary/:beneficiaryID':
+				switch (req.method) {
+					case "GET":
+						patientID = req.params.beneficiaryID;
+						msg = "consult the beneficiary overview";
+						break;
+				}
+				break;
+			case '/beneficiary/edit/:beneficiaryID' :
+				switch (req.method) {
+					case "GET":
+						patientID = req.params.beneficiaryID;
+						msg = "open the beneficiary overview for editing";
+						break;
+				}
+				break;
+			case '/answers/:entryID':
+				switch (req.method) {
+					case "GET":
+						patientID = req.session.beneficiary;
+						msg = "consult answer of questionnaire";
+						break;
+				}
+				break;
+			case '/datarecord/:dataRecordID':
+				switch (req.method) {
+					case "GET":
+						patientID = req.session.beneficiary;
+						msg = "consult detail of a datarecord";
+						break;
+				}
+				break;
+		}
+		if( patientID && msg ) {
+			ILogIDS.LogAccess(req, res, patientID.toString(), msg);
+		}
+	}
 });
 
 // ===================================================
 //               API requests
+
+// Authent
+server.post( '/api/checkpasswd', checkPasswd);
 
 // Menus
 server.get( '/api/menu', IMenu.getMenu);
@@ -314,6 +662,8 @@ server.put( '/api/directory/:entryID', IDirectory.updateEntry );
 server.del( '/api/directory/:entryID', IDirectory.deleteEntry );
 server.post('/api/directory/:entryID/account', IDirectory.accountUpdate );
 server.get( '/api/directory/:entryID/account', IDirectory.account );
+server.get( '/api/directory/:entryID/cert', IDirectory.createCert );
+server.del( '/api/directory/:entryID/cert', IDirectory.revoqCert );
 
 server.get( '/api/beneficiaries', IBeneficiary.getBeneficiaries);   // get beneficiaries list
 server.post('/api/beneficiaries', IBeneficiary.createBeneficiary);
@@ -492,9 +842,53 @@ server.get(/\/[^api|components\/]?$/, function(req, res, next) {
 	if( req.session ) {
 		return IPage.ui( req, res, next);
 	} else {
+		// logger.debug( req.headers );
 		var cookies = new Cookies(req, res);
-		cookies.set('lang',physioDOM.lang, cookieOptions);
-		return IPage.login( req, res, next);
+		
+		if( req.headers["ids-user"] === "03thomas.jabouley@viveris.fr") {
+			logger.debug( "ids-user" );
+			physioDOM.getAccountByCredentials("archer", "test")
+				.then( function(account) {
+					return account.createSession();
+				})
+				.then( function(session) {
+					console.log( session );
+					req.session = session;
+					cookies.set('sessionID', session.sessionID, cookieOptions);
+					cookies.set('role', session.role, { path: '/', httpOnly : false} );
+					cookies.set('lang', session.lang || physioDOM.lang, { path: '/', httpOnly : false});
+					return IPage.ui( req, res, next);
+				})
+				.catch( function(err) {
+					logger.warning(err.message || "bad login or password");
+					cookies.set('sessionID');
+					cookies.set('role');
+					res.send( 403, {code:403, message:"bad credentials"} );
+					next();
+				});
+		} else if ( req.headers["ids-user"] ) {
+			physioDOM.getAccountByIDSUser( req.headers["ids-user"] )
+				.then( function(account) {
+					return account.createSession();
+				}).then( function(session) {
+					console.log( session );
+					req.session = session;
+					cookies.set('sessionID', session.sessionID, cookieOptions);
+					cookies.set('role', session.role, { path: '/', httpOnly : false} );
+					cookies.set('lang', session.lang || physioDOM.lang, { path: '/', httpOnly : false});
+					return IPage.ui( req, res, next);
+				})
+				.catch( function(err) {
+					logger.warning(err.message || "bad login or password");
+					cookies.set('sessionID');
+					cookies.set('role');
+					res.send( 403, {code:403, message:"bad credentials"} );
+					next();
+				});
+		} else {
+			cookies.set('lang', physioDOM.lang, cookieOptions);
+			return IPage.login(req, res, next);
+		}
 	}
 });
 
@@ -512,35 +906,38 @@ physioDOM.connect()
 	})
 	.then( function() {
 		agenda.purge( function(err, numRemoved) {
-			agenda.define('push plans', function (job, done) {
-				// push measures plan and symptoms plan for all active beneficiary
-				var beneficiaries;
-				physioDOM.Beneficiaries()
-					.then(function (res) {
-						beneficiaries = res;
-						return beneficiaries.getAllActiveHHR();
-					})
-					.then(function (activeBeneficiaries) {
-						var promises = activeBeneficiaries.map(function (beneficiary) {
-							return new promise(function (resolve, reject) {
-								beneficiaries.getHHR(beneficiary._id)
-									.then(function (beneficiary) {
-										beneficiary.getSymptomsPlan(false)
-											.then(function () {
-												return beneficiary.getMeasurePlan(false);
-											})
-											.then(resolve);
-									});
+			if( config.queue ) {
+				// if no queue is defined then no jobs need to be defined
+				agenda.define('push plans', function (job, done) {
+					// push measures plan and symptoms plan for all active beneficiary
+					var beneficiaries;
+					physioDOM.Beneficiaries()
+						.then(function (res) {
+							beneficiaries = res;
+							return beneficiaries.getAllActiveHHR();
+						})
+						.then(function (activeBeneficiaries) {
+							var promises = activeBeneficiaries.map(function (beneficiary) {
+								return new promise(function (resolve, reject) {
+									beneficiaries.getHHR(beneficiary._id)
+										.then(function (beneficiary) {
+											beneficiary.getSymptomsPlan(false)
+												.then(function () {
+													return beneficiary.getMeasurePlan(false);
+												})
+												.then(resolve);
+										});
+								});
 							});
+            	
+							RSVP.all(promises)
+								.then(function () {
+									done();
+								});
 						});
-
-						RSVP.all(promises)
-							.then(function () {
-								done();
-							});
-					});
-			});
-			agenda.every(config.agenda + ' minutes', 'push plans');
+				});
+				agenda.every(config.agenda + ' minutes', 'push plans');
+			}
 		});
 			
 		agenda.start();

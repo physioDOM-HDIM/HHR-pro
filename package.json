@@ -1,7 +1,7 @@
 {
   "name": "PhysioDOM-server",
   "preferGlobal": false,
-  "version": "0.0.13-1",
+  "version": "0.0.14",
   "author": "Telecom Sante <tech@telecomsante.com>",
   "contributors": [
     {
@@ -37,6 +37,7 @@
     "mongodb": "~1.4.7",
     "restify": "2.6.3",
     "rsvp": "~3.0.9",
+    "soap": "^0.8.0",
     "swig": "~1.4.2",
     "tar.gz": "~0.1.1"
   },
