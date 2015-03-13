@@ -41,7 +41,8 @@ var listItem_BasicSchema = {
 		"active": { type: "boolean"},
 		"rank": { type: "number"},
 		"TVLabel": { type: "string"},
-		"roleTypeCode": { type:"array", item: { "enum": roleTypeCode }}
+		"roleTypeCode": { type:"array", item: { "enum": roleTypeCode }},
+		"diet": { type: "boolean"}
 	}
 };
 

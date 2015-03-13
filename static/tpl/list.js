@@ -59,6 +59,7 @@ function showLang() {
 
     var lang = document.querySelector("#lang");
     var modelData = {
+        hasDietChoice: (list.name === 'socialServices' || list.name === 'healthServices'), // this or adding it to database init?
         lang: lang.value,
         editable: list.editable,
         service: list.service?list.service:false,
