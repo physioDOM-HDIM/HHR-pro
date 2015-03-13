@@ -57,7 +57,7 @@ function computeBMI() {
 		var bmi = weight / (size * size);
 		document.getElementById('bmiInput').value = bmi.toFixed(2);
 	}
-	
+
 	validateChecking();
 }
 
@@ -70,10 +70,12 @@ function hideConfirm() {
 }
 
 function validateChecking() {
-	var validateButton = document.querySelector('.validate-button'),
-		formObj = form2js(document.getElementById('form'));
-	
-	validateButton.disabled = (!formObj.weight || !formObj.lean || !formObj.bmi || !formObj.mnaAnswer || !formObj.mnaSfAnswer || !formObj.snaqAnswer || !formObj.dhdAnswer);
+	var validateButton = document.querySelector('.validate-button');
+
+	if(validateButton) {
+		var formObj = form2js(document.getElementById('form'));
+		validateButton.disabled = (!formObj.weight || !formObj.lean || !formObj.bmi || !formObj.mnaAnswer || !formObj.mnaSfAnswer || !formObj.snaqAnswer || !formObj.dhdAnswer);
+	}
 }
 
 window.addEventListener('DOMContentLoaded', function() {

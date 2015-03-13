@@ -49,6 +49,10 @@ function onQuestionnaireValidate(name, date, score, answerID) {
 
 	document.getElementById('questionnaireIframe').parentNode.removeChild(document.getElementById('questionnaireIframe'));
 	document.getElementById('content').style.display = '';
+
+	if(validateChecking) {
+		validateChecking();
+	}
 }
 
 function closeQuestionnaire() {
