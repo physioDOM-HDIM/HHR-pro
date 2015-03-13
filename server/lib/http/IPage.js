@@ -577,7 +577,8 @@ function IPage() {
 
 		var data = {
 			admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
-			rights: { read:false, write:false, url: '/beneficiary/overview' }
+			rights: { read:false, write:false, url: '/beneficiary/overview' },
+			queue: physioDOM.config.queue ?true:false
 		};
 		
 		var promisesArray = [

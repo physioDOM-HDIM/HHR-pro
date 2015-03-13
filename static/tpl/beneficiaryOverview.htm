@@ -114,7 +114,7 @@
 		</div>
 		{% if rights.write %}
 		<div class="row control">
-			{% if beneficiary.biomaster %}
+			{% if beneficiary.biomaster && queue %}
 			<button class="red small" onclick="initQueue();">{{ "Init"|i18n }}</button>&nbsp;
 			{% if beneficiary.biomasterStatus %}( initialized ){% endif %}
 			{% endif %}
