@@ -1,33 +1,33 @@
 "use strict";
 
-var humanName     = require("./commonSchema").humanName;
-var contact       = require("./commonSchema").contact;
+var humanName = require("./commonSchema").humanName;
+var contact = require("./commonSchema").contact;
 var simpleAddress = require("./commonSchema").simpleAddress;
 var maritalStatus = require("./commonSchema").maritalStatus;
 
 var beneficiarySchema = {
-	id:"/Beneficiary",
-	type:"object",
-	properties: {
-		"_id"          : { type:"object", description:"beneficiary ID in the database" },
-		"name"         : {"$ref": "/HumanName", required:true},
-		"telecom": { "type":"array",item: { "$ref":"/Contact" } },
-		"birthdate"    : { type   : "string", format: "date", required: true },
+	id                    : "/Beneficiary",
+	type                  : "object",
+	properties            : {
+		"_id"          : {type: "object", description: "beneficiary ID in the database"},
+		"name"         : {"$ref": "/HumanName", required: true},
+		"telecom"      : {"type": "array", item: {"$ref": "/Contact"}},
+		"birthdate"    : {type: "string", format: "date", required: true},
 		"size"         : {type: "number"},
 		"deceased"     : {type: "boolean"},
-		"address"      : {type: "array", item: {"$ref": "/SimpleAddress"} },
-		"gender"       : { type:"string", "enum": [ "F" , "M" ] , "required":true},
+		"address"      : {type: "array", item: {"$ref": "/SimpleAddress"}},
+		"gender"       : {type: "string", "enum": ["F", "M"], "required": true},
 		"maritalStatus": {type: "string"},
-		"active"       : {type: "boolean" },
+		"active"       : {type: "boolean"},
 		"contact"      : {type: "array", "$ref": "/ContactPartner"},
 		"account"      : {type: "object", "description": "ObjectID of the account"},
 		"socialID"     : {type: "string"},
-		"perimeter"    : {type:"string"},
+		"perimeter"    : {type: "string"},
 		"lifeCond"     : {
-			type:"object",
-			properties: {
+			type                  : "object",
+			properties            : {
 				"disability": {
-					type:"object",
+					type      : "object",
 					properties: {
 						"type"   : {type: "string"},
 						"percent": {type: "integer"}
@@ -39,14 +39,14 @@ var beneficiarySchema = {
 			"additionalProperties": false
 		},
 		"entry"        : {
-			type:"object",
-			properties: {
-				"demand"    : {type: "string"},
-				"startDate" : {format: "date", required:true},
-				"plannedEnd": {format: "date"},
-				"endDate"   : {format: "date"},
-				"comeFrom"  : {type: "string"},
-				"destination": { type:"string"}
+			type                  : "object",
+			properties            : {
+				"demand"     : {type: "string"},
+				"startDate"  : {format: "date", required: true},
+				"plannedEnd" : {format: "date"},
+				"endDate"    : {format: "date"},
+				"comeFrom"   : {type: "string"},
+				"destination": {type: "string"}
 			},
 			"additionalProperties": false
 		},
@@ -62,22 +62,22 @@ var beneficiarySchema = {
 				"additionalProperties": false
 			}
 		},
-		"validate"     : {type: "boolean", required: true },
-		"diagnosis": {
-			type:"object",
-			properties:{
-				"general": { type:"string" },
-				"nutritional": { type:"string" },
-				"chronic": {
-					type:"object",
+		"validate"     : {type: "boolean", required: true},
+		"diagnosis"    : {
+			type                  : "object",
+			properties            : {
+				"general"    : {type: "string"},
+				"nutritional": {type: "string"},
+				"chronic"    : {
+					type      : "object",
 					properties: {
-						main: { type: "string" }
+						main: {type: "string"}
 					}
 				}
 			},
 			"additionalProperties": false
 		},
-		"threshold": {
+		"threshold"    : {
 			type: "object"
 		}
 	},
@@ -97,9 +97,9 @@ var contactPartnerSchema = {
 
 var Validator = require('jsonschema').Validator;
 var validator = new Validator();
-validator.addSchema(humanName,"/HumanName");
-validator.addSchema(simpleAddress,"/SimpleAddress");
-validator.addSchema(contact,"/Contact");
-validator.addSchema(contactPartnerSchema,"/ContactPartner");
-validator.addSchema(beneficiarySchema,"/Beneficiary");
+validator.addSchema(humanName, "/HumanName");
+validator.addSchema(simpleAddress, "/SimpleAddress");
+validator.addSchema(contact, "/Contact");
+validator.addSchema(contactPartnerSchema, "/ContactPartner");
+validator.addSchema(beneficiarySchema, "/Beneficiary");
 module.exports.validator = validator;
