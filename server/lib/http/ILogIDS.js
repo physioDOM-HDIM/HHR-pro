@@ -1,8 +1,10 @@
 "use strict";
 
 var soap = require('soap'),
-	Logger = require("logger"),
-	Cookies = require("cookies");
+    Logger = require("logger"),
+    promise = require("rsvp").Promise,
+    moment = require("moment"),
+    Cookies = require("cookies");
 
 var logger = new Logger("ILogIDS");
 
@@ -86,6 +88,61 @@ var ILogIDS = {
 					if( next ) { next(); }
 				}
 			});
+		});
+	},
+	
+	getLogLines: function (req, res, minDate, maxDate) {
+		
+		return new promise( function( resolv, reject) {
+			logger.trace("getLogLines");
+		
+			var wsdl = 'http://api.idshost.priv/log.wsdl';
+			var cookies = new Cookies(req, res);
+			
+			if( !maxDate ) {
+				maxDate = moment();
+			}
+			if( !minDate ) {
+				minDate = moment(maxDate).subtract(1,"M");
+				minDate.hours(12).minutes(0).second(0);
+			}
+			
+			var getLogLineRequest = {
+				getloglinesrequest : {
+					Application             : physioDOM.config.IDS.appName,
+					Requester               : req.headers["ids-user"],
+					AuthCookie              : cookies.get("sessionids"),
+					ReqFilter               : "*",
+					OrganizationUnitFilter  : "*",
+					UnitFilter              : physioDOM.config.IDS.unit,
+					PatientFilter           : req.session.beneficiary.toString(),
+					MinTimeFilter           : minDate.toISOString(),
+					MaxTimeFilter           : maxDate.toISOString(),
+					ExtraFilter             : "*"
+				}
+			};
+			
+			// logger.debug( getLogLineRequest );
+			/*
+			resolv( getLogLineRequest );
+			*/
+			
+			soap.createClient(wsdl, function (err, client) {
+				if(err) {
+					logger.alert(err);
+					reject( err );
+				}
+			
+				client.GetLogLines(getLogLineRequest, function ( err, result ) {
+					if(err) {
+						logger.warning(err.root.Envelope.Body.Fault);
+						reject( err.root.Envelope.Body.Fault );
+					} else {
+						resolv( result );
+					}
+				});
+			});
+			
 		});
 	}
 }

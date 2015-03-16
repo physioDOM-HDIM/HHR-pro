@@ -642,6 +642,53 @@ function IPage() {
 			});
 	};
 
+	/**
+	 * Get The IDS log page for the current beneficiary
+	 *
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	this.IDSLog = function(req, res, next) {
+		logger.trace("GetLogLines");
+		var html, beneficiary;
+		init(req);
+		
+		var IDSLog = require("./ILogIDS");
+		
+		var data = {
+			admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
+			rights: { read:true, write:false, url: '/beneficiary/overview' }
+		};
+		
+		new Menu().rights( req.session.role, data.rights.url )
+			.then( function( _rights ) {
+				data.rights = _rights;
+				return IDSLog.getLogLines( req, res );
+			})
+			.then( function( logLines ) {
+				data.logLines = logLines.logLines.logLine;
+				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/idslog.htm', data, function (err, output) {
+					if (err) {
+						console.log("error", err);
+						console.log("output", output);
+						res.write(err);
+						res.end();
+						next();
+					} else {
+						sendPage(output, res, next);
+					}
+				});
+				next( false );
+			})
+			.catch( function(err) {
+				logger.error("--> ", err);
+				console.log(err);
+				res.end(500, err);
+				next(false);
+			});
+	};
+	
 	// -------------- Lists pages ---------------------
 
 	/**

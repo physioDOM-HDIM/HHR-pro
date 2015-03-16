@@ -256,7 +256,7 @@ function checkPasswd(req, res, next ) {
 			var user = JSON.parse(body);
 			if( user.login === "03thomas.jabouley@viveris.fr" ) {
 				user.login = "archer";
-				user.password = "test";
+				// user.password = "test";
 				physioDOM.getAccountByCredentials(user.login, user.password )
 					.then( function(account) {
 						logger.info("valid user");
@@ -794,6 +794,8 @@ server.get( '/beneficiaries/create', IPage.beneficiaryCreate);
 server.get( '/beneficiary/edit/:beneficiaryID', IPage.beneficiaryUpdate);
 server.get( '/beneficiary/update', IPage.beneficiaryUpdate );
 server.get( '/beneficiary/:beneficiaryID', IPage.beneficiaryOverview );
+
+server.get( '/IDSLog', IPage.IDSLog);
 
 server.get( '/agenda', IPage.agenda);
 
