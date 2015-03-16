@@ -20,7 +20,7 @@
 <div class="hidden" id="changelang">{{"Are you sure to cancel your changes ?"|i18n}}</div>
 <div id="content">
 	<zdk-panel heading="{{ 'Diet values' | i18n }}">
-		<form name="form" id="form" autocomplete="off" onsubmit="checkForm(); return false;">
+		<form name="form" id="formDiet" autocomplete="off" onsubmit="saveDiet(); return false;">
 			<fieldset>
 				<legend>{{'Diet values'|i18n}}</legend>
 				<div class="row value-row">
@@ -28,7 +28,7 @@
 					<input
 						flex
 						id="sizeInput"
-						class="value-input"
+						class="value-input to-disable"
 						type="number"
 						name="size"
 						step="any"
@@ -42,7 +42,7 @@
 					<input
 						flex
 						id="weightInput"
-						class="value-input"
+						class="value-input to-disable"
 						type="number"
 						name="weight"
 						step="any"
@@ -54,7 +54,7 @@
 					<input
 						flex
 						id="commentWeight"
-						class="comment-input"
+						class="comment-input to-disable"
 						type="text"
 						name="commentWeight"
 						value="{{status.commentWeight}}"
@@ -63,7 +63,7 @@
 
 				<div class="row value-row">
 					<div class="value-name">{{'Lean/fat ratio'|i18n}}</div>
-					<input type="number" name="lean" class="value-input" value="{{status.lean}}" {% if status.validated %}disabled{% endif %} />
+					<input type="number" name="lean" class="value-input to-disable" value="{{status.lean}}" {% if status.validated %}disabled{% endif %} />
 					<div class="value-unit"></div>
 				</div>
 				<div class="row value-row">
@@ -83,7 +83,7 @@
 					<input
 						flex
 						id="bmiInput"
-						class="value-input"
+						class="value-input to-disable"
 						type="number"
 						name="bmi"
 						step="any"
@@ -95,7 +95,7 @@
 					<input
 						flex
 						id="commentBmi"
-						class="comment-input"
+						class="comment-input to-disable"
 						type="text"
 						name="commentBmi"
 						value="{{status.commentBmi}}"
@@ -116,7 +116,7 @@
 					<input
 						flex
 						id="commentMna"
-						class="comment-input"
+						class="comment-input to-disable"
 						type="text"
 						name="commentMna"
 						value="{{status.commentMna}}"
@@ -137,7 +137,7 @@
 					<input
 						flex
 						id="commentMnaSf"
-						class="comment-input"
+						class="comment-input to-disable"
 						type="text"
 						name="commentMnaSf"
 						value="{{status.commentMnaSf}}"
@@ -158,7 +158,7 @@
 					<input
 						flex
 						id="commentSnaq"
-						class="comment-input"
+						class="comment-input to-disable"
 						type="text"
 						name="commentSnaq"
 						value="{{status.commentSnaq}}"
@@ -179,7 +179,7 @@
 					<input
 						flex
 						id="commentDhd"
-						class="comment-input"
+						class="comment-input to-disable"
 						type="text"
 						name="commentDhd"
 						value="{{status.commentDhd}}"
@@ -191,37 +191,48 @@
 			<fieldset>
 				<legend>{{'Special diet prescriptions'|i18n}}</legend>
 				<div class="row value-row">
-					<textarea flex name="dietPresc" {% if status.validated %}disabled{% endif %}>{{status.dietPresc}}</textarea>
+					<textarea flex name="dietPresc">{{status.dietPresc}}</textarea>
 				</div>
 			</fieldset>
 			
 			{% if rights.write %}
-				{% if !status.validated %}
-				<div id="buttons" class="row control">
+				<div class="row control">
 					<span class="spacer"></span>
 					<button class="green">{{'Save'|i18n}}</button>
 				</div>
-				{% endif %}
 			{% endif %}
 		</form>
 	</zdk-panel>
 
 	<zdk-panel heading="{{ 'Assistance services' | i18n }}">
-		<div class="row value-row">
-			<div class="assist-name assist">{{'Delivery assistance'|i18n}}</div>
-			<input type="checkbox" class="value-checkbox" />
-			<input type="text" class="value-input assist" />
-		</div>
-
-		{% if rights.write %}
-			{% if !status.validated %}
-			<div id="buttons" class="row control">
-				<span class="spacer"></span>
-				<button class="green">{{'Save'|i18n}}</button>
+		<form name="form" id="formAssistance" autocomplete="off" onsubmit="saveAssistance(); return false;">
+			<div id="assistanceValues">
+				{% for assistance in status.assistance %}
+				 	{% set idx = loop.index %}
+					<div class="row value-row">
+						<span class="assistance-label">{{assistance.ref}}</span>
+						<input type="hidden" name="assistance[{{ idx }}].ref" value="{{ assistance.ref }}">
+						<input type="checkbox" class="value-checkbox" name="assistance[{{ idx }}].active" {% if assistance.active %}checked{% endif %}>
+						<input type="text" class="value-input assist" name="assistance[{{ idx }}].information" value="{{ assistance.information }}">
+						<button type="button" class="red" onclick="removeAssistance(this)">{{'Remove'|i18n}}</button>
+					</div>
+				{% endfor %}
 			</div>
-			{% endif %}
-		{% endif %}
+			<div class="hidden" id="idxValue">{{idx}}</div>
 
+			<div class="row control">
+				<span class="spacer"></span>
+				<button type="button" onclick="addAssistance()" class="green">{{'Add'|i18n}}</button>
+			</div>
+
+			{% if rights.write %}
+				<div class="row control">
+					<span class="spacer"></span>
+					<button class="green">{{'Save'|i18n}}</button>
+				</div>
+			{% endif %}
+
+		</form>
 	</zdk-panel>
 
 	{% if rights.write %}
@@ -235,6 +246,19 @@
 	{% endif %}
 </div>
 
+{% raw %}
+<script type="template" id="assistanceLine">
+	<select class="selectAssistanceRef" name="assistance[{{idx}}].ref">
+		{{#assistanceList}}
+			<option value="{{ref}}">{{labelLang}}</option>
+		{{/assistanceList}}
+	</select>
+	<input type="checkbox" class="value-checkbox" name="assistance[{{idx}}].active">
+	<input type="text" class="value-input assist" name="assistance[{{idx}}].information">
+	<button type="button" class="red" onclick="removeAssistance(this)">{% endraw %}{{'Remove'|i18n}}{% raw %}</button>
+</script>
+{% endraw %}
+
 {% include "../modal.htm" %}
 
 <zdk-modal id="confirmModal" closebutton="false">
@@ -243,7 +267,7 @@
 		<div class="modalContentContainer">{{'Are you sure?' |i18n}}</div>
 		<div class="modalButtonContainer">
 			<button class="red" onclick="hideConfirm();">{{'Cancel' | i18n}}</script>
-			<button class="green" onclick="hideConfirm(); checkForm(true);">{{'Validate' | i18n}}</script>
+			<button class="green" onclick="hideConfirm(); validate()">{{'Validate' | i18n}}</script>
 		</div>
 	</button>
 </zdk-modal>
