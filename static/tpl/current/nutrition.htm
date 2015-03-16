@@ -19,7 +19,7 @@
 <div class="hidden" id="unsave">{{"You have unsaved data"|i18n}}</div>
 <div class="hidden" id="changelang">{{"Are you sure to cancel your changes ?"|i18n}}</div>
 <div id="content">
-	<zdk-panel heading="{{ 'Nutritional status' | i18n }}">
+	<zdk-panel heading="{{ 'Diet values' | i18n }}">
 		<form name="form" id="form" autocomplete="off" onsubmit="checkForm(); return false;">
 			<fieldset>
 				<legend>{{'Diet values'|i18n}}</legend>
@@ -194,29 +194,45 @@
 					<textarea flex name="dietPresc" {% if status.validated %}disabled{% endif %}>{{status.dietPresc}}</textarea>
 				</div>
 			</fieldset>
-
-			<fieldset>
-				<legend>{{'Assistance services'|i18n}}</legend>
-
-				<div class="row value-row">
-					<div class="assist-name assist">{{'Delivery assistance'|i18n}}</div>
-					<input type="checkbox" class="value-checkbox" />
-					<input type="text" class="value-input assist" />
-				</div>
-			</fieldset>
 			
 			{% if rights.write %}
 				{% if !status.validated %}
 				<div id="buttons" class="row control">
 					<span class="spacer"></span>
-					<button type="button" class="blue validate-button" onclick="showConfirm();">{{'Validate'|i18n}}</button>
-					<button type="button" class="red" onclick="modified=false; location.reload();">{{'Cancel'|i18n}}</button>
 					<button class="green">{{'Save'|i18n}}</button>
 				</div>
 				{% endif %}
 			{% endif %}
 		</form>
 	</zdk-panel>
+
+	<zdk-panel heading="{{ 'Assistance services' | i18n }}">
+		<div class="row value-row">
+			<div class="assist-name assist">{{'Delivery assistance'|i18n}}</div>
+			<input type="checkbox" class="value-checkbox" />
+			<input type="text" class="value-input assist" />
+		</div>
+
+		{% if rights.write %}
+			{% if !status.validated %}
+			<div id="buttons" class="row control">
+				<span class="spacer"></span>
+				<button class="green">{{'Save'|i18n}}</button>
+			</div>
+			{% endif %}
+		{% endif %}
+
+	</zdk-panel>
+
+	{% if rights.write %}
+		{% if !status.validated %}
+		<div id="buttons" class="row control">
+			<span class="spacer"></span>
+			<button type="button" class="blue validate-button" onclick="showConfirm();">{{'Validate'|i18n}}</button>
+			<button type="button" class="red" onclick="modified=false; location.reload();">{{'Cancel'|i18n}}</button>
+		</div>
+		{% endif %}
+	{% endif %}
 </div>
 
 {% include "../modal.htm" %}
