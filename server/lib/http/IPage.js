@@ -578,7 +578,8 @@ function IPage() {
 		var data = {
 			admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
 			rights: { read:false, write:false, url: '/beneficiary/overview' },
-			queue: physioDOM.config.queue ?true:false
+			queue: physioDOM.config.queue ?true:false,
+			IDS = physioDOM.config.IDS && req.headers["ids-user"]
 		};
 		
 		var promisesArray = [
@@ -654,17 +655,24 @@ function IPage() {
 		var html, beneficiary;
 		init(req);
 		
+		moment.locale( physioDOM.lang === "en"?"en-gb":physioDOM.lang );
+		var maxDate = moment();
+		if( req.params.maxDate && moment(req.params.maxDate).isValid()) {
+			maxDate = moment(req.params.maxDate).hours(23).minutes(59).seconds(59);
+		}
 		var IDSLog = require("./ILogIDS");
 		
 		var data = {
 			admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
-			rights: { read:true, write:false, url: '/beneficiary/overview' }
+			rights: { read:true, write:false, url: '/beneficiary/overview' },
+			prevMonth: moment(maxDate).date(1).subtract(1,"d").format("YYYY-MM-DD"),
+			nextMonth: moment(maxDate).add(1,"M").format("YYYY-MM-DD")
 		};
 		
 		new Menu().rights( req.session.role, data.rights.url )
 			.then( function( _rights ) {
 				data.rights = _rights;
-				return IDSLog.getLogLines( req, res );
+				return IDSLog.getLogLines( req, res, maxDate );
 			})
 			.then( function( logLines ) {
 				data.logLines = logLines.logLines.logLine;

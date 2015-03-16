@@ -158,10 +158,12 @@
 	</tsante-list>
 </zdk-panel>
 
+{% if IDS %}
 <div class="row">
 	<span class="spacer"></span><a href="/IDSLog"><button class="blue small">{{ "IDS Log"|i18n }}</button></a>
 </div>
 <div class="row"></div>
+{% endif %}
 
 
 <zdk-panel heading="{{ 'Active services'|i18n }}" collapsable="true" collapsed="true">
