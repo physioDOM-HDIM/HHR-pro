@@ -91,7 +91,7 @@ var ILogIDS = {
 		});
 	},
 	
-	getLogLines: function (req, res, minDate, maxDate) {
+	getLogLines: function (req, res, maxDate, minDate ) {
 		
 		return new promise( function( resolv, reject) {
 			logger.trace("getLogLines");
@@ -99,12 +99,15 @@ var ILogIDS = {
 			var wsdl = 'http://api.idshost.priv/log.wsdl';
 			var cookies = new Cookies(req, res);
 			
+			moment.locale( physioDOM.lang === "en"?"en-gb":physioDOM.lang );
 			if( !maxDate ) {
 				maxDate = moment();
 			}
+			console.log( maxDate.toISOString() );
+			
 			if( !minDate ) {
-				minDate = moment(maxDate).subtract(1,"M");
-				minDate.hours(12).minutes(0).second(0);
+				minDate = moment(maxDate).date(1);
+				minDate.hours(0).minutes(0).second(0);
 			}
 			
 			var getLogLineRequest = {
