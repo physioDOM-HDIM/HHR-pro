@@ -1,3 +1,13 @@
+__v0.0.15__ debug release
+
+  - #249 [Bene overview][v011] la valeur de Height n'est pas bonne
+  - #256 - Organization checkbox
+  - #203 - Assistance Service
+  - #154 - Champ Telecom
+  - #152 - Ajouter professionnel
+  - #253 & #198 - Current Health Status Validate
+  - #169 - Saisie des seuils
+  
 __v0.0.14__
 
   - IDS login and certificates management
