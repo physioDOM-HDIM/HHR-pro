@@ -435,12 +435,27 @@ function addItem(node) {
     var refInput = div.querySelector('.ref-unique'),
         btnSave = document.querySelector('.btn-save');
 
-    refInput.addEventListener('input', function(elt) {
+    refInput.addEventListener('input', function(e) {
+        var newItemContainer = document.querySelector('#newItems'),
+            refAddedList = newItemContainer.querySelectorAll('.ref-unique'),  
+            refList = document.querySelectorAll('.ref-unique'),
+            refArray = [],
+            match;
 
-        var elt = elt.target,
-            match = Utils.findInObjectCaseInsensitive(list.items, 'ref', elt.value);
+        for(var y = 0; y<refList.length; y++) {
+            if(e.target !== refList[y]) {
+                refArray.push(refList[y].value.toUpperCase());
+            }
+        }
 
-        btnSave.disabled = (match !== null);
+        for(var i = 0; i<refAddedList.length; i++) {
+            match = (refArray.indexOf(e.target.value.toUpperCase()) > -1);
+            if(match) {
+                break; 
+            }
+        }
+
+        btnSave.disabled = (!!match);
 
     }, false);
 }
