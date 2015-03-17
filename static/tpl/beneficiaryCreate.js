@@ -773,10 +773,15 @@ window.addEventListener("beforeunload", function( e) {
 window.addEventListener("DOMContentLoaded", function () {
 
     var inputTextList = document.querySelectorAll("input[type='text']"),
+        inputEmailList = document.querySelectorAll("input[type='email']"),
         textareaList = document.querySelectorAll("textarea");
 
     for(var i=0; i<inputTextList.length; i++) {
         Utils.limitText(inputTextList[i], 100);
+    }
+
+    for(var i=0; i<inputEmailList.length; i++) {
+        Utils.limitText(inputEmailList[i], 100);
     }
 
     for(var i=0; i<textareaList.length; i++) {
