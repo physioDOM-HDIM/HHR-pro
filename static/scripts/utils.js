@@ -45,6 +45,22 @@ Utils.prototype.findInObject = function(obj, item, value) {
     return result;
 };
 
+Utils.prototype.findInObjectCaseInsensitive = function(obj, item, value) {
+    var i = 0,
+        len = obj.length,
+        result = null;
+
+    for(i; i<len; i++) {
+        if(obj[i][item].toUpperCase() === value.toUpperCase()) {
+            result = obj[i];
+            break;
+        }
+    }
+
+    return result;
+};
+
+
 /**
  * getting Day name from Day Number
  */

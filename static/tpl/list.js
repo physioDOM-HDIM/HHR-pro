@@ -431,4 +431,16 @@ function addItem(node) {
     div = div.querySelector("div");
     document.getElementById("newItems").appendChild(div);
     // div.scrollIntoView();
+    
+    var refInput = div.querySelector('.ref-unique'),
+        btnSave = document.querySelector('.btn-save');
+
+    refInput.addEventListener('input', function(elt) {
+
+        var elt = elt.target,
+            match = Utils.findInObjectCaseInsensitive(list.items, 'ref', elt.value);
+
+        btnSave.disabled = (match !== null);
+
+    }, false);
 }
