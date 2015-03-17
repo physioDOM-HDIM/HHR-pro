@@ -576,9 +576,10 @@ function IPage() {
 		}
 
 		var data = {
-			admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
-			rights: { read:false, write:false, url: '/beneficiary/overview' },
-			queue: physioDOM.config.queue ?true:false
+			admin  : ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
+			rights : { read:false, write:false, url: '/beneficiary/overview' },
+			queue  : physioDOM.config.queue ?true:false,
+			IDS    : physioDOM.config.IDS && req.headers["ids-user"]
 		};
 		
 		var promisesArray = [
@@ -642,6 +643,60 @@ function IPage() {
 			});
 	};
 
+	/**
+	 * Get The IDS log page for the current beneficiary
+	 *
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	this.IDSLog = function(req, res, next) {
+		logger.trace("GetLogLines");
+		var html, beneficiary;
+		init(req);
+		
+		moment.locale( physioDOM.lang === "en"?"en-gb":physioDOM.lang );
+		var maxDate = moment();
+		if( req.params.maxDate && moment(req.params.maxDate).isValid()) {
+			maxDate = moment(req.params.maxDate).hours(23).minutes(59).seconds(59);
+		}
+		var IDSLog = require("./ILogIDS");
+		
+		var data = {
+			admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
+			rights: { read:true, write:false, url: '/beneficiary/overview' },
+			prevMonth: moment(maxDate).date(1).subtract(1,"d").format("YYYY-MM-DD"),
+			nextMonth: moment(maxDate).add(1,"M").format("YYYY-MM-DD")
+		};
+		
+		new Menu().rights( req.session.role, data.rights.url )
+			.then( function( _rights ) {
+				data.rights = _rights;
+				return IDSLog.getLogLines( req, res, maxDate );
+			})
+			.then( function( logLines ) {
+				data.logLines = logLines.logLines.logLine;
+				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/idslog.htm', data, function (err, output) {
+					if (err) {
+						console.log("error", err);
+						console.log("output", output);
+						res.write(err);
+						res.end();
+						next();
+					} else {
+						sendPage(output, res, next);
+					}
+				});
+				next( false );
+			})
+			.catch( function(err) {
+				logger.error("--> ", err);
+				console.log(err);
+				res.end(500, err);
+				next(false);
+			});
+	};
+	
 	// -------------- Lists pages ---------------------
 
 	/**

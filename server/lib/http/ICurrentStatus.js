@@ -102,23 +102,28 @@ var ICurrentStatus = {
 					.then(function (current) {
 						updateItem._id = current._id;
 						current.update(updateItem)
-					.then(function (current) {
-						return beneficiary.createEvent('Health status', 'update', current._id, req.session.person.id)
-							.then( function() {
-								return createDataRecord(current);
+							.then(function (current) {
+								return beneficiary.createEvent('Health status', 'update', current._id, req.session.person.id)
+									.then( function() {
+										return createDataRecord(current);
+									});
+							})
+							.then(function (current) {
+								res.send(current);
+								next();
+							})
+							.catch (function (err) {
+								updateItem.validated = false;
+								current.update(updateItem)
+									.then(function() {
+										res.send(err.code || 400, err);
+										next(false);
+									});
 							});
-					})
-					.then(function (current) {
-						res.send(current);
-						next();
-					})
-					.catch (function (err) {
-						res.send(err.code || 400, err);
-						next(false);
-					});
 				})
 				.catch (function (err) {
 					// Current status not found: create a new one
+					var newCurrentStatus;
 					new CurrentStatus().update(updateItem)
 						.then(function (current) {
 							return beneficiary.createEvent('Health status', 'create', current._id, req.session.person.id)
@@ -131,8 +136,24 @@ var ICurrentStatus = {
 							next();
 						})
 						.catch (function (err) {
-							res.send(err.code || 500, err);
-							next(false);
+							//getting newest current status to change validate if datarecord is not sended
+							new CurrentStatus().get(beneficiary._id, req.params.name)
+								.then(function(current) {
+
+									updateItem._id = current._id;
+									updateItem.validated = false;
+
+									current.update(updateItem)
+										.then(function() {
+											res.send(err.code || 500, err);
+											next(false);
+										})
+										.catch(function(err) {
+											logger.trace(err);
+										})
+									
+								})
+
 						});
 				});
 			}

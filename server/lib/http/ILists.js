@@ -70,7 +70,7 @@ var ILists = {
 	getListTranslate: function(req, res, next) {
 		physioDOM.Lists.getList(req.params.listName)
 			.then(function(list) {
-				return list.lang(req.session.lang || req.params.lang);
+				return list.lang(req.session.lang || req.params.lang || physioDOM.lang);
 			})
 			.then(function(list) {
 				res.send(list);

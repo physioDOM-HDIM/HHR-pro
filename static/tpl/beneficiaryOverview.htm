@@ -79,7 +79,7 @@
 			<label>{{ "Birth date"|i18n }} :</label><div>{{beneficiary.birthdate}}</div>
 		</div>
 		<div class="row">
-			<label>{{ "Height"|i18n }} :</label><div>{{(beneficiary.size+"").replace('.','')}}{{ "cm"|i18n }}</div>
+			<label>{{ "Height"|i18n }} :</label><div>{{(beneficiary.size*100)}}{{ "cm"|i18n }}</div>
 		</div>
 		<div class="row">
 			<label>{{ "Social id"|i18n }} : </label><div>{{beneficiary.socialID}}</div>
@@ -157,6 +157,14 @@
 		</template>
 	</tsante-list>
 </zdk-panel>
+
+{% if IDS %}
+<div class="row">
+	<span class="spacer"></span><a href="/IDSLog"><button class="blue small">{{ "IDS Log"|i18n }}</button></a>
+</div>
+<div class="row"></div>
+{% endif %}
+
 
 <zdk-panel heading="{{ 'Active services'|i18n }}" collapsable="true" collapsed="true">
 	<div>{{'Not yet implemented'|i18n}}</div>
