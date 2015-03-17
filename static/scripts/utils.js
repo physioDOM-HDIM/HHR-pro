@@ -153,3 +153,28 @@ Utils.prototype.isValid = function(obj) {
 
     return true;
 }
+
+/**
+ * Limit text
+ */
+
+Utils.prototype.limitText = function(elt, limitNumber) {
+
+    var eventName;
+
+    if(elt.tagName === 'INPUT') {
+        eventName = 'input';
+    } else if(elt.tagName === 'TEXTAREA') {
+        eventName = 'keyup';
+    }
+
+    elt.addEventListener(eventName, function(elt) {
+
+        var elt = elt.target;
+        if (elt.value.length > limitNumber) {
+            elt.value = elt.value.substring(0, limitNumber);
+        }
+
+    }, false);
+
+}
