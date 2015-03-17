@@ -67,6 +67,9 @@ var getDataRecords = function(init) {
 		YellowCategory = null,
 		dateOption = '',
 		promises = {};
+		
+		//fix to have dateTo full day
+		dateTo = moment(new Date(dateTo)).add(1, 'days').format("YYYY-MM-DD");
 
 	//getting ref for selected params
 	for(i; i<len; i++) {
@@ -268,6 +271,9 @@ var renderGraph = function(dataRecords) {
 		dateTo = moment(document.querySelector('.date-to').value).valueOf();
 	
 	Utils.hideElt(noDataTip);
+
+	//fix to have dateTo full day
+	dateTo = moment(new Date(dateTo)).add(1, 'days').valueOf();
 
 	//blue graph config
 	if(dataRecords && dataRecords.blue !== null && dataRecords.blue.data.length !== 0) {
