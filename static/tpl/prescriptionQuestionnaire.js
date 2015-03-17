@@ -34,7 +34,7 @@ function init() {
 	
 	for (var i = 0, len = questionnairePlan.length; i < len; i++) {
 		var dataItem = questionnairePlan[i];
-		dataItem.labelLang = dataItem.label[infos.lang] || dataItem.ref;
+		dataItem.labelLang = dataItem.label || dataItem.ref;
 		
 		var dataModel = {
 			idx         : idx,
