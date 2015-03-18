@@ -1,6 +1,7 @@
 "use strict";
 
 var list,            // the list to edit
+    infos = {},
     newItems= [],    // new items
     units,           // units list
     jobs,            // job list
@@ -244,15 +245,19 @@ function addRoles() {
 }
 
 function closeRoles() {
-    document.getElementById("editRole").hide();
+    infos.modal.closeModal('editRoleModal');
 }
 
 function editRole(itemref, roles, newItem) {
-    var tpl, modal, html,
+    if(infos.modal !== undefined && infos.modal.isOpen('editRoleModal')) {
+        return;
+    }
+
+    var tpl, html,
         lang, modelData;
 
-    modal = document.getElementById("editRole");
-    modal.show();
+    infos.modal = new Modal('editRoleModal');
+
     tpl = document.querySelector("#tplJobs").innerHTML;
 
     lang = document.querySelector("#lang").value;
@@ -274,7 +279,7 @@ function editRole(itemref, roles, newItem) {
         }
     });
     html = Mustache.render(tpl, modelData);
-    document.querySelector("#editRole .modalContentContainer").innerHTML = html;
+    document.querySelector("#editRoleModal .modalContentContainer").innerHTML = html;
 }
 
 function save() {
