@@ -386,92 +386,129 @@ function Modal (type, callback) {
         }]
     };
 
-    if(!this.isOpen()) {
-        this.showModal(content[type]);
+    if(content[type] === undefined) {
+        if(!this.isOpen(type)) {
+            this.showModal(null, type); 
+        }
+    } else {
+         if(!this.isOpen()) {
+            this.showModal(content[type]);
+        }
     }
 
 }
 
-Modal.prototype.isOpen = function() {
-    var modalElt = document.querySelector("#statusModal");
-    return ((' ' + modalElt.className + ' ').indexOf(' show ') > -1)
-};
+Modal.prototype.isOpen = function(modalName) {
+    var name;
 
-Modal.prototype.closeModal = function() {
-    console.log("closeModal", arguments);
-    document.querySelector("#statusModal").hide();
-
-    var elt = document.querySelector("#statusModal"),
-        subElt, child;
-    subElt = elt.querySelector(".modalTitleContainer");
-    subElt.innerHTML = "";
-    subElt.classList.add("hidden");
-    subElt = elt.querySelector(".modalContentContainer");
-    subElt.innerHTML = "";
-    subElt.classList.add("hidden");
-    subElt = elt.querySelector(".modalButtonContainer");
-    for (var i = subElt.childNodes.length - 1; i >= 0; i--) {
-        child = subElt.childNodes[i];
-        subElt.removeChild(child);
+    if(modalName) {
+        name = modalName;
+    } else {
+        name = "statusModal";
     }
-    subElt.classList.add("hidden");
+
+    var modalElt = document.querySelector("#"+name);
+    return ((' ' + modalElt.className + ' ').indexOf(' show ') > -1);
 };
 
-Modal.prototype.showModal = function(modalObj) {
-    console.log("showModal", arguments);
+Modal.prototype.closeModal = function(modalName) {
+    if(modalName) {
+        
+        document.querySelector("#"+modalName).hide();
+        return;
 
-    //to lose focus from save/cancel..etc buttons
+    } else {
+
+        console.log("closeModal", arguments);
+        document.querySelector("#statusModal").hide();
+
+        var elt = document.querySelector("#statusModal"),
+            subElt, child;
+        subElt = elt.querySelector(".modalTitleContainer");
+        subElt.innerHTML = "";
+        subElt.classList.add("hidden");
+        subElt = elt.querySelector(".modalContentContainer");
+        subElt.innerHTML = "";
+        subElt.classList.add("hidden");
+        subElt = elt.querySelector(".modalButtonContainer");
+        for (var i = subElt.childNodes.length - 1; i >= 0; i--) {
+            child = subElt.childNodes[i];
+            subElt.removeChild(child);
+        }
+        subElt.classList.add("hidden");
+
+    }
+
+    
+};
+
+Modal.prototype.showModal = function(modalObj, modalName) {
+
     document.querySelector('body').focus();
 
-    var elt = document.querySelector("#statusModal"),
-        subElt;
+    if(modalName) {
 
-    if (modalObj.title) {
-        subElt = elt.querySelector(".modalTitleContainer");
-        subElt.innerHTML = document.querySelector("#" + modalObj.title).innerHTML;
-        subElt.classList.remove("hidden");
-    }
-    if (modalObj.content) {
-        subElt = elt.querySelector(".modalContentContainer");
-        subElt.innerHTML = document.querySelector("#" + modalObj.content).innerHTML;
-        subElt.classList.remove("hidden");
-    }
+        document.querySelector("#"+modalName).show();
+        return;
 
-    if (modalObj.buttons) {
-        var btn, obj, color;
-        subElt = elt.querySelector(".modalButtonContainer");
-        for (var i = 0; i < modalObj.buttons.length; i++) {
-            obj = modalObj.buttons[i];
-            btn = document.createElement("button");
-            btn.innerHTML = document.querySelector("#" + obj.id).innerHTML;
-            btn.onclick = obj.action;
-            switch (obj.id) {
-                case "trad_ok":
-                    {
-                        color = "green";
-                    }
-                    break;
-				case "trad_continue":
-					{
-						color = "blue";
-					}
-					break;
-                case "trad_yes":
-                    {
-                        color = "green";
-                    }
-                    break;
-                case "trad_no":
-                    {
-                        color = "blue";
-                    }
-                    break;
-            }
-            btn.classList.add(color);
-            subElt.appendChild(btn);
+    } else {
+
+        console.log("showModal", arguments);
+
+        //to lose focus from save/cancel..etc buttons
+        
+
+        var elt = document.querySelector("#statusModal"),
+            subElt;
+
+        if (modalObj.title) {
+            subElt = elt.querySelector(".modalTitleContainer");
+            subElt.innerHTML = document.querySelector("#" + modalObj.title).innerHTML;
+            subElt.classList.remove("hidden");
         }
-        subElt.classList.remove("hidden");
+        if (modalObj.content) {
+            subElt = elt.querySelector(".modalContentContainer");
+            subElt.innerHTML = document.querySelector("#" + modalObj.content).innerHTML;
+            subElt.classList.remove("hidden");
+        }
+
+        if (modalObj.buttons) {
+            var btn, obj, color;
+            subElt = elt.querySelector(".modalButtonContainer");
+            for (var i = 0; i < modalObj.buttons.length; i++) {
+                obj = modalObj.buttons[i];
+                btn = document.createElement("button");
+                btn.innerHTML = document.querySelector("#" + obj.id).innerHTML;
+                btn.onclick = obj.action;
+                switch (obj.id) {
+                    case "trad_ok":
+                        {
+                            color = "green";
+                        }
+                        break;
+                    case "trad_continue":
+                        {
+                            color = "blue";
+                        }
+                        break;
+                    case "trad_yes":
+                        {
+                            color = "green";
+                        }
+                        break;
+                    case "trad_no":
+                        {
+                            color = "blue";
+                        }
+                        break;
+                }
+                btn.classList.add(color);
+                subElt.appendChild(btn);
+            }
+            subElt.classList.remove("hidden");
+        }
+
+        document.querySelector("#statusModal").show();
     }
 
-    document.querySelector("#statusModal").show();
 };

@@ -168,8 +168,11 @@ var showOptions = function (frequency, dataModel) {
 
 function showForm(ref) {
 
+	if(infos.modal !== undefined && infos.modal.isOpen('dataProgModal')) {
+		return;
+	}
+
 	var formTpl = document.querySelector('#tpl-form'),
-		modal = document.querySelector("#editModal"),
 		formContainer = document.querySelector("#dataprog-form"),
 		formDiv = document.createElement('div'),
 		dataItem = {},
@@ -255,16 +258,15 @@ function showForm(ref) {
 	//show default frequency option template
 	showOptions(dataItem.frequency, dataModel);
 
-	modal.show();
+	infos.modal = new Modal('dataProgModal');
 }
 
 function closeForm() {
-	var modal = document.querySelector("#editModal"),
-		formContainer = document.querySelector("#dataprog-form");
+	var formContainer = document.querySelector("#dataprog-form");
 
 	formContainer.innerHTML = '';
 
-	modal.hide();
+	infos.modal.closeModal('dataProgModal');
 }
 
 /**
