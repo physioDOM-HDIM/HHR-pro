@@ -59,7 +59,7 @@ function showLang() {
 
     var lang = document.querySelector("#lang");
     var modelData = {
-        hasDietChoice: (list.name === 'socialServices' || list.name === 'healthServices'), // this or adding it to database init?
+        hasDietChoice: (list.name === 'socialServices' || list.name === 'healthServices'),
         lang: lang.value,
         editable: list.editable,
         service: list.service?list.service:false,
@@ -367,6 +367,7 @@ function addItem(node) {
     newItem = { ref:"", label:{}, new:true };
     
     modelData = {
+        hasDietChoice: (list.name === 'socialServices' || list.name === 'healthServices'),
         editable: true,
         hasRank: list.hasRank?list.hasRank:false,
         hasTVLabel: list.hasTVLabel?list.hasTVLabel:false,
