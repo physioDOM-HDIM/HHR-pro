@@ -5,6 +5,21 @@ function Modal (type, callback) {
     var content = {},
         self = this;
 
+
+    content.infoQuestionnaireResult = {
+        title: "trad_info_result",
+        content: "trad_info_result_score_questionnaire",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                if(callback) {
+                    callback();
+                }
+                self.closeModal();
+            }
+        }]
+    };
+
     content.errorOccured = {
         title: "trad_error",
         content: "trad_error_occured",
@@ -413,7 +428,7 @@ Modal.prototype.isOpen = function(modalName) {
 
 Modal.prototype.closeModal = function(modalName) {
     if(modalName) {
-        
+
         document.querySelector("#"+modalName).hide();
         return;
 
