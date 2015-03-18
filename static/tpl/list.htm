@@ -53,7 +53,7 @@
 			<div class="row">
 				<div class="col">
 					<label>{{ "Reference"|i18n }}:</label>
-					<input type="text" name="{% raw %}items[{{idx}}].ref{% endraw %}" value="{% raw %}{{ref}}{% endraw %}" {%raw%}{{^new}}disabled{{/new}}{%endraw%} required />
+					<input type="text" class="ref-unique" name="{% raw %}items[{{idx}}].ref{% endraw %}" value="{% raw %}{{ref}}{% endraw %}" {%raw%}{{^new}}disabled{{/new}}{%endraw%} required />
 				</div>
 				<div class="col">
 					<label>{{ "Active"|i18n }}:</label>
@@ -111,7 +111,7 @@
 			<div class="row">
 				<div class="col">
 					<label>{{ "Reference"|i18n }}:</label>
-					<input type="text" name="{% raw %}items[{{idx}}].ref{% endraw %}" value="{% raw %}{{ref}}{% endraw %}" required />
+					<input class="ref-unique" type="text" name="{% raw %}items[{{idx}}].ref{% endraw %}" value="{% raw %}{{ref}}{% endraw %}" required />
 				</div>
 				<div class="col">
 					<label>{{ "Active"|i18n }}:</label>
@@ -240,7 +240,7 @@
 	<div class="row">
 		<span class="spacer"></span>
 		<button type="button" class="red" onclick="modified=false; window.history.back(1)">{{ "Cancel"|i18n }}</button>
-		<button class="blue" onclick="save()">{{ "Save"|i18n }}</button>
+		<button class="blue btn-save" onclick="save()">{{ "Save"|i18n }}</button>
 	</div>
 </footer>
 

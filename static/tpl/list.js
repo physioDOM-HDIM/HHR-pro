@@ -431,4 +431,31 @@ function addItem(node) {
     div = div.querySelector("div");
     document.getElementById("newItems").appendChild(div);
     // div.scrollIntoView();
+    
+    var refInput = div.querySelector('.ref-unique'),
+        btnSave = document.querySelector('.btn-save');
+
+    refInput.addEventListener('input', function(e) {
+        var newItemContainer = document.querySelector('#newItems'),
+            refAddedList = newItemContainer.querySelectorAll('.ref-unique'),  
+            refList = document.querySelectorAll('.ref-unique'),
+            refArray = [],
+            match;
+
+        for(var y = 0; y<refList.length; y++) {
+            if(e.target !== refList[y]) {
+                refArray.push(refList[y].value.toUpperCase());
+            }
+        }
+
+        for(var i = 0; i<refAddedList.length; i++) {
+            match = (refArray.indexOf(e.target.value.toUpperCase()) > -1);
+            if(match) {
+                break; 
+            }
+        }
+
+        btnSave.disabled = (!!match);
+
+    }, false);
 }

@@ -45,6 +45,22 @@ Utils.prototype.findInObject = function(obj, item, value) {
     return result;
 };
 
+Utils.prototype.findInObjectCaseInsensitive = function(obj, item, value) {
+    var i = 0,
+        len = obj.length,
+        result = null;
+
+    for(i; i<len; i++) {
+        if(obj[i][item].toUpperCase() === value.toUpperCase()) {
+            result = obj[i];
+            break;
+        }
+    }
+
+    return result;
+};
+
+
 /**
  * getting Day name from Day Number
  */
@@ -152,4 +168,29 @@ Utils.prototype.isValid = function(obj) {
     }
 
     return true;
+}
+
+/**
+ * Limit text
+ */
+
+Utils.prototype.limitText = function(elt, limitNumber) {
+
+    var eventName;
+
+    if(elt.tagName === 'INPUT') {
+        eventName = 'input';
+    } else if(elt.tagName === 'TEXTAREA') {
+        eventName = 'keyup';
+    }
+
+    elt.addEventListener(eventName, function(elt) {
+
+        var elt = elt.target;
+        if (elt.value.length > limitNumber) {
+            elt.value = elt.value.substring(0, limitNumber);
+        }
+
+    }, false);
+
 }
