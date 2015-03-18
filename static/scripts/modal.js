@@ -386,9 +386,16 @@ function Modal (type, callback) {
         }]
     };
 
-    this.showModal(content[type]);
+    if(!this.isOpen()) {
+        this.showModal(content[type]);
+    }
 
 }
+
+Modal.prototype.isOpen = function() {
+    var modalElt = document.querySelector("#statusModal");
+    return ((' ' + modalElt.className + ' ').indexOf(' show ') > -1)
+};
 
 Modal.prototype.closeModal = function() {
     console.log("closeModal", arguments);
@@ -413,8 +420,12 @@ Modal.prototype.closeModal = function() {
 Modal.prototype.showModal = function(modalObj) {
     console.log("showModal", arguments);
 
+    //to lose focus from save/cancel..etc buttons
+    document.querySelector('body').focus();
+
     var elt = document.querySelector("#statusModal"),
         subElt;
+
     if (modalObj.title) {
         subElt = elt.querySelector(".modalTitleContainer");
         subElt.innerHTML = document.querySelector("#" + modalObj.title).innerHTML;
