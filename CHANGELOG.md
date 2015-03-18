@@ -1,3 +1,14 @@
+__v0.0.16__ debug release
+
+  - #247 Fix Label Questionnaire prescription
+  - #66 Added uppercase to first letter in labels
+  - #251 +1 day to the 'to' date to be able to see chosen date in results
+  - #254 Added profession field and value to view/schema
+  - #248 added rule to check professionals affiliation 
+  - #110 & #94 Added Utils method to limit input and textarea
+  - #118 Check references in the same list : case insensitive comparaison
+  
+  
 __v0.0.15__ debug release
 
   - #249 [Bene overview][v011] la valeur de Height n'est pas bonne
