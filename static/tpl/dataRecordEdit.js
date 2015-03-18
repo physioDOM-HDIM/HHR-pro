@@ -41,21 +41,29 @@ function hasClass(element, cls) {
 
 /* UI Actions */
 
-function getCategoryParam(category) {
+function getCategoryParam(category, filterON) {
 	var list = null;
+	
+	function filterActive(element) {
+		if(filterON) {
+			return element.active;
+		} else {
+			return true;
+		}
+	}
 
 	switch (category) {
 		case 'General':
-			list = lists.parameters;
+			list = lists.parameters.filter(filterActive);
 			break;
 		case 'HDIM':
-			list = lists.parameters;
+			list = lists.parameters.filter(filterActive);
 			break;
 		case 'symptom':
-			list = lists.symptom;
+			list = lists.symptom.filter(filterActive);
 			break;
 		case 'questionnaire':
-			list = lists.questionnaire;
+			list = lists.questionnaire.filter(filterActive);
 			break;
 	}
 
@@ -71,7 +79,7 @@ function addLine(category) {
 	//add index to line for form2js formating
 	var modelData = {
 		idx: ++idx,
-		lists: getCategoryParam(category),
+		lists: getCategoryParam(category, true),
 		questionnaire: (category === 'questionnaire')
 	};
 
@@ -278,15 +286,12 @@ function getLists() {
 	};
 
 	RSVP.hash(promises).then(function (results) {
-		function filterActive(element) {
-			return element.active;
-		}
 
 		lists.threshold = JSON.parse(results.threshold);
 
-		lists.parameters = JSON.parse(results.parameters).items.filter(filterActive);
-		lists.symptom = JSON.parse(results.symptom).items.filter(filterActive);
-		lists.questionnaire = JSON.parse(results.questionnaire).items.filter(filterActive);
+		lists.parameters = JSON.parse(results.parameters).items;
+		lists.symptom = JSON.parse(results.symptom).items;
+		lists.questionnaire = JSON.parse(results.questionnaire).items;
 
 		var unitsList = JSON.parse(results.units).items;
 

@@ -704,12 +704,10 @@ function Beneficiary( ) {
 		var that = this;
 		return new promise( function(resolve, reject) {
 			logger.trace("getThreshold", that._id);
-			dbPromise.findOne(physioDOM.db, "lists", {name: "parameters"}, {"items.ref": 1, "items.threshold": 1, "items.active":1})
+			dbPromise.findOne(physioDOM.db, "lists", {name: "parameters"}, {"items.ref": 1, "items.threshold": 1})
 				.then(function (thresholds) {
 					thresholds.items.forEach(function (threshold) {
-						if( threshold.active ) {
-							thresholdResult[threshold.ref] = threshold.threshold;
-						}
+						thresholdResult[threshold.ref] = threshold.threshold;
 					});
 					return thresholdResult;
 				})

@@ -21,7 +21,7 @@ var getList = function () {
 		lists.parameters = JSON.parse(results.parameterList);
 		if (infos.category) {
 			lists.parameters.items = lists.parameters.items.filter(function (item) {
-				return item.category === infos.category;
+				return (item.category === infos.category && item.active === true);
 			});
 		}
 		lists.thresholds = JSON.parse(results.thresholds);
@@ -53,6 +53,11 @@ var init = function () {
 		var dataItem = lists.dataprog[i],
 			param = utils.findInObject(lists.parameters.items, 'ref', dataItem.ref);
 		
+		//hide prescription with inactive params
+		if(param === null) {
+			continue;
+		}
+
 		dataItem.startDate = moment(dataItem.startDate).format("L");
 		dataItem.endDate = moment(dataItem.endDate).format("L");
 		
