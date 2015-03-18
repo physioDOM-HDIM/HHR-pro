@@ -6,7 +6,8 @@ var utils = new Utils(),
 	createdDataRecordID = null,
 	lists = {},
 	modified = false,
-	createdNew = false;
+	createdNew = false,
+	archiveUpdate = false;
 
 infos.datasInit = null;
 
@@ -18,7 +19,14 @@ window.addEventListener("DOMContentLoaded", function () {
 	document.addEventListener('change', function (evt) {
 		modified = true;
 	}, true);
+
 	createdDataRecordID = document.querySelector("#createdDataRecordID").value;
+	if(createdDataRecordID !== null && createdDataRecordID !== '') {
+		archiveUpdate = true;
+	}
+
+	infos.btnSave = document.querySelector('#saveBtn');
+
 }, false);
 
 window.addEventListener("beforeunload", function (e) {
@@ -39,11 +47,35 @@ function hasClass(element, cls) {
 	return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
 }
 
+function isValid() {
+	var inputList = [].slice.call(document.querySelectorAll('input[type="number"]')),
+		selectList = [].slice.call(document.querySelectorAll('select')),
+		arrayValue = inputList.concat(selectList),
+		valid = true;
+
+	for(var i = 0; i< arrayValue.length; i++) {
+		if(arrayValue[i].value === '') {
+			valid = false;
+			break;
+		}
+
+		if(i === (arrayValue.length-1)) {
+			valid = true;
+		}
+	}
+
+	return valid;
+}
+
+function validateChecking() {
+	infos.btnSave.disabled = !isValid();
+}
+
 /* UI Actions */
 
 function getCategoryParam(category, filterON) {
 	var list = null;
-	
+
 	function filterActive(element) {
 		if(filterON) {
 			return element.active;
@@ -136,6 +168,18 @@ function addLine(category) {
 		};
 	}
 
+
+	newLine.querySelector('input[type="number"]').addEventListener('input', function() {
+		validateChecking();
+	}, false);
+
+	newLine.querySelector('select').addEventListener('change', function() {
+		validateChecking();
+	}, false);
+
+
+	validateChecking();
+
 }
 
 function removeLine(element) {
@@ -161,6 +205,9 @@ function removeLine(element) {
 			}
 		}
 	}
+
+	validateChecking();
+
 }
 
 function removeItem(id) {
@@ -168,6 +215,8 @@ function removeItem(id) {
 		container = item.parentNode;
 
 	container.removeChild(item);
+
+	validateChecking();
 }
 
 /* Form Valid */
@@ -220,18 +269,6 @@ function update(dataRecordID) {
 					console.log("saveForm - error: ", error);
 				});
 		});
-	}
-}
-
-function checkForm() {
-	if (!document.forms.dataRecord.checkValidity()) {
-		var btn = document.querySelector("#saveBtn");
-		if (btn) {
-			btn.click();
-		}
-		return;
-	} else {
-		create();
 	}
 }
 
@@ -469,10 +506,14 @@ function toggleEditMode(id) {
 		updateMode = line.querySelector('.updateMode'),
 		readMode = line.querySelector('.readMode'),
 		paramSelect = updateMode.querySelector('select'),
-		paramValue = line.querySelector('.type').textContent;
+		paramValue = line.querySelector('.type').textContent,
+		initValue = line.querySelector('.item-value').innerHTML;
 
+	//reinit values
 	updateParam(paramSelect, paramValue);
+	line.querySelector('input').value = initValue;
 
+	//toggling
 	if (hasClass(updateMode, 'hidden')) {
 		updateMode.className = 'updateMode';
 		readMode.className = 'readMode hidden';
@@ -480,6 +521,17 @@ function toggleEditMode(id) {
 		updateMode.className = 'updateMode hidden';
 		readMode.className = 'readMode';
 	}
+
+	//Checking values for enable/disable the save button
+	line.addEventListener('input', function() {
+		 validateChecking();
+	}, false);
+
+	line.addEventListener('change', function() {
+		validateChecking();
+	}, false);
+
+	validateChecking();
 }
 
 function confirmDeleteItem(id) {
@@ -498,5 +550,11 @@ function createSuccess() {
 }
 
 function updateSuccess() {
-	new Modal('updateSuccess');
+	if(archiveUpdate) {
+		new Modal('updateSuccess', function() {
+			window.location.href = '/datarecord/'+createdDataRecordID;
+		});
+	} else {
+		new Modal('updateSuccess');	
+	}
 }
