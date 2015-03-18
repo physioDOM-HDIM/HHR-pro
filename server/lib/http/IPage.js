@@ -109,6 +109,22 @@ function IPage() {
 				return result;
 			});
 	}
+
+	function noaccess( res, next) {
+		logger.trace("no access");
+
+		swig.renderFile(DOCUMENTROOT + '/static/tpl/noaccess.htm', null, function (err, output) {
+			if (err) {
+				console.log("error", err);
+				console.log("output", output);
+				res.write(err);
+				res.end();
+				next();
+			} else {
+				sendPage(output, res, next);
+			}
+		});
+	}
 	
 	this.login = function( req, res, next ) {
 		logger.trace("login page");
@@ -215,17 +231,21 @@ function IPage() {
 				lists.forEach(function(list) {
 					data[Object.keys(list)] = list[Object.keys(list)];
 				});
-				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/directory.htm', data, function(err, output) {
-					if (err) {
-						console.log("error", err);
-						console.log("output", output);
-						res.write(err);
-						res.end();
-						next();
-					} else {
-						sendPage(output, res, next);
-					}
-				});
+				if( data.rights.read === false ) {
+					noaccess( res, next);
+				} else {
+					html = swig.renderFile(DOCUMENTROOT + '/static/tpl/directory.htm', data, function (err, output) {
+						if (err) {
+							console.log("error", err);
+							console.log("output", output);
+							res.write(err);
+							res.end();
+							next();
+						} else {
+							sendPage(output, res, next);
+						}
+					});
+				}
 			})
 			.catch(function(err) {
 				logger.error(err);
@@ -284,17 +304,21 @@ function IPage() {
 					data.professional = professional;
 				}
 				data.sessionID = req.session.person.id;
-				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/directoryUpdate.htm', data, function(err, output) {
-					if (err) {
-						console.log("error", err);
-						console.log("output", output);
-						res.write(err);
-						res.end();
-						next();
-					} else {
-						sendPage(output, res, next);
-					}
-				});
+				if( data.rights.read === false ) {
+					noacess( res, next);
+				} else {
+					html = swig.renderFile(DOCUMENTROOT + '/static/tpl/directoryUpdate.htm', data, function (err, output) {
+						if (err) {
+							console.log("error", err);
+							console.log("output", output);
+							res.write(err);
+							res.end();
+							next();
+						} else {
+							sendPage(output, res, next);
+						}
+					});
+				}
 			})
 			.catch(function(err) {
 				logger.error(err);
@@ -363,18 +387,21 @@ function IPage() {
 				if( professionals ){
 					data.beneficiary.professionals = professionals;
 				}
-
-				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/beneficiaryCreate.htm', data, function(err, output) {
-					if (err) {
-						console.log("error", err);
-						console.log("output", output);
-						res.write(err);
-						res.end();
-						next();
-					} else {
-						sendPage(output, res, next);
-					}
-				});
+				if( data.rights.read === false ) {
+					noacess( res, next);
+				} else {
+					html = swig.renderFile(DOCUMENTROOT + '/static/tpl/beneficiaryCreate.htm', data, function (err, output) {
+						if (err) {
+							console.log("error", err);
+							console.log("output", output);
+							res.write(err);
+							res.end();
+							next();
+						} else {
+							sendPage(output, res, next);
+						}
+					});
+				}
 			})
 			.catch(function(err) {
 				logger.error(err);
@@ -472,17 +499,21 @@ function IPage() {
 					data.beneficiary.professionals = professionals;
 				}
 
-				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/beneficiaryCreate.htm', data, function(err, output) {
-					if (err) {
-						console.log("error", err);
-						console.log("output", output);
-						res.write(err);
-						res.end();
-						next();
-					} else {
-						sendPage(output, res, next);
-					}
-				});
+				if( data.rights.read === false ) {
+					noacess( res, next);
+				} else {
+					html = swig.renderFile(DOCUMENTROOT + '/static/tpl/beneficiaryCreate.htm', data, function (err, output) {
+						if (err) {
+							console.log("error", err);
+							console.log("output", output);
+							res.write(err);
+							res.end();
+							next();
+						} else {
+							sendPage(output, res, next);
+						}
+					});
+				}
 			})
 			.catch(function(err) {
 				logger.error(err);
@@ -502,7 +533,8 @@ function IPage() {
 	this.beneficiaries = function(req, res, next) {
 		logger.trace("beneficiarySelect");
 		var html;
-
+		var that = this;
+		
 		init(req);
 		var data = {
 			admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
@@ -518,30 +550,22 @@ function IPage() {
 				if(req.session && req.session.beneficiary) {
 					return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
 				} else { 
-					throw( { code:404, message:"no beneficiary selected"});
+					console.log("no benefeciary selected");
+					// throw( { code:404, message:"no beneficiary selected"});
+					return null;
 				}
 			})
 			.then(function (beneficiary) {
 				data.beneficiary = beneficiary;
 			})
-			.finally(function () {
+			.then(function () {
+				console.log("get beneficiaries page");
 				physioDOM.Lists.getList("perimeter", lang)
 					.then(function (list) {
 						if (list) {
 							data.perimeter = list;
 						}
-
-						html = swig.renderFile(DOCUMENTROOT + '/static/tpl/beneficiaries.htm', data, function (err, output) {
-							if (err) {
-								console.log("error", err);
-								console.log("output", output);
-								res.write(err);
-								res.end();
-								next();
-							} else {
-								sendPage(output, res, next);
-							}
-						});
+						render('/static/tpl/beneficiaries.htm', data, res, next);
 					})
 					.catch(function (err) {
 						logger.error(err);
@@ -549,8 +573,21 @@ function IPage() {
 						res.end();
 						next();
 					});
+			})
+			.catch( function(err) {
+				console.log("en error suddendly appears",err);
+				html = swig.renderFile(DOCUMENTROOT + '/static/tpl/noaccess.htm', null, function (err, output) {
+					if (err) {
+						console.log("error", err);
+						console.log("output", output);
+						res.write(err);
+						res.end();
+						next();
+					} else {
+						sendPage(output, res, next);
+					}
+				});
 			});
-		
 	};
 
 	/**
@@ -623,17 +660,7 @@ function IPage() {
 				if( professionals ){
 					data.beneficiary.professionals = professionals;
 				}
-				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/beneficiaryOverview.htm', data, function (err, output) {
-					if (err) {
-						console.log("error", err);
-						console.log("output", output);
-						res.write(err);
-						res.end();
-						next();
-					} else {
-						sendPage(output, res, next);
-					}
-				});
+				render('/static/tpl/beneficiaryOverview.htm', data, res, next);
 			})
 			.catch( function(err) {
 				logger.error(err);
@@ -676,18 +703,8 @@ function IPage() {
 			})
 			.then( function( logLines ) {
 				data.logLines = logLines.logLines.logLine;
-				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/idslog.htm', data, function (err, output) {
-					if (err) {
-						console.log("error", err);
-						console.log("output", output);
-						res.write(err);
-						res.end();
-						next();
-					} else {
-						sendPage(output, res, next);
-					}
-				});
-				next( false );
+
+				render('/static/tpl/idslog.htm', data, res, next);
 			})
 			.catch( function(err) {
 				logger.error("--> ", err);
@@ -734,18 +751,7 @@ function IPage() {
 						data.lists = lists;
 						data.lang = lang;
 						//logger.debug("DATA", data);
-
-						html = swig.renderFile(DOCUMENTROOT+'/static/tpl/lists.htm', data, function (err, output) {
-							if (err) {
-								console.log("error", err);
-								console.log("output", output);
-								res.write(err);
-								res.end();
-								next();
-							} else {
-								sendPage(output, res, next);
-							}
-						});
+						render('/static/tpl/lists.htm', data, res, next);
 					});
 			})
 			.catch(function(err) {
@@ -793,18 +799,7 @@ function IPage() {
 						data.list = list;
 						data.lang = lang;
 						// logger.debug("DATA", data);
-
-						html = swig.renderFile(DOCUMENTROOT+'/static/tpl/list.htm', data, function (err, output) {
-							if (err) {
-								console.log("error", err);
-								console.log("output", output);
-								res.write(err);
-								res.end();
-								next();
-							} else {
-								sendPage(output, res, next);
-							}
-						});
+						render('/static/tpl/list.htm', data, res, next);
 					});
 			})
 			.catch(function(err) {
@@ -843,17 +838,7 @@ function IPage() {
 				data.questionnaires = questionnaires;
 				data.lang = lang;
 				//logger.debug("DATA", data);
-				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/questionnaireSelection.htm', data, function (err, output) {
-					if (err) {
-						console.log("error", err);
-						console.log("output", output);
-						res.write(err);
-						res.end();
-						next();
-					} else {
-						sendPage(output, res, next);
-					}
-				});
+				render('/static/tpl/questionnaireSelection.htm' , data, res, next);
 			})
 			.catch( function(err) {
 				logger.error(err);
@@ -903,18 +888,7 @@ function IPage() {
 					data.questionnaire = questionnaire;
 				}
 				data.lang = lang;
-
-				html = swig.renderFile(DOCUMENTROOT + '/static/tpl/questionnaireCreation.htm', data, function (err, output) {
-					if (err) {
-						console.log("error", err);
-						console.log("output", output);
-						res.write(err);
-						res.end();
-						next();
-					} else {
-						sendPage(output, res, next);
-					}
-				});
+				render('/static/tpl/questionnaireCreation.htm' , data, res, next);
 			});
 	};
 
@@ -951,17 +925,7 @@ function IPage() {
 				data.questionnaire = questionnaire;
 				data.lang = lang;
 				//logger.debug("DATA", data);
-				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/questionnaireOverview.htm', data, function (err, output) {
-					if (err) {
-						console.log("error", err);
-						console.log("output", output);
-						res.write(err);
-						res.end();
-						next();
-					} else {
-						sendPage(output, res, next);
-					}
-				});
+				render('/static/tpl/questionnaireOverview.htm' , data, res, next);
 			})
 			.catch( function(err) {
 				logger.error(err);
@@ -1003,17 +967,7 @@ function IPage() {
 				data.questionnaire = questionnaire;
 				data.lang = lang;
 				//logger.debug("DATA", data);
-				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/questionnaireOverview.htm', data, function (err, output) {
-					if (err) {
-						console.log("error", err);
-						console.log("output", output);
-						res.write(err);
-						res.end();
-						next();
-					} else {
-						sendPage(output, res, next);
-					}
-				});
+				render('/static/tpl/questionnaireOverview.htm' , data, res, next);
 			})
 			.catch( function(err) {
 				logger.error(err);
@@ -1107,18 +1061,7 @@ function IPage() {
 					if (professionals) {
 						data.professionals = professionals;
 					}
-
-					html = swig.renderFile(DOCUMENTROOT + '/static/tpl/dataRecord.htm', data, function (err, output) {
-						if (err) {
-							console.log("error", err);
-							console.log("output", output);
-							res.write(err);
-							res.end();
-							next();
-						} else {
-							sendPage(output, res, next);
-						}
-					});
+					render('/static/tpl/dataRecord.htm' , data, res, next);
 				})
 				.catch(function (err) {
 					logger.error(err);
@@ -1162,19 +1105,7 @@ function IPage() {
 				data.dataRecordItems.datetime = moment(data.dataRecordItems.datetime).format("L LT");
 				data.view = 'update';
 
-				// console.log("dataRecordItems :", data.dataRecordItems);
-
-				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/dataRecordEdit.htm', data, function(err, output) {
-					if (err) {
-						console.log("error", err);
-						console.log("output", output);
-						res.write(err);
-						res.end();
-						next();
-					} else {
-						sendPage(output, res, next);
-					}
-				});
+				render('/static/tpl/dataRecordEdit.htm' , data, res, next);
 
 			})
 			.catch(function(err) {
@@ -1224,17 +1155,7 @@ function IPage() {
 						_id : req.session.person.id
 					};
 
-					html = swig.renderFile(DOCUMENTROOT + '/static/tpl/dataRecordEdit.htm', data, function (err, output) {
-						if (err) {
-							console.log("error", err);
-							console.log("output", output);
-							res.write(err);
-							res.end();
-							next();
-						} else {
-							sendPage(output, res, next);
-						}
-					});
+					render('/static/tpl/dataRecordEdit.htm' , data, res, next);
 
 				})
 				.catch(function (err) {
@@ -1273,17 +1194,7 @@ function IPage() {
 				.then(function (beneficiary) {
 					data.beneficiary = beneficiary;
 
-					html = swig.renderFile(DOCUMENTROOT + '/static/tpl/dataRecordSynthesis.htm', data, function (err, output) {
-						if (err) {
-							console.log("error", err);
-							console.log("output", output);
-							res.write(err);
-							res.end();
-							next();
-						} else {
-							sendPage(output, res, next);
-						}
-					});
+					render('/static/tpl/dataRecordSynthesis.htm' , data, res, next);
 				})
 				.catch(function (err) {
 					logger.error(err);
@@ -1332,17 +1243,7 @@ function IPage() {
 						data.professionalList = professionalList;
 					}
 
-					html = swig.renderFile(DOCUMENTROOT + '/static/tpl/messageList.htm', data, function (err, output) {
-						if (err) {
-							console.log("error", err);
-							console.log("output", output);
-							res.write(err);
-							res.end();
-							next();
-						} else {
-							sendPage(output, res, next);
-						}
-					});
+					render('/static/tpl/messageList.htm' , data, res, next);
 
 				})
 				.catch(function (err) {
@@ -1395,17 +1296,7 @@ function IPage() {
 					}
 					data.lang = lang;
 
-					html = swig.renderFile(DOCUMENTROOT + '/static/tpl/messageCreate.htm', data, function (err, output) {
-						if (err) {
-							console.log("error", err);
-							console.log("output", output);
-							res.write(err);
-							res.end();
-							next();
-						} else {
-							sendPage(output, res, next);
-						}
-					});
+					render('/static/tpl/messageCreate.htm' , data, res, next);
 
 				})
 				.catch(function (err) {
@@ -1436,17 +1327,7 @@ function IPage() {
 			rights: { read:false, write:false, url: '/healthServices' }
 		};
 
-		swig.renderFile(DOCUMENTROOT+'/static/tpl/healthServices.htm', data, function(err, output) {
-			if (err) {
-				console.log("error", err);
-				console.log("output", output);
-				res.write(err);
-				res.end();
-				next();
-			} else {
-				sendPage(output, res, next);
-			}
-		});
+		render('/static/tpl/healthServices.htm' , data, res, next);
 	};
 
 
@@ -1473,17 +1354,7 @@ function IPage() {
 				logger.trace(data.beneficiary);
 				data.lang = lang;
 
-				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/physiologicalData.htm', data, function(err, output) {
-					if (err) {
-						console.log("error", err);
-						console.log("output", output);
-						res.write(err);
-						res.end();
-						next();
-					} else {
-						sendPage(output, res, next);
-					}
-				});
+				render('/static/tpl/physiologicalData.htm' , data, res, next);
 
 			})
 			.catch(function(err) {
@@ -1510,17 +1381,7 @@ function IPage() {
 			rights: { read:false, write:false, url: '/healthServices' }
 		};
 
-		swig.renderFile(DOCUMENTROOT + '/static/tpl/healthServiceCreate.htm', data, function (err, output) {
-			if (err) {
-				console.log("error", err);
-				console.log("output", output);
-				res.write(err);
-				res.end();
-				next();
-			} else {
-				sendPage(output, res, next);
-			}
-		});
+		render('/static/tpl/healthServiceCreate.htm' , data, res, next);
 	};
 
 	/**
@@ -1605,17 +1466,7 @@ function IPage() {
 				data.parameterList = 'parameters';
 				// jsut for test, otherwise read locale from session
 
-				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/prescriptionData.htm', data, function(err, output) {
-					if (err) {
-						console.log("error", err);
-						console.log("output", output);
-						res.write(err);
-						res.end();
-						next();
-					} else {
-						sendPage(output, res, next);
-					}
-				});
+				render('/static/tpl/prescriptionData.htm' , data, res, next);
 
 			})
 			.catch(function(err) {
@@ -1652,17 +1503,7 @@ function IPage() {
 				data.parameterList = 'parameters';
 				// jsut for test, otherwise read locale from session
 
-				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/prescriptionData.htm', data, function(err, output) {
-					if (err) {
-						console.log("error", err);
-						console.log("output", output);
-						res.write(err);
-						res.end();
-						next();
-					} else {
-						sendPage(output, res, next);
-					}
-				});
+				render('/static/tpl/prescriptionData.htm' , data, res, next);
 
 			})
 			.catch(function(err) {
@@ -1698,17 +1539,7 @@ function IPage() {
 				data.category = '';
 				data.parameterList = 'symptom';
 
-				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/prescriptionData.htm', data, function(err, output) {
-					if (err) {
-						console.log("error", err);
-						console.log("output", output);
-						res.write(err);
-						res.end();
-						next();
-					} else {
-						sendPage(output, res, next);
-					}
-				});
+				render('/static/tpl/prescriptionData.htm' , data, res, next);
 
 			})
 			.catch(function(err) {
@@ -1743,17 +1574,7 @@ function IPage() {
 				data.lang = lang;
 				data.title = 'Questionnaires';
 
-				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/prescriptionQuestionnaire.htm', data, function(err, output) {
-					if (err) {
-						console.log("error", err);
-						console.log("output", output);
-						res.write(err);
-						res.end();
-						next();
-					} else {
-						sendPage(output, res, next);
-					}
-				});
+				render('/static/tpl/prescriptionQuestionnaire.htm' , data, res, next);
 
 			})
 			.catch(function(err) {
@@ -1839,17 +1660,7 @@ function IPage() {
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
 
-				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/agenda.htm', data, function(err, output) {
-					if (err) {
-						console.log("error", err);
-						console.log("output", output);
-						res.write(err);
-						res.end();
-						next();
-					} else {
-						sendPage(output, res, next);
-					}
-				});
+				render('/static/tpl/agenda.htm' , data, res, next);
 
 			})
 			.catch(function(err) {
@@ -1887,17 +1698,7 @@ function IPage() {
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
 
-				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/dietaryPlan.htm', data, function(err, output) {
-					if (err) {
-						console.log("error", err);
-						console.log("output", output);
-						res.write(err);
-						res.end();
-						next();
-					} else {
-						sendPage(output, res, next);
-					}
-				});
+				render('/static/tpl/dietaryPlan.htm' , data, res, next);
 
 			})
 			.catch(function(err) {
@@ -1929,17 +1730,7 @@ function IPage() {
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
 
-				html = swig.renderFile(DOCUMENTROOT+'/static/tpl/physicalPlan.htm', data, function(err, output) {
-					if (err) {
-						console.log("error", err);
-						console.log("output", output);
-						res.write(err);
-						res.end();
-						next();
-					} else {
-						sendPage(output, res, next);
-					}
-				});
+				render('/static/tpl/physicalPlan.htm' , data, res, next);
 
 			})
 			.catch(function(err) {
@@ -1961,18 +1752,22 @@ function IPage() {
 	 * @param  {Function} next
 	 */
 	function render(tpl, data, res, next) {
-		swig.renderFile(DOCUMENTROOT + tpl, data, function (err, output) {
-			if (err) {
-				console.log('error', err);
-				console.log('output', output);
-				res.write(err);
-				res.end();
-				next();
-			}
-			else {
-				sendPage(output, res, next);
-			}
-		});
+		if( !data.rights || data.rights.read === false ) {
+			noaccess( res, next );
+		} else {
+			swig.renderFile(DOCUMENTROOT + tpl, data, function (err, output) {
+				if (err) {
+					console.log('error', err);
+					console.log('output', output);
+					res.write(err);
+					res.end();
+					next();
+				}
+				else {
+					sendPage(output, res, next);
+				}
+			});
+		}
 	}
 
 	/**
