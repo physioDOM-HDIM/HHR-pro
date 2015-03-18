@@ -103,15 +103,18 @@
                         </div>
                         <div class="row">
                             <div class="col">
-                                <div class="role" style="padding-left:50px;-webkit-flex:1; -ms-flex:1; flex:1">{{"role"|i18n}} : {% raw %}{{item.role}}{% endraw %}</div>
-                                <div class="job" style="-webkit-flex:1; -ms-flex:1; flex:1">{{"job"|i18n}} : {% raw %}{{item.job}}{% endraw %}</div>
+                                <div class="role" style="padding-left:50px;-webkit-flex:1; -ms-flex:1; flex:1">{{"Role"|i18n}} : {% raw %}{{item.role}}{% endraw %}</div>
+                                <div class="job" style="-webkit-flex:1; -ms-flex:1; flex:1">{{"Job"|i18n}} : {% raw %}{{item.job}}{% endraw %}</div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col" style="padding-left:50px;">
                                 <template repeat="{% raw %}{{telecomItem in item.telecom}}{% endraw %}">
                                     <template if="{% raw %}{{telecomItem.system !== 'email'}}{% endraw %}">
-                                        <div style="-webkit-flex:1; -ms-flex:1; flex:1;">{% raw %}{{telecomItem.system}} : {{telecomItem.value}}{% endraw %}</div>
+                                        <div style="-webkit-flex:1; -ms-flex:1; flex:1;">
+                                            <template if="{% raw %}{{telecomItem.system === 'mobile'}}{% endraw %}">Mobile</template>
+                                            <template if="{% raw %}{{telecomItem.system === 'phone'}}{% endraw %}">Phone</template>
+                                            {% raw %}: {{telecomItem.value}}{% endraw %}</div>
                                         <!--<span class="{% raw %}{{telecomItem.system}}{% endraw %}">{% raw %}{{telecomItem.system}} : {{telecomItem.value}}{% endraw %}</span>-->
                                     </template>
                                 </template>

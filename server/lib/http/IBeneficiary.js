@@ -143,18 +143,25 @@ var IBeneficiary = {
 			res.send(400, { error: "empty request"});
 			return next(false);
 		}
-		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
-			res.send(403,  { code:403, message:"not authorized"});
-			return next(false);
-		}
+
 		try {
 			var updateItem = JSON.parse(req.body);
+
 			physioDOM.Beneficiaries()
 				.then(function (beneficiaries) {
 					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID);
 				})
 				.then(function (beneficiary) {
-					return beneficiary.update(updateItem, req.session.person.id);
+
+					beneficiary.hasProfessional(req.session.person.id)
+						.then(function(hasProfessional) {
+							if(hasProfessional || ["administrator","coordinator"].indexOf(req.session.role) !== -1) {
+								return beneficiary.update(updateItem, req.session.person.id);
+							} else {
+								throw { code:403, message:"not authorized"};
+							}
+						});
+
 				})
 				.then( function (beneficiary ) {
 					res.send( beneficiary );
@@ -165,7 +172,7 @@ var IBeneficiary = {
 					next(false);
 				});
 		} catch( err ) {
-			res.send(400, { error: "bad json format"});
+			res.send(err.code || 400, err);
 			next(false);
 		}
 	},
@@ -180,11 +187,16 @@ var IBeneficiary = {
 				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID );
 			})
 			.then( function(beneficiary) {
-				if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
-					throw { code:403, message:"not authorized"};
-				} else {
-					return beneficiaries.deleteBeneficiary(beneficiary);
-				}
+
+				beneficiary.hasProfessional(req.session.person.id)
+					.then(function(hasProfessional) {
+						if(hasProfessional || ["administrator","coordinator"].indexOf(req.session.role) !== -1) {
+							return beneficiaries.deleteBeneficiary(beneficiary);
+						} else {
+							throw { code:403, message:"not authorized"};
+						}
+					});
+
 			})
 			.then( function() {
 				res.send(410, { code:410, message: "entry deleted"});

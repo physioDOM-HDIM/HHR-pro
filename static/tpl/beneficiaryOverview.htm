@@ -246,6 +246,9 @@
 		<div class="row">
 			<label>{{ "Way of life"|i18n }} : </label><div>{{wayOfLifeArray.items[beneficiary.lifeCond.wayOfLife]}}</div>
 		</div>
+		<div class="row">
+			<label>{{ "Profession"|i18n }} : </label><div>{% if beneficiary.lifeCond.profession %}{{ beneficiary.lifeCond.profession }}{% endif %}</div>
+		</div>
 		{% if beneficiary.lifeCond.disability %}
 			<div class="row">
 				<label>{{ "Type of disability"|i18n }} : </label><div>{{disabilityArray.items[beneficiary.lifeCond.disability.type]}}</div>

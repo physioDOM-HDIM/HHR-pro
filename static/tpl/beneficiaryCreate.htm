@@ -364,6 +364,12 @@
 					{% endfor %}
 				</select>
 			</div>
+
+			<div class="row">
+				<label class="mandatory">{{ "Profession"|i18n }}</label>
+				<input type="text" name="lifeCond.profession" value="{{beneficiary.lifeCond.profession}}" required>
+			</div>
+
 			<button id="life_conditionSubmitBtn" class="hidden"></button>
 		</form>
 	</zdk-panel>
