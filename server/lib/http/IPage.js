@@ -112,7 +112,7 @@ function IPage() {
 
 	function noaccess( res, next) {
 		logger.trace("no access");
-
+		
 		swig.renderFile(DOCUMENTROOT + '/static/tpl/noaccess.htm', null, function (err, output) {
 			if (err) {
 				console.log("error", err);
