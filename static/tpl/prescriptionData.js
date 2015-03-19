@@ -379,7 +379,7 @@ var saveData = function () {
 function updateCal() {
 	var inputStartDate = document.querySelector("zdk-input-date[name=startDate]");
 	var inputEndDate = document.querySelector("zdk-input-date[name=endDate]");
-	console.log("updateCal", inputStartDate.value, inputEndDate.value );
+
 	if( inputStartDate.value && inputEndDate ) {
 		inputEndDate.start = inputStartDate.value;
 	}
