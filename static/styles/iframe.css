@@ -48,7 +48,7 @@ body {
 	display: flex;
 	/* height: 100%; */
 	width: 100%;
-	background: white;
+	/* background: white; */
 	flex-direction: column;
 	-webkit-flex-direction: column;
 	-ms-flex-direction: column;
