@@ -7,6 +7,7 @@
 <script src="/bower_components/rsvp/rsvp.min.js"></script>
 <script src="/bower_components/form2js/src/form2js.js"></script>
 <script src="/tpl/questionnaireOverview.js"></script>
+<script src="/scripts/modal.js"></script>
 {% endblock %}
 {% block content %}
 
@@ -109,16 +110,10 @@
 		{% endif %}
 	</form>
 
-	<zdk-modal id="statusModal" closebutton="false">
-		<div class="modalContainer">
-			<div class="modalTitleContainer">{{'Result' | i18n}}</div>
-			<div class="modalContentContainer">{{'Your score is: ' |i18n}}<span id="score">{{score}}</span></div>
-			<div class="modalButtonContainer">
-				<button class="green" onclick="closeModal();">{{'OK' | i18n}}</button>
-			</div>
-		</div>
-	</zdk-modal>
-</div>
-
 <div id="questionnaireName" class="hidden">{{questionnaire.name}}</div>
+
+<div class="hidden">
+	<div id="trad_info_result_score_questionnaire">{{'Your score is: ' |i18n}}<span id="score">{{score}}</span></div>
+</div>
+{% include "./modal.htm" %}
 {% endblock %}
