@@ -250,7 +250,20 @@ function showForm(ref) {
 	formDiv.innerHTML = Mustache.render(formTpl.innerHTML, dataModel);
 
 	formContainer.appendChild(formDiv);
-
+	
+	setTimeout( function() {
+		moment.locale( infos.lang==="en"?"en_gb":infos.lang );
+		[].slice.call(document.querySelectorAll("zdk-input-date")).forEach( function(item) {
+			item.setAttribute("i18n", infos.lang=="en"?"en-gb":infos.lang );
+		});
+		
+		updateCal();
+		var inputStartDate = document.querySelector("zdk-input-date[name=startDate]");
+		var inputEndDate = document.querySelector("zdk-input-date[name=endDate]");
+		inputStartDate.onchange = updateCal;
+		inputEndDate.onchange = updateCal;
+	}, 100 );
+	
 
 	//Set threshold for first param of the list
 	var select = formContainer.querySelector('#ref-select');
@@ -368,6 +381,17 @@ var saveData = function () {
 	
 };
 
+function updateCal() {
+	var inputStartDate = document.querySelector("zdk-input-date[name=startDate]");
+	var inputEndDate = document.querySelector("zdk-input-date[name=endDate]");
+
+	if( inputStartDate.value && inputEndDate ) {
+		inputEndDate.start = inputStartDate.value;
+	}
+	if( inputEndDate.value && inputStartDate ) {
+		inputStartDate.stop = inputEndDate.value;
+	}
+}
 
 var removeData = function (id) {
 	modified = true;

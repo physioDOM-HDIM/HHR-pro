@@ -88,6 +88,13 @@
 				</form>
 			</div>
 	</zdk-panel>
+
+	{% if rights.write %}
+	<div class="row control" style="height:60px; align-content: center">
+		<span class="spacer"></span>
+		<a href="/beneficiaries/create"><button class="blue big">{{ "Add"|i18n }}</button></a>
+	</div>
+	{% endif %}
 	
 	<tsante-list url="/api/beneficiaries" pg="1" offset="25" auto="true" unresolved id="tsanteList">
 		<template is="auto-binding" repeat="{% raw %}{{item in list.items}}{% endraw %}">

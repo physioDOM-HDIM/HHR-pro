@@ -75,6 +75,14 @@
 	    </div>
     </zdk-panel>
 
+	{% if rights.write %}
+	<div class="row control">
+		<a href="/api/directory/export"><button class="blue" type="button">{{"Export CSV"|i18n}}</button></a>
+		<span class="spacer"></span>
+		<a href="/directory/create"><button class="blue" type="button">{{"Add entry"|i18n}}</button></a>
+	</div>
+	{% endif %}
+
     <tsante-list url="/api/directory" pg="1" offset="25" auto="true" autoRender="false" unresolved id="tsanteList">
         <template is="auto-binding" repeat="{% raw %}{{item, i in list.items}}{% endraw %}">
             <div class="item">
@@ -144,9 +152,9 @@
 
     {% if rights.write %}
     <div class="row control">
-        <a href="/api/directory/export"><button id="addEntry" class="blue" type="button">Export CSV</button></a>
+        <a href="/api/directory/export"><button class="blue" type="button">{{"Export CSV"|i18n}}</button></a>
         <span class="spacer"></span>
-        <a href="/directory/create"><button id="addEntry" class="blue" type="button">Add entry</button></a>
+        <a href="/directory/create"><button class="blue" type="button">{{"Add entry"|i18n}}</button></a>
     </div>
     {% endif %}
 <zdk-modal id="statusModal" closebutton="false">
