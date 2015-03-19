@@ -1,23 +1,33 @@
+
+__v0.0.17__ debug release
+
+  - [Boites de Dialogue][physioDOM-v0.0.16] Save changes ( \#123 internal )
+  - \#168 [Physiological data/Data Recording][physioDOM-v0.0.6.1] Save button ( \#122 internal )
+  - [Rights] Problème utilisateur sans droit ( \#120 internal )
+  - \#162 [Quicklook/Physiological data][physioDOM-v0.0.6.1] paramètre non activé ( \#113 internal )
+  - \#120 [List Management/Service Type Health et Social][physioDOM-v0.0.4] Category non present ( \#100 internal )
+  
+
 __v0.0.16__ debug release
 
-  - #247 Fix Label Questionnaire prescription
-  - #66 Added uppercase to first letter in labels
-  - #251 +1 day to the 'to' date to be able to see chosen date in results
-  - #254 Added profession field and value to view/schema
-  - #248 added rule to check professionals affiliation 
-  - #110 & #94 Added Utils method to limit input and textarea
-  - #118 Check references in the same list : case insensitive comparaison
+  - \#247 Fix Label Questionnaire prescription
+  - \#66 Added uppercase to first letter in labels
+  - \#251 +1 day to the 'to' date to be able to see chosen date in results
+  - \#254 Added profession field and value to view/schema
+  - \#248 added rule to check professionals affiliation 
+  - \#110 & #94 Added Utils method to limit input and textarea
+  - \#118 Check references in the same list : case insensitive comparaison
   
   
 __v0.0.15__ debug release
 
-  - #249 [Bene overview][v011] la valeur de Height n'est pas bonne
-  - #256 - Organization checkbox
-  - #203 - Assistance Service
-  - #154 - Champ Telecom
-  - #152 - Ajouter professionnel
-  - #253 & #198 - Current Health Status Validate
-  - #169 - Saisie des seuils
+  - \#249 [Bene overview][v011] la valeur de Height n'est pas bonne
+  - \#256 - Organization checkbox
+  - \#203 - Assistance Service
+  - \#154 - Champ Telecom
+  - \#152 - Ajouter professionnel
+  - \#253 & #198 - Current Health Status Validate
+  - \#169 - Saisie des seuils
   
 __v0.0.14__
 
@@ -37,28 +47,28 @@ __v0.0.13__
     - Fix send units
     - Fix agenda of data prescription
   - Fixed bugs
-    - #73 : Directory CSV export 
-    - #74 : non specifié
-    - #78 : Erreur sauvegarde mail ( Directory )
-    - #88 : Signalement perte de saisie
-    - #95 : Message erreur incomplet sur erreur de date de naissance ( beneficiary create )
-    - #100 : Tri de la liste des professionels attachés à un beneficiare
-    - #112 : Directory create plantage sur civilité et organisation
-    - #113 : Controle d'intégrité ( suppression d'un professionel attaché à des beneficiares )
-    - #119 : Liste à compléter
-    - #147 : Filtre sur les beneficiares
-    - #180 : Listes vides
-    - #181 : Bouton menu
-    - #182 : Uniformaisation des champs date ( prescription of data monitoring )
-    - #187 : chanmp demande trop petit ( non spécifie )
-    - #189 : Bouton validate
-    - #197 : Current health status well being problème de formulaire
-    - #204 : Eetscore manquant
-    - #206 : Synthèse des résultats : pas de tri
-    - #224 : Nutritional status label au lieu de la référence
-    - #232 : organizationType en double
-    - #246 : Affichage des seuils dans le graphe ( non reproduit )
-    - #238 : Taille des messages to home
+    - \#73 : Directory CSV export 
+    - \#74 : non specifié
+    - \#78 : Erreur sauvegarde mail ( Directory )
+    - \#88 : Signalement perte de saisie
+    - \#95 : Message erreur incomplet sur erreur de date de naissance ( beneficiary create )
+    - \#100 : Tri de la liste des professionels attachés à un beneficiare
+    - \#112 : Directory create plantage sur civilité et organisation
+    - \#113 : Controle d'intégrité ( suppression d'un professionel attaché à des beneficiares )
+    - \#119 : Liste à compléter
+    - \#147 : Filtre sur les beneficiares
+    - \#180 : Listes vides
+    - \#181 : Bouton menu
+    - \#182 : Uniformaisation des champs date ( prescription of data monitoring )
+    - \#187 : chanmp demande trop petit ( non spécifie )
+    - \#189 : Bouton validate
+    - \#197 : Current health status well being problème de formulaire
+    - \#204 : Eetscore manquant
+    - \#206 : Synthèse des résultats : pas de tri
+    - \#224 : Nutritional status label au lieu de la référence
+    - \#232 : organizationType en double
+    - \#246 : Affichage des seuils dans le graphe ( non reproduit )
+    - \#238 : Taille des messages to home
     
 __v0.0.12__
 
