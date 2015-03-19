@@ -1,10 +1,14 @@
 "use strict";
 
-function Modal (type, callback) {
+function Modal (type, callback, log) {
 
     var content = {},
         self = this;
 
+    if(log && log.response) {
+        var logResponse = JSON.parse(log.response).message;
+        this.errorLog = logResponse.charAt(0).toUpperCase() + logResponse.slice(1);
+    }
 
     content.infoQuestionnaireResult = {
         title: "trad_info_result",
@@ -485,6 +489,14 @@ Modal.prototype.showModal = function(modalObj, modalName) {
             subElt = elt.querySelector(".modalContentContainer");
             subElt.innerHTML = document.querySelector("#" + modalObj.content).innerHTML;
             subElt.classList.remove("hidden");
+
+            if(this.errorLog) {
+                var div = document.createElement('div');
+                div.className = 'info-detail';
+                div.innerHTML = this.errorLog;
+                subElt.appendChild(div);
+            }
+            
         }
 
         if (modalObj.buttons) {
