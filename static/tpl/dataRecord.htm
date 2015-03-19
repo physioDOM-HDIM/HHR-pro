@@ -32,18 +32,17 @@
 			<div class="col">
 				<label class="collabel" for="startDate">{{ "Since"|i18n }} : </label>
 				<div class="colcontent">
-					<zdk-input-date class="startDate" name="startDate" style="z-index:100"></zdk-input-date>
+					<zdk-input-date class="startDate" name="startDate" onchange="updateCal()" style="z-index:100"></zdk-input-date>
 				</div>
 			</div>
 			<div class="col">
 				<label class="collabel" for="endDate">{{ "To"|i18n }} : </label>
 				<div class="colcontent">
-					<zdk-input-date class="endDate" name="endDate" style="z-index:100"></zdk-input-date>
+					<zdk-input-date class="endDate" name="endDate" onchange="updateCal()" style="z-index:100"></zdk-input-date>
 				</div>
 			</div>
 		</div>
 		<div class="row">
-			<div class="col"></div>
 			<div class="col">
 				<label class="collabel" for="provider">{{ "Professional"|i18n }} : </label>
 				<div class="colcontent">
@@ -55,6 +54,7 @@
 						</select>
 				</div>
 			</div>
+			<div class="col"></div>
 		</div>
 		<div class="row control">
 			<span class="spacer"></span>
@@ -69,8 +69,8 @@
 			<div class="col">
 				<label>{{ "Sort"|i18n }}:</label>
 				<select name="sort">
-					<option value="source">{{ "Provider"|i18n }}</option>
-					<option value="datetime">{{ "Date"|i18n }}</option>
+					<option value="source">{{ "Professional"|i18n }}</option>
+					<option value="datetime" selected>{{ "Date"|i18n }}</option>
 					<option value="home">{{ "Type"|i18n }}</option>
 				</select>
 			</div>
@@ -78,7 +78,7 @@
 				<label>{{ "Direction"|i18n }}:</label>
 				<select name="dir">
 					<option value="1">{{ "ascending"|i18n }}</option>
-					<option value="-1">{{ "descending"|i18n }}</option>
+					<option value="-1" selected>{{ "descending"|i18n }}</option>
 				</select>
 			</div>
 		</div>
