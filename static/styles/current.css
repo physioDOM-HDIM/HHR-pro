@@ -17,7 +17,7 @@ legend {
 	width: 100px;
 }
 .value-name {
-	width: 210px;
+	width: 100px;
 }
 
 input.value-input {
@@ -34,21 +34,34 @@ input.assist { max-width: none; }
 	font-size: 0.9em;
 }
 
-.questionnaire-date {
+.value-date, .questionnaire-date {
 	color: #b0b0b0;
 	padding: 0 10px;
 	width: 90px;
 }
 
+.value-date-textarea {
+	color: #b0b0b0;
+	padding: 0 10px;
+	float: right;
+	font-weight: normal;
+	margin-left: 10px;
+}
+
 input.questionnaire-score {
 	margin: 0 10px;
-	font-weight: bold;
 	max-width: 150px;
 }
 
 div.row label.comment-label {
 	width: 210px;
 	text-align: right;
+	color: #777;
+}
+
+div.row label.comment-label-full {
+	width: 100px;
+	text-align: left;
 	color: #777;
 }
 
