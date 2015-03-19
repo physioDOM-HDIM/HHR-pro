@@ -53,7 +53,6 @@ function resetFilter() {
     endDateContainer.value = '';
 	endDateContainer.start = null;
 	startDateContainer.stop = null;
-    console.log(endDateContainer);
     var params = getParams();
     paginate(false, params);
 }
