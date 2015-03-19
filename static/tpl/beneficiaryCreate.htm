@@ -327,8 +327,9 @@
 				<input type="checkbox" name="deceased" value="true" {% if beneficiary.deceased %}checked{% endif %}/>
 			</div>
 			<div class="row">
-				<label class="mandatory">{{ "Marital status"|i18n }}</label>
-				<select name="maritalStatus" required>
+				<label>{{ "Marital status"|i18n }}</label>
+				<select name="maritalStatus">
+					<option value="NONE"></option>
 					{% for item in maritalStatus.items %}
 					<option value="{{item.value}}" {% if item.value== beneficiary.maritalStatus %}selected{% endif %}>
 						{{item.label}}
@@ -355,8 +356,9 @@
 				</div>
 			</fieldset>
 			<div class="row">
-				<label class="mandatory">{{ "Way of life"|i18n }}</label>
-				<select name="lifeCond.wayOfLife" required>
+				<label>{{ "Way of life"|i18n }}</label>
+				<select name="lifeCond.wayOfLife">
+					<option value="NONE"></option>
 					{% for item in wayOfLife.items %}
 					<option value="{{item.value}}" {% if item.value== beneficiary.lifeCond.wayOfLife %}selected{% endif
 					        %}>{{item.label}}
@@ -366,8 +368,8 @@
 			</div>
 
 			<div class="row">
-				<label class="mandatory">{{ "Profession"|i18n }}</label>
-				<input type="text" name="lifeCond.profession" value="{{beneficiary.lifeCond.profession}}" required>
+				<label>{{ "Profession"|i18n }}</label>
+				<input type="text" name="lifeCond.profession" value="{{beneficiary.lifeCond.profession}}">
 			</div>
 
 			<button id="life_conditionSubmitBtn" class="hidden"></button>
