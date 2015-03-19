@@ -111,8 +111,8 @@ var getDataRecords = function(init) {
     	} else {
     		physiologicalData.dataRecords.yellow = null;
     	}
-    }, function(error) {
-    	new Modal('errorOccured');
+    }, function(res) {
+    	new Modal('errorOccured',undefined, res);
     }).then(function() {
     	if(BlueChoice || YellowChoice) {
     		renderGraph(physiologicalData.dataRecords);
