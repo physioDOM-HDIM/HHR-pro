@@ -13,7 +13,7 @@ physiologicalData.dataRecords = {};
  * INIT
  */
 
-window.addEventListener("DOMContentLoaded", function() {
+window.addEventListener("polymer-ready", function() {
     infos.lang = Cookies.get("lang");
     getParamList();
 }, false);
@@ -67,10 +67,13 @@ var getDataRecords = function(init) {
 		YellowCategory = null,
 		dateOption = '',
 		promises = {};
-		
-		//fix to have dateTo full day
-		dateTo = moment(new Date(dateTo)).add(1, 'days').format("YYYY-MM-DD");
 
+	document.querySelector('.date-from').stop = dateTo;
+	document.querySelector('.date-to').start = dateFrom;
+
+	//fix to have dateTo full day
+	dateTo = moment(new Date(dateTo)).add(1, 'days').format("YYYY-MM-DD");
+	
 	//getting ref for selected params
 	for(i; i<len; i++) {
 		if(lineBlueList[i].checked) {
@@ -253,7 +256,9 @@ var initGraph = function() {
 
 	//default values
 	stop.value = today;
+	stop.start = monthAgo;
 	start.value = monthAgo;
+	start.stop = today;
 	lineBlueList[0].checked = true;
 	//lineYellowList[0].checked = false;
 
