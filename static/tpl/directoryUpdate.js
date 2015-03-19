@@ -11,7 +11,7 @@ var _dataObj = null,
     _jobEnum = null,
     _communicationEnum = null,
     _idxNbTelecom = 0,
-    passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=])[a-zA-Z0-9!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=]{8,}$/,
+    passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*§$£€+-\/\[\]\(\)\{\}\=])[a-zA-Z0-9!@#$%^&*§$£€+-\/\[\]\(\)\{\}\=]{8,}$/,
     passwordPlaceholder = '****',
 	modified = false;
 
