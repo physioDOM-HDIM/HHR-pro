@@ -21,7 +21,7 @@ var getList = function () {
 		lists.parameters = JSON.parse(results.parameterList);
 		if (infos.category) {
 			lists.parameters.items = lists.parameters.items.filter(function (item) {
-				return item.category === infos.category;
+				return (item.category === infos.category && item.active === true);
 			});
 		}
 		lists.thresholds = JSON.parse(results.thresholds);
@@ -53,6 +53,11 @@ var init = function () {
 		var dataItem = lists.dataprog[i],
 			param = utils.findInObject(lists.parameters.items, 'ref', dataItem.ref);
 		
+		//hide prescription with inactive params
+		if(param === null) {
+			continue;
+		}
+
 		dataItem.startDate = moment(dataItem.startDate).format("L");
 		dataItem.endDate = moment(dataItem.endDate).format("L");
 		
@@ -163,8 +168,11 @@ var showOptions = function (frequency, dataModel) {
 
 function showForm(ref) {
 
+	if(infos.modal !== undefined && infos.modal.isOpen('dataProgModal')) {
+		return;
+	}
+
 	var formTpl = document.querySelector('#tpl-form'),
-		modal = document.querySelector("#editModal"),
 		formContainer = document.querySelector("#dataprog-form"),
 		formDiv = document.createElement('div'),
 		dataItem = {},
@@ -250,16 +258,15 @@ function showForm(ref) {
 	//show default frequency option template
 	showOptions(dataItem.frequency, dataModel);
 
-	modal.show();
+	infos.modal = new Modal('dataProgModal');
 }
 
 function closeForm() {
-	var modal = document.querySelector("#editModal"),
-		formContainer = document.querySelector("#dataprog-form");
+	var formContainer = document.querySelector("#dataprog-form");
 
 	formContainer.innerHTML = '';
 
-	modal.hide();
+	infos.modal.closeModal('dataProgModal');
 }
 
 /**

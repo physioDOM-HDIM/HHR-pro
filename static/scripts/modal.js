@@ -5,6 +5,21 @@ function Modal (type, callback) {
     var content = {},
         self = this;
 
+
+    content.infoQuestionnaireResult = {
+        title: "trad_info_result",
+        content: "trad_info_result_score_questionnaire",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                if(callback) {
+                    callback();
+                }
+                self.closeModal();
+            }
+        }]
+    };
+
     content.errorOccured = {
         title: "trad_error",
         content: "trad_error_occured",
@@ -386,81 +401,129 @@ function Modal (type, callback) {
         }]
     };
 
-    this.showModal(content[type]);
+    if(content[type] === undefined) {
+        if(!this.isOpen(type)) {
+            this.showModal(null, type); 
+        }
+    } else {
+         if(!this.isOpen()) {
+            this.showModal(content[type]);
+        }
+    }
 
 }
 
-Modal.prototype.closeModal = function() {
-    console.log("closeModal", arguments);
-    document.querySelector("#statusModal").hide();
+Modal.prototype.isOpen = function(modalName) {
+    var name;
 
-    var elt = document.querySelector("#statusModal"),
-        subElt, child;
-    subElt = elt.querySelector(".modalTitleContainer");
-    subElt.innerHTML = "";
-    subElt.classList.add("hidden");
-    subElt = elt.querySelector(".modalContentContainer");
-    subElt.innerHTML = "";
-    subElt.classList.add("hidden");
-    subElt = elt.querySelector(".modalButtonContainer");
-    for (var i = subElt.childNodes.length - 1; i >= 0; i--) {
-        child = subElt.childNodes[i];
-        subElt.removeChild(child);
+    if(modalName) {
+        name = modalName;
+    } else {
+        name = "statusModal";
     }
-    subElt.classList.add("hidden");
+
+    var modalElt = document.querySelector("#"+name);
+    return ((' ' + modalElt.className + ' ').indexOf(' show ') > -1);
 };
 
-Modal.prototype.showModal = function(modalObj) {
-    console.log("showModal", arguments);
+Modal.prototype.closeModal = function(modalName) {
+    if(modalName) {
 
-    var elt = document.querySelector("#statusModal"),
-        subElt;
-    if (modalObj.title) {
+        document.querySelector("#"+modalName).hide();
+        return;
+
+    } else {
+
+        console.log("closeModal", arguments);
+        document.querySelector("#statusModal").hide();
+
+        var elt = document.querySelector("#statusModal"),
+            subElt, child;
         subElt = elt.querySelector(".modalTitleContainer");
-        subElt.innerHTML = document.querySelector("#" + modalObj.title).innerHTML;
-        subElt.classList.remove("hidden");
-    }
-    if (modalObj.content) {
+        subElt.innerHTML = "";
+        subElt.classList.add("hidden");
         subElt = elt.querySelector(".modalContentContainer");
-        subElt.innerHTML = document.querySelector("#" + modalObj.content).innerHTML;
-        subElt.classList.remove("hidden");
-    }
-
-    if (modalObj.buttons) {
-        var btn, obj, color;
+        subElt.innerHTML = "";
+        subElt.classList.add("hidden");
         subElt = elt.querySelector(".modalButtonContainer");
-        for (var i = 0; i < modalObj.buttons.length; i++) {
-            obj = modalObj.buttons[i];
-            btn = document.createElement("button");
-            btn.innerHTML = document.querySelector("#" + obj.id).innerHTML;
-            btn.onclick = obj.action;
-            switch (obj.id) {
-                case "trad_ok":
-                    {
-                        color = "green";
-                    }
-                    break;
-				case "trad_continue":
-					{
-						color = "blue";
-					}
-					break;
-                case "trad_yes":
-                    {
-                        color = "green";
-                    }
-                    break;
-                case "trad_no":
-                    {
-                        color = "blue";
-                    }
-                    break;
-            }
-            btn.classList.add(color);
-            subElt.appendChild(btn);
+        for (var i = subElt.childNodes.length - 1; i >= 0; i--) {
+            child = subElt.childNodes[i];
+            subElt.removeChild(child);
         }
-        subElt.classList.remove("hidden");
+        subElt.classList.add("hidden");
+
     }
 
-    document.querySelector("#statusModal").show();
+    
+};
+
+Modal.prototype.showModal = function(modalObj, modalName) {
+
+    document.querySelector('body').focus();
+
+    if(modalName) {
+
+        document.querySelector("#"+modalName).show();
+        return;
+
+    } else {
+
+        console.log("showModal", arguments);
+
+        //to lose focus from save/cancel..etc buttons
+        
+
+        var elt = document.querySelector("#statusModal"),
+            subElt;
+
+        if (modalObj.title) {
+            subElt = elt.querySelector(".modalTitleContainer");
+            subElt.innerHTML = document.querySelector("#" + modalObj.title).innerHTML;
+            subElt.classList.remove("hidden");
+        }
+        if (modalObj.content) {
+            subElt = elt.querySelector(".modalContentContainer");
+            subElt.innerHTML = document.querySelector("#" + modalObj.content).innerHTML;
+            subElt.classList.remove("hidden");
+        }
+
+        if (modalObj.buttons) {
+            var btn, obj, color;
+            subElt = elt.querySelector(".modalButtonContainer");
+            for (var i = 0; i < modalObj.buttons.length; i++) {
+                obj = modalObj.buttons[i];
+                btn = document.createElement("button");
+                btn.innerHTML = document.querySelector("#" + obj.id).innerHTML;
+                btn.onclick = obj.action;
+                switch (obj.id) {
+                    case "trad_ok":
+                        {
+                            color = "green";
+                        }
+                        break;
+                    case "trad_continue":
+                        {
+                            color = "blue";
+                        }
+                        break;
+                    case "trad_yes":
+                        {
+                            color = "green";
+                        }
+                        break;
+                    case "trad_no":
+                        {
+                            color = "blue";
+                        }
+                        break;
+                }
+                btn.classList.add(color);
+                subElt.appendChild(btn);
+            }
+            subElt.classList.remove("hidden");
+        }
+
+        document.querySelector("#statusModal").show();
+    }
+
 };

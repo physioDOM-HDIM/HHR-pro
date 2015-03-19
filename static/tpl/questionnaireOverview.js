@@ -2,17 +2,6 @@
 
 var answerData = {};
 
-function closeModal() {
-	if (window.parent.onQuestionnaireValidate) {
-		var name = document.getElementById('questionnaireName').innerHTML;
-		window.parent.onQuestionnaireValidate(name, answerData.date, answerData.score, answerData.answerID);
-	}
-}
-
-function showModal() {
-	document.getElementById('statusModal').show();
-}
-
 function checkForm() {
 	var obj = form2js(document.querySelector("form[name='questionnaire']"));
 
@@ -58,7 +47,14 @@ function checkForm() {
 			answerData.answerID = result._id;
 			answerData.date = result.datetime;
 			answerData.score = result.score;
-			showModal();
+
+			new Modal('infoQuestionnaireResult', function() {
+				if (window.parent.onQuestionnaireValidate) {
+					var name = document.getElementById('questionnaireName').innerHTML;
+					window.parent.onQuestionnaireValidate(name, answerData.date, answerData.score, answerData.answerID);
+				}
+			});
+
 		}, function(error) {
 			console.log(error);
 		});

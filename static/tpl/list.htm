@@ -183,6 +183,16 @@
 					<input type="text" name="{% raw %}items[{{idx}}].range.max{% endraw %}" value="{% raw %}{{range.max}}{% endraw %}" />
 				</div>
 			</div>
+
+			{% raw %}{{#hasDietChoice}}{% endraw %}
+			<div class="row">
+				<div class="col">
+					<input type="radio" name="{% raw %}items[{{idx}}].diet{% endraw %}" value="true" {% raw %}{{#diet}}checked{{/diet}}{% endraw %}> {{ "Diet"|i18n }}
+					<input type="radio" name="{% raw %}items[{{idx}}].diet{% endraw %}" value="false" {% raw %}{{^diet}}checked{{/diet}}{% endraw %}> {{ "Basic"|i18n }}
+				</div>	
+			</div>
+			{% raw %}{{/hasDietChoice}}{% endraw %}
+
 			{% raw %}{{#new}}{% endraw %}
 			<div class="row control itemBtnContainer">
 				<input type="hidden" name="{% raw %}items[{{idx}}].new{% endraw %}" value="true" />
@@ -243,15 +253,6 @@
 		<button class="blue btn-save" onclick="save()">{{ "Save"|i18n }}</button>
 	</div>
 </footer>
-
-<zdk-modal width="450" id="editRole" closebutton="false">
-	<div class="modalContainer">
-		<div class="modalTitleContainer">{{ "providers role"|i18n }}</div>
-		<div class="modalContentContainer">
-			<!-- here come the content of the template tplJobs -->
-		</div>
-	</div>
-</zdk-modal>
 
 {% include 'modal.htm' %}
 
