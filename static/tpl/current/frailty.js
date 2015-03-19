@@ -1,19 +1,8 @@
 'use strict';
 
-var normalElt,
-	riskElt;
 var modified = false;
 
 window.addEventListener('DOMContentLoaded', function() {
-
-	normalElt = document.querySelector('.choice-normal');
-	riskElt = document.querySelector('.choice-risk');
-
-	//default
-	if(!normalElt.checked && !riskElt.checked) {
-		normalElt.checked = true;
-	}
-
 	document.addEventListener('change', function( evt ) {
 		modified = true;
 	}, false );
@@ -29,21 +18,15 @@ window.addEventListener("beforeunload", function( e) {
 	}
 });
 
-function updateChoice(elt) {
-	if(elt === normalElt) {
-		riskElt.checked = (!elt.checked);
-	} else {
-		normalElt.checked = (!elt.checked);
-	}
-}
-
 function checkForm(validate) {
 	var formObj = form2js(document.getElementById('form'));
 
-	formObj.normal = !!formObj.normal;
-	formObj.risk = !!formObj.risk;
+	formObj.normal = (formObj.choice === 'normal');
+	formObj.risk = (formObj.choice === 'risk');
 
 	formObj.validated = validate;
+
+	delete formObj.choice;
 
 	promiseXHR('PUT', '../api/beneficiary/current/frailty', 200, JSON.stringify(formObj))
 		.then(function(res) {
