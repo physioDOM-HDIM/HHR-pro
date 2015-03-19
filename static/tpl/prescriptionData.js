@@ -252,6 +252,11 @@ function showForm(ref) {
 	formContainer.appendChild(formDiv);
 	
 	setTimeout( function() {
+		moment.locale( infos.lang==="en"?"en_gb":infos.lang );
+		[].slice.call(document.querySelectorAll("zdk-input-date")).forEach( function(item) {
+			item.setAttribute("i18n", infos.lang=="en"?"en-gb":infos.lang );
+		});
+		
 		updateCal();
 		var inputStartDate = document.querySelector("zdk-input-date[name=startDate]");
 		var inputEndDate = document.querySelector("zdk-input-date[name=endDate]");
