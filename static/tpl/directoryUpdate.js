@@ -240,7 +240,12 @@ function updateItem(obj) {
 }
 
 function confirmDelete() {
-    new Modal('confirmDeleteItem', deleteItem);
+	var hasBeneficiary = document.querySelector("div#hasBeneficiary");
+	if( hasBeneficiary ) {
+		new Modal('confirmDeleteItem', deleteItem, hasBeneficiary.innerHTML );
+	} else {
+		new Modal('confirmDeleteItem', deleteItem);
+	}
 }
 
 function deleteItem() {

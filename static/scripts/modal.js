@@ -5,10 +5,14 @@ function Modal (type, callback, log) {
     var content = {},
         self = this;
 
-    if(log && log.response) {
-        var logResponse = JSON.parse(log.response).message;
-        this.errorLog = logResponse.charAt(0).toUpperCase() + logResponse.slice(1);
-    }
+    if(log) {
+		if(log.response) {
+        	var logResponse = JSON.parse(log.response).message;
+        	this.errorLog = logResponse.charAt(0).toUpperCase() + logResponse.slice(1);
+    	} else {
+			this.errorLog = log;
+		}
+	}
 
     content.infoQuestionnaireResult = {
         title: "trad_info_result",
