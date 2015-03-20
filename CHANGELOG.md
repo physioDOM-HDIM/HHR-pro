@@ -1,4 +1,26 @@
 
+__v0.0.18__ debug release
+
+> Nota : fixed bugs number are from gitlab
+
+  - \#126 : [Beneficiary/Bene_edit][physioDOM-v0.0.16] Life condition
+  - \#121 : [Login][physioDOM-v0.0.16] Login Policies
+  - \#103 : Titre de l'application (dans l'onglet)
+  - \#115 : [Data sect°/Prescript° Data monitoring/Gral physiological data][physioDOM-v0.0.16] Date US Format
+  - \#127 : [data curves/global][v0013-2] messages an error occured ( Bug 263 )
+  - \#127 : prevent select a start date after the end date and reciprocally
+  - \#135 : Calendar behind the menu bar on the beneficiary create page
+  - \#130 : Bug 226 - [Login][v009.1] lowercase login
+  - \#129 : Bug 227 - [Directory][v009.1] Droit compte admin/coord
+  - \#128 : Bug 209 - [Physiological data][Results from data recording/Edit][physioDOM-v0.0.8] remplacer provider par professional
+  - \#123 : [Boites de Dialogue][physioDOM-v0.0.16] Save changes
+  - \#122 : Bug 168 - [Physiological data/Data Recording][physioDOM-v0.0.6.1] Save button
+  - \#120 : [Rights] Problème utilisateur sans droit
+  - \#118 : [Data section/Results from Data Recording][physioDOM-v0.0.16] Display Issues
+  - \#134 : Bug 201 - [Current Health Status/all][physioDOM-v0.0.8] champs manquant (status, date, ...)
+  - \#132 : Bug 63 - [Globale][physioDOM-v0.0.3] Interface graphique globale
+  - \#131 : Bug 225 - [Global][v009.1] Erreur update après utilisation
+
 __v0.0.17__ debug release
 
   - [Boites de Dialogue][physioDOM-v0.0.16] Save changes ( \#123 internal )
