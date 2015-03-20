@@ -404,6 +404,15 @@ function Beneficiary( ) {
 									if(jobFilter) {
 										resolve( proList );
 									} else {
+										that.professionals.sort( function(a,b) { 
+											if(b.referent ) {
+												return true;
+											} else if(a.referent) {
+												return false;
+											} else {
+												return b.name.family < a.name.family ? true : false;
+											}
+										});
 										resolve( that.professionals );
 									}
 								}
