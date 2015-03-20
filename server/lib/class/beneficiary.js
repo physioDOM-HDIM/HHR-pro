@@ -274,8 +274,12 @@ function Beneficiary( ) {
 							switch(key) {
 								case "name":
 									that.name = newEntry.name;
-									that.name.family = capitalize(that.name.family);
-									that.name.given = capitalize(that.name.given);
+									if(that.name.family) {
+										that.name.family = capitalize(that.name.family);
+									}
+									if(that.name.given) {
+										that.name.given = capitalize(that.name.given);
+									}
 									break;
 								default:
 									that[key] = newEntry[key];
@@ -314,8 +318,12 @@ function Beneficiary( ) {
 							switch(key) {
 								case "name":
 									that.name = updatedEntry.name;
-									that.name.family = capitalize(that.name.family);
-									that.name.given = capitalize(that.name.given);
+									if(that.name.family) {
+										that.name.family = capitalize(that.name.family);
+									}
+									if(that.name.given) {
+										that.name.given = capitalize(that.name.given);
+									}
 									break;
 								default:
 									that[key] = updatedEntry[key];
