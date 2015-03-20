@@ -169,7 +169,6 @@
                         </div>
                         <div>
                             <span class="spacer"></span>
-                            <button type="button" class="red small" onclick="deleteTelecom(this)">{{"Delete" | i18n }}</button>
                         </div>
                     </div>
                 </div>
@@ -202,7 +201,9 @@
 	                        </div>
 	                        <div>
 	                            <span class="spacer"></span>
+		                        {% if entry.system !== 'email' %}
 	                            <button type="button" class="red small" onclick="deleteTelecom(this)">{{"Delete"|i18n}}</button>
+		                        {% endif %}
 	                        </div>
 	                    </div>
 	                </div>
@@ -279,6 +280,9 @@
                 {% endif %}
             </zdk-panel>
             <br />
+	        {% if professional.nb %}
+	        <div class="row"><span class="spacer"></span><div id="hasBeneficiary"><b>{{ "Nota"|i18n }} :</b> {{"this professional has"|i18n}} {{professional.nb}} {% if professional.nb == 1 %}{{"beneficiary"|i18n}}{% else %}{{"beneficiaries"|i18n}}{% endif %} {{"affected"|i18n}}</div></div>
+	        {% endif %}
             <div class="row">
                 <span class="spacer"></span>
 	            <div class="buttonContainer">
@@ -293,9 +297,6 @@
 	                {% endif %}
 	            </div>
             </div>
-	        {% if professional.nb %}
-	        <div class="row"><b>{{ "Nota"|i18n }} :</b> {{"this professional has"|i18n}} {{professional.nb}} {% if professional.nb == 1 %}{{"beneficiary"|i18n}}{% else %}{{"beneficiaries"|i18n}}{% endif %} {{"affected"|i18n}}</div>
-	        {% endif %}
         </form>
     </div>
 

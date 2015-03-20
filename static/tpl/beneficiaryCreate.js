@@ -193,7 +193,8 @@ function _onHaveProfessionalsData(data) {
 }
 
 function _checkDateFormat(strDate) {
-    return moment(strDate, _momentFormat, _langCookie, true).isValid();
+	var lang = _langCookie==="en"?"en-gb":_langCookie;
+    return moment(strDate, _momentFormat, lang, true).isValid();
 }
 
 function _checkIsBeforeDate(firstDate, secondDate) {
@@ -603,7 +604,7 @@ function checkBeneficiaryForm(backgroundTask) {
     var obj = form2js(document.querySelector("form[name='beneficiary']"));
 
     console.log("checkBeneficiaryForm", obj);
-
+	
     if (!_checkDateFormat(obj.birthdate)) {
         new Modal('errorDateRequired');
         return false;
