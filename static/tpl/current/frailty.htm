@@ -33,9 +33,40 @@
 					<a class="button small blue" href={% if status.chairStandAnswer %}"/answers/{{status.chairStandAnswer}}"{% else %}"/questionnaire/CHAIR_TEST"{% endif %}>{{'Questionnaire'|i18n}}</a>
 				</div>
 			</div>
+			<div class="row value-row">
+				<label class="comment-label" for="commentchairStand">{{'Status' | i18n}}</label>
+				<input
+					flex
+					id="commentchairStand"
+					class="comment-input to-disable"
+					type="text"
+					name="commentchairStand"
+					value="{{status.commentchairStand}}"
+					{% if status.validated %}disabled{% endif %} />
+			</div>
+
 			<div class="row value-row" style="padding-left: 210px">
-				{{'Normal'|i18n}} <input type="checkbox" name="normal" onchange="updateChoice(this)" class="value-checkbox choice-normal" style="width:100px" {% if status.normal %}checked{% endif %} {% if status.validated %}disabled{% endif %} />
-				{{'Risk of fail'|i18n}} <input type="checkbox" name="risk" onchange="updateChoice(this)" class="value-checkbox choice-risk" {% if status.risk %}checked{% endif %} {% if status.validated %}disabled{% endif %} />
+
+				{{'Normal'|i18n}} 
+				<input 
+					type="radio" 
+					name="choice"
+					value="normal"
+					class="value-checkbox choice-normal" 
+					style="width:100px" 
+					{% if status.normal %}checked{% endif %} 
+					{% if !status.normal && !status.risk %}checked{% endif %} 
+					{% if status.validated %}disabled{% endif %}/>
+				
+				{{'Risk of fail'|i18n}} 
+				<input 
+					type="radio" 
+					name="choice"
+					value="risk"
+					class="value-checkbox choice-risk" 
+					{% if status.risk %}checked{% endif %} 
+					{% if status.validated %}disabled{% endif %} />
+
 			</div>
 			
 			{% if rights.write %}

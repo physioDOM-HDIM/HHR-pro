@@ -29,6 +29,17 @@
 					<a class="button small blue" href={% if status.sf36Answer %}"/answers/{{status.sf36Answer}}"{% else %}"/questionnaire/SF36"{% endif %}>{{'Questionnaire'|i18n}}</a>
 				</div>
 			</div>
+			<div class="row value-row">
+					<label class="comment-label" for="commentSf36">{{'Status' | i18n}}</label>
+					<input
+						flex
+						id="commentSf36"
+						class="comment-input to-disable"
+						type="text"
+						name="commentSf36"
+						value="{{status.commentSf36}}"
+						{% if status.validated %}disabled{% endif %} />
+				</div>
 			{% if rights.write %}
 				{% if !status.validated %}
 				<div id="buttons" class="row control">

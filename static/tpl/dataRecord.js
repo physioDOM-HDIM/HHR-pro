@@ -51,7 +51,8 @@ function resetFilter() {
         endDateContainer = document.querySelector('.endDate');
     startDateContainer.value = '';
     endDateContainer.value = '';
-    console.log(endDateContainer);
+	endDateContainer.start = null;
+	startDateContainer.stop = null;
     var params = getParams();
     paginate(false, params);
 }
@@ -61,8 +62,24 @@ function validFilter() {
     paginate(true, params);
 }
 
+function updateCal() {
+	var startDateContainer = document.querySelector('.startDate'),
+		endDateContainer = document.querySelector('.endDate');
+
+	if( startDateContainer.value ) {
+		endDateContainer.start = startDateContainer.value;
+	}
+	if( endDateContainer.value ) {
+		startDateContainer.stop = endDateContainer.value;
+	}
+}
+
 function init() {
-    // need to set the locale for moment ( read from cookie lang or default get the language from navigator )
+	moment.locale(Cookies.get("lang")=="en"?"en-gb":Cookies.get("lang"));
+	[].slice.call(document.querySelectorAll("zdk-input-date")).forEach( function(item) {
+		item.setAttribute("i18n", Cookies.get("lang")=="en"?"en-gb":Cookies.get("lang") );
+	});
+	
     var listPager = document.querySelector('tsante-list');
     listPager.addEventListener('tsante-response', function(data) {
         var list = data.detail.list;

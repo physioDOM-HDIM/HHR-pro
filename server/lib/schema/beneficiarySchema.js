@@ -34,7 +34,7 @@ var beneficiarySchema = {
 					}
 				},
 				"wayOfLife" : {type: "string"},
-				"profession" : {type: "string"}				
+				"profession" : {type: "string"}
 			},
 			"additionalProperties": false
 		},

@@ -1,11 +1,15 @@
 'use strict';
 
-var modified = false;
+var modified = false,
+	datas = {};
 
 window.addEventListener('DOMContentLoaded', function() {
 	document.addEventListener('change', function (evt) {
 		modified = true;
 	}, true);
+
+	datas.savedData = form2js(document.getElementById('form'));
+
 });
 
 window.addEventListener("beforeunload", function( e) {
@@ -20,12 +24,16 @@ window.addEventListener("beforeunload", function( e) {
 function checkForm(validate) {
 	var formObj = form2js(document.getElementById('form'));
 
-	if (formObj.stepsNumber) {
-		formObj.stepsNumber = parseInt(formObj.stepsNumber, 10);
+	if(formObj.stepsNumber && (datas.savedData.stepsNumber !== formObj.stepsNumber)) {
+		var todayDate = moment().format('L'),
+		dateContainer = document.querySelector('.stepsNumberDate');
+		dateContainer.innerHTML = todayDate;
+
+		formObj['stepsNumberDate'] = todayDate;
 	}
 
-	if (formObj.stepsCheck) {
-		formObj.stepsCheck = !!formObj.stepsCheck;
+	if (formObj.stepsNumber) {
+		formObj.stepsNumber = parseInt(formObj.stepsNumber, 10);
 	}
 
 	formObj.validated = validate;

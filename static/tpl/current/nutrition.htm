@@ -25,6 +25,7 @@
 				<legend>{{'Diet values'|i18n}}</legend>
 				<div class="row value-row">
 					<div class="value-name">{{'Height'|i18n}}</div>
+					<div class="value-date sizeDate">{% if status.sizeDate %}{{status.sizeDate}}{% endif %}</div>
 					<input
 						flex
 						id="sizeInput"
@@ -36,9 +37,22 @@
 						{% if status.validated %}disabled{% else %}readonly{% endif %} />
 					<div class="value-unit">{{'meter'|i18n}}</div>
 				</div>
+				<div class="row value-row">
+					<label class="comment-label" for="commentHeight">{{'Status' | i18n}}</label>
+					<input
+						flex
+						id="commentHeight"
+						class="comment-input to-disable"
+						type="text"
+						name="commentHeight"
+						value="{{status.commentHeight}}"
+						{% if status.validated %}disabled{% endif %} />
+				</div>
+
 
 				<div class="row value-row">
 					<div class="value-name">{{'Weight'|i18n}}</div>
+					<div class="value-date weightDate">{% if status.weightDate %}{{status.weightDate}}{% endif %}</div>
 					<input
 						flex
 						id="weightInput"
@@ -63,8 +77,9 @@
 
 				<div class="row value-row">
 					<div class="value-name">{{'Lean/fat ratio'|i18n}}</div>
+					<div class="value-date leanDate">{% if status.leanDate %}{{status.leanDate}}{% endif %}</div>
 					<input type="number" name="lean" class="value-input to-disable" value="{{status.lean}}" {% if status.validated %}disabled{% endif %} />
-					<div class="value-unit"></div>
+					<div class="value-unit">{{'%'|i18n}}</div>
 				</div>
 				<div class="row value-row">
 					<label class="comment-label" for="commentLean">{{'Status' | i18n}}</label>
@@ -80,6 +95,7 @@
 
 				<div class="row value-row">
 					<div class="value-name">{{'BMI'|i18n}}</div>
+					<div class="value-date bmiDate">{% if status.bmiDate %}{{status.bmiDate}}{% endif %}</div>
 					<input
 						flex
 						id="bmiInput"
@@ -88,7 +104,7 @@
 						name="bmi"
 						step="any"
 						value="{{status.bmi}}" {% if status.validated %}disabled{% endif %} />
-					<div class="value-unit"></div>
+					<div class="value-unit">{{'kg/m²'|i18n}}</div>
 				</div>
 				<div class="row value-row">
 					<label class="comment-label" for="commentBmi">{{'Status' | i18n}}</label>
@@ -189,9 +205,25 @@
 			</fieldset>
 
 			<fieldset>
-				<legend>{{'Special diet prescriptions'|i18n}}</legend>
+				<legend>
+					{{'Special diet prescriptions'|i18n}}
+					<div class="value-date-textarea dietPrescDate">{% if status.dietPrescDate %}{{status.dietPrescDate | date }}{% endif %}</div>
+				</legend>
+				
+
 				<div class="row value-row">
 					<textarea flex name="dietPresc">{{status.dietPresc}}</textarea>
+				</div>
+				<div class="row value-row">
+					<label class="comment-label-full" for="commentDietPresc">{{'Status' | i18n}}</label>
+					<input
+						flex
+						id="commentDietPresc"
+						class="comment-input to-disable"
+						type="text"
+						name="commentDietPresc"
+						value="{{status.commentDietPresc}}"
+						{% if status.validated %}disabled{% endif %} />
 				</div>
 			</fieldset>
 			

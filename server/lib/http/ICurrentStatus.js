@@ -57,7 +57,7 @@ var ICurrentStatus = {
 							switch (currentStatus.name) {
 								case 'well':
 									dataRecord.items = [
-										{category: 'questionnaire', text: 'SF12', value: currentStatus.sf12Score, ref: currentStatus.sf12Answer}
+										{category: 'questionnaire', text: 'SF36', value: currentStatus.sf36Score, ref: currentStatus.sf36Answer}
 									];
 									break;
 								case 'nutrition':

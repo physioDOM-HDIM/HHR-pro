@@ -22,10 +22,28 @@
 <div id="content">
 	<zdk-panel heading="{{ 'Distance travelled' | i18n }}">
 		<form name="form" id="form" autocomplete="off" onsubmit="checkForm(); return false;">
+
 			<div class="row value-row">
+
 				<div class="value-name">{{'Number of steps'|i18n}}</div>
+				<div class="value-date stepsNumberDate">{% if status.stepsNumberDate %}{{status.stepsNumberDate}}{% endif %}</div>
 				<input type="number" step="1" min="0" name="stepsNumber" class="value-input" value="{{status.stepsNumber}}" {% if status.validated %}disabled{% endif %} />
 				<div class="value-unit">{{'steps per week'|i18n}}</div>
+
+			</div>
+
+			<div class="row value-row">
+
+				<label class="comment-label" for="commentStepsNumber">{{'Status' | i18n}}</label>
+				<input
+					flex
+					id="commentStepsNumber"
+					class="comment-input to-disable"
+					type="text"
+					name="commentStepsNumber"
+					value="{{status.commentStepsNumber}}"
+					{% if status.validated %}disabled{% endif %} />
+
 			</div>
 
 			{% if rights.write %}

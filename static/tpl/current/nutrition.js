@@ -89,24 +89,31 @@ function saveAssistance(validate) {
 	
 }
 
+function addValue (valueName, formObj, isFloat) {
+
+	if(formObj[valueName] && (datas.savedData[valueName] !== formObj[valueName])) {
+		var todayDate = moment().format('L'),
+		dateContainer = document.querySelector('.'+valueName+'Date');
+
+		dateContainer.innerHTML = todayDate;
+
+		formObj[valueName+'Date'] = todayDate;
+	}
+
+	if (formObj[valueName] && isFloat) {
+		formObj[valueName] = parseFloat(formObj[valueName]);
+	}
+}
+
 function saveDiet(validate) {
 	var formObj = form2js(document.getElementById('formDiet'));
 
-	if (formObj.size) {
-		formObj.size = parseFloat(formObj.size);
-	}
+	addValue('size', formObj, true);
+	addValue('weight', formObj, true);
+	addValue('lean', formObj, true);
+	addValue('bmi', formObj, true);
 
-	if (formObj.weight) {
-		formObj.weight = parseFloat(formObj.weight);
-	}
-
-	if (formObj.lean) {
-		formObj.lean = parseFloat(formObj.lean);
-	}
-
-	if (formObj.bmi) {
-		formObj.bmi = parseFloat(formObj.bmi);
-	}
+	addValue('dietPresc', formObj, false);
 
 	if(!validate) {
 		sendDatas(formObj, function() {
@@ -221,6 +228,9 @@ window.addEventListener('DOMContentLoaded', function() {
 
     validateChecking();
     getAssistanceList();
+
+    datas.savedData = form2js(document.getElementById('formDiet'));
+
 });
 
 window.addEventListener("beforeunload", function( e) {

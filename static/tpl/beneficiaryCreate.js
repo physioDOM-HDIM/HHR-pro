@@ -316,10 +316,12 @@ function checkLifeCondForm() {
     console.log("checkLifeCondForm");
     var formObj = form2js(document.querySelector("form[name='life_condition']"));
 
+	/*
     if(!formObj.maritalStatus || formObj.maritalStatus === 'NONE') {
         new Modal('errorNoMaritalStatus');
         return false;
     }
+    */
 	if( formObj.lifeCond.disability.percent ) {
 		formObj.lifeCond.disability.percent = parseInt(formObj.lifeCond.disability.percent, 10);
 	}
