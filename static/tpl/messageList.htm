@@ -40,7 +40,7 @@
 					<label class="collabel" for="sender">{{ "Sender"|i18n }} : </label>
 					<div class="colcontent">
 						<select name="sender" id="sender">
-							<option value=""></option>
+							<option value="">{{ "All"|i18n }}</option>
 							{% for item in professionalList %}
 							<option value="{{item._id.toString()}}" >{{item.name.given}} {{item.name.family}}</option>
 							{% endfor %}
