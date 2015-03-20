@@ -184,7 +184,7 @@
 	<div class="row control">
 		<span class="spacer"></span>
 		<button type="button" onclick="closeForm()" class="red">{{"Cancel"|i18n}}</button>
-		<button type="button" onclick="removeData('{% raw %}{{data._id}}{% endraw %}')" class="red">{{"Delete"|i18n}}</button>
+		<button id="delBtn" type="button" onclick="removeData('{% raw %}{{data._id}}{% endraw %}')" class="red">{{"Delete"|i18n}}</button>
 		<button type="button" onclick="saveData()" class="green">{{"Save"|i18n}}</button>
 	</div>
 	

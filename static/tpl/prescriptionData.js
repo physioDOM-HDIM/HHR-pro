@@ -248,7 +248,9 @@ function showForm(ref) {
 
 	formDiv.classList.add('modalContainer');
 	formDiv.innerHTML = Mustache.render(formTpl.innerHTML, dataModel);
-
+	if( !ref ) {
+		formDiv.querySelector("#delBtn").classList.add("hidden");
+	}
 	formContainer.appendChild(formDiv);
 	
 	setTimeout( function() {
@@ -394,6 +396,10 @@ function updateCal() {
 }
 
 var removeData = function (id) {
+	if( !id ) {
+		window.location.href = "/prescription/" + ( infos.category || infos.paramList ).toLowerCase();
+		return;
+	}
 	modified = true;
 	var deleteAction = function () {
 		utils.promiseXHR("DELETE", "/api/beneficiary/dataprog/" + id, 200).then(function () {
