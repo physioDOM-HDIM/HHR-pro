@@ -1,4 +1,23 @@
 
+__v0.0.19-Pre__
+
+  - #145 : [Beneficiary/Bene_edit/Address][physioDOM-v0.0.18] City
+  - #144 : [Data sect°/Prescript° Data monitoring][physioDOM-v0.0.18] Delete Button
+  - #143 : [Data sect°/Prescript° Data monitoring/Symptom assessments][physioDOM-v0.0.18] Save button
+  - #141 : [Current health status/Nutritional Status][physioDOM-v0.0.18] Remove Assistance Services checkboxes
+  - #140 : Bug 113 [Create/Update Professional/Delete du professionnel][physioDOM-v0.0.16] Contrôle d’intégrité
+  - #139 : [Result synthesis][[physioDOM-v0.0.18] Results list
+  - #124 : [Beneficiary/Bene_edit][physioDOM-v0.0.16] Personal data
+  - #120 : [Rights] Problème utilisateur sans droit
+  - #116 : [Data sect°/Prescript° Data monitoring/Gral physiological data][physioDOM-v0.0.16] Display Threshold Values
+  - #114 : [Dietary&Physical Activity/Dietary Plan][physioDOM-v0.0.16] Save changes
+  - #107 : Bug 154 [Directory/Pro_edit][physioDOM-v0.0.16] Telecom
+  - #105 : [Directory/Directory List][physioDOM-v0.0.16] Telecom
+  - #102 : [Beneficiary/Bene_edit][physioDOM-v0.0.16] Diagnosis
+  - #101 : [Beneficiary/Bene_edit][physioDOM-v0.0.16] Professional List
+  - #71  : [Quick look on HHR/Message To Home][physioDOM-v0.0.15] Filter Issue
+  
+
 __v0.0.18__ debug release
 
 > Nota : fixed bugs number are from gitlab
