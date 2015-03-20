@@ -43,6 +43,23 @@
 	</div>
 	{{/param}}
 	{% endraw %}
+	
+	{% raw %}
+	{{#data.hasThreshold}}
+	{% endraw %}
+	<div class="row h1">
+		<div class="col05"></div>
+		<div class="col">
+			<label>{{"threshold min"|i18n}}</label><span>{% raw %}{{ data.threshold.min }}{% endraw %}</span>
+		</div>
+		<div class="col">
+			<label>{{"threshold max"|i18n}}</label><span>{% raw %}{{ data.threshold.max }}{% endraw %}</span>
+		</div>
+	</div>
+	{% raw %}
+	{{/data.hasThreshold}}
+	{% endraw %}
+	
 	<div class="row h1">
 		<div class="col05"></div>
 		<div class="col">
@@ -135,12 +152,12 @@
 	{{#hasThresholds}}
 	{% endraw %}
 	<div class="row h1">
-		<label>{{"Seuil min"|i18n}}</label>
+		<label>{{"threshold min"|i18n}}</label>
 		<input type="number" value="" name="threshold.min" class="min-threshold">
 	</div>
 
 	<div class="row h1">
-		<label>{{"Seuil max"|i18n}}</label>
+		<label>{{"threshold max"|i18n}}</label>
 		<input type="number" value="" name="threshold.max" class="max-threshold">
 	</div>
 	{% raw %}
