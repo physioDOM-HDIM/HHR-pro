@@ -71,6 +71,8 @@
 	</select>
 </script>
 
+<div class="hidden no-validation alert-info-error">{{ "Vous ne pouvez pas créer de Data Record tant que le Health Status n'a pas été validé"|i18n}}</div>
+
 <div id="content">
 	{% macro line(cat) %}
 	<div id="ID{{item._id.toString()}}" class="line">

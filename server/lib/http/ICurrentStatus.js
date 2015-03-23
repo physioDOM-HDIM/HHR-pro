@@ -19,6 +19,20 @@ var CurrentStatus = require('../class/currentStatus');
  */
 var ICurrentStatus = {
 
+	isValidated: function(req, res, next) {
+		logger.trace('isValidated', req.session.beneficiary);
+
+		new CurrentStatus().isValidated(req.session.beneficiary)
+			.then( function(isValid) {
+				res.send({isValid: isValid});
+				next();
+			})
+			.catch(function(err) {
+				logger.trace('Error', err);
+				res.send(err.code || 400, {error: err});
+			});
+	},
+
 	get: function(req, res, next) {
 		logger.trace('get', req.params.name);
 

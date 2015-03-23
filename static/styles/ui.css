@@ -511,3 +511,10 @@ zdk-input-date {
 	padding: 10px;
 	border-top: 1px solid #313131;
 }
+
+.alert-info-error {
+	font-style: italic;
+	text-align: center;
+	margin: 30px;
+	color: red;
+}
