@@ -104,8 +104,9 @@
 						<div class="{% raw %}{{item.home? 'show':'hide'}}{% endraw %}">
 							{{ "From Home" |i18n}}
 						</div>
-						<div class="{% raw %}{{item.home? 'hide':'show'}}{% endraw %}">
-							{{ "From consultation" |i18n}}
+						<div class="{% raw %}{{ item.home ? 'hide':'show'}}{% endraw %}">
+							<span class="{% raw %}{{ item.self ? 'show':'hide'}}{% endraw %}">{{ "From beneficiary" |i18n}}</span>
+							<span class="{% raw %}{{ item.self ? 'hide':'show'}}{% endraw %}">{{ "From consultation" |i18n}}</span>
 						</div>
 					</div>
 					<div class="col">{% raw %}{{item.source.name.family}} {{item.source.name.given}}{% endraw %}</div>

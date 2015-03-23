@@ -23,7 +23,8 @@ var RSVP = require("rsvp"),
 	dbPromise = require("./database"),
 	Queue = require("./queue.js"),
 	Symptoms = require("./symptoms.js"),
-	moment = require("moment");
+	moment = require("moment"),
+	md5 = require('MD5');
 
 var logger = new Logger("Beneficiary");
 
@@ -168,7 +169,7 @@ function Beneficiary( ) {
 	this.getAccount = function() {
 		var that = this;
 		return new promise( function(resolve, reject) {
-			var search = { "person.id": that._id };
+			var search = { "person.id": that._id, "role":"beneficiary" };
 			physioDOM.db.collection("account").findOne( search, function( err, item ) {
 				if(err) {
 					throw err;
@@ -293,6 +294,74 @@ function Beneficiary( ) {
 		});
 	};
 
+	this.getEmail = function() {
+		var email = "";
+		this.telecom.forEach( function(item) {
+			if( !email && item.system === "email") {
+				email = item.value;
+			}
+		});
+		return email;
+	};
+
+	/**
+	 * @method accountUpdate
+	 *
+	 * update account information of the beneficiary, resolve with the updated object
+	 *
+	 * @param accountData
+	 * @returns {promise}
+	 */
+	this.accountUpdate = function( accountData ) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace( "accountUpdate" );
+			that.getAccount()
+				.then( function(account) {
+					logger.trace("account", accountData );
+					if ( accountData.IDS==="true" ) {
+						// keep the old login if exists
+						accountData.login = account.login;
+					}
+					if (!(accountData.login || accountData.IDS==="true" ) || !accountData.password) {
+						return reject({error: "account data incomplete"});
+					}
+					var newAccount = {
+						login   : accountData.login,
+						password: md5(accountData.password),
+						active  : that.active,
+						role    : "beneficiary",
+						email   : that.getEmail(),
+						person  : {
+							id        : that._id,
+							collection: "beneficiaries"
+						}
+					};
+					if( account && account._id) {
+						newAccount._id = account._id;
+						newAccount.OTP = account.OTP?account.OTP:false;
+					} else {
+						newAccount.OTP = false;
+					}
+					physioDOM.db.collection("account").save(newAccount, function (err, result) {
+						if(err) { throw err; }
+						if( isNaN(result)) {
+							newAccount._id = result._id;
+						}
+						that.account = newAccount._id;
+						that.active = true;
+						that.save()
+							.then( function( beneficiary ) {
+								logger.info("benneficiary saved, OTP : ",newAccount.OTP );
+								resolve(beneficiary, newAccount.OTP );
+							})
+							.catch( reject );
+					});
+				})
+				.catch( reject );
+		});
+	};
+	
 	/**
 	 * Update the beneficiary
 	 * 
@@ -303,6 +372,7 @@ function Beneficiary( ) {
 	 */
 	this.update = function( updatedEntry, professionalID) {
 		var that = this;
+		var accountData = null;
 		return new promise( function(resolve, reject) {
 			logger.trace("update");
 			if( that._id.toString() !== updatedEntry._id ) {
@@ -325,12 +395,26 @@ function Beneficiary( ) {
 										that.name.given = capitalize(that.name.given);
 									}
 									break;
+								case "account":
+									accountData = updatedEntry.account;
+									break;
 								default:
 									that[key] = updatedEntry[key];
 							}
 						}
 					}
 					return that.save();
+				})
+				.then( function() {
+					return new promise( function(resolve, reject) {
+						if (accountData) {
+							that.accountUpdate(accountData)
+								.then( resolve )
+								.catch( resolve );
+						} else {
+							resolve( that );
+						}
+					});
 				})
 				.then( function() {
 					that.createEvent("Beneficiary","update", updatedEntry._id, professionalID);
@@ -696,17 +780,25 @@ function Beneficiary( ) {
 	this.createDataRecord = function( dataRecordObj, professionalID) {
 		var that = this;
 		return new promise( function(resolve, reject) {
-			logger.trace("createDataRecord", dataRecordObj);
+			logger.trace("createDataRecord", dataRecordObj, professionalID);
 			var dataRecord = new DataRecord();
 			dataRecord.setup(that._id, dataRecordObj, professionalID)
 				.then(function (dataRecord) {
 					return that.createEvent('Data record', 'create', dataRecord._id, professionalID)
 				})
 				.then( function() {
-					return that.pushLastDHDFFQ();
+					if( physioDOM.config.queue ) {
+						return that.pushLastDHDFFQ();
+					} else {
+						return false
+					}
 				})
 				.then( function() {
-					return that.pushHistory();
+					if( physioDOM.config.queue ) {
+						return that.pushHistory();
+					} else {
+						return false
+					}
 				})
 				.then( function() {
 					return that.getCompleteDataRecordByID(dataRecord._id);

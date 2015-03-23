@@ -239,7 +239,11 @@
 			{% if dataRecordItems.home %}
 				{{ "From Home"|i18n }}
 			{% else %}
+				{% if dataRecordItems.source._id === dataRecordItems.subject %}
+				{{ "From Beneficiary"|i18n }}&nbsp;:&nbsp;{{dataRecordItems.source.name.family}} {{dataRecordItems.source.name.given}}
+				{% else %}
 				{{ "From Consultation"|i18n }}&nbsp;:&nbsp;{{dataRecordItems.source.name.family}} {{dataRecordItems.source.name.given}}
+				{% endif %}
 			{% endif %}
 		</label>
 		{% if !dataRecordItems.home && view === 'create' %}
