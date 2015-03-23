@@ -56,41 +56,72 @@ var ICurrentStatus = {
 
 							switch (currentStatus.name) {
 								case 'well':
-									dataRecord.items = [
-										{category: 'questionnaire', text: 'SF36', value: currentStatus.sf36Score, ref: currentStatus.sf36Answer}
-									];
+
+									if(currentStatus.sf36Answer) {
+										dataRecord.items.push({category: 'questionnaire', text: 'SF36', value: currentStatus.sf36Score, ref: currentStatus.sf36Answer});
+									}
+
 									break;
 								case 'nutrition':
-									dataRecord.items = [
-										{category: 'HDIM', text: 'WEG', value: currentStatus.weight},
-										{category: 'HDIM', text: 'LFR', value: currentStatus.lean},
-										{category: 'HDIM', text: 'BMI', value: currentStatus.bmi},
-										{category: 'questionnaire', text: 'MNA', value: currentStatus.mnaScore, ref: currentStatus.mnaAnswer},
-										{category: 'questionnaire', text: 'MNA_MINI', value: currentStatus.mnaSfScore, ref: currentStatus.mnaSfAnswer},
-										{category: 'questionnaire', text: 'SNAQ', value: currentStatus.snaqScore, ref: currentStatus.snaqAnswer},
-										{category: 'questionnaire', text: 'DHD-FFQ', value: currentStatus.dhdScore, ref: currentStatus.dhdAnswer}
-									];
+
+									if(currentStatus.weight) {
+										dataRecord.items.push({category: 'HDIM', text: 'WEG', value: currentStatus.weight});
+									}
+
+									if(currentStatus.lean) {
+										dataRecord.items.push({category: 'HDIM', text: 'LFR', value: currentStatus.lean});
+									}
+
+									if(currentStatus.bmi) {
+										dataRecord.items.push({category: 'HDIM', text: 'BMI', value: currentStatus.bmi});
+									}
+
+									if(currentStatus.mnaAnswer) {
+										dataRecord.items.push({category: 'questionnaire', text: 'MNA', value: currentStatus.mnaScore, ref: currentStatus.mnaAnswer});
+									}
+
+									if(currentStatus.mnaSfAnswer) {
+										dataRecord.items.push({category: 'questionnaire', text: 'MNA_MINI', value: currentStatus.mnaSfScore, ref: currentStatus.mnaSfAnswer});
+									}
+
+									if(currentStatus.snaqAnswer) {
+										dataRecord.items.push({category: 'questionnaire', text: 'SNAQ', value: currentStatus.snaqScore, ref: currentStatus.snaqAnswer});
+									}
+
+									if(currentStatus.dhdAnswer) {
+										dataRecord.items.push({category: 'questionnaire', text: 'DHD-FFQ', value: currentStatus.dhdScore, ref: currentStatus.dhdAnswer});
+									}
+										
 									break;
 								case 'activity':
-									dataRecord.items = [
-										{category: 'HDIM', text: 'DIST', value: currentStatus.stepsNumber}
-									];
+
+									if(currentStatus.stepsNumber) {
+										dataRecord.items.push({category: 'HDIM', text: 'DIST', value: currentStatus.stepsNumber});
+									}
+
 									break;
 								case 'frailty':
-									dataRecord.items = [
-										{category: 'questionnaire', text: 'CHAIR_TEST', value: currentStatus.chairStandScore, ref: currentStatus.chairStandAnswer}
-									];
+
+									if(currentStatus.chairStandAnswer) {
+										dataRecord.items.push({category: 'questionnaire', text: 'CHAIR_TEST', value: currentStatus.chairStandScore, ref: currentStatus.chairStandAnswer});
+									}
+
 									break;
 							}
-							
-							beneficiary.createDataRecord(dataRecord, req.session.person.id)
-								.then(function() {
-									resolve(currentStatus);
-								})
-								.catch(function(err) {
-									logger.trace('Error', err);
-									reject(err);
-								});
+
+							if(dataRecord.items.length === 0) {
+								resolve(currentStatus);
+							} else {
+								beneficiary.createDataRecord(dataRecord, req.session.person.id)
+									.then(function() {
+										resolve(currentStatus);
+									})
+									.catch(function(err) {
+										logger.trace('Error', err);
+										reject(err);
+									});
+							}
+
 						}
 						else {
 							resolve(currentStatus);

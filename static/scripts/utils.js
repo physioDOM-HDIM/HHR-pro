@@ -194,3 +194,14 @@ Utils.prototype.limitText = function(elt, limitNumber) {
     }, false);
 
 }
+
+Utils.prototype.lockdown = function() {
+    var inputList = [].slice.call(document.querySelectorAll('input')),
+        selectList = [].slice.call(document.querySelectorAll('select')),
+        textareaList = [].slice.call(document.querySelectorAll('textarea')),
+        fieldList = inputList.concat(selectList, textareaList);
+
+    for(var i = 0; i< fieldList.length; i++) {
+        fieldList[i].setAttribute('disabled', true);
+    }
+}

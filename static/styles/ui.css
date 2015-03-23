@@ -48,6 +48,10 @@ footer + section {
 
 a { text-decoration: none; color: inherit; }
 
+a[disabled] {
+    pointer-events: none;
+}
+
 @media (max-width: 992px) {
 	nav {
 		top: -50px;

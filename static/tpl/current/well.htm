@@ -17,39 +17,54 @@
 {% endblock %}
 
 {% block content %}
+<div class="hidden" id="unsave">{{"You have unsaved data"|i18n}}</div>
+<div class="hidden" id="changelang">{{"Are you sure to cancel your changes ?"|i18n}}</div>
+
+
+<div class="hidden" id="validate-status">{{status.validated}}</div>
+
 <div id="content">
+
 	<zdk-panel heading="{{ 'Well being' | i18n }}">
-		<form name="form" id="form" autocomplete="off" onsubmit="checkForm(); return false;">
+		<form name="form" id="form" autocomplete="off">
 			<div class="row value-row questionnaire-row" data-name="SF36">
 				<div class="quest-name">{{'SF 36 score'|i18n}}</div>
 				<div class="questionnaire-date">{% if status.sf36Date %}{{status.sf36Date | date }}{% endif %}</div>
 				<input type="text" class="questionnaire-score" value="{{status.sf36Score}}" readonly />
 				<input type="hidden" class="questionnaire-answer" name="sf36Answer" value="{{status.sf36Answer}}" />
 				<div class="questionnaire-button-container">
-					<a class="button small blue" href={% if status.sf36Answer %}"/answers/{{status.sf36Answer}}"{% else %}"/questionnaire/SF36"{% endif %}>{{'Questionnaire'|i18n}}</a>
+					<a 
+						class="button small blue" 
+						href={% if status.sf36Answer %}"/answers/{{status.sf36Answer}}"{% else %}"/questionnaire/SF36"{% endif %}
+						{% if status.validated && !status.sf36Score %}disabled{% endif %}>
+						{{'Questionnaire'|i18n}}
+					</a>
 				</div>
 			</div>
 			<div class="row value-row">
-					<label class="comment-label" for="commentSf36">{{'Status' | i18n}}</label>
-					<input
-						flex
-						id="commentSf36"
-						class="comment-input to-disable"
-						type="text"
-						name="commentSf36"
-						value="{{status.commentSf36}}"
-						{% if status.validated %}disabled{% endif %} />
-				</div>
-			{% if rights.write %}
-				{% if !status.validated %}
-				<div id="buttons" class="row control">
-					<span class="spacer"></span>
-					<button type="button" class="blue" onclick="showConfirm();">{{'Validate'|i18n}}</button>
-				</div>
-				{% endif %}
-			{% endif %}
+				<label class="comment-label" for="commentSf36">{{'Status' | i18n}}</label>
+				<input
+					flex
+					id="commentSf36"
+					class="comment-input to-disable"
+					type="text"
+					name="commentSf36"
+					value="{{status.commentSf36}}" />
+			</div>
 		</form>
 	</zdk-panel>
+
+	{% if rights.write %}
+		{% if !status.validated %}
+		<div id="buttons" class="row control">
+			<span class="spacer"></span>
+			<button type="button" class="blue" onclick="showConfirm();">{{'Validate'|i18n}}</button>
+			<button type="button" class="red" onclick="modified=false; location.reload();">{{'Cancel'|i18n}}</button>
+			<button type="button" class="green" onclick="checkForm();">{{'Save'|i18n}}</button>
+		</div>
+		{% endif %}
+	{% endif %}
+
 </div>
 
 {% include "../modal.htm" %}

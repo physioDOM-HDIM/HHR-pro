@@ -19,15 +19,20 @@
 {% block content %}
 <div class="hidden" id="unsave">{{"You have unsaved data"|i18n}}</div>
 <div class="hidden" id="changelang">{{"Are you sure to cancel your changes ?"|i18n}}</div>
+
+
+<div class="hidden" id="validate-status">{{status.validated}}</div>
+
 <div id="content">
+
 	<zdk-panel heading="{{ 'Distance travelled' | i18n }}">
-		<form name="form" id="form" autocomplete="off" onsubmit="checkForm(); return false;">
+		<form name="form" id="form" autocomplete="off">
 
 			<div class="row value-row">
 
 				<div class="value-name">{{'Number of steps'|i18n}}</div>
 				<div class="value-date stepsNumberDate">{% if status.stepsNumberDate %}{{status.stepsNumberDate}}{% endif %}</div>
-				<input type="number" step="1" min="0" name="stepsNumber" class="value-input" value="{{status.stepsNumber}}" {% if status.validated %}disabled{% endif %} />
+				<input type="number" step="1" min="0" name="stepsNumber" class="value-input" value="{{status.stepsNumber}}" />
 				<div class="value-unit">{{'steps per week'|i18n}}</div>
 
 			</div>
@@ -41,23 +46,24 @@
 					class="comment-input to-disable"
 					type="text"
 					name="commentStepsNumber"
-					value="{{status.commentStepsNumber}}"
-					{% if status.validated %}disabled{% endif %} />
+					value="{{status.commentStepsNumber}}" />
 
 			</div>
 
-			{% if rights.write %}
-				{% if !status.validated %}
-				<div id="buttons" class="row control">
-					<span class="spacer"></span>
-					<button type="button" class="blue" onclick="showConfirm();">{{'Validate'|i18n}}</button>
-					<button type="button" class="red" onclick="modified=false; location.reload();">{{'Cancel'|i18n}}</button>
-					<button class="green">{{'Save'|i18n}}</button>
-				</div>
-				{% endif %}
-			{% endif %}
 		</form>
 	</zdk-panel>
+
+	{% if rights.write %}
+		{% if !status.validated %}
+		<div id="buttons" class="row control">
+			<span class="spacer"></span>
+			<button type="button" class="blue" onclick="showConfirm();">{{'Validate'|i18n}}</button>
+			<button type="button" class="red" onclick="modified=false; location.reload();">{{'Cancel'|i18n}}</button>
+			<button type="button" class="green" onclick="checkForm();">{{'Save'|i18n}}</button>
+		</div>
+		{% endif %}
+	{% endif %}
+
 </div>
 
 {% include "../modal.htm" %}

@@ -93,3 +93,7 @@ textarea {
 	bottom: 0;
 	margin: 0;
 }
+
+a.button.small.blue[disabled] {
+	opacity: 0.65;
+}
