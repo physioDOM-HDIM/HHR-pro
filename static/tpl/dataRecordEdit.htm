@@ -85,7 +85,7 @@
 				<div class="col" style="max-width:150px">{% raw %}{{ unitsLabel }}{% endraw %}</div>
 				{% else %}
 				<div class="col" style="max-width:150px">
-				<button type="button" class="blue small answer" data-answer="{{item.ref}}" onclick="showAnswer('{{item.ref}}')">{{"Questionnaire"|i18n}}</button>
+				<button type="button" class="blue small answer not-disabled" data-answer="{{item.ref}}" onclick="showAnswer('{{item.ref}}')">{{"Questionnaire"|i18n}}</button>
 				</div>
 				{% endif %}
 				
@@ -231,15 +231,21 @@
 		-create and update actions
 	#}
 
+	<div class="hidden health-status">{{dataRecordItems.healthStatus}}</div>
+
 	<div class="row title">
 		<label class="title">
 			<span id="datetime">
 				{{dataRecordItems.datetime}}
 			</span>
-			{% if dataRecordItems.home %}
-				{{ "From Home"|i18n }}
+			{% if dataRecordItems.healthStatus %}
+				{{ "From Health Status"|i18n }}&nbsp;:&nbsp;{{dataRecordItems.source.name.family}} {{dataRecordItems.source.name.given}}
 			{% else %}
-				{{ "From Consultation"|i18n }}&nbsp;:&nbsp;{{dataRecordItems.source.name.family}} {{dataRecordItems.source.name.given}}
+				{% if dataRecordItems.home %}
+					{{ "From Home"|i18n }}
+				{% else %}
+					{{ "From Consultation"|i18n }}&nbsp;:&nbsp;{{dataRecordItems.source.name.family}} {{dataRecordItems.source.name.given}}
+				{% endif %}
 			{% endif %}
 		</label>
 		{% if !dataRecordItems.home && view === 'create' %}
@@ -259,7 +265,6 @@
 	</div>
 
 	<form name="dataRecord" id="dataRecord" onsubmit="create(); return false;">
-		<!--{% if dataRecordItems.healthStatus %}Locked DataRecord{% endif %}-->
 		<zdk-panel heading="{{'Physiological parameters' |i18n}}" collapsable="false" collapsed="false">
 			<div class="row">
 				<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{{ 'Parameter'|i18n }}</div>
@@ -335,7 +340,7 @@
 			<button id="saveBtn" class="green">{{'Save'|i18n}}</button>
 			{% endif %}
 			{% else %}
-			<a href="/datarecord"><button type="button" class="blue big">{{'Back'|i18n}}</button></a>
+			<a href="/datarecord"><button type="button" class="blue big not-disabled">{{'Back'|i18n}}</button></a>
 			{% if rights.write %}
 			<button id="saveBtn" class="green">{{'Save'|i18n}}</button>
 			{% endif %}

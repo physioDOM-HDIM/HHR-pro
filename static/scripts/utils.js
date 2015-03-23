@@ -205,3 +205,14 @@ Utils.prototype.lockdown = function() {
         fieldList[i].setAttribute('disabled', true);
     }
 }
+
+Utils.prototype.lockActions = function() {
+    var buttonList = [].slice.call(document.querySelectorAll('button'));
+
+    for(var i = 0; i< buttonList.length; i++) {
+        if(!this.hasClass(buttonList[i], 'not-disabled')) {
+            buttonList[i].setAttribute('disabled', true); 
+        }
+    }
+}
+

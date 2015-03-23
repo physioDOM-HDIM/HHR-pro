@@ -27,6 +27,11 @@ window.addEventListener("DOMContentLoaded", function () {
 
 	infos.btnSave = document.querySelector('#saveBtn');
 
+	var isHealthStatus = (document.querySelector('.health-status').innerHTML === 'true');
+	if(isHealthStatus) {
+		utils.lockActions();
+	}
+
 }, false);
 
 window.addEventListener("beforeunload", function (e) {
