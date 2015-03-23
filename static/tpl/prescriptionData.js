@@ -57,7 +57,15 @@ var init = function () {
 		if(param === null) {
 			continue;
 		}
-
+		
+		if( lists.thresholds[dataItem.ref] && ( lists.thresholds[dataItem.ref].min || lists.thresholds[dataItem.ref].max )  ) {
+			dataItem.hasThreshold = true;
+			dataItem.threshold = {};
+			dataItem.threshold.min = lists.thresholds[dataItem.ref].min;
+			dataItem.threshold.max = lists.thresholds[dataItem.ref].max;
+		} else {
+			dataItem.hasThreshold = false;
+		}
 		dataItem.startDate = moment(dataItem.startDate).format("L");
 		dataItem.endDate = moment(dataItem.endDate).format("L");
 		
@@ -248,7 +256,9 @@ function showForm(ref) {
 
 	formDiv.classList.add('modalContainer');
 	formDiv.innerHTML = Mustache.render(formTpl.innerHTML, dataModel);
-
+	if( !ref ) {
+		formDiv.querySelector("#delBtn").classList.add("hidden");
+	}
 	formContainer.appendChild(formDiv);
 	
 	setTimeout( function() {
@@ -294,9 +304,11 @@ var saveData = function () {
 		thresholds = {};
 
 	//preparing threshold data to save
-	thresholds[data.ref] = {};
-	thresholds[data.ref].min = parseFloat(data.threshold.min);
-	thresholds[data.ref].max = parseFloat(data.threshold.max);
+	if( data.threshold ) {
+		thresholds[data.ref] = {};
+		thresholds[data.ref].min = data.threshold.min ? parseFloat(data.threshold.min) : null;
+		thresholds[data.ref].max = data.threshold.max ? parseFloat(data.threshold.max) : null;
+	}
 
 	//preparing dataprescription
 	dataprog.ref = data.ref;
@@ -359,20 +371,17 @@ var saveData = function () {
 		}
 	}
 
-	utils.promiseXHR("POST", "/api/beneficiary/thresholds", 200, JSON.stringify(thresholds)).then(function(response) {
-
-       	utils.promiseXHR('POST', '/api/beneficiary/dataprog', 200, JSON.stringify(dataprog)).then(function () {
+	utils.promiseXHR('POST', '/api/beneficiary/dataprog', 200, JSON.stringify(dataprog)).then(function () {
+		if( thresholds[data.ref] ) {
+			utils.promiseXHR("POST", "/api/beneficiary/thresholds", 200, JSON.stringify(thresholds)).then(function (response) {
+				window.location.href = "/prescription/" + ( infos.category || infos.paramList ).toLowerCase();
+			}, function (error) {
+				new Modal('errorOccured');
+				console.log("saveData - error: ", error);
+			});
+		} else {
 			window.location.href = "/prescription/" + ( infos.category || infos.paramList ).toLowerCase();
-			/*
-			 new Modal('createSuccess', function() {
-			 window.location.href = "/prescription/"+ ( infos.category || infos.paramList ).toLowerCase();
-			 });
-			 */
-		}, function (error) {
-			new Modal('errorOccured');
-			console.log("saveData - error: ", error);
-		});
-
+		}
     }, function(error) {
     	new Modal('errorOccured');
 
@@ -394,6 +403,10 @@ function updateCal() {
 }
 
 var removeData = function (id) {
+	if( !id ) {
+		window.location.href = "/prescription/" + ( infos.category || infos.paramList ).toLowerCase();
+		return;
+	}
 	modified = true;
 	var deleteAction = function () {
 		utils.promiseXHR("DELETE", "/api/beneficiary/dataprog/" + id, 200).then(function () {

@@ -1,0 +1,26 @@
+{% extends './page.htm' %}
+
+{% block title %}{{'no access'|i18n}}{% endblock %}
+
+{% block head %}
+{% parent %}
+<style>
+	body { background:lavenderblush; }
+	div.msg {
+		font-size: 18px;
+		width: 300px;
+		text-align: center;
+		margin: auto;
+		padding-top: 50px;
+	}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div style="text-align: center; margin-top:50px">
+	<img src="/img/physiodom_logo.png" id="logo" style="height:150px;">
+</div>
+<div class="msg">{{ "You have no access to this topic"|i18n }}</div>
+
+{% endblock %}

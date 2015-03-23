@@ -244,9 +244,9 @@
 					<div class="row value-row">
 						<span class="assistance-label">{{assistance.ref}}</span>
 						<input type="hidden" name="assistance[{{ idx }}].ref" value="{{ assistance.ref }}">
-						<input type="checkbox" class="value-checkbox" name="assistance[{{ idx }}].active" {% if assistance.active %}checked{% endif %}>
+						<!--<input type="checkbox" class="value-checkbox" name="assistance[{{ idx }}].active" {% if assistance.active %}checked{% endif %}>-->
 						<input type="text" class="value-input assist" name="assistance[{{ idx }}].information" value="{{ assistance.information }}">
-						<button type="button" class="red" onclick="removeAssistance(this)">{{'Remove'|i18n}}</button>
+						<button type="button" class="red small" onclick="removeAssistance(this)">{{'Remove'|i18n}}</button>
 					</div>
 				{% endfor %}
 			</div>
@@ -254,7 +254,7 @@
 
 			<div class="row control">
 				<span class="spacer"></span>
-				<button type="button" onclick="addAssistance()" class="green">{{'Add'|i18n}}</button>
+				<button type="button" onclick="addAssistance()" class="green small">{{'Add'|i18n}}</button>
 			</div>
 
 			{% if rights.write %}
@@ -285,9 +285,9 @@
 			<option value="{{ref}}">{{labelLang}}</option>
 		{{/assistanceList}}
 	</select>
-	<input type="checkbox" class="value-checkbox" name="assistance[{{idx}}].active">
+	<!-- <input type="checkbox" class="value-checkbox" name="assistance[{{idx}}].active"> -->
 	<input type="text" class="value-input assist" name="assistance[{{idx}}].information">
-	<button type="button" class="red" onclick="removeAssistance(this)">{% endraw %}{{'Remove'|i18n}}{% raw %}</button>
+	<button type="button" class="red small" onclick="removeAssistance(this)">{% endraw %}{{'Remove'|i18n}}{% raw %}</button>
 </script>
 {% endraw %}
 

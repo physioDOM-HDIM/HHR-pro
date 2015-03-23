@@ -82,6 +82,7 @@
 			{% raw %}{{#hasDietChoice}}{% endraw %}
 			<div class="row">
 				<div class="col">
+					<label>{{"Type of service"|i18n}} : </label>
 					<input type="radio" name="{% raw %}items[{{idx}}].diet{% endraw %}" value="true" {% raw %}{{#diet}}checked{{/diet}}{% endraw %}> {{ "Diet"|i18n }}
 					<input type="radio" name="{% raw %}items[{{idx}}].diet{% endraw %}" value="false" {% raw %}{{^diet}}checked{{/diet}}{% endraw %}> {{ "Basic"|i18n }}
 				</div>	
@@ -89,7 +90,7 @@
 			{% raw %}{{/hasDietChoice}}{% endraw %}
 
 			{% raw %}{{#service}}{% endraw %}
-			<div class="row">Provider roles <button type="button" class="small blue" onclick="editRole({% raw %}{{idx}},{{roles}}{{#new}},true{{/new}}{% endraw %})" >Edit</button></div>
+			<div class="row">{{"Provider roles"|i18n}} <button type="button" class="small blue" style="margin-left:20px" onclick="editRole({% raw %}{{idx}},{{roles}}{{#new}},true{{/new}}{% endraw %})" >Edit</button></div>
 			<div class="row" style="padding-left:50px">
 				{% raw %}{{roleTypeCode}}{% endraw %}
 			</div>

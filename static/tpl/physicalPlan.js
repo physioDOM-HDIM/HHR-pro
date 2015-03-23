@@ -7,9 +7,11 @@ var modified = false;
 
 window.addEventListener('DOMContentLoaded', function() {
 	initData();
-	document.addEventListener('change', function( evt ) {
-		modified = true;
-		document.querySelector("#saveBtn").disabled = false;
+	document.addEventListener('keypress', function( evt ) {
+		if( evt.target.tagName === "TEXTAREA") {
+			modified = true;
+			document.querySelector("#saveBtn").disabled = false;
+		}
 	}, true );
 }, false);
 
