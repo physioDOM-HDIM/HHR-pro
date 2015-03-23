@@ -24,7 +24,9 @@ var RSVP = require("rsvp"),
 	Queue = require("./queue.js"),
 	Symptoms = require("./symptoms.js"),
 	moment = require("moment"),
-	md5 = require('MD5');
+	md5 = require('MD5'),
+	soap = require("soap"),
+	Cookies = require("cookies");
 
 var logger = new Logger("Beneficiary");
 
@@ -421,6 +423,112 @@ function Beneficiary( ) {
 				})
 				.then(resolve)
 				.catch(reject);
+		});
+	};
+
+	this.createCert = function(req, res) {
+		var that = this;
+
+		return new promise( function(resolve, reject) {
+			logger.trace("createCert" );
+			that.getAccount()
+				.then( function(account) {
+					var email = that.getEmail();
+					var cookies = new Cookies(req, res);
+
+					var certRequest = {
+						certrequest: {
+							Application       : physioDOM.config.IDS.appName,
+							Requester         : req.headers["ids-user"],
+							AuthCookie        : cookies.get("sessionids"),
+							OrganizationUnit  : physioDOM.config.IDS.OrganizationUnit,
+							Owner             : "03" + email,
+							Identifier        : email,
+							Privilege         : 255,
+							Profile           : 0,
+							Duration          : 365,
+							AuthenticationMask: 8,
+							Number            : 3,
+							Comment           : "Create certificate for " + email
+						}
+					};
+
+					var wsdl = 'http://api.idshost.priv/pki.wsdl';
+					soap.createClient(wsdl, function (err, client) {
+						if (err) {
+							logger.alert("error ", err);
+							throw err;
+						}
+
+						client.CertRequest(certRequest, function (err, result) {
+							if (err) {
+								throw err;
+							} else {
+								logger.info("certResponse", result);
+								account.OTP = result.certresponse.OTP;
+								physioDOM.db.collection("account").save(account, function(err, result) {
+									if(err) {
+										reject(err);
+									} else {
+										resolve(account);
+									}
+								});
+							}
+						});
+					});
+				})
+				.catch( reject );
+		});
+	};
+
+	this.revokeCert = function(req, res) {
+		var that = this;
+		logger.trace("revokeCert" );
+
+		return new promise( function(resolve, reject) {
+			that.getAccount()
+				.then( function(account) {
+					var cookies = new Cookies(req, res);
+					var email = that.getEmail();
+
+					var CertRevocate = {
+						certRevocateRequest : {
+							Application       : physioDOM.config.IDS.appName,
+							Requester         : req.headers["ids-user"],
+							AuthCookie        : cookies.get("sessionids"),
+							OrganizationUnit  : physioDOM.config.IDS.OrganizationUnit,
+							Owner             : "03" + email,
+							Index             : -1,
+							Comment           : "Revoke all certificates for " + email
+						}
+					};
+
+					var wsdl = 'http://api.idshost.priv/pki.wsdl';
+					soap.createClient(wsdl, function (err, client) {
+						if(err) {
+							logger.alert(err);
+							res.send(400, { code:400, message:err });
+							return next(false);
+						}
+
+						client.CertRevocate(CertRevocate, function (err, result ) {
+							if (err) {
+								throw err;
+							} else {
+								logger.info("certRevokeResponse", result);
+								account.OTP = false;
+								physioDOM.db.collection("account").save(account, function(err, result) {
+									if(err) {
+										reject(err);
+									} else {
+										resolve(account);
+									}
+								});
+							}
+						});
+					});
+				})
+				.catch( reject );
 		});
 	};
 
@@ -1417,7 +1525,7 @@ function Beneficiary( ) {
 				measures.measure.forEach(function (measure) {
 					if (parameters[measure].rank) {
 						hasMeasure = true;
-						var name = leaf + ".param[" + parameters[measure].ref + "]";
+						var name = leaf + ".params[" + parameters[measure].ref + "]";
 						msg.push({
 							name : name + ".type",
 							value: parseInt(parameters[measure].rank, 10),
@@ -1704,7 +1812,7 @@ function Beneficiary( ) {
 		logger.trace("pushSymptomsSelfToQueue");
 		
 		var queue = new Queue(this._id);
-		var leaf = "hhr[" + this._id + "].symptomsSelf.scale["+symptomSelf.ref+"]";
+		var leaf = "hhr[" + this._id + "].symptomsSelf.scales["+symptomSelf.ref+"]";
 		
 		return new promise( function(resolve, reject) {
 			var msg = [];
@@ -2058,12 +2166,12 @@ function Beneficiary( ) {
 						});
 						for (var i = 0, l = quest.history.length; i < l; i++) {
 							msg.push({
-								name: leaf + ".values[" + i + "].datetime",
+								name: leaf + ".scores[" + i + "].datetime",
 								value: moment(quest.history[i].datetime).unix(),
 								type: "Integer"
 							});
 							msg.push({
-								name: leaf + ".values[" + i + "].value",
+								name: leaf + ".scores[" + i + "].value",
 								value: quest.history[i].value,
 								type: "Double"
 							});

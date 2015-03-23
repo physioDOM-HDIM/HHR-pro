@@ -462,7 +462,7 @@ function Professional() {
 							Application       : physioDOM.config.IDS.appName,
 							Requester         : req.headers["ids-user"],
 							AuthCookie        : cookies.get("sessionids"),
-							OrganizationUnit  : "User",
+							OrganizationUnit  : physioDOM.config.IDS.OrganizationUnit,
 							Owner             : "03" + email,
 							Identifier        : email,
 							Privilege         : 255,
@@ -473,12 +473,6 @@ function Professional() {
 							Comment           : "Create certificate for " + email
 						}
 					};
-					
-					/*
-					logger.info("certRequest", certRequest);
-					logger.info( account );
-					resolve(account);
-					*/
 					
 					var wsdl = 'http://api.idshost.priv/pki.wsdl';
 					soap.createClient(wsdl, function (err, client) {
@@ -523,17 +517,12 @@ function Professional() {
 							Application       : physioDOM.config.IDS.appName,
 							Requester         : req.headers["ids-user"],
 							AuthCookie        : cookies.get("sessionids"),
-							OrganizationUnit  : "User",
+							OrganizationUnit  : physioDOM.config.IDS.OrganizationUnit,
 							Owner             : "03" + email,
 							Index             : -1,
 							Comment           : "Revoke all certificates for " + email
 						}
-					};	
-
-					/*
-					logger.debug("certRequest", CertRevocate);
-					resolve( account );
-					*/
+					};
 					
 					var wsdl = 'http://api.idshost.priv/pki.wsdl';
 					soap.createClient(wsdl, function (err, client) {
