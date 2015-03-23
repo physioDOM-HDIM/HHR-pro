@@ -25,6 +25,12 @@
 
 <div id="content">
 
+	{% if status.validated && status.validatedDate %}
+		<div class="validated-date right">
+			{{"Le"|i18n}} {{ status.validatedDate | date }} {{"par"|i18n}} {{ author.name.family + ' ' + author.name.given }}
+		</div>
+	{% endif %}
+
 	<zdk-panel heading="{{ 'Well being' | i18n }}">
 		<form name="form" id="form" autocomplete="off">
 			<div class="row value-row questionnaire-row" data-name="SF36">

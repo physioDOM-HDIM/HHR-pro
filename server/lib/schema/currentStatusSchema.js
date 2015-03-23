@@ -221,11 +221,20 @@ var currentStatusSchema = {
 			description: "beneficiary Object ID",
 			required: true
 		},
+		"validatedDate": {
+			type: "string",
+			format: "date",
+			description: "validation date"
+		},
+		"validatedAuthor": {
+			type: "object",
+			description: "author Object ID"
+		},
 		"validated": {
 			type: "boolean",
 			description: "this group of data has been validated",
 			required: false
-		},
+		}
 	},
 	"required": ["subject"]
 };

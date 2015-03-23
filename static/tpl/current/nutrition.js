@@ -32,14 +32,14 @@ function hideConfirm() {
 	document.getElementById('confirmModal').hide();
 }
 
-function validateChecking() {
-	var validateButton = document.querySelector('.validate-button');
+// function validateChecking() {
+// 	var validateButton = document.querySelector('.validate-button');
 
-	if(validateButton) {
-		var formObj = form2js(document.getElementById('formDiet'));
-		validateButton.disabled = (!formObj.weight || !formObj.lean || !formObj.bmi || !formObj.mnaAnswer || !formObj.mnaSfAnswer || !formObj.snaqAnswer || !formObj.dhdAnswer);
-	}
-}
+// 	if(validateButton) {
+// 		var formObj = form2js(document.getElementById('formDiet'));
+// 		validateButton.disabled = (!formObj.weight || !formObj.lean || !formObj.bmi || !formObj.mnaAnswer || !formObj.mnaSfAnswer || !formObj.snaqAnswer || !formObj.dhdAnswer);
+// 	}
+// }
 
 /**
  * ACTIONS
@@ -131,6 +131,7 @@ function validate() {
 
 	formObj.assistance = saveAssistance(true);
 	formObj.validated = true;
+	formObj.validatedDate = moment().format('YYYY-MM-DD');
 
 	sendDatas(formObj, function(res) {
 		new Modal('saveSuccess', function() {
@@ -199,6 +200,7 @@ function getAssistanceList(callback) {
 }
 
 window.addEventListener('DOMContentLoaded', function() {
+	moment.locale(Cookies.get("lang")=="en"?"en-gb":Cookies.get("lang"));
 	document.getElementById('sizeInput').addEventListener('change', computeBMI);
 	document.getElementById('weightInput').addEventListener('change', computeBMI);
 	document.addEventListener('change', function( evt ) {

@@ -5,6 +5,8 @@ var Utils = new Utils(),
 	datas = {};
 
 window.addEventListener('DOMContentLoaded', function() {
+	moment.locale(Cookies.get("lang")=="en"?"en-gb":Cookies.get("lang"));
+
 	document.addEventListener('change', function (evt) {
 		modified = true;
 	}, true);
@@ -44,6 +46,9 @@ function checkForm(validate) {
 	}
 
 	formObj.validated = validate;
+	if(validate) {
+		formObj.validatedDate = moment().format('YYYY-MM-DD');
+	}
 
 	promiseXHR('PUT', '../api/beneficiary/current/activity', 200, JSON.stringify(formObj))
 		.then(function(res) {

@@ -46,6 +46,11 @@ var ICurrentStatus = {
 				updateItem.subject = beneficiary._id;
 				updateItem.name = req.params.name;
 
+				//adding author to health entry
+				if(updateItem.validated) {
+					updateItem.validatedAuthor = req.session.person.id;	
+				}
+
 				var createDataRecord = function(currentStatus) {
 					return new RSVP.Promise(function(resolve, reject) {
 						if (updateItem.validated) {
@@ -147,6 +152,10 @@ var ICurrentStatus = {
 								updateItem.validated = false;
 								current.update(updateItem)
 									.then(function() {
+										res.send(err.code || 400, err);
+										next(false);
+									})
+									.catch(function(err) {
 										res.send(err.code || 400, err);
 										next(false);
 									});

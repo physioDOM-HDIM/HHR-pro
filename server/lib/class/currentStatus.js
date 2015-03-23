@@ -99,10 +99,10 @@ function CurrentStatus() {
 			var schema = '/' + entry.name;
 			var check = CurrentStatusSchema.validator.validate( entry, {'$ref': schema} );
 			if (check.errors.length) {
-				return reject({error: 'bad format', detail: check.errors});
+				reject({error: 'bad format', detail: check.errors});
 			}
 			else {
-				return resolve(entry);
+				resolve(entry);
 			}
 		});
 	}

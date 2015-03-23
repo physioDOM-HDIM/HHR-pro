@@ -5,6 +5,7 @@ var Utils = new Utils(),
 	datas = {};
 
 window.addEventListener('DOMContentLoaded', function() {
+	moment.locale(Cookies.get("lang")=="en"?"en-gb":Cookies.get("lang"));
 	document.addEventListener('change', function( evt ) {
 		modified = true;
 	}, false );
@@ -33,6 +34,9 @@ function checkForm(validate) {
 	formObj.risk = (formObj.choice === 'risk');
 
 	formObj.validated = validate;
+	if(validate) {
+		formObj.validatedDate = moment().format('YYYY-MM-DD');
+	}
 
 	delete formObj.choice;
 
