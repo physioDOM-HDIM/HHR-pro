@@ -1,5 +1,7 @@
 
-__v0.0.19-Pre__
+__v0.0.19__
+
+> Nota : don't forget to apply the initDB/lists.json modification
 
   - #145 : [Beneficiary/Bene_edit/Address][physioDOM-v0.0.18] City
   - #144 : [Data sect°/Prescript° Data monitoring][physioDOM-v0.0.18] Delete Button
