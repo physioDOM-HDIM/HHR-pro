@@ -56,7 +56,8 @@ var ICurrentStatus = {
 						if (updateItem.validated) {
 
 							var dataRecord = {
-								items: []
+								items: [],
+								healthStatus: true
 							};
 
 							switch (currentStatus.name) {

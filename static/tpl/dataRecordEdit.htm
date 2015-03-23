@@ -259,6 +259,7 @@
 	</div>
 
 	<form name="dataRecord" id="dataRecord" onsubmit="create(); return false;">
+		<!--{% if dataRecordItems.healthStatus %}Locked DataRecord{% endif %}-->
 		<zdk-panel heading="{{'Physiological parameters' |i18n}}" collapsable="false" collapsed="false">
 			<div class="row">
 				<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{{ 'Parameter'|i18n }}</div>

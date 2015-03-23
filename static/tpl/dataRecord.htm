@@ -101,12 +101,18 @@
 				<div class="row">
 					<div class="c1 col"><b>{% raw %}{{ item.date }}{% endraw %}</b> {% raw %}{{item.dateFrom}}{% endraw %}</div>
 					<div class="col">
-						<div class="{% raw %}{{item.home? 'show':'hide'}}{% endraw %}">
-							{{ "From Home" |i18n}}
-						</div>
-						<div class="{% raw %}{{item.home? 'hide':'show'}}{% endraw %}">
-							{{ "From consultation" |i18n}}
-						</div>
+					 	<template if="{% raw %}{{item.healthStatus}}{% endraw %}">
+                           <div>{{ "From Health Status" |i18n}}</div>
+                        </template>
+                        <template if="{% raw %}{{!item.healthStatus}}{% endraw %}">
+                        	<div class="{% raw %}{{item.home? 'show':'hide'}}{% endraw %}">
+								{{ "From Home" |i18n}}
+							</div>
+							<div class="{% raw %}{{item.home? 'hide':'show'}}{% endraw %}">
+								{{ "From consultation" |i18n}}
+							</div>
+                        </template>
+						
 					</div>
 					<div class="col">{% raw %}{{item.source.name.family}} {{item.source.name.given}}{% endraw %}</div>
 				</div>
