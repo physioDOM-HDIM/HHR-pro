@@ -1202,8 +1202,8 @@ function Beneficiary( ) {
 						for (var i = 0; i < lists.length; i++) {
 							for (var y in lists[i].items) { // jshint ignore:line
 								var ref = lists[i].items[y].ref;
-
-								labels[ref] = lists[i].items[y].label[lang];
+								
+								labels[ref] = lists[i].items[y].label[lang  || physioDOM.lang ] || lists[i].items[y].label.en;
 								ranks[ref] = lists[i].items[y].rank || '';
 								TVLabels[ref] = lists[i].items[y].TVLabel || '';
 								precisions[ref] = lists[i].items[y].precision ? 1 : 0;
@@ -1895,7 +1895,7 @@ function Beneficiary( ) {
 				measures.measure.forEach(function (measure) {
 					if (symptoms[measure].rank) {
 						hasMeasure = true;
-						var name = leaf + ".scale[" + symptoms[measure].ref + "]";
+						var name = leaf + ".scales[" + symptoms[measure].ref + "]";
 						msg.push({
 							name : name + ".label",
 							value: symptoms[measure].label[physioDOM.lang],
@@ -2198,6 +2198,7 @@ function Beneficiary( ) {
 			 measuresHistory.params[id].values[id].value
 			 */
 			
+			console.log( param );
 			var msg = [];
 			if (param.rank) {
 				var leaf = name + ".measuresHistory.params[" + param.text + "]";
@@ -2480,12 +2481,12 @@ function Beneficiary( ) {
 									});
 									for( var i= 0, l=answer.questions.length; i<l;i++) {
 										msg.push({
-											name : leaf + ".subscore["+i+"].label",
+											name : leaf + ".subscores["+i+"].label",
 											value: questionnaire.questions[i].label[physioDOM.lang],
 											type : "String"
 										});
 										msg.push({
-											name : leaf + ".subscore["+i+"].value",
+											name : leaf + ".subscores["+i+"].value",
 											value: answer.questions[i].choice,
 											type : "Integer"
 										});
