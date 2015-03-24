@@ -88,10 +88,10 @@ function Session( obj ) {
 			} else {
 				physioDOM.Beneficiaries()
 					.then(function(beneficiaries) {
-						return beneficiaries.getBeneficiaryByID(null, new ObjectID(that.person.id));
+						return beneficiaries.getHHR(new ObjectID(that.person.id));
 					})
 					.then( function( beneficiary ) {
-						that.person.item = professional;
+						that.person.item = beneficiary;
 						return that;
 					})
 					.then( resolve )

@@ -59,6 +59,10 @@ function Account( obj ) {
 			var session = new Session( obj );
 			session.getPerson()
 				.then( function( session ) {
+					logger.debug("createSession", session.person );
+					if( session.role === "beneficiary" ) {
+						session.beneficiary = session.person.item._id;
+					}
 					session.lang = session.person.item.communication || physioDOM.lang;
 					return session.save();
 				})

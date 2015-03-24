@@ -1,4 +1,7 @@
+__v0.0.20-pre__ Beneficiary login
 
+  - Beneficiary login
+  
 __v0.0.19__
 
 > Nota : don't forget to apply the initDB/lists.json modification

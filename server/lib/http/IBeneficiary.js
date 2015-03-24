@@ -125,7 +125,11 @@ var IBeneficiary = {
 					req.session.save();
 				}
 				*/
-				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary || new ObjectID(req.params.entryID) );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session,req.session.beneficiary || new ObjectID(req.params.entryID) );
+				}
 			})
 			.then( function(beneficiary) {
 				res.send( beneficiary );
@@ -149,7 +153,11 @@ var IBeneficiary = {
 
 			physioDOM.Beneficiaries()
 				.then(function (beneficiaries) {
-					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID);
+					if( req.session.role === "beneficiary") {
+						return beneficiaries.getHHR(req.session.beneficiary );
+					} else {
+						return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID );
+					}
 				})
 				.then(function (beneficiary) {
 
@@ -184,7 +192,11 @@ var IBeneficiary = {
 		physioDOM.Beneficiaries()
 			.then( function( _beneficiaries) {
 				beneficiaries = _beneficiaries;
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID );
+				}
 			})
 			.then( function(beneficiary) {
 
@@ -215,7 +227,11 @@ var IBeneficiary = {
 		
 		physioDOM.Beneficiaries()
 			.then( function(beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then( function(beneficiary) {
 				return beneficiary.getProfessionals( pg, offset );
@@ -234,7 +250,11 @@ var IBeneficiary = {
 		logger.trace("beneficiaryAddProfessonnal");
 		physioDOM.Beneficiaries()
 			.then( function(beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID);
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID );
+				}
 			}).then( function(beneficiary) {
 				logger.debug("get beneficiary");
 				var item;
@@ -268,7 +288,11 @@ var IBeneficiary = {
 		logger.trace("beneficiaryDelProfessonnal");
 		physioDOM.Beneficiaries()
 			.then( function(beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID);
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID );
+				}
 			}).then( function(beneficiary) {
 				return beneficiary.delProfessional(req.params.profID);
 			})
@@ -299,7 +323,11 @@ var IBeneficiary = {
 
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then(function (beneficiary) {
 				return beneficiary.getDataRecords(pg, offset, sort, sortDir, filter);
@@ -326,7 +354,11 @@ var IBeneficiary = {
 		logger.trace("datarecord", req.params.dataRecordID );
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then(function (beneficiary) {
 				return beneficiary.getCompleteDataRecordByID(req.params.dataRecordID);
@@ -357,7 +389,11 @@ var IBeneficiary = {
 		
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then(function (beneficiaryRes) {
 				beneficiary = beneficiaryRes;
@@ -390,7 +426,11 @@ var IBeneficiary = {
 		
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then(function (beneficiaryObj) {
 				beneficiary = beneficiaryObj;
@@ -439,7 +479,11 @@ var IBeneficiary = {
 
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then(function (beneficiaryObj) {
 				beneficiary = beneficiaryObj;
@@ -466,7 +510,11 @@ var IBeneficiary = {
 		logger.trace("getThreshold");
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then(function (beneficiary) {
 				return beneficiary.getThreshold();
@@ -497,7 +545,11 @@ var IBeneficiary = {
 		
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then( function(selectedBeneficiary) {
 				beneficiary = selectedBeneficiary;
@@ -533,7 +585,11 @@ var IBeneficiary = {
 		
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then( function(selectedBeneficiary) {
 				beneficiary = selectedBeneficiary;
@@ -555,7 +611,11 @@ var IBeneficiary = {
 
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then( function(selectedBeneficiary) {
 				beneficiary = selectedBeneficiary;
@@ -590,7 +650,11 @@ var IBeneficiary = {
 		var beneficiary;
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then( function(selectedBeneficiary) {
 				beneficiary = selectedBeneficiary;
@@ -618,7 +682,11 @@ var IBeneficiary = {
 		var beneficiary;
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then( function(selectedBeneficiary) {
 				beneficiary = selectedBeneficiary;
@@ -645,7 +713,11 @@ var IBeneficiary = {
 		var beneficiary;
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then( function(selectedBeneficiary) {
 				beneficiary = selectedBeneficiary;
@@ -666,7 +738,11 @@ var IBeneficiary = {
 
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then( function(selectedBeneficiary) {
 				beneficiary = selectedBeneficiary;
@@ -694,7 +770,11 @@ var IBeneficiary = {
 		
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then(function (selectedBeneficiary) {
 				beneficiary = selectedBeneficiary;
@@ -723,7 +803,11 @@ var IBeneficiary = {
 
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then(function (selectedBeneficiary) {
 				beneficiary = selectedBeneficiary;
@@ -756,7 +840,11 @@ var IBeneficiary = {
 
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then(function (selectedBeneficiary) {
 				beneficiary = selectedBeneficiary;
@@ -778,7 +866,11 @@ var IBeneficiary = {
 
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then( function(selectedBeneficiary) {
 				beneficiary = selectedBeneficiary;
@@ -803,7 +895,11 @@ var IBeneficiary = {
 
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then( function(selectedBeneficiary) {
 				beneficiary = selectedBeneficiary;
@@ -828,7 +924,11 @@ var IBeneficiary = {
 
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then( function(selectedBeneficiary) {
 				beneficiary = selectedBeneficiary;
@@ -853,7 +953,11 @@ var IBeneficiary = {
 
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then( function(selectedBeneficiary) {
 				beneficiary = selectedBeneficiary;
@@ -891,7 +995,11 @@ var IBeneficiary = {
 
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+				}
 			})
 			.then(function (selectedBeneficiary) {
 				beneficiary = selectedBeneficiary;
@@ -935,7 +1043,11 @@ var IBeneficiary = {
 		logger.trace("newDietaryPlan");
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then(function (beneficiary) {
 				var dietaryPlan = JSON.parse( req.body );
@@ -955,7 +1067,11 @@ var IBeneficiary = {
 		logger.trace("dietaryPlan");
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then(function (beneficiary) {
 				return beneficiary.getDietaryPlan();
@@ -980,7 +1096,11 @@ var IBeneficiary = {
 
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then(function (beneficiary) {
 				return beneficiary.getDietaryPlanList(pg, offset, sort, sortDir, filter);
@@ -1006,7 +1126,11 @@ var IBeneficiary = {
 		logger.trace("newPhysicalPlan");
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then(function (beneficiary) {
 				var physicalPlan = JSON.parse( req.body );
@@ -1026,7 +1150,11 @@ var IBeneficiary = {
 		logger.trace("physicalPlan");
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then(function (beneficiary) {
 				return beneficiary.getPhysicalPlan();
@@ -1051,7 +1179,11 @@ var IBeneficiary = {
 
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then(function (beneficiary) {
 				return beneficiary.getPhysicalPlanList(pg, offset, sort, sortDir, filter);
@@ -1076,7 +1208,11 @@ var IBeneficiary = {
 
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
 			})
 			.then(function (beneficiary) {
 				return beneficiary.getEventList(pg, offset, sort, sortDir, filter);

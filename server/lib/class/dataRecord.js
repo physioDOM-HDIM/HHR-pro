@@ -54,21 +54,39 @@ function DataRecord( beneficiaryID ) {
 							that[prop] = doc[prop];
 						}
 					}
-
-					physioDOM.Directory()
-						.then( function( directory ) {
-							if( that.source ) {
-								return directory.getEntryByID( that.source );
-							} else {
-								return null;
-							}
-						})
-						.then( function( professional ) {
-							if( professional ) {
-								that.source = professional;
-							}
-							resolve(that);
-						});
+					
+					if( that.source && that.source.toString() === beneficiaryID.toString() ) {
+						logger.info("source is the beneficiary");
+						physioDOM.Beneficiaries()
+							.then(function (beneficiaries) {
+								if (that.source) {
+									return beneficiaries.getHHR(that.source);
+								} else {
+									return null;
+								}
+							})
+							.then(function (beneficiary) {
+								if (beneficiary) {
+									that.source = beneficiary;
+								}
+								resolve(that);
+							});
+					} else {
+						physioDOM.Directory()
+							.then(function (directory) {
+								if (that.source) {
+									return directory.getEntryByID(that.source);
+								} else {
+									return null;
+								}
+							})
+							.then(function (professional) {
+								if (professional) {
+									that.source = professional;
+								}
+								resolve(that);
+							});
+					}
 				}
 			});
 		});

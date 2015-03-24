@@ -68,28 +68,51 @@ function DataRecords( beneficiaryID ) {
 			cursorSort.datetime = -1;
 		}
 		cursor = cursor.sort( cursorSort );
-		
+		var that = this;
 		return dbPromise.getList(cursor, pg, offset)
 			.then( function( list ) {
 				var promises = list.items.map( function( item ) {
-					return physioDOM.Directory()
-						.then( function( directory ) {
-							if( item.source ) {
-								return directory.getEntryByID( item.source );
-							} else {
-								return null;
-							}
-						})
-						.then( function( professional ) {
-							if( professional ) {
-								item.source = professional;
-							}
-							return item;
-						})
-						.catch( function(err) {
-							logger.warning("getList error",err);
-							return item;
-						});
+					if( item.source && item.source.toString() === that.beneficiaryID.toString() ) {
+						item.self = true;
+						return physioDOM.Beneficiaries()
+							.then(function (Beneficiaries) {
+								if (item.source) {
+									return Beneficiaries.getHHR(item.source);
+								} else {
+									return null;
+								}
+							})
+							.then(function (beneficiary) {
+								if (beneficiary) {
+									item.source = beneficiary;
+								}
+								return item;
+							})
+							.catch(function (err) {
+								logger.warning("getList error", err);
+								return item;
+							});
+					} else {
+						item.self = false;
+						return physioDOM.Directory()
+							.then(function (directory) {
+								if (item.source) {
+									return directory.getEntryByID(item.source);
+								} else {
+									return null;
+								}
+							})
+							.then(function (professional) {
+								if (professional) {
+									item.source = professional;
+								}
+								return item;
+							})
+							.catch(function (err) {
+								logger.warning("getList error", err);
+								return item;
+							});
+					}
 				});
 				
 				return RSVP.all( promises )
