@@ -150,6 +150,12 @@
 								<template if="{% raw %}{{ item.service == 'Beneficiary' }}{% endraw %}">
 									{{"Beneficiary"|i18n}}
 								</template>
+								<template if="{% raw %}{{ item.service == 'Dietary plan' }}{% endraw %}">
+									{{"Dietary plan"|i18n}}
+								</template>
+								<template if="{% raw %}{{ item.service == 'Physical plan' }}{% endraw %}">
+									{{"Physical plan"|i18n}}
+								</template>
 								<template if="{% raw %}{{ item.service == 'Data record' }}{% endraw %}">
 									{{"Data record"|i18n}}
 								</template>
@@ -179,6 +185,12 @@
 							<div style="-webkit-flex:1; -ms-flex:1; flex:1; text-align:right">
 								<template if="{% raw %}{{ item.service == 'Beneficiary' }}{% endraw %}">
 									<span></span>
+								</template>
+								<template if="{% raw %}{{ item.service == 'Dietary plan' }}{% endraw %}">
+									<a href="/dietary-plan"><button class="blue small">{{"View"|i18n}}</button></a>
+								</template>
+								<template if="{% raw %}{{ item.service == 'Physical plan' }}{% endraw %}">
+									<a href="/physical-plan"><button class="blue small">{{"View"|i18n}}</button></a>
 								</template>
 								<template if="{% raw %}{{ item.service == 'Data record' }}{% endraw %}">
 									<a href="/datarecord/{% raw %}{{item.ref}}{% endraw %}"><button class="blue small">{{"View"|i18n}}</button></a>
