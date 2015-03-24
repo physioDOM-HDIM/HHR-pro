@@ -110,19 +110,10 @@
 						{% endif %}
 						
 						{% raw %}{{/item}}{% endraw %}
-
-						
-
 					</div>
 				
-					<div class="row">
-					{% if cat === 'questionnaire' %}
-						<pre style="font-family:inherit; margin-left:50px">{{item.comment}}</pre>
-					{% else %}
-						<div class="row marged">
-							{{ item.comment }}
-						</div>
-					{% endif %}
+					<div class="row marged">
+						{{ item.comment }}
 					</div>
 				</div>
 
