@@ -1316,9 +1316,9 @@ function IPage() {
 				.then(function(result) {
 					data.session = result.session;
 					if( req.session.role === "beneficiary") {
-						return beneficiaries.getHHR(req.session.beneficiary );
+						return result.beneficiaries.getHHR(req.session.beneficiary );
 					} else {
-						return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+						return result.beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
 					}
 				})
 				.then(function (beneficiary) {
