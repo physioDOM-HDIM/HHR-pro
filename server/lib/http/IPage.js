@@ -1462,9 +1462,23 @@ function IPage() {
 				data.beneficiary = beneficiary;
 				return new CurrentStatus().get(beneficiary._id, name);
 			})
-			.then( function(status) {
+			.then(function(status) {
 				data.status = status;
-
+				return physioDOM.Directory();
+			})
+			.then( function(directory) {
+				if(data.status.validatedAuthor) {
+					return directory.getEntryByID(data.status.validatedAuthor.toString());
+				} else {
+					return null;
+				}
+			})
+			.then(function(author) {
+				logger.trace(author);
+				if(author !== null) {
+					data.author = author;
+					logger.trace(data);
+				}
 				render('/static/tpl/current/' + name + '.htm', data, res, next);
 			})
 			.catch(function(err) {

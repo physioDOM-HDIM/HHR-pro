@@ -27,7 +27,30 @@ window.addEventListener("DOMContentLoaded", function () {
 
 	infos.btnSave = document.querySelector('#saveBtn');
 
+	var isHealthStatus = (document.querySelector('.health-status').innerHTML === 'true');
+	if(isHealthStatus) {
+		utils.lockActions();
+	}
+
+	if(!archiveUpdate) {
+		isHealthStatusValidated()
+	}
+
 }, false);
+
+function isHealthStatusValidated() {
+	utils.promiseXHR("GET", "/api/beneficiary/current/validation", 200)
+		.then(function (res) {
+			infos.isValid = JSON.parse(res).isValid;
+			if(!infos.isValid) {
+				var noValidationMessage = document.querySelector('.no-validation');
+				utils.lockActions();
+				utils.lockdown();
+				
+				utils.showElt(noValidationMessage, 'no-validation alert-info-error');
+			}
+		});
+}
 
 window.addEventListener("beforeunload", function (e) {
 	var confirmationMessage;

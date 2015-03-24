@@ -34,6 +34,12 @@ input.assist { max-width: none; }
 	font-size: 0.9em;
 }
 
+.validated-date {
+	color: #b0b0b0;
+	padding: 0 10px;
+	font-size: 16px;
+}
+
 .value-date, .questionnaire-date {
 	color: #b0b0b0;
 	padding: 0 10px;
@@ -92,4 +98,8 @@ textarea {
 	top: 0;
 	bottom: 0;
 	margin: 0;
+}
+
+a.button.small.blue[disabled] {
+	opacity: 0.65;
 }

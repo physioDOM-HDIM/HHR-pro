@@ -21,7 +21,7 @@ function computeBMI() {
 		document.getElementById('bmiInput').value = bmi.toFixed(2);
 	}
 
-	validateChecking();
+	//validateChecking();
 }
 
 function showConfirm() {
@@ -32,14 +32,14 @@ function hideConfirm() {
 	document.getElementById('confirmModal').hide();
 }
 
-function validateChecking() {
-	var validateButton = document.querySelector('.validate-button');
+// function validateChecking() {
+// 	var validateButton = document.querySelector('.validate-button');
 
-	if(validateButton) {
-		var formObj = form2js(document.getElementById('formDiet'));
-		validateButton.disabled = (!formObj.weight || !formObj.lean || !formObj.bmi || !formObj.mnaAnswer || !formObj.mnaSfAnswer || !formObj.snaqAnswer || !formObj.dhdAnswer);
-	}
-}
+// 	if(validateButton) {
+// 		var formObj = form2js(document.getElementById('formDiet'));
+// 		validateButton.disabled = (!formObj.weight || !formObj.lean || !formObj.bmi || !formObj.mnaAnswer || !formObj.mnaSfAnswer || !formObj.snaqAnswer || !formObj.dhdAnswer);
+// 	}
+// }
 
 /**
  * ACTIONS
@@ -125,32 +125,19 @@ function saveDiet(validate) {
 	}
 }
 
+
 function validate() {
 	var formObj = saveDiet(true);
 
 	formObj.assistance = saveAssistance(true);
 	formObj.validated = true;
+	formObj.validatedDate = moment().format('YYYY-MM-DD');
 
 	sendDatas(formObj, function(res) {
-		if (JSON.parse(res).validated) {
-			document.getElementById('buttons').innerHTML = '';
-
-			var inputs = document.querySelectorAll('input');
-			for (var i = 0; i < inputs.length; ++i) {
-				if(Utils.hasClass(inputs[i], 'to-disable')) {
-					inputs[i].setAttribute('disabled', true);
-				}
-			}
-
-			var textareas = document.querySelectorAll('textarea');
-			for (i = 0; i < textareas.length; ++i) {
-				if(Utils.hasClass(textareas[i], 'to-disable')) {
-					textareas[i].setAttribute('disabled', true);
-				}
-			}
-		}
-		new Modal('saveSuccess');
-		modified = false;
+		new Modal('saveSuccess', function() {
+			modified = false;
+			window.location.href = '/current/nutrition';
+		});
 	});
 }
 
@@ -213,6 +200,7 @@ function getAssistanceList(callback) {
 }
 
 window.addEventListener('DOMContentLoaded', function() {
+	moment.locale(Cookies.get("lang")=="en"?"en-gb":Cookies.get("lang"));
 	document.getElementById('sizeInput').addEventListener('change', computeBMI);
 	document.getElementById('weightInput').addEventListener('change', computeBMI);
 	document.addEventListener('change', function( evt ) {
@@ -222,14 +210,20 @@ window.addEventListener('DOMContentLoaded', function() {
 	datas.idxValue = document.querySelector('#idxValue').innerHTML;
 	var inputList = document.querySelectorAll('input');
 
-	for(var i=0; i<inputList.length; i++) {
-        inputList[i].addEventListener('input', validateChecking, false);
-    }
+	// for(var i=0; i<inputList.length; i++) {
+ //        inputList[i].addEventListener('input', validateChecking, false);
+ //    }
 
-    validateChecking();
+    //validateChecking();
     getAssistanceList();
 
     datas.savedData = form2js(document.getElementById('formDiet'));
+
+    //init lockdown
+    datas.validateStatus = (document.querySelector('#validate-status').innerHTML === 'true');
+    if(datas.validateStatus) {
+    	Utils.lockdown();
+    }
 
 });
 

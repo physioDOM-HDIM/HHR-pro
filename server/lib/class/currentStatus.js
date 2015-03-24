@@ -21,6 +21,40 @@ var logger = new Logger('CurrentStatus');
  */
 function CurrentStatus() {
 
+	this.isValidated = function(beneficiaryID) {
+
+		var that = this;
+		return new Promise( function(resolve, reject) {
+			logger.trace('isValidated', beneficiaryID);
+
+			physioDOM.db.collection('currentStatuses').find({
+				subject: beneficiaryID
+			}).toArray( function (err, doc) {
+				logger.trace('________________');
+				if (err) {
+					logger.alert('Database error');
+					throw err;
+				}
+				if (!doc) {
+					logger.trace('not found', beneficiaryID);
+					reject({code: 404, error: 'not found'});
+				}
+				else {
+					logger.trace('found', doc);
+					var valid = true;
+					for(var i = 0; i< doc.length; i++) {
+						if(!doc[i].validated) {
+							valid = false;
+							break;
+						}
+					}
+					
+					resolve(valid);
+				}
+			});
+		});
+	};
+
 	/**
 	 * Get a current status from the database known by its subject (beneficiary 
 	 * ID) and its name (well, nutrition, activity).
@@ -99,10 +133,10 @@ function CurrentStatus() {
 			var schema = '/' + entry.name;
 			var check = CurrentStatusSchema.validator.validate( entry, {'$ref': schema} );
 			if (check.errors.length) {
-				return reject({error: 'bad format', detail: check.errors});
+				reject({error: 'bad format', detail: check.errors});
 			}
 			else {
-				return resolve(entry);
+				resolve(entry);
 			}
 		});
 	}
