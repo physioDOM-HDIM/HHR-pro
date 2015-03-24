@@ -308,7 +308,10 @@
 <zdk-modal id="confirmModal" closebutton="false">
 	<div class="modalContainer">
 		<div class="modalTitleContainer">{{'Confirmation' | i18n}}</div>
-		<div class="modalContentContainer">{{'Are you sure?' |i18n}}</div>
+		<div class="modalContentContainer">
+			<p>{{'This action will lock all the datas entered. There is no going back to edit the datas.'|i18n}}<br>
+			{{'Are you sure you want to continue ?' |i18n}}</p>
+		</div>
 		<div class="modalButtonContainer">
 			<button class="red" onclick="hideConfirm();">{{'Cancel' | i18n}}</script>
 			<button class="green" onclick="hideConfirm(); validate()">{{'Validate' | i18n}}</script>
