@@ -78,52 +78,52 @@ var ICurrentStatus = {
 								case 'well':
 
 									if(currentStatus.sf36Answer) {
-										dataRecord.items.push({category: 'questionnaire', text: 'SF36', value: currentStatus.sf36Score, ref: currentStatus.sf36Answer});
+										dataRecord.items.push({category: 'questionnaire', text: 'SF36', value: currentStatus.sf36Score, ref: currentStatus.sf36Answer, comment: currentStatus.commentSf36});
 									}
 
 									break;
 								case 'nutrition':
 
 									if(currentStatus.weight) {
-										dataRecord.items.push({category: 'HDIM', text: 'WEG', value: currentStatus.weight});
+										dataRecord.items.push({category: 'HDIM', text: 'WEG', value: currentStatus.weight, comment: currentStatus.commentWeight});
 									}
 
 									if(currentStatus.lean) {
-										dataRecord.items.push({category: 'HDIM', text: 'LFR', value: currentStatus.lean});
+										dataRecord.items.push({category: 'HDIM', text: 'LFR', value: currentStatus.lean, comment: currentStatus.commentLean});
 									}
 
 									if(currentStatus.bmi) {
-										dataRecord.items.push({category: 'HDIM', text: 'BMI', value: currentStatus.bmi});
+										dataRecord.items.push({category: 'HDIM', text: 'BMI', value: currentStatus.bmi, comment: currentStatus.commentBmi});
 									}
 
 									if(currentStatus.mnaAnswer) {
-										dataRecord.items.push({category: 'questionnaire', text: 'MNA', value: currentStatus.mnaScore, ref: currentStatus.mnaAnswer});
+										dataRecord.items.push({category: 'questionnaire', text: 'MNA', value: currentStatus.mnaScore, ref: currentStatus.mnaAnswer, comment: currentStatus.commentMna});
 									}
 
 									if(currentStatus.mnaSfAnswer) {
-										dataRecord.items.push({category: 'questionnaire', text: 'MNA_MINI', value: currentStatus.mnaSfScore, ref: currentStatus.mnaSfAnswer});
+										dataRecord.items.push({category: 'questionnaire', text: 'MNA_MINI', value: currentStatus.mnaSfScore, ref: currentStatus.mnaSfAnswer, comment: currentStatus.commentMnaSf});
 									}
 
 									if(currentStatus.snaqAnswer) {
-										dataRecord.items.push({category: 'questionnaire', text: 'SNAQ', value: currentStatus.snaqScore, ref: currentStatus.snaqAnswer});
+										dataRecord.items.push({category: 'questionnaire', text: 'SNAQ', value: currentStatus.snaqScore, ref: currentStatus.snaqAnswer, comment: currentStatus.commentSnaq});
 									}
 
 									if(currentStatus.dhdAnswer) {
-										dataRecord.items.push({category: 'questionnaire', text: 'DHD-FFQ', value: currentStatus.dhdScore, ref: currentStatus.dhdAnswer});
+										dataRecord.items.push({category: 'questionnaire', text: 'DHD-FFQ', value: currentStatus.dhdScore, ref: currentStatus.dhdAnswer, comment: currentStatus.commentDhd});
 									}
 										
 									break;
 								case 'activity':
 
 									if(currentStatus.stepsNumber) {
-										dataRecord.items.push({category: 'HDIM', text: 'DIST', value: currentStatus.stepsNumber});
+										dataRecord.items.push({category: 'HDIM', text: 'DIST', value: currentStatus.stepsNumber, comment: currentStatus.commentStepsNumber});
 									}
 
 									break;
 								case 'frailty':
 
 									if(currentStatus.chairStandAnswer) {
-										dataRecord.items.push({category: 'questionnaire', text: 'CHAIR_TEST', value: currentStatus.chairStandScore, ref: currentStatus.chairStandAnswer});
+										dataRecord.items.push({category: 'questionnaire', text: 'CHAIR_TEST', value: currentStatus.chairStandScore, ref: currentStatus.chairStandAnswer, comment: currentStatus.commentchairStand});
 									}
 
 									break;
