@@ -394,11 +394,12 @@
 			</div>
 			<div class="row">
 				<label>{{ "Password" | i18n }}</label>
-				<input type="password" name="account.password"/>
+				<input type="hidden" name="password"  value="{{beneficiary.account.password}}" />
+				<input type="password" name="account.password" value="{{beneficiary.account.password}}"/>
 			</div>
 			<div class="row">
 				<label>{{ "Confirm password" | i18n }}</label>
-				<input type="password" name="checkAccountPassword"/>
+				<input type="password" name="checkAccountPassword" value="{{beneficiary.account.password}}"/>
 			</div>
 			<div class="row tip" style="line-height:initial;margin-top:5px; margin-bottom:5px;">
 				{{"Info: The password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters" | i18n}}
@@ -412,6 +413,17 @@
 	                        {% endif %}
 	                    {% endfor %}"/>
 			</div>
+			{% if IDS %}
+			<div class="row">
+				<label>{{ "Withdrawal code"|i18n }} : </label>
+				<span style="font-weight:bold" id="OTP">{% if professional.account.OTP %}{{professional.account.OTP }}{% endif %}</span>
+			</div>
+			<div class="row">
+				<span class="spacer"></span>
+				<button type="button" class="red {% if !professional.account.OTP %}hidden{% endif %}" id="revokeCert">Revoke certificate</button>
+				<button type="button" class="blue {% if professional.account.OTP %}hidden{% endif %}" id="createCert">Generate certificate</button>
+			</div>
+			{% endif %}
 		</form>
 	</zdk-panel>
 	
