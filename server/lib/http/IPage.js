@@ -535,6 +535,12 @@ function IPage() {
 		var html;
 		var that = this;
 		
+		if( req.session.role === "beneficiary" ) {
+			logger.warning("beneficiary connected redirect to overview");
+			res.header('Location', '/beneficiary/'+req.session.beneficiary.toString());
+			res.send(302);
+			return next();
+		}
 		init(req);
 		var data = {
 			admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
@@ -649,7 +655,11 @@ function IPage() {
 				return physioDOM.Beneficiaries();
 			})
 			.then( function(beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+				}
 			})
 			.then( function( beneficiary ) {
 				moment.locale(req.cookies.lang==="en"?"en-gb":req.cookies.lang);
@@ -1052,7 +1062,11 @@ function IPage() {
 					return physioDOM.Beneficiaries();
 				})
 				.then(function (beneficiaries) {
-					return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+					if( req.session.role === "beneficiary") {
+						return beneficiaries.getHHR(req.session.beneficiary );
+					} else {
+						return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+					}
 				})
 				.then(function (beneficiary) {
 					data.beneficiary = beneficiary;
@@ -1089,7 +1103,11 @@ function IPage() {
 				return physioDOM.Beneficiaries();
 			})
 			.then(function(beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+				}
 			})
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
@@ -1139,7 +1157,11 @@ function IPage() {
 					return physioDOM.Beneficiaries();
 				})
 				.then(function (beneficiaries) {
-					return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+					if( req.session.role === "beneficiary") {
+						return beneficiaries.getHHR(req.session.beneficiary );
+					} else {
+						return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+					}
 				})
 				.then(function (beneficiary) {
 					data.beneficiary = beneficiary;
@@ -1189,7 +1211,11 @@ function IPage() {
 					return physioDOM.Beneficiaries();
 				})
 				.then(function (beneficiaries) {
-					return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+					if( req.session.role === "beneficiary") {
+						return beneficiaries.getHHR(req.session.beneficiary );
+					} else {
+						return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+					}
 				})
 				.then(function (beneficiary) {
 					data.beneficiary = beneficiary;
@@ -1233,7 +1259,11 @@ function IPage() {
 					return physioDOM.Beneficiaries();
 				})
 				.then(function (beneficiaries) {
-					return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+					if( req.session.role === "beneficiary") {
+						return beneficiaries.getHHR(req.session.beneficiary );
+					} else {
+						return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+					}
 				})
 				.then(function (beneficiary) {
 					data.beneficiary = beneficiary;
@@ -1285,7 +1315,11 @@ function IPage() {
 				})
 				.then(function(result) {
 					data.session = result.session;
-					return result.beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+					if( req.session.role === "beneficiary") {
+						return beneficiaries.getHHR(req.session.beneficiary );
+					} else {
+						return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+					}
 				})
 				.then(function (beneficiary) {
 					data.beneficiary = beneficiary;
@@ -1347,7 +1381,11 @@ function IPage() {
 				return physioDOM.Beneficiaries();
 			})
 			.then(function(beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+				}
 			})
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
@@ -1414,15 +1452,33 @@ function IPage() {
 					return physioDOM.Beneficiaries();
 				})
 			.then(function(beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+					if( req.session.role === "beneficiary") {
+						return beneficiaries.getHHR(req.session.beneficiary );
+					} else {
+						return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+					}
 			})
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
 				return new CurrentStatus().get(beneficiary._id, name);
 			})
-			.then( function(status) {
+			.then(function(status) {
 				data.status = status;
-
+				return physioDOM.Directory();
+			})
+			.then( function(directory) {
+				if(data.status.validatedAuthor) {
+					return directory.getEntryByID(data.status.validatedAuthor.toString());
+				} else {
+					return null;
+				}
+			})
+			.then(function(author) {
+				logger.trace(author);
+				if(author !== null) {
+					data.author = author;
+					logger.trace(data);
+				}
 				render('/static/tpl/current/' + name + '.htm', data, res, next);
 			})
 			.catch(function(err) {
@@ -1456,7 +1512,11 @@ function IPage() {
 				return physioDOM.Beneficiaries();
 			})
 			.then(function(beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+				}
 			})
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
@@ -1493,7 +1553,11 @@ function IPage() {
 				return physioDOM.Beneficiaries();
 			})
 			.then(function(beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+				}
 			})
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
@@ -1530,7 +1594,11 @@ function IPage() {
 				return physioDOM.Beneficiaries();
 			})
 			.then(function(beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+				}
 			})
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
@@ -1567,7 +1635,11 @@ function IPage() {
 				return physioDOM.Beneficiaries();
 			})
 			.then(function(beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+				}
 			})
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
@@ -1655,7 +1727,11 @@ function IPage() {
 				return physioDOM.Beneficiaries();
 			})
 			.then(function(beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+				}
 			})
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
@@ -1693,7 +1769,11 @@ function IPage() {
 				return physioDOM.Beneficiaries();
 			})
 			.then(function(beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+				}
 			})
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
@@ -1725,7 +1805,11 @@ function IPage() {
 				return physioDOM.Beneficiaries();
 			})
 			.then(function(beneficiaries) {
-				return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary );
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+				}
 			})
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;

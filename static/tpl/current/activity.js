@@ -1,14 +1,23 @@
 'use strict';
 
-var modified = false,
+var Utils = new Utils(),
+	modified = false,
 	datas = {};
 
 window.addEventListener('DOMContentLoaded', function() {
+	moment.locale(Cookies.get("lang")=="en"?"en-gb":Cookies.get("lang"));
+
 	document.addEventListener('change', function (evt) {
 		modified = true;
 	}, true);
 
 	datas.savedData = form2js(document.getElementById('form'));
+
+	//init lockdown
+    datas.validateStatus = (document.querySelector('#validate-status').innerHTML === 'true');
+    if(datas.validateStatus) {
+    	Utils.lockdown();
+    }
 
 });
 
@@ -37,19 +46,16 @@ function checkForm(validate) {
 	}
 
 	formObj.validated = validate;
+	if(validate) {
+		formObj.validatedDate = moment().format('YYYY-MM-DD');
+	}
 
 	promiseXHR('PUT', '../api/beneficiary/current/activity', 200, JSON.stringify(formObj))
 		.then(function(res) {
-			if (JSON.parse(res).validated) {
-				document.getElementById('buttons').innerHTML = '';
-
-				var inputs = document.querySelectorAll('input');
-				for (var i = 0; i < inputs.length; ++i) {
-					inputs[i].setAttribute('disabled', true);
-				}
-			}
-			new Modal('saveSuccess');
-			modified = false;
+			new Modal('saveSuccess', function() {
+				modified = false;
+				window.location.href = '/current/activity';
+			});
 		}, function(error) {
 			new Modal('errorOccured');
 			console.log(error);

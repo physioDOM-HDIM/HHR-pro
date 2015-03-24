@@ -194,3 +194,25 @@ Utils.prototype.limitText = function(elt, limitNumber) {
     }, false);
 
 }
+
+Utils.prototype.lockdown = function() {
+    var inputList = [].slice.call(document.querySelectorAll('input')),
+        selectList = [].slice.call(document.querySelectorAll('select')),
+        textareaList = [].slice.call(document.querySelectorAll('textarea')),
+        fieldList = inputList.concat(selectList, textareaList);
+
+    for(var i = 0; i< fieldList.length; i++) {
+        fieldList[i].setAttribute('disabled', true);
+    }
+}
+
+Utils.prototype.lockActions = function() {
+    var buttonList = [].slice.call(document.querySelectorAll('button'));
+
+    for(var i = 0; i< buttonList.length; i++) {
+        if(!this.hasClass(buttonList[i], 'not-disabled')) {
+            buttonList[i].setAttribute('disabled', true); 
+        }
+    }
+}
+

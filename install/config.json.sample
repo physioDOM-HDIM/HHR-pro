@@ -13,5 +13,11 @@
     "protocol":"http",
     "ip":"127.0.0.1",
     "port":9000
+  },
+  "IDS": {
+    "ip":"10.122.31.126",
+    "appName": "secureapp21.idshost.fr",
+    "unit":"test"
+    "OrganizationUnit":"physioDOM"
   }
 }

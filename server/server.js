@@ -719,6 +719,8 @@ server.post('/api/beneficiaries/:entryID/dataprog', IBeneficiary.setDataProg );
 server.del( '/api/beneficiary/dataprog/:dataProgItemID', IBeneficiary.removeDataProg );
 server.del( '/api/beneficiaries/:entryID/dataprog/:dataProgItemID', IBeneficiary.removeDataProg );
 
+server.get( '/api/beneficiary/current/validation', ICurrentStatus.isValidated);
+
 server.get( '/api/beneficiary/current/:name', ICurrentStatus.get);
 server.put( '/api/beneficiary/current/:name', ICurrentStatus.put);
 

@@ -378,21 +378,31 @@
 	
 	<zdk-panel heading="{{'Access to HHR-Pro'|i18n}}" collapsable="true" collapsed="true">
 		<form name="account" autocomplete="off" onsubmit="return false;">
+			<!--
+			<div class="row" style="height:35px">
+				<input type="hidden" name="telecom[0].use" value="work">
+				<div class="col">
+					<input type="hidden"  name="telecom[0].system" value="email">
+					<label>{{"Email"|i18n}}</label>
+					<input name="email" value="" type="email" required />
+				</div>
+			</div>
+			-->
 			<div class="row">
 				<label>{{ "Login" | i18n }}</label>
 				<input type="text" name="account.login" value="{{beneficiary.account.login}}"/>
 			</div>
 			<div class="row">
 				<label>{{ "Password" | i18n }}</label>
-				<input type="password" name="account.password"/>
+				<input type="hidden" name="password"  value="{{beneficiary.account.password}}" />
+				<input type="password" name="account.password" value="{{beneficiary.account.password}}"/>
 			</div>
 			<div class="row">
 				<label>{{ "Confirm password" | i18n }}</label>
-				<input type="password" name="checkAccountPassword"/>
+				<input type="password" name="checkAccountPassword" value="{{beneficiary.account.password}}"/>
 			</div>
-			<div class="row tip">
-				{{'Info: The password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at
-				least 8 characters' | i18n}}
+			<div class="row tip" style="line-height:initial;margin-top:5px; margin-bottom:5px;">
+				{{"Info: The password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters" | i18n}}
 			</div>
 			<div class="row">
 				<label>{{ "Email"|i18n }}</label>
@@ -403,6 +413,17 @@
 	                        {% endif %}
 	                    {% endfor %}"/>
 			</div>
+			{% if IDS %}
+			<div class="row">
+				<label>{{ "Withdrawal code"|i18n }} : </label>
+				<span style="font-weight:bold" id="OTP">{% if professional.account.OTP %}{{professional.account.OTP }}{% endif %}</span>
+			</div>
+			<div class="row">
+				<span class="spacer"></span>
+				<button type="button" class="red {% if !professional.account.OTP %}hidden{% endif %}" id="revokeCert">Revoke certificate</button>
+				<button type="button" class="blue {% if professional.account.OTP %}hidden{% endif %}" id="createCert">Generate certificate</button>
+			</div>
+			{% endif %}
 		</form>
 	</zdk-panel>
 	

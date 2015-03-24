@@ -21,16 +21,33 @@
 {% block content %}
 <div class="hidden" id="unsave">{{"You have unsaved data"|i18n}}</div>
 <div class="hidden" id="changelang">{{"Are you sure to cancel your changes ?"|i18n}}</div>
+
+
+<div class="hidden" id="validate-status">{{status.validated}}</div>
+
 <div id="content">
+
+	{% if status.validated && status.validatedDate %}
+		<div class="validated-date right">
+			{{ status.validatedDate | date }} {{"by"|i18n}} {{ author.name.family + ' ' + author.name.given }}
+		</div>
+	{% endif %}
+
 	<zdk-panel heading="{{ 'Frailty status' | i18n }}">
-		<form name="form" id="form" autocomplete="off" onsubmit="checkForm(); return false;">
+	
+		<form name="form" id="form" autocomplete="off">
 			<div class="row value-row questionnaire-row" data-name="CHAIR_TEST">
 				<div class="quest-name">{{'Chair stand results' | i18n }}</div>
 				<div class="questionnaire-date">{% if status.chairStandDate %}{{ status.chairStandDate | date }}{% endif %}</div>
-				<input type="text" class="questionnaire-score" value="{{status.chairStandScore}}" disabled />
+				<input type="text" class="questionnaire-score" value="{{status.chairStandScore}}" readonly />
 				<input type="hidden" class="questionnaire-answer" name="chairStandAnswer" value="{{status.chairStandAnswer}}" />
 				<div class="questionnaire-button-container">
-					<a class="button small blue" href={% if status.chairStandAnswer %}"/answers/{{status.chairStandAnswer}}"{% else %}"/questionnaire/CHAIR_TEST"{% endif %}>{{'Questionnaire'|i18n}}</a>
+					<a 
+						class="button small blue" 
+						href={% if status.chairStandAnswer %}"/answers/{{status.chairStandAnswer}}"{% else %}"/questionnaire/CHAIR_TEST"{% endif %}
+						{% if status.validated && !status.chairStandScore %}disabled{% endif %}>
+						{{'Questionnaire'|i18n}}
+					</a>
 				</div>
 			</div>
 			<div class="row value-row">
@@ -41,8 +58,7 @@
 					class="comment-input to-disable"
 					type="text"
 					name="commentchairStand"
-					value="{{status.commentchairStand}}"
-					{% if status.validated %}disabled{% endif %} />
+					value="{{status.commentchairStand}}" />
 			</div>
 
 			<div class="row value-row" style="padding-left: 210px">
@@ -55,8 +71,7 @@
 					class="value-checkbox choice-normal" 
 					style="width:100px" 
 					{% if status.normal %}checked{% endif %} 
-					{% if !status.normal && !status.risk %}checked{% endif %} 
-					{% if status.validated %}disabled{% endif %}/>
+					{% if !status.normal && !status.risk %}checked{% endif %} />
 				
 				{{'Risk of fail'|i18n}} 
 				<input 
@@ -64,23 +79,24 @@
 					name="choice"
 					value="risk"
 					class="value-checkbox choice-risk" 
-					{% if status.risk %}checked{% endif %} 
-					{% if status.validated %}disabled{% endif %} />
+					{% if status.risk %}checked{% endif %} />
 
 			</div>
-			
-			{% if rights.write %}
-				{% if !status.validated %}
-				<div id="buttons" class="row control">
-					<span class="spacer"></span>
-					<button type="button" class="blue" onclick="showConfirm();">{{'Validate'|i18n}}</button>
-					<button type="button" class="red" onclick="modified=false; location.reload();">{{'Cancel'|i18n}}</button>
-					<button class="green">{{'Save'|i18n}}</button>
-				</div>
-				{% endif %}
-			{% endif %}
+
 		</form>
 	</zdk-panel>
+
+	{% if rights.write %}
+		{% if !status.validated %}
+		<div id="buttons" class="row control">
+			<span class="spacer"></span>
+			<button type="button" class="blue" onclick="showConfirm();">{{'Validate'|i18n}}</button>
+			<button type="button" class="red" onclick="modified=false; location.reload();">{{'Cancel'|i18n}}</button>
+			<button type="button" class="green" onclick="checkForm();">{{'Save'|i18n}}</button>
+		</div>
+		{% endif %}
+	{% endif %}
+
 </div>
 
 {% include "../modal.htm" %}

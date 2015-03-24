@@ -20,101 +20,119 @@
 {% block content %}
 
 <div class="row title">
-<label class="title">
-	{{ "Select a Record"|i18n }}
-</label>
+	<label class="title">
+		{{ "Select a Record"|i18n }}
+	</label>
 </div>
 
 <zdk-panel heading="{{'Filter'|i18n}} / {{'Sort'|i18n}}" collapsable="true" collapsed="false">
 	<div>
-	<form class="filter" name="filter" autocomplete="off" onsubmit="validFilter(); return false;">
-		<div class="row">
-			<div class="col">
-				<label class="collabel" for="startDate">{{ "Since"|i18n }} : </label>
-				<div class="colcontent">
-					<zdk-input-date class="startDate" name="startDate" onchange="updateCal()" style="z-index:100"></zdk-input-date>
+		<form class="filter" name="filter" autocomplete="off" onsubmit="validFilter(); return false;">
+			<div class="row">
+				<div class="col">
+					<label class="collabel" for="startDate">{{ "Since"|i18n }} : </label>
+					
+					<div class="colcontent">
+						<zdk-input-date class="startDate" name="startDate" onchange="updateCal()"
+						                style="z-index:100"></zdk-input-date>
+					</div>
+				</div>
+				<div class="col">
+					<label class="collabel" for="endDate">{{ "To"|i18n }} : </label>
+					
+					<div class="colcontent">
+						<zdk-input-date class="endDate" name="endDate" onchange="updateCal()"
+						                style="z-index:100"></zdk-input-date>
+					</div>
 				</div>
 			</div>
-			<div class="col">
-				<label class="collabel" for="endDate">{{ "To"|i18n }} : </label>
-				<div class="colcontent">
-					<zdk-input-date class="endDate" name="endDate" onchange="updateCal()" style="z-index:100"></zdk-input-date>
-				</div>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">
-				<label class="collabel" for="provider">{{ "Professional"|i18n }} : </label>
-				<div class="colcontent">
-					<select name="source" id="provider">
-					<option value=""></option>
+			<div class="row">
+				<div class="col">
+					<label class="collabel" for="provider">{{ "Professional"|i18n }} : </label>
+					
+					<div class="colcontent">
+						<select name="source" id="provider">
+							<option value=""></option>
 							{% for item in professionals %}
-							<option value="{{item._id.toString()}}" >{{item.name.family}} {{item.name.given}}</option>
+							<option value="{{item._id.toString()}}">{{item.name.family}} {{item.name.given}}</option>
 							{% endfor %}
 						</select>
+					</div>
 				</div>
+				<div class="col"></div>
 			</div>
-			<div class="col"></div>
-		</div>
-		<div class="row control">
-			<span class="spacer"></span>
-			<button type="button" class="red" onclick="resetFilter()">{{ "Reset"|i18n }}</button>
-			<button class="green">{{ "Filter"|i18n }}</button>
-		</div>
+			<div class="row control">
+				<span class="spacer"></span>
+				<button type="button" class="red" onclick="resetFilter()">{{ "Reset"|i18n }}</button>
+				<button class="green">{{ "Filter"|i18n }}</button>
+			</div>
 		</form>
 		<div style="height:10px">&nbsp;</div>
 		<hr/>
 		<form class="order" name="order" autocomplete="off" onsubmit="validFilter(); return false;">
-		<div class="row">
-			<div class="col">
-				<label>{{ "Sort"|i18n }}:</label>
-				<select name="sort">
-					<option value="source">{{ "Professional"|i18n }}</option>
-					<option value="datetime" selected>{{ "Date"|i18n }}</option>
-					<option value="home">{{ "Type"|i18n }}</option>
-				</select>
+			<div class="row">
+				<div class="col">
+					<label>{{ "Sort"|i18n }}:</label>
+					<select name="sort">
+						<option value="source">{{ "Professional"|i18n }}</option>
+						<option value="datetime" selected>{{ "Date"|i18n }}</option>
+						<option value="home">{{ "Type"|i18n }}</option>
+					</select>
+				</div>
+				<div class="col">
+					<label>{{ "Direction"|i18n }}:</label>
+					<select name="dir">
+						<option value="1">{{ "ascending"|i18n }}</option>
+						<option value="-1" selected>{{ "descending"|i18n }}</option>
+					</select>
+				</div>
 			</div>
-			<div class="col">
-				<label>{{ "Direction"|i18n }}:</label>
-				<select name="dir">
-					<option value="1">{{ "ascending"|i18n }}</option>
-					<option value="-1" selected>{{ "descending"|i18n }}</option>
-				</select>
+			<div class="row control">
+				<span class="spacer"></span>
+				
+				<button type="button" class="red" onclick="resetOrder()">{{ "Reset"|i18n }}</button>
+				<button class="green">{{ "Sort"|i18n }}</button>
 			</div>
-		</div>
-		<div class="row control">
-			<span class="spacer"></span>
-
-			<button type="button" class="red" onclick="resetOrder()">{{ "Reset"|i18n }}</button>
-			<button class="green">{{ "Sort"|i18n }}</button>
-		</div>
 		</form>
 	</div>
 
 </zdk-panel>
 
 <tsante-list url="/api/beneficiary/datarecords" pg="1" auto="true" autoRender="false" unresolved id="tsanteList">
-<template is="auto-binding" repeat="{% raw %}{{item in list.items}}{% endraw %}">
-	<div class="item">
-		<div class="row">
-			<div class="flex-line">
-				<div class="row">
-					<div class="c1 col"><b>{% raw %}{{ item.date }}{% endraw %}</b> {% raw %}{{item.dateFrom}}{% endraw %}</div>
-					<div class="col">
-						<div class="{% raw %}{{item.home? 'show':'hide'}}{% endraw %}">
-							{{ "From Home" |i18n}}
+	<template is="auto-binding" repeat="{% raw %}{{item in list.items}}{% endraw %}">
+		<div class="item">
+			<div class="row">
+				<div class="flex-line">
+					<div class="row">
+						<div class="c1 col"><b>{% raw %}{{ item.date }}{% endraw %}</b> {% raw %}{{item.dateFrom}}{%
+							endraw %}
 						</div>
-						<div class="{% raw %}{{item.home? 'hide':'show'}}{% endraw %}">
-							{{ "From consultation" |i18n}}
+						<div class="col">
+							<template if="{% raw %}{{item.healthStatus}}{% endraw %}">
+								<div>{{ "From Health Status" |i18n}}</div>
+							</template>
+							<template if="{% raw %}{{!item.healthStatus}}{% endraw %}">
+								<template if="{% raw %}{{item.home}}{% endraw %}">
+									<div>{{ "From Home" |i18n}}</div>
+								</template>
+								<template if="{% raw %}{{!item.home}}{% endraw %}">
+									<div>
+										<span class="{% raw %}{{ item.self ? 'show':'hide'}}{% endraw %}">{{ "From beneficiary" |i18n}}</span>
+										<span class="{% raw %}{{ item.self ? 'hide':'show'}}{% endraw %}">{{ "From consultation" |i18n}}</span>
+									</div>
+								</template>
+							</template>
+						</div>
+						<div class="col">{% raw %}{{item.source.name.family}} {{item.source.name.given}}{% endraw %}
 						</div>
 					</div>
-					<div class="col">{% raw %}{{item.source.name.family}} {{item.source.name.given}}{% endraw %}</div>
 				</div>
+				<div><a href="/datarecord/{%raw%}{{item._id}}{% endraw %}">
+					<button class="blue small" style="margin:5px">{{'View'|i18n}}</button>
+				</a></div>
 			</div>
-			<div><a href="/datarecord/{%raw%}{{item._id}}{% endraw %}"><button class="blue small" style="margin:5px">{{'View'|i18n}}</button></a></div>
 		</div>
-	</div>
-</template>
+	</template>
 </tsante-list>
 
 {% endblock %}

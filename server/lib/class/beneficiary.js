@@ -23,7 +23,10 @@ var RSVP = require("rsvp"),
 	dbPromise = require("./database"),
 	Queue = require("./queue.js"),
 	Symptoms = require("./symptoms.js"),
-	moment = require("moment");
+	moment = require("moment"),
+	md5 = require('MD5'),
+	soap = require("soap"),
+	Cookies = require("cookies");
 
 var logger = new Logger("Beneficiary");
 
@@ -168,7 +171,7 @@ function Beneficiary( ) {
 	this.getAccount = function() {
 		var that = this;
 		return new promise( function(resolve, reject) {
-			var search = { "person.id": that._id };
+			var search = { "person.id": that._id, "role":"beneficiary" };
 			physioDOM.db.collection("account").findOne( search, function( err, item ) {
 				if(err) {
 					throw err;
@@ -293,6 +296,74 @@ function Beneficiary( ) {
 		});
 	};
 
+	this.getEmail = function() {
+		var email = "";
+		this.telecom.forEach( function(item) {
+			if( !email && item.system === "email") {
+				email = item.value;
+			}
+		});
+		return email;
+	};
+
+	/**
+	 * @method accountUpdate
+	 *
+	 * update account information of the beneficiary, resolve with the updated object
+	 *
+	 * @param accountData
+	 * @returns {promise}
+	 */
+	this.accountUpdate = function( accountData ) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace( "accountUpdate" );
+			that.getAccount()
+				.then( function(account) {
+					logger.trace("account", accountData );
+					if ( accountData.IDS==="true" ) {
+						// keep the old login if exists
+						accountData.login = account.login;
+					}
+					if (!(accountData.login || accountData.IDS==="true" ) || !accountData.password) {
+						return reject({error: "account data incomplete"});
+					}
+					var newAccount = {
+						login   : accountData.login,
+						password: accountData.password === account.password?account.password:md5(accountData.password),
+						active  : that.active,
+						role    : "beneficiary",
+						email   : that.getEmail(),
+						person  : {
+							id        : that._id,
+							collection: "beneficiaries"
+						}
+					};
+					if( account && account._id) {
+						newAccount._id = account._id;
+						newAccount.OTP = account.OTP?account.OTP:false;
+					} else {
+						newAccount.OTP = false;
+					}
+					physioDOM.db.collection("account").save(newAccount, function (err, result) {
+						if(err) { throw err; }
+						if( isNaN(result)) {
+							newAccount._id = result._id;
+						}
+						that.account = newAccount._id;
+						that.active = true;
+						that.save()
+							.then( function( beneficiary ) {
+								logger.info("benneficiary saved, OTP : ",newAccount.OTP );
+								resolve(beneficiary, newAccount.OTP );
+							})
+							.catch( reject );
+					});
+				})
+				.catch( reject );
+		});
+	};
+	
 	/**
 	 * Update the beneficiary
 	 * 
@@ -303,6 +374,7 @@ function Beneficiary( ) {
 	 */
 	this.update = function( updatedEntry, professionalID) {
 		var that = this;
+		var accountData = null;
 		return new promise( function(resolve, reject) {
 			logger.trace("update");
 			if( that._id.toString() !== updatedEntry._id ) {
@@ -325,6 +397,9 @@ function Beneficiary( ) {
 										that.name.given = capitalize(that.name.given);
 									}
 									break;
+								case "account":
+									accountData = updatedEntry.account;
+									break;
 								default:
 									that[key] = updatedEntry[key];
 							}
@@ -333,10 +408,127 @@ function Beneficiary( ) {
 					return that.save();
 				})
 				.then( function() {
+					return new promise( function(resolve, reject) {
+						if (accountData) {
+							that.accountUpdate(accountData)
+								.then( resolve )
+								.catch( resolve );
+						} else {
+							resolve( that );
+						}
+					});
+				})
+				.then( function() {
 					that.createEvent("Beneficiary","update", updatedEntry._id, professionalID);
 				})
 				.then(resolve)
 				.catch(reject);
+		});
+	};
+
+	this.createCert = function(req, res) {
+		var that = this;
+
+		return new promise( function(resolve, reject) {
+			logger.trace("createCert" );
+			that.getAccount()
+				.then( function(account) {
+					var email = that.getEmail();
+					var cookies = new Cookies(req, res);
+
+					var certRequest = {
+						certrequest: {
+							Application       : physioDOM.config.IDS.appName,
+							Requester         : req.headers["ids-user"],
+							AuthCookie        : cookies.get("sessionids"),
+							OrganizationUnit  : physioDOM.config.IDS.OrganizationUnit,
+							Owner             : "03" + email,
+							Identifier        : email,
+							Privilege         : 255,
+							Profile           : 0,
+							Duration          : 365,
+							AuthenticationMask: 8,
+							Number            : 3,
+							Comment           : "Create certificate for " + email
+						}
+					};
+
+					var wsdl = 'http://api.idshost.priv/pki.wsdl';
+					soap.createClient(wsdl, function (err, client) {
+						if (err) {
+							logger.alert("error ", err);
+							throw err;
+						}
+
+						client.CertRequest(certRequest, function (err, result) {
+							if (err) {
+								throw err;
+							} else {
+								logger.info("certResponse", result);
+								account.OTP = result.certresponse.OTP;
+								physioDOM.db.collection("account").save(account, function(err, result) {
+									if(err) {
+										reject(err);
+									} else {
+										resolve(account);
+									}
+								});
+							}
+						});
+					});
+				})
+				.catch( reject );
+		});
+	};
+
+	this.revokeCert = function(req, res) {
+		var that = this;
+		logger.trace("revokeCert" );
+
+		return new promise( function(resolve, reject) {
+			that.getAccount()
+				.then( function(account) {
+					var cookies = new Cookies(req, res);
+					var email = that.getEmail();
+
+					var CertRevocate = {
+						certRevocateRequest : {
+							Application       : physioDOM.config.IDS.appName,
+							Requester         : req.headers["ids-user"],
+							AuthCookie        : cookies.get("sessionids"),
+							OrganizationUnit  : physioDOM.config.IDS.OrganizationUnit,
+							Owner             : "03" + email,
+							Index             : -1,
+							Comment           : "Revoke all certificates for " + email
+						}
+					};
+
+					var wsdl = 'http://api.idshost.priv/pki.wsdl';
+					soap.createClient(wsdl, function (err, client) {
+						if(err) {
+							logger.alert(err);
+							res.send(400, { code:400, message:err });
+							return next(false);
+						}
+
+						client.CertRevocate(CertRevocate, function (err, result ) {
+							if (err) {
+								throw err;
+							} else {
+								logger.info("certRevokeResponse", result);
+								account.OTP = false;
+								physioDOM.db.collection("account").save(account, function(err, result) {
+									if(err) {
+										reject(err);
+									} else {
+										resolve(account);
+									}
+								});
+							}
+						});
+					});
+				})
+				.catch( reject );
 		});
 	};
 
@@ -696,17 +888,25 @@ function Beneficiary( ) {
 	this.createDataRecord = function( dataRecordObj, professionalID) {
 		var that = this;
 		return new promise( function(resolve, reject) {
-			logger.trace("createDataRecord", dataRecordObj);
+			logger.trace("createDataRecord", dataRecordObj, professionalID);
 			var dataRecord = new DataRecord();
 			dataRecord.setup(that._id, dataRecordObj, professionalID)
 				.then(function (dataRecord) {
 					return that.createEvent('Data record', 'create', dataRecord._id, professionalID)
 				})
 				.then( function() {
-					return that.pushLastDHDFFQ();
+					if( physioDOM.config.queue ) {
+						return that.pushLastDHDFFQ();
+					} else {
+						return false
+					}
 				})
 				.then( function() {
-					return that.pushHistory();
+					if( physioDOM.config.queue ) {
+						return that.pushHistory();
+					} else {
+						return false
+					}
 				})
 				.then( function() {
 					return that.getCompleteDataRecordByID(dataRecord._id);
@@ -1002,8 +1202,8 @@ function Beneficiary( ) {
 						for (var i = 0; i < lists.length; i++) {
 							for (var y in lists[i].items) { // jshint ignore:line
 								var ref = lists[i].items[y].ref;
-
-								labels[ref] = lists[i].items[y].label[lang];
+								
+								labels[ref] = lists[i].items[y].label[lang  || physioDOM.lang ] || lists[i].items[y].label.en;
 								ranks[ref] = lists[i].items[y].rank || '';
 								TVLabels[ref] = lists[i].items[y].TVLabel || '';
 								precisions[ref] = lists[i].items[y].precision ? 1 : 0;
@@ -1325,7 +1525,7 @@ function Beneficiary( ) {
 				measures.measure.forEach(function (measure) {
 					if (parameters[measure].rank) {
 						hasMeasure = true;
-						var name = leaf + ".param[" + parameters[measure].ref + "]";
+						var name = leaf + ".params[" + parameters[measure].ref + "]";
 						msg.push({
 							name : name + ".type",
 							value: parseInt(parameters[measure].rank, 10),
@@ -1612,7 +1812,7 @@ function Beneficiary( ) {
 		logger.trace("pushSymptomsSelfToQueue");
 		
 		var queue = new Queue(this._id);
-		var leaf = "hhr[" + this._id + "].symptomsSelf.scale["+symptomSelf.ref+"]";
+		var leaf = "hhr[" + this._id + "].symptomsSelf.scales["+symptomSelf.ref+"]";
 		
 		return new promise( function(resolve, reject) {
 			var msg = [];
@@ -1695,7 +1895,7 @@ function Beneficiary( ) {
 				measures.measure.forEach(function (measure) {
 					if (symptoms[measure].rank) {
 						hasMeasure = true;
-						var name = leaf + ".scale[" + symptoms[measure].ref + "]";
+						var name = leaf + ".scales[" + symptoms[measure].ref + "]";
 						msg.push({
 							name : name + ".label",
 							value: symptoms[measure].label[physioDOM.lang],
@@ -1966,12 +2166,12 @@ function Beneficiary( ) {
 						});
 						for (var i = 0, l = quest.history.length; i < l; i++) {
 							msg.push({
-								name: leaf + ".values[" + i + "].datetime",
+								name: leaf + ".scores[" + i + "].datetime",
 								value: moment(quest.history[i].datetime).unix(),
 								type: "Integer"
 							});
 							msg.push({
-								name: leaf + ".values[" + i + "].value",
+								name: leaf + ".scores[" + i + "].value",
 								value: quest.history[i].value,
 								type: "Double"
 							});
@@ -1998,6 +2198,7 @@ function Beneficiary( ) {
 			 measuresHistory.params[id].values[id].value
 			 */
 			
+			console.log( param );
 			var msg = [];
 			if (param.rank) {
 				var leaf = name + ".measuresHistory.params[" + param.text + "]";
@@ -2280,12 +2481,12 @@ function Beneficiary( ) {
 									});
 									for( var i= 0, l=answer.questions.length; i<l;i++) {
 										msg.push({
-											name : leaf + ".subscore["+i+"].label",
+											name : leaf + ".subscores["+i+"].label",
 											value: questionnaire.questions[i].label[physioDOM.lang],
 											type : "String"
 										});
 										msg.push({
-											name : leaf + ".subscore["+i+"].value",
+											name : leaf + ".subscores["+i+"].value",
 											value: answer.questions[i].choice,
 											type : "Integer"
 										});

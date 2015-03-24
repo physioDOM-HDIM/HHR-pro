@@ -1,4 +1,10 @@
+__v0.0.20__
 
+  - Beneficiary login
+  - Current Health Status
+    - All Current statuses must be validate before creating data records ( from concusltation or home )
+    - Data records created from Current statuses are locked
+  
 __v0.0.19__
 
 > Nota : don't forget to apply the initDB/lists.json modification

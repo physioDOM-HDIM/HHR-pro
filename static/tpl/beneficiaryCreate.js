@@ -12,7 +12,7 @@ var _dataObj = null,
     _momentFormat = null,
     _currentNodeCalendar = null,
     tsanteListProfessionalElt = null,
-    passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=])[a-zA-Z0-9!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=]{8,}$/;
+	passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*§$£€+-\/\[\]\(\)\{\}\=])[a-zA-Z0-9!@#$%^&*§$£€+-\/\[\]\(\)\{\}\=]{8,}$/;
 
 var modified = false;
 
@@ -341,7 +341,7 @@ function checkAccountForm() {
         return false;
     }
 
-    if(formObj.account && !passwordRegex.test(formObj.account.password)) {
+    if(formObj.account && formObj.account.password !== formObj.password && !passwordRegex.test(formObj.account.password)) {
         new Modal('errorMatchRegexPassword');
         return false;
     }
@@ -352,6 +352,8 @@ function checkAccountForm() {
     }
 
     delete formObj.checkAccountPassword;
+	delete formObj.password;
+	
     if (formObj.telecom) {
         formObj.telecom.system = "email";
     }

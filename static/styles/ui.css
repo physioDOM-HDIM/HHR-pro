@@ -48,6 +48,10 @@ footer + section {
 
 a { text-decoration: none; color: inherit; }
 
+a[disabled] {
+    pointer-events: none;
+}
+
 @media (max-width: 992px) {
 	nav {
 		top: -50px;
@@ -506,4 +510,11 @@ zdk-input-date {
 	font-size: 11px;
 	padding: 10px;
 	border-top: 1px solid #313131;
+}
+
+.alert-info-error {
+	font-style: italic;
+	text-align: center;
+	margin: 30px;
+	color: red;
 }

@@ -15,6 +15,7 @@ var dataRecordSchema = {
 		"dataRecordID": { type:"string", description:"ObjectID from the database" },
 		"datetime": { type:"string", format:"date-time"},
 		"home": { type:"boolean", default:"false" },
+		"healthStatus": { type: "boolean", default: "false" },
 		"source": { type:"string", description:"practitioner ID"},
 		"subject": { type:"string", description:"beneficiary ID" },
 		"items": { "$ref": "/DataItems" }
