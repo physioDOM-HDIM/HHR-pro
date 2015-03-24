@@ -36,7 +36,7 @@
 			<div class="row value-row">
 
 				<div class="value-name">{{'Number of steps'|i18n}}</div>
-				<div class="value-date stepsNumberDate">{% if status.stepsNumberDate %}{{status.stepsNumberDate | date}}{% endif %}</div>
+				<div class="value-date stepsNumberDate">{% if status.stepsNumberDate %}{{status.stepsNumberDate}}{% endif %}</div>
 				<input type="number" step="1" min="0" name="stepsNumber" class="value-input" value="{{status.stepsNumber}}" />
 				<div class="value-unit">{{'steps per week'|i18n}}</div>
 
