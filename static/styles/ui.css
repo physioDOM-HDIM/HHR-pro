@@ -518,3 +518,21 @@ zdk-input-date {
 	margin: 30px;
 	color: red;
 }
+
+.row.marged {
+	padding-left: 25px;
+}
+
+.row-legend {
+	margin-right: 115px;
+}
+
+
+#dataRecord .line {
+	border-bottom: 1px solid #ccc;
+	padding: 5px;
+}
+
+#dataRecord .line:last-child {
+	border-bottom: 0px solid #ccc;
+}

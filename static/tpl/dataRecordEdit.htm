@@ -80,52 +80,69 @@
 		<div class="category hidden">{{cat}}</div>
 		<div class="readMode">
 			<div class="row">
-				{% raw %}{{#item}}{% endraw %}
-				<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{% raw %}{{ labelLang }}{% endraw %} {% if item.automatic %}({{"Auto"|i18n}}){% endif %}</div>
-				<div class="col item-value" style="max-width:150px">{{ item.value }}</div>
-				{% if cat !== 'questionnaire' %}
-				<div class="col" style="max-width:150px">{% raw %}{{ unitsLabel }}{% endraw %}</div>
-				{% else %}
-				<div class="col" style="max-width:150px">
-				<button type="button" class="blue small answer not-disabled" data-answer="{{item.ref}}" onclick="showAnswer('{{item.ref}}')">{{"Questionnaire"|i18n}}</button>
-				</div>
-				{% endif %}
-				
-				{% if cat !== 'questionnaire' %}
-				{% raw %}
-				<div class="col" style="max-width:150px">
-					<div class="min-treshold spacing-around">{{#threshold}}{{min}}{{/threshold}}</div>
-				</div>
-				<div class="col" style="max-width:150px">
-					<div class="max-treshold spacing-around">{{#threshold}}{{max}}{{/threshold}}</div>
-				</div>
-				{% endraw %}
-				{% else %}
-				<div class="col" style="max-width:150px"></div>
-				<div class="col" style="max-width:150px"></div>
-				{% endif %}
-				
-				{% raw %}{{/item}}{% endraw %}
 
-				{% if admin %}
-				<div style="width:100px; text-align:right">
-					{% if cat !== 'questionnaire' %}
-					<div>
-						<button type="button" class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">{{'Edit'|i18n}}</button>
+				<div class="col" vertical layout>
+					<div class="row">
+						{% raw %}{{#item}}{% endraw %}
+						<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{% raw %}{{ labelLang }}{% endraw %} {% if item.automatic %}({{"Auto"|i18n}}){% endif %}</div>
+						<div class="col item-value" style="max-width:150px">{{ item.value }}</div>
+						{% if cat !== 'questionnaire' %}
+						<div class="col" style="max-width:150px">{% raw %}{{ unitsLabel }}{% endraw %}</div>
+						{% else %}
+						<div class="col" style="max-width:150px">
+						<button type="button" class="blue small answer not-disabled" data-answer="{{item.ref}}" onclick="showAnswer('{{item.ref}}')">{{"Questionnaire"|i18n}}</button>
+						</div>
+						{% endif %}
+						
+						{% if cat !== 'questionnaire' %}
+						{% raw %}
+						<div class="col" style="max-width:150px">
+							<div class="min-treshold spacing-around">{{#threshold}}{{min}}{{/threshold}}</div>
+						</div>
+						<div class="col" style="max-width:150px">
+							<div class="max-treshold spacing-around">{{#threshold}}{{max}}{{/threshold}}</div>
+						</div>
+						{% endraw %}
+						{% else %}
+						<div class="col" style="max-width:150px"></div>
+						<div class="col" style="max-width:150px"></div>
+						{% endif %}
+						
+						{% raw %}{{/item}}{% endraw %}
+
+						
+
 					</div>
+				
+					<div class="row">
+					{% if cat === 'questionnaire' %}
+						<pre style="font-family:inherit; margin-left:50px">{{item.comment}}</pre>
+					{% else %}
+						<div class="row marged">
+							{{ item.comment }}
+						</div>
 					{% endif %}
-					<div>
-						<button type="button" class="red small" onclick="confirmDeleteItem('{{item._id.toString()}}')">{{'Delete'|i18n}}</button>
 					</div>
 				</div>
-				{% else %}
-				<div style="width:70px"></div>
-				{% endif %}
+
+				<div>
+					{% if admin %}
+					<div style="width:100px; text-align:right">
+						{% if cat !== 'questionnaire' %}
+						<div>
+							<button type="button" class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">{{'Edit'|i18n}}</button>
+						</div>
+						{% endif %}
+						<div>
+							<button type="button" class="red small" onclick="confirmDeleteItem('{{item._id.toString()}}')">{{'Delete'|i18n}}</button>
+						</div>
+					</div>
+					{% else %}
+					<div style="width:70px"></div>
+					{% endif %}
+				</div>
 
 			</div>
-			{% if cat === 'questionnaire' %}
-				<pre style="font-family:inherit; margin-left:50px">{{item.comment}}</pre>
-			{% endif %}
 		</div>
 		<div class="updateMode hidden">
 			<div class="row">
@@ -143,16 +160,16 @@
 				<div class="col" style="max-width:150px">
 					<div class="max-treshold spacing-around">{{#threshold}}{{max}}{{/threshold}}</div>
 				</div>
-				{% endraw %}{% endif %}{% raw %}
 
-				{{/item}}
 				{% endraw %}
+				{% endif %}
+				{% raw %}{{/item}}{% endraw %}
 
 				<input name="items[{{item._id.toString()}}].category" class="item-category" type="hidden" value="{{item.category}}">
 				<input name="items[{{item._id.toString()}}]._id" type="hidden" value="{{item._id.toString()}}">
 				<input name="items[{{item._id.toString()}}].automatic" type="hidden" value="{{item.automatic}}">
 				<input name="items[{{item._id.toString()}}].dataRecordID" type="hidden" value="{{item.dataRecordID.toString()}}">
-		
+				
 				<div style="width:100px; text-align:right">
 					{% if admin %}
 					<div>
@@ -164,6 +181,11 @@
 					{% endif %}
 				</div>
 			</div>
+			{% if cat !== 'questionnaire' %}
+			<div class="row">
+				<input type="text" name="items[{{item._id.toString()}}].comment" value="{{ item.comment }}">
+			</div>
+			{% endif %}
 
 		</div>
 	</div>
@@ -221,9 +243,14 @@
 		</div>
 	</div>
 	{% raw %}{{#questionnaire}}{% endraw %}
-	<div class="row">
-		<textarea name="items[{% raw %}{{idx}}{% endraw %}].comment" class="questionnaire-comment" rows="10"></textarea>
-	</div>
+		<div class="row">
+			<textarea name="items[{% raw %}{{idx}}{% endraw %}].comment" class="questionnaire-comment" rows="10"></textarea>
+		</div>
+	{% raw %}{{/questionnaire}}{% endraw %}
+	{% raw %}{{^questionnaire}}{% endraw %}
+		<div class="row">
+			<input type="text" name="items[{% raw %}{{idx}}{% endraw %}].comment">
+		</div>
 	{% raw %}{{/questionnaire}}{% endraw %}
 	</script>
 
@@ -272,13 +299,12 @@
 
 	<form name="dataRecord" id="dataRecord" onsubmit="create(); return false;">
 		<zdk-panel heading="{{'Physiological parameters' |i18n}}" collapsable="false" collapsed="false">
-			<div class="row">
+			<div class="row row-legend">
 				<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{{ 'Parameter'|i18n }}</div>
 				<div class="col bold" style="max-width:150px">{{ 'Value'|i18n }}</div>
 				<div class="col bold" style="max-width:150px">{{ 'Unit'|i18n }}</div>
 				<div class="col bold" style="max-width:150px">{{ 'Min threshold' | i18n }}</div>
 				<div class="col bold" style="max-width:150px">{{ 'Max threshold' | i18n }}</div>
-				<div style="width:70px; text-align:right"></div>
 			</div>
 			{% if view === 'create'%}
 				{{ addItem('General') }}
@@ -299,13 +325,12 @@
 
 		</zdk-panel>
 		<zdk-panel heading="{{'Symptoms assessments' |i18n}}" collapsable="false" collapsed="false">
-			<div class="row">
+			<div class="row row-legend">
 				<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{{ 'Assessment'|i18n }}</div>
 				<div class="col bold" style="max-width:150px">{{ 'Value'|i18n }}</div>
 				<div class="col bold" style="max-width:150px"></div>
 				<div class="col bold" style="max-width:150px"></div>
 				<div class="col bold" style="max-width:150px"></div>
-				<div style="width:70px; text-align:right"></div>
 			</div>
 			{% if view === 'create'%}
 				{{ addItem('symptom') }}
@@ -319,13 +344,12 @@
 
 		</zdk-panel>
 		<zdk-panel heading="{{'Questionnaires' |i18n}}" collapsable="false" collapsed="false">
-			<div class="row">
+			<div class="row row-legend">
 				<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{{ 'Questionnaire'|i18n }}</div>
 				<div class="col bold" style="max-width:150px">{{ 'Value'|i18n }}</div>
 				<div class="col bold" style="max-width:150px"></div>
 				<div class="col bold" style="max-width:150px"></div>
 				<div class="col bold" style="max-width:150px"></div>
-				<div style="width:70px; text-align:right"></div>
 			</div>
 			{% if view === 'create'%}
 				{{ addItem('questionnaire') }}
