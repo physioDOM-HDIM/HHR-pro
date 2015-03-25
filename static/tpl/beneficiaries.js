@@ -56,8 +56,6 @@ function getParams() {
 
 function resetFilter() {
 	document.forms.filter.reset();
-	document.querySelector('.startDate').value = '';
-	document.querySelector('.stopDate').value = '';
 
 	var params = getParams();
 	paginate(false, params);
@@ -73,6 +71,7 @@ function validFilter() {
 	var params = getParams();
 	paginate(true, params);
 }
+
 function init() {
 	moment.locale(Cookies.get("lang")=="en"?"en-gb":Cookies.get("lang"));
     var listPager = document.querySelector('tsante-list');

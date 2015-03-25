@@ -154,7 +154,8 @@ var ICurrentStatus = {
 						updateItem._id = current._id;
 						current.update(updateItem)
 							.then(function (current) {
-								return beneficiary.createEvent('Health status', 'update', current._id, req.session.person.id)
+								console.log( current );
+								return beneficiary.createEvent('Health status : '+ current.name, 'update', current._id, req.session.person.id)
 									.then( function() {
 										return createDataRecord(current);
 									});

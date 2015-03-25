@@ -254,6 +254,20 @@ function Modal (type, callback, log) {
 		]
 	};
 
+	content.noChangeDetected = {
+		title: "trad_create",
+		content: "trad_noChangeDetected",
+		buttons: [{
+			id: "trad_ok",
+			action: function() {
+				if(callback) {
+					callback();
+				}
+				self.closeModal();
+			}
+		}]
+	};
+	
     content.createSuccess = {
         title: "trad_create",
         content: "trad_success_create",

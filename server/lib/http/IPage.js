@@ -177,7 +177,7 @@ function IPage() {
 					.then(function(session) {
 						// logger.debug("person", session.person);
 						data.account = {
-								firstname: session.person.item.name.given.slice(0, 1).toUpperCase(),
+								firstname: session.person.item.name.given?session.person.item.name.given.slice(0, 1).toUpperCase():"",
 								lastname: session.person.item.name.family
 							};
 						html = swig.renderFile(DOCUMENTROOT+'/static/tpl/ui.htm', data, function(err, output) {
@@ -1316,9 +1316,9 @@ function IPage() {
 				.then(function(result) {
 					data.session = result.session;
 					if( req.session.role === "beneficiary") {
-						return beneficiaries.getHHR(req.session.beneficiary );
+						return result.beneficiaries.getHHR(req.session.beneficiary );
 					} else {
-						return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+						return result.beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
 					}
 				})
 				.then(function (beneficiary) {
