@@ -175,7 +175,11 @@
 			</div>
 			{% if cat !== 'questionnaire' %}
 			<div class="row">
-				<input type="text" name="items[{{item._id.toString()}}].comment" value="{{ item.comment }}">
+				<div class="col" style="max-width:200px"><span class="spacer"></span><span>Comment : </span></div>
+				<div class="col">
+					<input type="text" name="items[{{item._id.toString()}}].comment" value="{{ item.comment }}">
+				</div>
+				<div style="width:100px"></div>
 			</div>
 			{% endif %}
 
@@ -265,7 +269,7 @@
 			{% if dataRecordItems.home %}
 				{{ "From Home"|i18n }}
 			{% else %}
-				{% if dataRecordItems.source._id === dataRecordItems.subject %}
+				{% if (dataRecordItems.subject && dataRecordItems.source._id === dataRecordItems.subject) || role === "beneficiary"  %}
 				{{ "From Beneficiary"|i18n }}&nbsp;:&nbsp;{{dataRecordItems.source.name.family}} {{dataRecordItems.source.name.given}}
 				{% else %}
 				{{ "From Consultation"|i18n }}&nbsp;:&nbsp;{{dataRecordItems.source.name.family}} {{dataRecordItems.source.name.given}}
