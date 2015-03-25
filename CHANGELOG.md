@@ -1,3 +1,23 @@
+
+__v0.0.21__
+
+  - \#146 [Beneficiary][physioDOM-v0.0.19] Suppression beneficiaire
+  - \#82 Event log & professional contact collapsed by default
+  - \#54 Added warning message to modal for validate action
+  - \#148 [Directory/Pro_Edit][physioDOM-v0.0.20] Organization Type
+  - \#94 [Rights] Elements ne devraient pas être éditables
+  - \#79 [Beneficiary][physioDOM-v0.0.15] BeneficiarySelection Reset Filter
+  - \#154 [Dietary&Physical Activity/Dietary Plan] create event
+  - \#114 [Dietary&Physical Activity/Dietary Plan][physioDOM-v0.0.16] Save changes
+  - \#151 [Data section/Results from Data Recording][physioDOM-v0.0.20] Professional Filter
+  - \#153 [Quick look on HHR / Data Curves] prevent saving threshold with alpha character
+  - \#150 [Current health status/Activity-Motricity status][physioDOM-v0.0.20] Invalid Date
+  - \#86 [Beneficiary/Bene_overview][physioDOM-v0.0.15] Events log
+  - \#147 Hotfix : [Quick look on HHR/Message To Home/New Message][physioDOM-v0.0.20] "New Message" button doesn't work
+  - [DataRecord] Added comment info to DataRecords params + adapting UI
+  - [DataRecord] Added statuses coming from health status to datarecord when its validate
+  - [Health Status] Added config array for selecting the health Status section to be validated for authorizing datarecords
+
 __v0.0.20__
 
   - Beneficiary login
@@ -9,21 +29,21 @@ __v0.0.19__
 
 > Nota : don't forget to apply the initDB/lists.json modification
 
-  - #145 : [Beneficiary/Bene_edit/Address][physioDOM-v0.0.18] City
-  - #144 : [Data sect°/Prescript° Data monitoring][physioDOM-v0.0.18] Delete Button
-  - #143 : [Data sect°/Prescript° Data monitoring/Symptom assessments][physioDOM-v0.0.18] Save button
-  - #141 : [Current health status/Nutritional Status][physioDOM-v0.0.18] Remove Assistance Services checkboxes
-  - #140 : Bug 113 [Create/Update Professional/Delete du professionnel][physioDOM-v0.0.16] Contrôle d’intégrité
-  - #139 : [Result synthesis][[physioDOM-v0.0.18] Results list
-  - #124 : [Beneficiary/Bene_edit][physioDOM-v0.0.16] Personal data
-  - #120 : [Rights] Problème utilisateur sans droit
-  - #116 : [Data sect°/Prescript° Data monitoring/Gral physiological data][physioDOM-v0.0.16] Display Threshold Values
-  - #114 : [Dietary&Physical Activity/Dietary Plan][physioDOM-v0.0.16] Save changes
-  - #107 : Bug 154 [Directory/Pro_edit][physioDOM-v0.0.16] Telecom
-  - #105 : [Directory/Directory List][physioDOM-v0.0.16] Telecom
-  - #102 : [Beneficiary/Bene_edit][physioDOM-v0.0.16] Diagnosis
-  - #101 : [Beneficiary/Bene_edit][physioDOM-v0.0.16] Professional List
-  - #71  : [Quick look on HHR/Message To Home][physioDOM-v0.0.15] Filter Issue
+  - \#145 : [Beneficiary/Bene_edit/Address][physioDOM-v0.0.18] City
+  - \#144 : [Data sect°/Prescript° Data monitoring][physioDOM-v0.0.18] Delete Button
+  - \#143 : [Data sect°/Prescript° Data monitoring/Symptom assessments][physioDOM-v0.0.18] Save button
+  - \#141 : [Current health status/Nutritional Status][physioDOM-v0.0.18] Remove Assistance Services checkboxes
+  - \#140 : Bug 113 [Create/Update Professional/Delete du professionnel][physioDOM-v0.0.16] Contrôle d’intégrité
+  - \#139 : [Result synthesis][[physioDOM-v0.0.18] Results list
+  - \#124 : [Beneficiary/Bene_edit][physioDOM-v0.0.16] Personal data
+  - \#120 : [Rights] Problème utilisateur sans droit
+  - \#116 : [Data sect°/Prescript° Data monitoring/Gral physiological data][physioDOM-v0.0.16] Display Threshold Values
+  - \#114 : [Dietary&Physical Activity/Dietary Plan][physioDOM-v0.0.16] Save changes
+  - \#107 : Bug 154 [Directory/Pro_edit][physioDOM-v0.0.16] Telecom
+  - \#105 : [Directory/Directory List][physioDOM-v0.0.16] Telecom
+  - \#102 : [Beneficiary/Bene_edit][physioDOM-v0.0.16] Diagnosis
+  - \#101 : [Beneficiary/Bene_edit][physioDOM-v0.0.16] Professional List
+  - \#71  : [Quick look on HHR/Message To Home][physioDOM-v0.0.15] Filter Issue
   
 
 __v0.0.18__ debug release
