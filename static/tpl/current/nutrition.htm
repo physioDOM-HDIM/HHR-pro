@@ -36,7 +36,7 @@
 				<legend>{{'Diet values'|i18n}}</legend>
 				<div class="row value-row">
 					<div class="value-name">{{'Height'|i18n}}</div>
-					<div class="value-date sizeDate">{% if status.sizeDate %}{{status.sizeDate | date}}{% endif %}</div>
+					<div class="value-date sizeDate">{% if status.sizeDate %}{{status.sizeDate}}{% endif %}</div>
 					<input
 						flex
 						id="sizeInput"
@@ -63,7 +63,7 @@
 
 				<div class="row value-row">
 					<div class="value-name">{{'Weight'|i18n}}</div>
-					<div class="value-date weightDate">{% if status.weightDate %}{{status.weightDate | date}}{% endif %}</div>
+					<div class="value-date weightDate">{% if status.weightDate %}{{status.weightDate}}{% endif %}</div>
 					<input
 						flex
 						id="weightInput"
@@ -89,7 +89,7 @@
 
 				<div class="row value-row">
 					<div class="value-name">{{'Lean/fat ratio'|i18n}}</div>
-					<div class="value-date leanDate">{% if status.leanDate %}{{status.leanDate | date}}{% endif %}</div>
+					<div class="value-date leanDate">{% if status.leanDate %}{{status.leanDate}}{% endif %}</div>
 					<input type="number" name="lean" class="value-input" value="{{status.lean}}" {% if !rights.write %}disabled{% endif %} />
 					<div class="value-unit">{{'%'|i18n}}</div>
 				</div>
@@ -107,7 +107,7 @@
 
 				<div class="row value-row">
 					<div class="value-name">{{'BMI'|i18n}}</div>
-					<div class="value-date bmiDate">{% if status.bmiDate %}{{status.bmiDate | date}}{% endif %}</div>
+					<div class="value-date bmiDate">{% if status.bmiDate %}{{status.bmiDate}}{% endif %}</div>
 					<input
 						flex
 						id="bmiInput"
@@ -240,7 +240,7 @@
 			<fieldset>
 				<legend>
 					{{'Special diet prescriptions'|i18n}}
-					<div class="value-date-textarea dietPrescDate">{% if status.dietPrescDate %}{{status.dietPrescDate | date }}{% endif %}</div>
+					<div class="value-date-textarea dietPrescDate">{% if status.dietPrescDate %}{{status.dietPrescDate}}{% endif %}</div>
 				</legend>
 
 				<div class="row value-row">
@@ -319,7 +319,10 @@
 <zdk-modal id="confirmModal" closebutton="false">
 	<div class="modalContainer">
 		<div class="modalTitleContainer">{{'Confirmation' | i18n}}</div>
-		<div class="modalContentContainer">{{'Are you sure?' |i18n}}</div>
+		<div class="modalContentContainer">
+			<p>{{'This action will lock all the datas entered. There is no going back to edit the datas.'|i18n}}<br>
+			{{'Are you sure you want to continue ?' |i18n}}</p>
+		</div>
 		<div class="modalButtonContainer">
 			<button class="red" onclick="hideConfirm();">{{'Cancel' | i18n}}</script>
 			<button class="green" onclick="hideConfirm(); validate()">{{'Validate' | i18n}}</script>

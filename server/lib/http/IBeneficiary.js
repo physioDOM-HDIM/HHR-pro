@@ -128,7 +128,7 @@ var IBeneficiary = {
 				if( req.session.role === "beneficiary") {
 					return beneficiaries.getHHR(req.session.beneficiary );
 				} else {
-					return beneficiaries.getBeneficiaryByID(req.session,req.session.beneficiary || new ObjectID(req.params.entryID) );
+					return beneficiaries.getBeneficiaryByID(req.session, new ObjectID(req.params.entryID) || req.session.beneficiary  );
 				}
 			})
 			.then( function(beneficiary) {
