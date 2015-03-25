@@ -446,7 +446,8 @@ var updateParam = function (element, directValue) {
 		minContainer = container.querySelector('.min-treshold'),
 		maxContainer = container.querySelector('.max-treshold'),
 		unitsContainer = container.querySelector('.units'),
-		categoryContainer = container.querySelector('.item-category');
+		categoryContainer = container.querySelector('.item-category'),
+		inputNumber  = container.querySelector('input[type="number"]');
 
 	if (!directValue) {
 		if (element.value !== undefined && element.value !== '') {
@@ -487,6 +488,10 @@ var updateParam = function (element, directValue) {
 		minContainer.innerHTML = param.threshold.min ? param.threshold.min : '-';
 		maxContainer.innerHTML = param.threshold.max ? param.threshold.max : '-';
 		unitsContainer.innerHTML = param.unitsLabel ? param.unitsLabel : '';
+
+		inputNumber.setAttribute("min", param.range.min);
+		inputNumber.setAttribute("max", param.range.max);
+
 	}
 	else if (category === 'questionnaire') {
 		// Questionnaire item

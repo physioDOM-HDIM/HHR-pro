@@ -19,6 +19,7 @@ window.addEventListener('DOMContentLoaded', function() {
     	Utils.lockdown();
     }
 
+    datas.btnList = document.querySelectorAll('.to-valid');
 });
 
 window.addEventListener("beforeunload", function( e) {
@@ -31,7 +32,13 @@ window.addEventListener("beforeunload", function( e) {
 });
 
 function checkForm(validate) {
-	var formObj = form2js(document.getElementById('form'));
+	var formElt = document.getElementById('form');
+
+	if(!formElt.checkValidity()) {
+		return;
+	}
+
+	var formObj = form2js(formElt);
 
 	if(formObj.stepsNumber && (datas.savedData.stepsNumber !== formObj.stepsNumber)) {
 		var todayDate = moment().format('L'),
@@ -63,6 +70,12 @@ function checkForm(validate) {
 }
 
 function showConfirm() {
+	var formElt = document.getElementById('form');
+
+	if(!formElt.checkValidity()) {
+		return;
+	}
+
 	document.getElementById('confirmModal').show();
 }
 

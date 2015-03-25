@@ -1,6 +1,6 @@
 {% extends '../page.htm' %}
 
-{% block title %}{{ 'Healthcare: current health status' | i18n }}{% endblock %}
+{% block title %}{{ 'Activity/Motricity status' | i18n }}{% endblock %}
 
 {% block head %}
 {% parent %}
@@ -29,48 +29,47 @@
 			{{ status.validatedDate | date }} {{"by"|i18n}} {{ author.name.family + ' ' + author.name.given }}
 		</div>
 	{% endif %}
+	<form name="form" id="form" autocomplete="off" onsubmit="return false;">
+		<zdk-panel heading="{{ 'Distance travelled' | i18n }}">
 
-	<zdk-panel heading="{{ 'Distance travelled' | i18n }}">
-		<form name="form" id="form" autocomplete="off">
+				<div class="row value-row">
 
-			<div class="row value-row">
+					<div class="value-name">{{'Number of steps'|i18n}}</div>
+					<div class="value-date stepsNumberDate">{% if status.stepsNumberDate %}{{status.stepsNumberDate}}{% endif %}</div>
+					<input type="number" step="1" min="{{parameters.stepsNumber.range.min}}" max="{{parameters.stepsNumber.range.max}}" name="stepsNumber" class="value-input" value="{{status.stepsNumber}}" {% if !rights.write %}disabled{% endif %} />
+					<div class="value-unit">{{'steps per week'|i18n}}</div>
 
-				<div class="value-name">{{'Number of steps'|i18n}}</div>
-				<div class="value-date stepsNumberDate">{% if status.stepsNumberDate %}{{status.stepsNumberDate}}{% endif %}</div>
-				<input type="number" step="1" min="0" name="stepsNumber" class="value-input" value="{{status.stepsNumber}}" {% if !rights.write %}disabled{% endif %} />
-				<div class="value-unit">{{'steps per week'|i18n}}</div>
+				</div>
 
+				<div class="row value-row">
+
+					<label class="comment-label" for="commentStepsNumber">{{'Status' | i18n}}</label>
+					<input
+						flex
+						id="commentStepsNumber"
+						class="comment-input to-disable"
+						type="text"
+						name="commentStepsNumber"
+						value="{{status.commentStepsNumber}}"
+						{% if !rights.write %}disabled{% endif %}
+						/>
+
+				</div>
+
+		</zdk-panel>
+
+		{% if rights.write %}
+			{% if !status.validated %}
+			<div id="buttons" class="row control">
+				<span class="spacer"></span>
+				<button type="submit" class="blue to-valid" onclick="showConfirm();">{{'Validate'|i18n}}</button>
+				<button type="button" class="red" onclick="modified=false; location.reload();">{{'Cancel'|i18n}}</button>
+				<button type="submit" class="green to-valid" onclick="checkForm();">{{'Save'|i18n}}</button>
 			</div>
-
-			<div class="row value-row">
-
-				<label class="comment-label" for="commentStepsNumber">{{'Status' | i18n}}</label>
-				<input
-					flex
-					id="commentStepsNumber"
-					class="comment-input to-disable"
-					type="text"
-					name="commentStepsNumber"
-					value="{{status.commentStepsNumber}}"
-					{% if !rights.write %}disabled{% endif %}
-					/>
-
-			</div>
-
-		</form>
-	</zdk-panel>
-
-	{% if rights.write %}
-		{% if !status.validated %}
-		<div id="buttons" class="row control">
-			<span class="spacer"></span>
-			<button type="button" class="blue" onclick="showConfirm();">{{'Validate'|i18n}}</button>
-			<button type="button" class="red" onclick="modified=false; location.reload();">{{'Cancel'|i18n}}</button>
-			<button type="button" class="green" onclick="checkForm();">{{'Save'|i18n}}</button>
-		</div>
+			{% endif %}
 		{% endif %}
-	{% endif %}
 
+	</form>
 </div>
 
 {% include "../modal.htm" %}

@@ -1,6 +1,6 @@
 {% extends '../page.htm' %}
 
-{% block title %}{{ 'Healthcare: current health status' | i18n }}{% endblock %}
+{% block title %}{{ 'Nutritional status' | i18n }}{% endblock %}
 
 {% block head %}
 {% parent %}
@@ -24,6 +24,7 @@
 
 <div id="content">
 
+	<form name="form" id="formDiet" autocomplete="off" onsubmit="return false;">
 	{% if status.validated && status.validatedDate %}
 		<div class="validated-date right">
 			{{ status.validatedDate | date }} {{"by"|i18n}} {{ author.name.family + ' ' + author.name.given }}
@@ -31,7 +32,7 @@
 	{% endif %}
 
 	<zdk-panel heading="{{ 'Diet values' | i18n }}">
-		<form name="form" id="formDiet" autocomplete="off">
+		
 			<fieldset>
 				<legend>{{'Diet values'|i18n}}</legend>
 				<div class="row value-row">
@@ -71,6 +72,8 @@
 						type="number"
 						name="weight"
 						step="any"
+						min="{{parameters.weight.range.min}}" 
+						max="{{parameters.weight.range.max}}"
 						value="{{status.weight}}"
 						{% if !rights.write %}disabled{% endif %}/>
 					<div class="value-unit">{{'kilogram'|i18n}}</div>
@@ -90,7 +93,14 @@
 				<div class="row value-row">
 					<div class="value-name">{{'Lean/fat ratio'|i18n}}</div>
 					<div class="value-date leanDate">{% if status.leanDate %}{{status.leanDate}}{% endif %}</div>
-					<input type="number" name="lean" class="value-input" value="{{status.lean}}" {% if !rights.write %}disabled{% endif %} />
+					<input 
+						type="number" 
+						name="lean" 
+						class="value-input" 
+						min="{{parameters.lean.range.min}}" 
+						max="{{parameters.lean.range.max}}"
+						value="{{status.lean}}"
+						{% if !rights.write %}disabled{% endif %} />
 					<div class="value-unit">{{'%'|i18n}}</div>
 				</div>
 				<div class="row value-row">
@@ -115,6 +125,8 @@
 						type="number"
 						name="bmi"
 						step="any"
+						min="{{parameters.bmi.range.min}}" 
+						max="{{parameters.bmi.range.max}}"
 						value="{{status.bmi}}"
 						{% if !rights.write %}disabled{% endif %}/>
 					<div class="value-unit">{{'kg/m²'|i18n}}</div>
@@ -259,18 +271,15 @@
 				</div>
 			</fieldset>
 
-		</form>
 	</zdk-panel>
 
 	<zdk-panel heading="{{ 'Assistance services' | i18n }}">
-		<form name="form" id="formAssistance" autocomplete="off">
 			<div id="assistanceValues">
 				{% for assistance in status.assistance %}
 				 	{% set idx = loop.index %}
 					<div class="row value-row">
 						<span class="assistance-label">{{assistance.ref}}</span>
 						<input type="hidden" name="assistance[{{ idx }}].ref" value="{{ assistance.ref }}">
-						<!--<input type="checkbox" class="value-checkbox" name="assistance[{{ idx }}].active" {% if assistance.active %}checked{% endif %}>-->
 						<input type="text" class="value-input assist" name="assistance[{{ idx }}].information" value="{{ assistance.information }}" {% if !rights.write %}disabled{% endif %}>
 						{% if !status.validated && rights.write %}
 						<button type="button" class="red small" onclick="removeAssistance(this)" {% if !rights.write %}disabled{% endif %}>{{'Remove'|i18n}}</button>
@@ -286,20 +295,20 @@
 				<button type="button" onclick="addAssistance()" class="green small" {% if !rights.write %}disabled{% endif %}>{{'Add'|i18n}}</button>
 			</div>
 			{% endif %}
-
-		</form>
 	</zdk-panel>
 
 	{% if rights.write %}
 		{% if !status.validated %}
 		<div id="buttons" class="row control">
 			<span class="spacer"></span>
-			<button type="button" class="blue validate-button" onclick="showConfirm();">{{'Validate'|i18n}}</button>
+			<button type="submit" class="blue to-valid validate-button" onclick="showConfirm();">{{'Validate'|i18n}}</button>
 			<button type="button" class="red" onclick="modified=false; location.reload();">{{'Cancel'|i18n}}</button>
-			<button type="button" class="green" onclick="saveAssistance();saveDiet();">{{'Save'|i18n}}</button>
+			<button type="submit" class="green to-valid" onclick="saveDatas();">{{'Save'|i18n}}</button>
 		</div>
 		{% endif %}
 	{% endif %}
+
+	</form>
 </div>
 
 {% raw %}

@@ -25,6 +25,12 @@ function computeBMI() {
 }
 
 function showConfirm() {
+	var formElt = document.getElementById('formDiet');
+
+	if(!formElt.checkValidity()) {
+		return;
+	}
+
 	document.getElementById('confirmModal').show();
 }
 
@@ -67,28 +73,6 @@ function removeAssistance(elt) {
 	container.removeChild(assistance);
 }
 
-function saveAssistance(validate) {
-	var formObj = form2js(document.getElementById('formAssistance'));
-
-	for(var i in formObj.assistance) {
-		formObj.assistance[i].active = (formObj.assistance[i].active !== undefined && formObj.assistance[i].active === 'on');
-	}
-
-	if(!formObj.assistance) {
-		formObj.assistance = [];
-	}
-
-	if(!validate) {
-		sendDatas(formObj, function() {
-			new Modal('saveSuccess');
-			modified = false;
-		});
-	} else {
-		return formObj.assistance;
-	}
-	
-}
-
 function addValue (valueName, formObj, isFloat) {
 
 	if(formObj[valueName] && (datas.savedData[valueName] !== formObj[valueName])) {
@@ -105,8 +89,13 @@ function addValue (valueName, formObj, isFloat) {
 	}
 }
 
-function saveDiet(validate) {
-	var formObj = form2js(document.getElementById('formDiet'));
+function saveDatas(validate) {
+	var formElt = document.getElementById('formDiet');
+	if(!formElt.checkValidity()) {
+		return;
+	}
+
+	var formObj = form2js(formElt);
 
 	addValue('size', formObj, true);
 	addValue('weight', formObj, true);
@@ -114,6 +103,10 @@ function saveDiet(validate) {
 	addValue('bmi', formObj, true);
 
 	addValue('dietPresc', formObj, false);
+
+	if(!formObj.assistance) {
+		formObj.assistance = [];
+	}
 
 	if(!validate) {
 		sendDatas(formObj, function() {
@@ -127,9 +120,8 @@ function saveDiet(validate) {
 
 
 function validate() {
-	var formObj = saveDiet(true);
+	var formObj = saveDatas(true);
 
-	formObj.assistance = saveAssistance(true);
 	formObj.validated = true;
 	formObj.validatedDate = moment().format('YYYY-MM-DD');
 

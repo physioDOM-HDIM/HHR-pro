@@ -1,5 +1,16 @@
 {% extends './page.htm' %}
-{% block title %}{{'Prescritption of data monitoring'|i18n}}{% endblock %}
+
+{% macro getTitle(category) %}
+	{% if category === 'General'%}
+		{{ "General physiological data" |i18n }}
+	{% elseif category === 'HDIM'%}
+		{{ "HDIM Data" |i18n }}
+	{% else %}
+		{{ "Symptom assessments" |i18n }}
+	{% endif %}
+{% endmacro %}
+
+{% block title %}{{ getTitle(category) }}{% endblock %}
 {% block head %}
 {% parent %}
 <link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
@@ -21,7 +32,7 @@
 <div class="hidden param-list">{{ parameterList }}</div>
 <div class="row title">
     <label class="title">
-        {{title}}
+        {{ getTitle(category) }}
     </label>
 </div>
 
@@ -134,7 +145,7 @@
 </script>
 
 <script type="template" id="tpl-form">
-	<h2>{{title}}</h2>
+	<h2>{{ getTitle(category) }}</h2>
 	
 	<div class="row h1">
 		<label>{{"Type of data"|i18n}}</label>

@@ -216,3 +216,24 @@ Utils.prototype.lockActions = function() {
     }
 }
 
+
+Utils.prototype.checkInputRange = function(callback) {
+    var inputList = document.querySelectorAll('input[type="number"]'),
+        valid = true;
+
+    for(var i = 0; i < inputList.length; i++) {
+        if(inputList[i].value && inputList[i].getAttribute("min") && inputList[i].getAttribute("max")) {
+            var min = parseInt(inputList[i].getAttribute("min")),
+                max = parseInt(inputList[i].getAttribute("max")),
+                val = parseInt(inputList[i].value);
+
+            if((isNaN(val)) || (min > val) || (max < val)) {
+                valid = false;
+                break;
+            }
+        }
+        
+    }
+
+    callback(valid);
+}
