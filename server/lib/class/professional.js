@@ -342,9 +342,17 @@ function Professional() {
 					return professional.getAccount();
 				})
 				.then( function(account) {
+					var modified = false;
 					if( account.hasOwnProperty("active") && account.active !== that.active ) {
+						modified = true;
 						logger.debug("update account active flag");
 						account.active = that.active;
+					}
+					if ( account.hasOwnProperty("role") && account.role !== that.role) {
+						modified = true;
+						account.role = that.role;
+					}
+					if( modified ) {
 						physioDOM.db.collection("account").save(account, function (err, result) {
 							if(err) { throw err; }
 							resolve(that);

@@ -4,6 +4,7 @@
  */
 
 /* jslint node:true */
+/* global physioDOM */
 "use strict";
 
 var Logger = require("logger"),
@@ -422,7 +423,7 @@ var IBeneficiary = {
 	 */
 	updateDataRecord: function(req, res, next) {
 		logger.trace("updateDataRecord");
-		var beneficiary;
+		var beneficiary, completeDataRecord;
 		
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
@@ -443,16 +444,38 @@ var IBeneficiary = {
 			.then( function( dataRecord ) {
 				return dataRecord.getComplete();
 			})
-			.then(function( completeDataRecord ) {
-				res.send(completeDataRecord);
-				logger.trace(completeDataRecord._id, req.session.person.id);
-				return beneficiary.createEvent('Data record', 'update', new ObjectID(completeDataRecord._id), req.session.person.id);
+			.then(function( _completeDataRecord ) {
+				res.send(_completeDataRecord);
+				completeDataRecord = _completeDataRecord;
 			})
 			.then( function() {
-				return beneficiary.pushLastDHDFFQ();
+				return beneficiary.getThreshold();
+			})
+			.then( function(thresholds) {
+				var outOfRange = false;
+				completeDataRecord.items.items.forEach( function( item ) {
+					if( thresholds[item.text] ) {
+						if( thresholds[item.text].min && item.value < thresholds[item.text].min ) {
+							console.log( "overtake min", item.text);
+							outOfRange = true;
+						}
+						if( thresholds[item.text].max && item.value > thresholds[item.text].max ) {
+							console.log( "overtake max", item.text);
+							outOfRange = true;
+						}
+					}
+				});
+				if( outOfRange ) {
+					return beneficiary.createEvent('Data record', 'overtake', new ObjectID(completeDataRecord._id), req.session.person.id);
+				} else {
+					return beneficiary.createEvent('Data record', 'update', new ObjectID(completeDataRecord._id), req.session.person.id);
+				}
 			})
 			.then( function() {
-				return beneficiary.pushHistory();
+				return physioDOM.config.queue ? beneficiary.pushLastDHDFFQ() : false;
+			})
+			.then( function() {
+				return physioDOM.config.queue ? beneficiary.pushHistory() : false;
 			})
 			.then(function() {
 				next();

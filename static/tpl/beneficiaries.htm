@@ -10,11 +10,18 @@
 <script src="/tpl/beneficiaries.js"></script>
 <style>
 	.inactive { opacity:0.5; }
+	div#nobeneficiaries {
+		padding-top: 100px;
+		width: 300px;
+		text-align: center;
+		margin: auto;
+		font-size: 18px;
+	}
 </style>
 {% endblock %}
 
 {% block content %}
-	<zdk-panel heading="{{'Filter'|i18n}} / {{'Sort'|i18n}}" collapsable="true" collapsed={% if admin %}"false"{% else %}"true"{% endif %}>
+	<zdk-panel id="filter" heading="{{'Filter'|i18n}} / {{'Sort'|i18n}}" collapsable="true" collapsed={% if admin %}"false"{% else %}"true"{% endif %}>
 			<div>
 				<form class="filter" name="filter" autocomplete="off" onsubmit="validFilter(); return false;">
 					<div class="row">
@@ -128,6 +135,10 @@
 			</div>
 		</template>
 	</tsante-list>
+
+	<div id="nobeneficiaries" class="hidden">
+		You have no beneficiaries attached
+	</div>
 	
 	{% if rights.write %}
 	<div class="row control" style="height:60px; align-content: center">

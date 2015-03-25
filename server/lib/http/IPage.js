@@ -637,6 +637,8 @@ function IPage() {
 			"communication",
 			"profession",
 			"perimeter",
+			"nutritionalStatus",
+			"generalStatus",
 			"job"
 		].map( promiseListArray);
 
@@ -1141,7 +1143,8 @@ function IPage() {
 		init(req);
 		var data = {
 			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false,
-			rights: { read:false, write:false, url: '/datarecord/create' }
+			rights: { read:false, write:false, url: '/datarecord/create' },
+			role: req.session.role
 		};
 
 		if( !req.session.beneficiary ) {
@@ -1479,6 +1482,32 @@ function IPage() {
 					data.author = author;
 					logger.trace(data);
 				}
+				return physioDOM.Lists.getList('parameters');
+			})
+			.then(function(parameters) {
+
+				var findInObj = function(obj, item, value) {
+				    var i = 0,
+				        len = obj.length,
+				        result = null;
+
+				    for(i; i<len; i++) {
+				        if(obj[i][item] === value) {
+				            result = obj[i];
+				            break;
+				        }
+				    }
+
+				    return result;
+				};
+				
+				data.parameters = {
+					stepsNumber: findInObj(parameters.items, 'ref', 'DIST'),
+					weight: findInObj(parameters.items, 'ref', 'WEG'),
+					lean: findInObj(parameters.items, 'ref', 'LEAN'),
+					bmi: findInObj(parameters.items, 'ref', 'BMI')
+				}
+
 				render('/static/tpl/current/' + name + '.htm', data, res, next);
 			})
 			.catch(function(err) {
@@ -1521,7 +1550,6 @@ function IPage() {
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
 				data.lang = lang;
-				data.title = 'General Data';
 				data.category = 'General';
 				data.parameterList = 'parameters';
 				// jsut for test, otherwise read locale from session
@@ -1562,7 +1590,6 @@ function IPage() {
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
 				data.lang = lang;
-				data.title = 'HDIM Data';
 				data.category = 'HDIM';
 				data.parameterList = 'parameters';
 				// jsut for test, otherwise read locale from session
@@ -1603,7 +1630,6 @@ function IPage() {
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
 				data.lang = lang;
-				data.title = 'Symptom Data';
 				data.category = '';
 				data.parameterList = 'symptom';
 

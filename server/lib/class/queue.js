@@ -125,7 +125,7 @@ function Queue ( beneficiaryID ) {
 		var that = this;
 
 		return new promise( function( resolve, reject ) {
-			logger.trace("postMsg", msg);
+			logger.trace("postMsg");
 			physioDOM.Beneficiaries()
 				.then(function (beneficiaries) {
 					return beneficiaries.getHHR( that.subject );
