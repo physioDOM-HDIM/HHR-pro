@@ -52,7 +52,7 @@
 					
 					<div class="colcontent">
 						<select name="source" id="provider">
-							<option value=""></option>
+							<option value="">{{"All"|i18n}}</option>
 							{% for item in professionals %}
 							<option value="{{item._id.toString()}}">{{item.name.family}} {{item.name.given}}</option>
 							{% endfor %}

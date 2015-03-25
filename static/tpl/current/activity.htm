@@ -37,7 +37,7 @@
 
 				<div class="value-name">{{'Number of steps'|i18n}}</div>
 				<div class="value-date stepsNumberDate">{% if status.stepsNumberDate %}{{status.stepsNumberDate | date}}{% endif %}</div>
-				<input type="number" step="1" min="0" name="stepsNumber" class="value-input" value="{{status.stepsNumber}}" />
+				<input type="number" step="1" min="0" name="stepsNumber" class="value-input" value="{{status.stepsNumber}}" {% if !rights.write %}disabled{% endif %} />
 				<div class="value-unit">{{'steps per week'|i18n}}</div>
 
 			</div>
@@ -51,7 +51,9 @@
 					class="comment-input to-disable"
 					type="text"
 					name="commentStepsNumber"
-					value="{{status.commentStepsNumber}}" />
+					value="{{status.commentStepsNumber}}"
+					{% if !rights.write %}disabled{% endif %}
+					/>
 
 			</div>
 

@@ -129,6 +129,7 @@ var getDataRecords = function(init) {
 };
 
 var updateThreshold = function(elt) {
+	var error = false;
 	var line = elt;
 	while(! line.classList.contains("row")) {
 		line = line.parentNode;
@@ -138,11 +139,28 @@ var updateThreshold = function(elt) {
 		var i = 0,
 			len = datas.length;
 
-		for(var prop in datas) {
+	line.querySelector(".input-min").classList.remove("error");
+	line.querySelector(".input-max").classList.remove("error");
+	
+	for(var prop in datas) {
+		if( datas[prop].min !== parseFloat(datas[prop].min)+"" ) {
+			error = true;
+			line.querySelector(".input-min").classList.add("error");
+		} else {
 			datas[prop].min = parseFloat(datas[prop].min);
+		}
+		if( datas[prop].max !== parseFloat(datas[prop].max)+"" ) {
+			error = true;
+			line.querySelector(".input-max").classList.add("error");
+		} else {
 			datas[prop].max = parseFloat(datas[prop].max);
 		}
+	}
 
+	if( error ) {
+		return;
+	}
+	
 	Utils.promiseXHR("POST", "/api/beneficiary/thresholds", 200, JSON.stringify(datas)).then(function(response) {
 
        	setThresholdUI(line);

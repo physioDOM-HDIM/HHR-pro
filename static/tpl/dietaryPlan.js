@@ -7,7 +7,7 @@ var modified = false;
 
 window.addEventListener('DOMContentLoaded', function() {
 	initData();
-	document.addEventListener('keypress', function( evt ) {
+	document.addEventListener('keydown', function( evt ) {
 		if( evt.target.tagName === "TEXTAREA") {
 			modified = true;
 			document.querySelector("#saveBtn").disabled = false;
@@ -94,12 +94,19 @@ var toggleMode = function() {
  */
 
 var saveRecommendation = function() {
+	var contentSaved = document.querySelector('#content-saved');
 	var obj = form2js(document.forms.recommendation),
 		recommendation = {
 			special: (!!obj.special && obj.special === 'on'),
 			content: obj.content
 		};
 
+	if( contentSaved.value === recommendation.content ) {
+		new Modal('noChangeDetected', function() {
+			modified = false;
+			window.location.href = "/dietary-plan";
+		});
+	}
 	Utils.promiseXHR("POST", "/api/beneficiary/dietary-plan", 200, JSON.stringify(recommendation)).then(function(response) {
         new Modal('saveSuccess', function() {
 			modified = false;
