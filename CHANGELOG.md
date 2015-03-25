@@ -2,7 +2,6 @@
 __v0.0.21__
 
   - \#146 [Beneficiary][physioDOM-v0.0.19] Suppression beneficiaire
-  - \#82 Event log & professional contact collapsed by default
   - \#54 Added warning message to modal for validate action
   - \#148 [Directory/Pro_Edit][physioDOM-v0.0.20] Organization Type
   - \#94 [Rights] Elements ne devraient pas être éditables
@@ -17,6 +16,8 @@ __v0.0.21__
   - [DataRecord] Added comment info to DataRecords params + adapting UI
   - [DataRecord] Added statuses coming from health status to datarecord when its validate
   - [Health Status] Added config array for selecting the health Status section to be validated for authorizing datarecords
+  
+> __Nota :__   (Issue \#82) Event log & professional contact collapsed by default is not valid and these panels must not be collapsed.
 
 __v0.0.20__
 
