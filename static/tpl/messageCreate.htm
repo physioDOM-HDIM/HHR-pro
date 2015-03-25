@@ -34,9 +34,9 @@
 		<div class="col flex-right">
 			<label for="author">{{'Sender'|i18n}}: </label>
 			<select id="author" name="author">
-				<option value="{{session.person.id.toString()}}">{{session.person.item.name.given}} {{session.person.item.name.family}}</option>
+				<option value="{{session.person.id.toString()}}">{{session.person.item.name.family}} {{session.person.item.name.given}}</option>
 				{% for item in professionalList %}
-				<option value="{{item._id.toString()}}" >{{item.name.given}} {{item.name.family}}</option>
+				<option value="{{item._id.toString()}}" >{{item.name.family}} {{item.name.given}} </option>
 				{% endfor %}
 			</select>
 		</div>
