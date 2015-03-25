@@ -127,6 +127,7 @@
 						step="any"
 						min="{{parameters.bmi.range.min}}" 
 						max="{{parameters.bmi.range.max}}"
+						value="{{status.bmi}}"
 						{% if !rights.write %}disabled{% endif %}/>
 					<div class="value-unit">{{'kg/m²'|i18n}}</div>
 				</div>
