@@ -329,10 +329,10 @@
 	{% endif %}
 	{% if beneficiary.diagnosis %}
 		<div class="row">
-			<label>{{ "General status"|i18n }} : </label><div>{{beneficiary.diagnosis.general}}</div>
+			<label>{{ "General status"|i18n }} : </label><div>{{generalStatusArray.items[beneficiary.diagnosis.general]}}</div>
 		</div>
 		<div class="row">
-			<label>{{ "Nutritional status"|i18n }} : </label><div>{{beneficiary.diagnosis.nutritional}}</div>
+			<label>{{ "Nutritional status"|i18n }} : </label><div>{{nutritionalStatusArray.items[beneficiary.diagnosis.nutritional]}}</div>
 		</div>
 		<p>{{ "Chronic pathologies"|i18n }}</p>
 		<div class="row">

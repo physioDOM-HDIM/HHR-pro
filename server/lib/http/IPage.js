@@ -637,6 +637,8 @@ function IPage() {
 			"communication",
 			"profession",
 			"perimeter",
+			"nutritionalStatus",
+			"generalStatus",
 			"job"
 		].map( promiseListArray);
 
