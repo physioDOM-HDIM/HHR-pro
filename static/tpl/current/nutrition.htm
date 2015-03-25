@@ -36,7 +36,7 @@
 				<legend>{{'Diet values'|i18n}}</legend>
 				<div class="row value-row">
 					<div class="value-name">{{'Height'|i18n}}</div>
-					<div class="value-date sizeDate">{% if status.sizeDate %}{{status.sizeDate | date}}{% endif %}</div>
+					<div class="value-date sizeDate">{% if status.sizeDate %}{{status.sizeDate}}{% endif %}</div>
 					<input
 						flex
 						id="sizeInput"
@@ -56,13 +56,14 @@
 						class="comment-input"
 						type="text"
 						name="commentHeight"
-						value="{{status.commentHeight}}" />
+						value="{{status.commentHeight}}"
+						{% if !rights.write %}disabled{% endif %}/>
 				</div>
 
 
 				<div class="row value-row">
 					<div class="value-name">{{'Weight'|i18n}}</div>
-					<div class="value-date weightDate">{% if status.weightDate %}{{status.weightDate | date}}{% endif %}</div>
+					<div class="value-date weightDate">{% if status.weightDate %}{{status.weightDate}}{% endif %}</div>
 					<input
 						flex
 						id="weightInput"
@@ -70,7 +71,8 @@
 						type="number"
 						name="weight"
 						step="any"
-						value="{{status.weight}}" />
+						value="{{status.weight}}"
+						{% if !rights.write %}disabled{% endif %}/>
 					<div class="value-unit">{{'kilogram'|i18n}}</div>
 				</div>
 				<div class="row value-row">
@@ -81,13 +83,14 @@
 						class="comment-input"
 						type="text"
 						name="commentWeight"
-						value="{{status.commentWeight}}" />
+						value="{{status.commentWeight}}"
+						{% if !rights.write %}disabled{% endif %}/>
 				</div>
 
 				<div class="row value-row">
 					<div class="value-name">{{'Lean/fat ratio'|i18n}}</div>
-					<div class="value-date leanDate">{% if status.leanDate %}{{status.leanDate | date}}{% endif %}</div>
-					<input type="number" name="lean" class="value-input" value="{{status.lean}}" />
+					<div class="value-date leanDate">{% if status.leanDate %}{{status.leanDate}}{% endif %}</div>
+					<input type="number" name="lean" class="value-input" value="{{status.lean}}" {% if !rights.write %}disabled{% endif %} />
 					<div class="value-unit">{{'%'|i18n}}</div>
 				</div>
 				<div class="row value-row">
@@ -98,12 +101,13 @@
 						class="comment-input"
 						type="text"
 						name="commentLean"
-						value="{{status.commentLean}}" />
+						value="{{status.commentLean}}"
+						{% if !rights.write %}disabled{% endif %}/>
 				</div>
 
 				<div class="row value-row">
 					<div class="value-name">{{'BMI'|i18n}}</div>
-					<div class="value-date bmiDate">{% if status.bmiDate %}{{status.bmiDate | date}}{% endif %}</div>
+					<div class="value-date bmiDate">{% if status.bmiDate %}{{status.bmiDate}}{% endif %}</div>
 					<input
 						flex
 						id="bmiInput"
@@ -111,7 +115,8 @@
 						type="number"
 						name="bmi"
 						step="any"
-						value="{{status.bmi}}" />
+						value="{{status.bmi}}"
+						{% if !rights.write %}disabled{% endif %}/>
 					<div class="value-unit">{{'kg/m²'|i18n}}</div>
 				</div>
 				<div class="row value-row">
@@ -122,7 +127,8 @@
 						class="comment-input"
 						type="text"
 						name="commentBmi"
-						value="{{status.commentBmi}}" />
+						value="{{status.commentBmi}}"
+						{% if !rights.write %}disabled{% endif %}/>
 				</div>
 
 				<div class="row value-row questionnaire-row" data-name="MNA">
@@ -134,7 +140,7 @@
 						<a 
 							class="button small blue" 
 							href={% if status.mnaAnswer %}"/answers/{{status.mnaAnswer}}"{% else %}"/questionnaire/MNA"{% endif %}
-							{% if status.validated && !status.mnaScore %}disabled{% endif %}>
+							{% if status.validated && !status.mnaScore %}disabled{% endif %}{% if !rights.write %}disabled{% endif %}>
 							{{'Questionnaire'|i18n}}
 						</a>
 					</div>
@@ -147,7 +153,8 @@
 						class="comment-input"
 						type="text"
 						name="commentMna"
-						value="{{status.commentMna}}" />
+						value="{{status.commentMna}}"
+						{% if !rights.write %}disabled{% endif %}/>
 				</div>
 
 				<div class="row value-row questionnaire-row" data-name="MNA_MINI">
@@ -159,7 +166,7 @@
 						<a 
 							class="button small blue" 
 							href={% if status.mnaSfAnswer %}"/answers/{{status.mnaSfAnswer}}"{% else %}"/questionnaire/MNA_MINI"{% endif %}
-							{% if status.validated && !status.mnaSfScore %}disabled{% endif %}>
+							{% if status.validated && !status.mnaSfScore %}disabled{% endif %}{% if !rights.write %}disabled{% endif %}>
 							{{'Questionnaire'|i18n}}
 						</a>
 					</div>
@@ -172,7 +179,8 @@
 						class="comment-input"
 						type="text"
 						name="commentMnaSf"
-						value="{{status.commentMnaSf}}" />
+						value="{{status.commentMnaSf}}"
+						{% if !rights.write %}disabled{% endif %}/>
 				</div>
 
 				<div class="row value-row questionnaire-row" data-name="SNAQ">
@@ -184,7 +192,7 @@
 						<a 
 							class="button small blue" 
 							href={% if status.snaqAnswer %}"/answers/{{status.snaqAnswer}}"{% else %}"/questionnaire/SNAQ"{% endif %}
-							{% if status.validated && !status.snaqScore %}disabled{% endif %}>
+							{% if status.validated && !status.snaqScore %}disabled{% endif %}{% if !rights.write %}disabled{% endif %}>
 							{{'Questionnaire'|i18n}}
 						</a>
 					</div>
@@ -197,7 +205,8 @@
 						class="comment-input"
 						type="text"
 						name="commentSnaq"
-						value="{{status.commentSnaq}}" />
+						value="{{status.commentSnaq}}"
+						{% if !rights.write %}disabled{% endif %}/>
 				</div>
 
 				<div class="row value-row questionnaire-row" data-name="DHD-FFQ">
@@ -209,7 +218,7 @@
 						<a 
 							class="button small blue" 
 							href={% if status.dhdAnswer %}"/answers/{{status.dhdAnswer}}"{% else %}"/questionnaire/DHD-FFQ"{% endif %}
-							{% if status.validated && !status.dhdScore %}disabled{% endif %}>
+							{% if status.validated && !status.dhdScore %}disabled{% endif %}{% if !rights.write %}disabled{% endif %}>
 							{{'Questionnaire'|i18n}}
 						</a>
 					</div>
@@ -222,7 +231,8 @@
 						class="comment-input"
 						type="text"
 						name="commentDhd"
-						value="{{status.commentDhd}}" />
+						value="{{status.commentDhd}}"
+						{% if !rights.write %}disabled{% endif %}/>
 				</div>
 
 			</fieldset>
@@ -230,11 +240,11 @@
 			<fieldset>
 				<legend>
 					{{'Special diet prescriptions'|i18n}}
-					<div class="value-date-textarea dietPrescDate">{% if status.dietPrescDate %}{{status.dietPrescDate | date }}{% endif %}</div>
+					<div class="value-date-textarea dietPrescDate">{% if status.dietPrescDate %}{{status.dietPrescDate}}{% endif %}</div>
 				</legend>
 
 				<div class="row value-row">
-					<textarea flex name="dietPresc">{{status.dietPresc}}</textarea>
+					<textarea flex name="dietPresc" {% if !rights.write %}disabled{% endif %}>{{status.dietPresc}}</textarea>
 				</div>
 				<div class="row value-row">
 					<label class="comment-label-full" for="commentDietPresc">{{'Status' | i18n}}</label>
@@ -244,7 +254,8 @@
 						class="comment-input"
 						type="text"
 						name="commentDietPresc"
-						value="{{status.commentDietPresc}}" />
+						value="{{status.commentDietPresc}}"
+						{% if !rights.write %}disabled{% endif %} />
 				</div>
 			</fieldset>
 
@@ -260,19 +271,19 @@
 						<span class="assistance-label">{{assistance.ref}}</span>
 						<input type="hidden" name="assistance[{{ idx }}].ref" value="{{ assistance.ref }}">
 						<!--<input type="checkbox" class="value-checkbox" name="assistance[{{ idx }}].active" {% if assistance.active %}checked{% endif %}>-->
-						<input type="text" class="value-input assist" name="assistance[{{ idx }}].information" value="{{ assistance.information }}">
-						{% if !status.validated %}
-						<button type="button" class="red small" onclick="removeAssistance(this)">{{'Remove'|i18n}}</button>
+						<input type="text" class="value-input assist" name="assistance[{{ idx }}].information" value="{{ assistance.information }}" {% if !rights.write %}disabled{% endif %}>
+						{% if !status.validated && rights.write %}
+						<button type="button" class="red small" onclick="removeAssistance(this)" {% if !rights.write %}disabled{% endif %}>{{'Remove'|i18n}}</button>
 						{% endif %}
 					</div>
 				{% endfor %}
 			</div>
 			<div class="hidden" id="idxValue">{{idx}}</div>
 
-			{% if !status.validated %}
+			{% if !status.validated && rights.write %}
 			<div class="row control">
 				<span class="spacer"></span>
-				<button type="button" onclick="addAssistance()" class="green small">{{'Add'|i18n}}</button>
+				<button type="button" onclick="addAssistance()" class="green small" {% if !rights.write %}disabled{% endif %}>{{'Add'|i18n}}</button>
 			</div>
 			{% endif %}
 
@@ -298,8 +309,8 @@
 			<option value="{{ref}}">{{labelLang}}</option>
 		{{/assistanceList}}
 	</select>
-	<input type="text" class="value-input assist" name="assistance[{{idx}}].information">
-	<button type="button" class="red small" onclick="removeAssistance(this)">{% endraw %}{{'Remove'|i18n}}{% raw %}</button>
+	<input type="text" class="value-input assist" name="assistance[{{idx}}].information" {% if !rights.write %}disabled{% endif %}>
+	<button type="button" class="red small" onclick="removeAssistance(this)" {% if !rights.write %}disabled{% endif %}>{% endraw %}{{'Remove'|i18n}}{% raw %}</button>
 </script>
 {% endraw %}
 
@@ -308,7 +319,10 @@
 <zdk-modal id="confirmModal" closebutton="false">
 	<div class="modalContainer">
 		<div class="modalTitleContainer">{{'Confirmation' | i18n}}</div>
-		<div class="modalContentContainer">{{'Are you sure?' |i18n}}</div>
+		<div class="modalContentContainer">
+			<p>{{'This action will lock all the datas entered. There is no going back to edit the datas.'|i18n}}<br>
+			{{'Are you sure you want to continue ?' |i18n}}</p>
+		</div>
 		<div class="modalButtonContainer">
 			<button class="red" onclick="hideConfirm();">{{'Cancel' | i18n}}</script>
 			<button class="green" onclick="hideConfirm(); validate()">{{'Validate' | i18n}}</script>

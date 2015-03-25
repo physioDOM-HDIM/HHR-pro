@@ -45,7 +45,7 @@
 					<a 
 						class="button small blue" 
 						href={% if status.chairStandAnswer %}"/answers/{{status.chairStandAnswer}}"{% else %}"/questionnaire/CHAIR_TEST"{% endif %}
-						{% if status.validated && !status.chairStandScore %}disabled{% endif %}>
+						{% if status.validated && !status.chairStandScore %}disabled{% endif %}{% if !rights.write %}disabled{% endif %}>
 						{{'Questionnaire'|i18n}}
 					</a>
 				</div>
@@ -58,7 +58,8 @@
 					class="comment-input to-disable"
 					type="text"
 					name="commentchairStand"
-					value="{{status.commentchairStand}}" />
+					value="{{status.commentchairStand}}"
+					{% if !rights.write %}disabled{% endif %}/>
 			</div>
 
 			<div class="row value-row" style="padding-left: 210px">
@@ -71,7 +72,8 @@
 					class="value-checkbox choice-normal" 
 					style="width:100px" 
 					{% if status.normal %}checked{% endif %} 
-					{% if !status.normal && !status.risk %}checked{% endif %} />
+					{% if !status.normal && !status.risk %}checked{% endif %}
+					{% if !rights.write %}disabled{% endif %}/>
 				
 				{{'Risk of fail'|i18n}} 
 				<input 
@@ -79,7 +81,8 @@
 					name="choice"
 					value="risk"
 					class="value-checkbox choice-risk" 
-					{% if status.risk %}checked{% endif %} />
+					{% if status.risk %}checked{% endif %}
+					{% if !rights.write %}disabled{% endif %}/>
 
 			</div>
 
@@ -104,7 +107,10 @@
 <zdk-modal id="confirmModal" closebutton="false">
 	<div class="modalContainer">
 		<div class="modalTitleContainer">{{'Confirmation' | i18n}}</div>
-		<div class="modalContentContainer">{{'Are you sure?' | i18n}}</div>
+		<div class="modalContentContainer">
+			<p>{{'This action will lock all the datas entered. There is no going back to edit the datas.'|i18n}}<br>
+			{{'Are you sure you want to continue ?' |i18n}}</p>
+		</div>
 		<div class="modalButtonContainer">
 			<button class="red" onclick="hideConfirm();">{{'Cancel' | i18n}}</script>
 			<button class="green" onclick="hideConfirm(); checkForm(true);">{{'Validate' | i18n}}</script>

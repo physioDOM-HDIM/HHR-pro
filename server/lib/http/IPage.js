@@ -177,7 +177,7 @@ function IPage() {
 					.then(function(session) {
 						// logger.debug("person", session.person);
 						data.account = {
-								firstname: session.person.item.name.given.slice(0, 1).toUpperCase(),
+								firstname: session.person.item.name.given?session.person.item.name.given.slice(0, 1).toUpperCase():"",
 								lastname: session.person.item.name.family
 							};
 						html = swig.renderFile(DOCUMENTROOT+'/static/tpl/ui.htm', data, function(err, output) {
