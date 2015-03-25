@@ -199,6 +199,12 @@ function getAssistanceList(callback) {
 		});
 }
 
+function isForm (valid) {
+	for(var i = 0; i< datas.btnList.length; i++) {
+		datas.btnList[i].disabled = !valid;
+	}
+}
+
 window.addEventListener('DOMContentLoaded', function() {
 	moment.locale(Cookies.get("lang")=="en"?"en-gb":Cookies.get("lang"));
 	document.getElementById('sizeInput').addEventListener('change', computeBMI);
@@ -223,6 +229,15 @@ window.addEventListener('DOMContentLoaded', function() {
     datas.validateStatus = (document.querySelector('#validate-status').innerHTML === 'true');
     if(datas.validateStatus) {
     	Utils.lockdown();
+    }
+
+    datas.btnList = document.querySelectorAll('.to-valid');
+    var inputList = document.querySelectorAll('input[type="number"]');
+
+    for(var i = 0; i < inputList.length; i++) {
+    	inputList[i].addEventListener('input', function() {
+    		Utils.checkInputRange(isForm);
+		}, false);
     }
 
 });

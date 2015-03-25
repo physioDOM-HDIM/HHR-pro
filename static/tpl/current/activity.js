@@ -19,7 +19,22 @@ window.addEventListener('DOMContentLoaded', function() {
     	Utils.lockdown();
     }
 
+    datas.btnList = document.querySelectorAll('.to-valid');
+    var inputList = document.querySelectorAll('input[type="number"]');
+
+    for(var i = 0; i < inputList.length; i++) {
+    	inputList[i].addEventListener('input', function() {
+    		Utils.checkInputRange(isForm);
+		}, false);
+    }
+
 });
+
+function isForm (valid) {
+	for(var i = 0; i< datas.btnList.length; i++) {
+		datas.btnList[i].disabled = !valid;
+	}
+}
 
 window.addEventListener("beforeunload", function( e) {
 	var confirmationMessage;

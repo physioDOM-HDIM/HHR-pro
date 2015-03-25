@@ -37,7 +37,7 @@
 
 				<div class="value-name">{{'Number of steps'|i18n}}</div>
 				<div class="value-date stepsNumberDate">{% if status.stepsNumberDate %}{{status.stepsNumberDate}}{% endif %}</div>
-				<input type="number" step="1" min="0" name="stepsNumber" class="value-input" value="{{status.stepsNumber}}" />
+				<input type="number" step="1" min="{{parameters.stepsNumber.range.min}}" max="{{parameters.stepsNumber.range.max}}" name="stepsNumber" class="value-input" value="{{status.stepsNumber}}" />
 				<div class="value-unit">{{'steps per week'|i18n}}</div>
 
 			</div>
@@ -62,9 +62,9 @@
 		{% if !status.validated %}
 		<div id="buttons" class="row control">
 			<span class="spacer"></span>
-			<button type="button" class="blue" onclick="showConfirm();">{{'Validate'|i18n}}</button>
+			<button type="button" class="blue to-valid" onclick="showConfirm();">{{'Validate'|i18n}}</button>
 			<button type="button" class="red" onclick="modified=false; location.reload();">{{'Cancel'|i18n}}</button>
-			<button type="button" class="green" onclick="checkForm();">{{'Save'|i18n}}</button>
+			<button type="button" class="green to-valid" onclick="checkForm();">{{'Save'|i18n}}</button>
 		</div>
 		{% endif %}
 	{% endif %}

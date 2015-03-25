@@ -1479,6 +1479,32 @@ function IPage() {
 					data.author = author;
 					logger.trace(data);
 				}
+				return physioDOM.Lists.getList('parameters');
+			})
+			.then(function(parameters) {
+
+				var findInObj = function(obj, item, value) {
+				    var i = 0,
+				        len = obj.length,
+				        result = null;
+
+				    for(i; i<len; i++) {
+				        if(obj[i][item] === value) {
+				            result = obj[i];
+				            break;
+				        }
+				    }
+
+				    return result;
+				};
+				
+				data.parameters = {
+					stepsNumber: findInObj(parameters.items, 'ref', 'DIST'),
+					weight: findInObj(parameters.items, 'ref', 'WEG'),
+					lean: findInObj(parameters.items, 'ref', 'LEAN'),
+					bmi: findInObj(parameters.items, 'ref', 'BMI')
+				}
+
 				render('/static/tpl/current/' + name + '.htm', data, res, next);
 			})
 			.catch(function(err) {
