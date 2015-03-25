@@ -245,7 +245,11 @@
 	{% raw %}{{/questionnaire}}{% endraw %}
 	{% raw %}{{^questionnaire}}{% endraw %}
 		<div class="row">
-			<input type="text" name="items[{% raw %}{{idx}}{% endraw %}].comment">
+			<div class="col" style="max-width:200px"><span class="spacer"></span><span>Comment : </span></div>
+			<div class="col">
+				<input type="text" name="items[{% raw %}{{idx}}{% endraw %}].comment">
+			</div>
+			<div style="width:100px"></div>
 		</div>
 	{% raw %}{{/questionnaire}}{% endraw %}
 	</script>
