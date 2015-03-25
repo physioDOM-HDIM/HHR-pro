@@ -20,21 +20,7 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 
     datas.btnList = document.querySelectorAll('.to-valid');
-    var inputList = document.querySelectorAll('input[type="number"]');
-
-    for(var i = 0; i < inputList.length; i++) {
-    	inputList[i].addEventListener('input', function() {
-    		Utils.checkInputRange(isForm);
-		}, false);
-    }
-
 });
-
-function isForm (valid) {
-	for(var i = 0; i< datas.btnList.length; i++) {
-		datas.btnList[i].disabled = !valid;
-	}
-}
 
 window.addEventListener("beforeunload", function( e) {
 	var confirmationMessage;
@@ -46,7 +32,13 @@ window.addEventListener("beforeunload", function( e) {
 });
 
 function checkForm(validate) {
-	var formObj = form2js(document.getElementById('form'));
+	var formElt = document.getElementById('form');
+
+	if(!formElt.checkValidity()) {
+		return;
+	}
+
+	var formObj = form2js(formElt);
 
 	if(formObj.stepsNumber && (datas.savedData.stepsNumber !== formObj.stepsNumber)) {
 		var todayDate = moment().format('L'),
@@ -78,6 +70,12 @@ function checkForm(validate) {
 }
 
 function showConfirm() {
+	var formElt = document.getElementById('form');
+
+	if(!formElt.checkValidity()) {
+		return;
+	}
+
 	document.getElementById('confirmModal').show();
 }
 
