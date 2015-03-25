@@ -1,4 +1,16 @@
+__v0.0.22__
 
+  - \#160 : Bug 224 : [Beneficiary overview][v009.1] Nutritional status
+  - \#159 : Bug 212 : [Physiological data][Results from data recording/Filter][physioDOM-v0.0.8] trie de la list des provider/professionel
+  - \#158 : added range checking for current health and datarecord
+  - \#117 : [List Management][physioDOM-v0.0.16] Standard List Update Form
+  - \#149 : [Directory/Pro_Edit][physioDOM-v0.0.20] Change role
+  - \#155 : [Data recording] Create a event when detecting measures in data record that are out of range defined by thresholds limits
+  - \#77  : Titles fixed
+  - \#157 : [Beneficiary create] on successfull save, refresh the page
+  - \#156 : [Beneficiary overview] Add a info panel when no beneficiaries are attached to the account
+  - [Beneficiary Overview] Fix professionals table
+  
 __v0.0.21__
 
   - \#146 [Beneficiary][physioDOM-v0.0.19] Suppression beneficiaire
