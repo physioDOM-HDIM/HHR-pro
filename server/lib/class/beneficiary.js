@@ -887,25 +887,54 @@ function Beneficiary( ) {
 	 */
 	this.createDataRecord = function( dataRecordObj, professionalID) {
 		var that = this;
+		
 		return new promise( function(resolve, reject) {
 			logger.trace("createDataRecord", dataRecordObj, professionalID);
 			var dataRecord = new DataRecord();
 			dataRecord.setup(that._id, dataRecordObj, professionalID)
-				.then(function (dataRecord) {
-					return that.createEvent('Data record', 'create', dataRecord._id, professionalID)
+				.then(function ( _dataRecord ) {
+					return _dataRecord.getComplete();
+				})
+				.then( function(_dataRecord) {
+					dataRecord = _dataRecord;
+					console.log( dataRecord );
+					return that.createEvent('Data record', 'create', new ObjectID(dataRecord._id), professionalID);
+				})
+				.then(function() {
+					return that.getThreshold();
+				})
+				.then( function(thresholds) {
+					var outOfRange = false;
+					dataRecord.items.items.forEach( function( item ) {
+						if( thresholds[item.text] ) {
+							if( thresholds[item.text].min && item.value < thresholds[item.text].min ) {
+								console.log( "overtake min", item.text);
+								outOfRange = true;
+							}
+							if( thresholds[item.text].max && item.value > thresholds[item.text].max ) {
+								console.log( "overtake max", item.text);
+								outOfRange = true;
+							}
+						}
+					});
+					if( outOfRange ) {
+						return that.createEvent('Data record', 'overtake', new ObjectID(dataRecord._id), professionalID);
+					} else {
+						return;
+					}
 				})
 				.then( function() {
 					if( physioDOM.config.queue ) {
 						return that.pushLastDHDFFQ();
 					} else {
-						return false
+						return false;
 					}
 				})
 				.then( function() {
 					if( physioDOM.config.queue ) {
 						return that.pushHistory();
 					} else {
-						return false
+						return false;
 					}
 				})
 				.then( function() {
@@ -2150,7 +2179,7 @@ function Beneficiary( ) {
 			 questionnaires[id].scores[id].datetime
 			 questionnaires[id].scores[id].value
 			 */
-			logger.trace("pushQuestionnaire",quest);
+			logger.trace("pushQuestionnaire",quest.text );
 			
 			var msg = [];
 			if (quest.TVLabel ) {
@@ -2204,7 +2233,7 @@ function Beneficiary( ) {
 			 measuresHistory.params[id].values[id].value
 			 */
 			
-			console.log( param );
+			// console.log( param );
 			var msg = [];
 			if (param.rank) {
 				var leaf = name + ".measuresHistory.params[" + param.text + "]";

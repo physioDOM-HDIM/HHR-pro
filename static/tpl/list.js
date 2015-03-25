@@ -302,6 +302,10 @@ function save() {
         return;
     }
 
+	list.defaultValue = document.querySelector("#defaultValue").value;
+	if ( list.defaultValue === "null" ) {
+		list.defaultValue = null;
+	}
     newItems = [];
 
     Utils.promiseXHR("PUT", "/api/lists/" + list.name, 200, JSON.stringify(list)).then(function(response) {

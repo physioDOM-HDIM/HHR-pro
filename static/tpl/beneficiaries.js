@@ -79,6 +79,11 @@ function init() {
         var list = data.detail.list;
         var i = 0,
             len = list.items.length;
+		if( list.nb === 0 ) {
+			document.querySelector("#tsanteList").classList.add("hidden");
+			document.querySelector("#filter").classList.add("hidden");
+			document.querySelector("#nobeneficiaries").classList.remove("hidden");
+		}
         for (i; i < len; i++) {
 			if(list.items[i].birthdate) {
 				list.items[i].birthdate = moment(list.items[i].birthdate).format("L");

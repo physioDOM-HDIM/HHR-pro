@@ -45,6 +45,10 @@
 		border-bottom:1px solid black;
 	}
 	
+	div.item.alert {
+		background: Tomato;
+	}
+	
 	zdk-panel[heading="Details"] div.row {
 		display:block;
 		height:25px;
@@ -56,6 +60,7 @@
 	}
 	table#stakeholders {
 		min-width:700px;
+		width: 100%;
 		white-space: nowrap
 	}
 	table tr {
@@ -141,11 +146,13 @@
 <zdk-panel heading="{{ 'Events log'|i18n }}" collapsable="true" collapsed="false">
 	<tsante-list url="/api/beneficiary/events" pg="1" auto="true" autoRender="false" unresolved id="tsanteList" style="margin-top: 0;">
 		<template is="auto-binding" repeat="{% raw %}{{item in list.items}}{% endraw %}">
-			<div class="item">
+			<div class="item {% raw %}{{ item.operation == 'overtake'?'alert':'' }}{% endraw %}">
 				<div class="row">
 					<div style="-webkit-flex:1; -ms-flex:1; flex:1">
 						<div class="row">
-							<div style="-webkit-flex:2; -ms-flex:2; flex:2;font-weight:bold;padding-right:5px">{% raw %}{{item.date}} ( {{item.dateFrom}} ){% endraw %}</div>
+							<div style="-webkit-flex:2; -ms-flex:2; flex:2;font-weight:bold;padding-right:5px">
+								{% raw %}{{item.date}} <span>( {{item.dateFrom}} )</span>{% endraw %}
+							</div>
 							<div style="-webkit-flex:2; -ms-flex:2; flex:2;font-weight:bold;padding-right:5px">
 								<template if="{% raw %}{{ item.service == 'Beneficiary' }}{% endraw %}">
 									{{"Beneficiary"|i18n}}
@@ -181,6 +188,7 @@
 							<div style="-webkit-flex:1; -ms-flex:1; flex:1;padding-right:5px">
 								<template if="{% raw %}{{ item.operation == 'create' }}{% endraw %}">{{"Create"|i18n}}</template>
 								<template if="{% raw %}{{ item.operation == 'update' }}{% endraw %}">{{"Update"|i18n}}</template>
+								<template if="{% raw %}{{ item.operation == 'overtake' }}{% endraw %}">{{"Overtake"|i18n}}</template>
 							</div>
 							<div style="-webkit-flex:1; -ms-flex:1; flex:1; text-align:right">
 								<template if="{% raw %}{{ item.service == 'Beneficiary' }}{% endraw %}">
@@ -257,7 +265,7 @@
 			<td>
 				{% for telecom in prof.telecom %}
 					{% if telecom.system === "email" %}
-						{{telecom.value}}
+						<div>{{telecom.value}}</div>
 					{% endif %}
 				{% endfor %}
 			</td>
@@ -321,10 +329,10 @@
 	{% endif %}
 	{% if beneficiary.diagnosis %}
 		<div class="row">
-			<label>{{ "General status"|i18n }} : </label><div>{{beneficiary.diagnosis.general}}</div>
+			<label>{{ "General status"|i18n }} : </label><div>{{generalStatusArray.items[beneficiary.diagnosis.general]}}</div>
 		</div>
 		<div class="row">
-			<label>{{ "Nutritional status"|i18n }} : </label><div>{{beneficiary.diagnosis.nutritional}}</div>
+			<label>{{ "Nutritional status"|i18n }} : </label><div>{{nutritionalStatusArray.items[beneficiary.diagnosis.nutritional]}}</div>
 		</div>
 		<p>{{ "Chronic pathologies"|i18n }}</p>
 		<div class="row">

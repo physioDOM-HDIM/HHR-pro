@@ -6,7 +6,13 @@
     "db":"physioDOM"
   },
   "Lang":"fr",
-  "languages": ["en","en_gb","es","nl","fr"],
+  "languages": ["en","es","nl","fr"],
+  "healthStatusValidation": [
+    "well", 
+    "activity", 
+    "frailty", 
+    "nutrition"
+  ],
   "agenda": 720,
   "key": "e4ffe05c-f5fe-4fd9-96b2-63dc7ee58e3d",
   "queue": {
