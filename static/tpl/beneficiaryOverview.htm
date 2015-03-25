@@ -60,6 +60,7 @@
 	}
 	table#stakeholders {
 		min-width:700px;
+		width: 100%;
 		white-space: nowrap
 	}
 	table tr {
@@ -264,7 +265,7 @@
 			<td>
 				{% for telecom in prof.telecom %}
 					{% if telecom.system === "email" %}
-						{{telecom.value}}
+						<div>{{telecom.value}}</div>
 					{% endif %}
 				{% endfor %}
 			</td>
