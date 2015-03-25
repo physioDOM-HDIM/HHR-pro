@@ -1547,7 +1547,6 @@ function IPage() {
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
 				data.lang = lang;
-				data.title = 'General Data';
 				data.category = 'General';
 				data.parameterList = 'parameters';
 				// jsut for test, otherwise read locale from session
@@ -1588,7 +1587,6 @@ function IPage() {
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
 				data.lang = lang;
-				data.title = 'HDIM Data';
 				data.category = 'HDIM';
 				data.parameterList = 'parameters';
 				// jsut for test, otherwise read locale from session
@@ -1629,7 +1627,6 @@ function IPage() {
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
 				data.lang = lang;
-				data.title = 'Symptom Data';
 				data.category = '';
 				data.parameterList = 'symptom';
 
