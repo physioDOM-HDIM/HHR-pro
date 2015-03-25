@@ -64,6 +64,8 @@ if( program.config ) {
 		config.languages = tmp.languages;
 		config.server = tmp.server;
 		config.agenda = tmp.agenda;
+		config.healthStatusValidation = tmp.healthStatusValidation;
+		
 		if( tmp.queue ) {
 			config.queue = tmp.queue.protocol+"://"+tmp.queue.ip+":"+tmp.queue.port;
 		}

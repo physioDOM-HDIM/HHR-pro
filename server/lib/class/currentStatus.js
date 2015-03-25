@@ -43,9 +43,11 @@ function CurrentStatus() {
 					logger.trace('found', doc);
 					var valid = true;
 					for(var i = 0; i< doc.length; i++) {
-						if(!doc[i].validated) {
-							valid = false;
-							break;
+						if(physioDOM.config.healthStatusValidation && physioDOM.config.healthStatusValidation.indexOf( doc[i].name ) > -1) {
+							if(!doc[i].validated) {
+								valid = false;
+								break;
+							}
 						}
 					}
 					
