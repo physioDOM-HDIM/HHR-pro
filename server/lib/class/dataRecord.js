@@ -104,7 +104,7 @@ function DataRecord( beneficiaryID ) {
 	 */
 	this.getItems = function( pg, offset, sort, sortDir, filter) {
 		pg = pg || 1;
-		offset = offset || 50;
+		offset = offset || 100;
 
 		var search = { dataRecordID: this._id };
 		

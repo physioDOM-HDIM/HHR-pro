@@ -637,6 +637,8 @@ function IPage() {
 			"communication",
 			"profession",
 			"perimeter",
+			"nutritionalStatus",
+			"generalStatus",
 			"job"
 		].map( promiseListArray);
 
@@ -1141,7 +1143,8 @@ function IPage() {
 		init(req);
 		var data = {
 			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false,
-			rights: { read:false, write:false, url: '/datarecord/create' }
+			rights: { read:false, write:false, url: '/datarecord/create' },
+			role: req.session.role
 		};
 
 		if( !req.session.beneficiary ) {

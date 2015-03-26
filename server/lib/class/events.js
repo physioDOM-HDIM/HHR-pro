@@ -123,7 +123,8 @@ function events(beneficiaryID) {
 				logger.trace("ADD EVENT", lastEvent );
 	
 				if(eventObj.ref.toString() === lastEvent.ref.toString()
-					&& eventObj.operation === lastEvent.operation
+					&& ["update","overtake"].indexOf(eventObj.operation) !== -1
+					&& ["update","overtake"].indexOf(lastEvent.operation) !== -1
 					&& eventObj.sender.toString() === lastEvent.sender.toString()) {
 	
 					logger.trace("BY REPLACE" );

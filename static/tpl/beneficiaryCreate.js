@@ -497,6 +497,8 @@ function checkAllForms(isValidate) {
 
     new Modal('confirmSaveItem', function() {
         updateAll(formsObj);
+		modified = false;
+		window.location.reload(true);
     });
 
     return true;

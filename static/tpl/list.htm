@@ -39,7 +39,7 @@
 	
 	<div class="row">
 		<label>{{ "Default reference"|i18n }}:</label>
-		<select name="defaultValue" {% if !list.editable %}disabled{% endif%}>
+		<select name="defaultValue" id="defaultValue" {% if !list.editable %}disabled{% endif%}>
 			<option value="null" {% if list.defaultValue === null %}selected{% endif %}>{{ "-- No default value --"|i18n }}</option>
 			{% for item in list.items %}
 			<option value="{{item.ref}}" {% if list.defaultValue === item.ref %}selected{% endif %}>{{item.ref}}</option>
