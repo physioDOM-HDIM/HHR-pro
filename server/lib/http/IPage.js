@@ -1504,7 +1504,7 @@ function IPage() {
 				data.parameters = {
 					stepsNumber: findInObj(parameters.items, 'ref', 'DIST'),
 					weight: findInObj(parameters.items, 'ref', 'WEG'),
-					lean: findInObj(parameters.items, 'ref', 'LEAN'),
+					lean: findInObj(parameters.items, 'ref', 'LFR'),
 					bmi: findInObj(parameters.items, 'ref', 'BMI')
 				}
 
