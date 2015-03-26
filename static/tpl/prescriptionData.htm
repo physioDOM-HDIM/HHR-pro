@@ -153,7 +153,7 @@
 		<select name="ref" onchange="updateParam(this)" id="ref-select">
 			{% raw %}
 			{{#paramList}}
-			<option value="{{ref}}" {{#selection}}{{ref}}{{/selection}}>{{labelLang}}</option>
+			<option value="{{ref}}" {{#selection}}{{ref}}{{/selection}} {{#disable}}{{ref}}{{/disable}}>{{labelLang}}</option>
 			{{/paramList}}
 			{% endraw %}
 		</select>
