@@ -286,7 +286,15 @@ function showForm(ref) {
 	var select = formContainer.querySelector('#ref-select');
 	updateParam(select);
 
-	select.disabled = (!!ref);
+
+	if(ref) {
+		select.disabled = true;
+		var inputHidden = document.createElement('input');
+		inputHidden.setAttribute('type', 'hidden');
+		inputHidden.setAttribute('value', ref);
+		inputHidden.setAttribute('name', 'ref');
+		formContainer.appendChild(inputHidden);
+	}
 
 	//show default frequency option template
 	showOptions(dataItem.frequency, dataModel);
