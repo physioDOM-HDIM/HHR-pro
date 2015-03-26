@@ -51,7 +51,7 @@
 			<div class="col" style="padding-left:50px">
 				<label>{{"Frequency"|i18n}}</label>
 				{% raw %}
-				<input type="text" name="questionnaire[{{idx}}].frequency" value="{{frequency}}"/>
+				<input type="text" class="data-frequency" name="questionnaire[{{idx}}].frequency" value="{{frequency}}"/>
 				{% endraw %}
 			</div>
 		</div>
@@ -59,14 +59,14 @@
 			<div class="col" style="padding-left:50px">
 				<label>{{"Comment"|i18n}}</label>
 				{% raw %}
-				<input type="text" name="questionnaire[{{idx}}].comment" value="{{comment}}">
+				<input type="text" class="data-comment" name="questionnaire[{{idx}}].comment" value="{{comment}}">
 				{% endraw %}
 			</div>
 		</div>
 		<div class="row">
 			<div class="col" style="padding-left:50px">
 				<label>{{"Dates"|i18n}}</label>
-				<ul class="dates-list">
+				<ul class="dates-list" id="{% raw %}{{idx}}{% endraw %}">
 					{% raw %}
 					{{#date}}
 						{{#setAddedDate}}{{.}}{{/setAddedDate}}
@@ -87,6 +87,18 @@
 		</div>
 	{% endif %}
 	</div>
+	<div class="row control right">
+		<span class="spacer"></span>
+		<label class="spacing-around">Copy datas from</label>
+		<select onchange="copySelection('{% raw %}{{ref}}{% endraw %}', this)">
+			<option></option>
+			{% raw %}
+				{{#dataList}}
+					<option value="{{ref}}" {{#disable}}{{ref}}{{/disable}}>{{labelLang}}</option>
+				{{/dataList}}
+			{% endraw %}
+		</select>
+	</div>	
 	<hr>
 	{% raw %}{{/data}}{% endraw %}
 </script>
