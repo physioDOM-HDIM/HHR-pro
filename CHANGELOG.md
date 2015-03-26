@@ -1,3 +1,7 @@
+__v0.0.24__
+
+  - Hotfix : \#161 : Bug 171
+  
 __v0.0.23__
 
   - \#161 : Bug 171 (part 1) :[Prescription of Data monitoring] prevent to add a prescription for a already scheduled parameter
