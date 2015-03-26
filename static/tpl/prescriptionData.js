@@ -211,6 +211,13 @@ function showForm(ref) {
 				}
 			};
 		},
+		disable: function() {
+			return function (val, render) {
+				if(utils.findInObject(lists.dataprog, 'ref', render(val)) !== null) {
+					return 'disabled';
+				}
+			};
+		},
 		getFrequencyDefault: function () {
 			return function (val, render) {
 				if (dataItem.frequency === render(val)) {
@@ -278,6 +285,9 @@ function showForm(ref) {
 	//Set threshold for first param of the list
 	var select = formContainer.querySelector('#ref-select');
 	updateParam(select);
+
+	select.disabled = (!!ref);
+
 	//show default frequency option template
 	showOptions(dataItem.frequency, dataModel);
 
