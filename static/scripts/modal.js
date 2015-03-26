@@ -28,6 +28,20 @@ function Modal (type, callback, log) {
         }]
     };
 
+    content.errorNoParamAvailable = {
+        title: "trad_error",
+        content: "trad_error_no_param",
+        buttons: [{
+            id: "trad_ok",
+            action: function() {
+                if(callback) {
+                    callback();
+                }
+                self.closeModal();
+            }
+        }]
+    };
+
     content.errorOccured = {
         title: "trad_error",
         content: "trad_error_occured",
