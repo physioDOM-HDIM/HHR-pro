@@ -58,7 +58,7 @@
 						type="text"
 						name="commentHeight"
 						value="{{status.commentHeight}}"
-						{% if !rights.write %}disabled{% endif %}/>
+						{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
 				</div>
 
 
@@ -75,7 +75,7 @@
 						min="{{parameters.weight.range.min}}" 
 						max="{{parameters.weight.range.max}}"
 						value="{{status.weight}}"
-						{% if !rights.write %}disabled{% endif %}/>
+						{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
 					<div class="value-unit">{{'kilogram'|i18n}}</div>
 				</div>
 				<div class="row value-row">
@@ -87,7 +87,7 @@
 						type="text"
 						name="commentWeight"
 						value="{{status.commentWeight}}"
-						{% if !rights.write %}disabled{% endif %}/>
+						{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
 				</div>
 
 				<div class="row value-row">
@@ -100,7 +100,7 @@
 						min="{{parameters.lean.range.min}}" 
 						max="{{parameters.lean.range.max}}"
 						value="{{status.lean}}"
-						{% if !rights.write %}disabled{% endif %} />
+						{% if !rights.write || !beneficiary.active %}disabled{% endif %} />
 					<div class="value-unit">{{'%'|i18n}}</div>
 				</div>
 				<div class="row value-row">
@@ -112,7 +112,7 @@
 						type="text"
 						name="commentLean"
 						value="{{status.commentLean}}"
-						{% if !rights.write %}disabled{% endif %}/>
+						{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
 				</div>
 
 				<div class="row value-row">
@@ -128,7 +128,7 @@
 						min="{{parameters.bmi.range.min}}" 
 						max="{{parameters.bmi.range.max}}"
 						value="{{status.bmi}}"
-						{% if !rights.write %}disabled{% endif %}/>
+						{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
 					<div class="value-unit">{{'kg/m²'|i18n}}</div>
 				</div>
 				<div class="row value-row">
@@ -140,7 +140,7 @@
 						type="text"
 						name="commentBmi"
 						value="{{status.commentBmi}}"
-						{% if !rights.write %}disabled{% endif %}/>
+						{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
 				</div>
 
 				<div class="row value-row questionnaire-row" data-name="MNA">
@@ -152,7 +152,7 @@
 						<a 
 							class="button small blue" 
 							href={% if status.mnaAnswer %}"/answers/{{status.mnaAnswer}}"{% else %}"/questionnaire/MNA"{% endif %}
-							{% if status.validated && !status.mnaScore %}disabled{% endif %}{% if !rights.write %}disabled{% endif %}>
+							{% if status.validated && !status.mnaScore %}disabled{% endif %}{% if ( !rights.write || !beneficiary.active ) && !status.mnaScore %}disabled{% endif %}>
 							{{'Questionnaire'|i18n}}
 						</a>
 					</div>
@@ -166,7 +166,7 @@
 						type="text"
 						name="commentMna"
 						value="{{status.commentMna}}"
-						{% if !rights.write %}disabled{% endif %}/>
+						{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
 				</div>
 
 				<div class="row value-row questionnaire-row" data-name="MNA_MINI">
@@ -178,7 +178,7 @@
 						<a 
 							class="button small blue" 
 							href={% if status.mnaSfAnswer %}"/answers/{{status.mnaSfAnswer}}"{% else %}"/questionnaire/MNA_MINI"{% endif %}
-							{% if status.validated && !status.mnaSfScore %}disabled{% endif %}{% if !rights.write %}disabled{% endif %}>
+							{% if status.validated && !status.mnaSfScore %}disabled{% endif %}{% if ( !rights.write || !beneficiary.active ) && !status.mnaSfScore %}disabled{% endif %}>
 							{{'Questionnaire'|i18n}}
 						</a>
 					</div>
@@ -192,7 +192,7 @@
 						type="text"
 						name="commentMnaSf"
 						value="{{status.commentMnaSf}}"
-						{% if !rights.write %}disabled{% endif %}/>
+						{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
 				</div>
 
 				<div class="row value-row questionnaire-row" data-name="SNAQ">
@@ -204,7 +204,7 @@
 						<a 
 							class="button small blue" 
 							href={% if status.snaqAnswer %}"/answers/{{status.snaqAnswer}}"{% else %}"/questionnaire/SNAQ"{% endif %}
-							{% if status.validated && !status.snaqScore %}disabled{% endif %}{% if !rights.write %}disabled{% endif %}>
+							{% if status.validated && !status.snaqScore %}disabled{% endif %}{% if (!rights.write || !beneficiary.active) && !status.snaqScore %}disabled{% endif %}>
 							{{'Questionnaire'|i18n}}
 						</a>
 					</div>
@@ -218,7 +218,7 @@
 						type="text"
 						name="commentSnaq"
 						value="{{status.commentSnaq}}"
-						{% if !rights.write %}disabled{% endif %}/>
+						{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
 				</div>
 
 				<div class="row value-row questionnaire-row" data-name="DHD-FFQ">
@@ -230,7 +230,7 @@
 						<a 
 							class="button small blue" 
 							href={% if status.dhdAnswer %}"/answers/{{status.dhdAnswer}}"{% else %}"/questionnaire/DHD-FFQ"{% endif %}
-							{% if status.validated && !status.dhdScore %}disabled{% endif %}{% if !rights.write %}disabled{% endif %}>
+							{% if status.validated && !status.dhdScore %}disabled{% endif %}{% if (!rights.write || !beneficiary.active) && !status.dhdScore %}disabled{% endif %}>
 							{{'Questionnaire'|i18n}}
 						</a>
 					</div>
@@ -244,7 +244,7 @@
 						type="text"
 						name="commentDhd"
 						value="{{status.commentDhd}}"
-						{% if !rights.write %}disabled{% endif %}/>
+						{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
 				</div>
 
 			</fieldset>
@@ -256,7 +256,7 @@
 				</legend>
 
 				<div class="row value-row">
-					<textarea flex name="dietPresc" {% if !rights.write %}disabled{% endif %}>{{status.dietPresc}}</textarea>
+					<textarea flex name="dietPresc" {% if !rights.write || !beneficiary.active %}disabled{% endif %}>{{status.dietPresc}}</textarea>
 				</div>
 				<div class="row value-row">
 					<label class="comment-label-full" for="commentDietPresc">{{'Status' | i18n}}</label>
@@ -267,7 +267,7 @@
 						type="text"
 						name="commentDietPresc"
 						value="{{status.commentDietPresc}}"
-						{% if !rights.write %}disabled{% endif %} />
+						{% if !rights.write || !beneficiary.active %}disabled{% endif %} />
 				</div>
 			</fieldset>
 
@@ -280,24 +280,24 @@
 					<div class="row value-row">
 						<span class="assistance-label">{{assistance.ref}}</span>
 						<input type="hidden" name="assistance[{{ idx }}].ref" value="{{ assistance.ref }}">
-						<input type="text" class="value-input assist" name="assistance[{{ idx }}].information" value="{{ assistance.information }}" {% if !rights.write %}disabled{% endif %}>
+						<input type="text" class="value-input assist" name="assistance[{{ idx }}].information" value="{{ assistance.information }}" {% if !rights.write || !beneficiary.active %}disabled{% endif %}>
 						{% if !status.validated && rights.write %}
-						<button type="button" class="red small" onclick="removeAssistance(this)" {% if !rights.write %}disabled{% endif %}>{{'Remove'|i18n}}</button>
+						<button type="button" class="red small" onclick="removeAssistance(this)" {% if !rights.write || !beneficiary.active %}disabled{% endif %}>{{'Remove'|i18n}}</button>
 						{% endif %}
 					</div>
 				{% endfor %}
 			</div>
 			<div class="hidden" id="idxValue">{{idx}}</div>
 
-			{% if !status.validated && rights.write %}
+			{% if !status.validated && rights.write && beneficiary.active %}
 			<div class="row control">
 				<span class="spacer"></span>
-				<button type="button" onclick="addAssistance()" class="green small" {% if !rights.write %}disabled{% endif %}>{{'Add'|i18n}}</button>
+				<button type="button" onclick="addAssistance()" class="green small" {% if !rights.write || !beneficiary.active %}disabled{% endif %}>{{'Add'|i18n}}</button>
 			</div>
 			{% endif %}
 	</zdk-panel>
 
-	{% if rights.write %}
+	{% if rights.write && beneficiary.active %}
 		{% if !status.validated %}
 		<div id="buttons" class="row control">
 			<span class="spacer"></span>
@@ -318,8 +318,8 @@
 			<option value="{{ref}}">{{labelLang}}</option>
 		{{/assistanceList}}
 	</select>
-	<input type="text" class="value-input assist" name="assistance[{{idx}}].information" {% if !rights.write %}disabled{% endif %}>
-	<button type="button" class="red small" onclick="removeAssistance(this)" {% if !rights.write %}disabled{% endif %}>{% endraw %}{{'Remove'|i18n}}{% raw %}</button>
+	<input type="text" class="value-input assist" name="assistance[{{idx}}].information" {% if !rights.write || !beneficiary.active %}disabled{% endif %}>
+	<button type="button" class="red small" onclick="removeAssistance(this)" {% if !rights.write || !beneficiary.active %}disabled{% endif %}>{% endraw %}{{'Remove'|i18n}}{% raw %}</button>
 </script>
 {% endraw %}
 

@@ -467,6 +467,12 @@ function IPage() {
 			})
 			.then(function(beneficiaries) {
 				var beneficiaryID = req.params.beneficiaryID?req.params.beneficiaryID:req.session.beneficiary;
+				if( beneficiaryID === req.session.beneficiary) {
+					// indicate that we are editing the selected beneficiary
+					data.sessionBene = true;
+				} else {
+					data.sessionBene = false
+				}
 				return beneficiaries.getBeneficiaryAdminByID( req.session, beneficiaryID );
 			})
 			.then( function(beneficiary) {
@@ -1271,7 +1277,8 @@ function IPage() {
 				.then(function (beneficiary) {
 					data.beneficiary = beneficiary;
 					return beneficiary._id ? beneficiary.getProfessionals() : null;
-				}).then(function (professionalList) {
+				})
+				.then(function (professionalList) {
 					if (professionalList) {
 						data.professionalList = professionalList;
 					}

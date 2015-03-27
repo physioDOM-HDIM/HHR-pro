@@ -263,12 +263,22 @@ function highlight(pathname) {
 	if( document.querySelector("#beneficiary a").innerHTML !== '-' ) {
 		var menuEntries = document.querySelectorAll("ul.tree li");
 		[].slice.call(menuEntries).forEach(function (entry) {
-			entry.classList.remove("disabled");
+			if( entry.getAttribute("data-link") !== "/datarecord/create") {
+				entry.classList.remove("disabled");
+			}
 		});
 	}
 	var link = document.querySelector("[drawer] li[data-link='"+pathname+"']");
 	if( link ) {
 		link.classList.add("selected");
+	}
+}
+function enableDataRecord(flag) {
+	var menuEntry = document.querySelector('li[data-link*="/datarecord/create"]');
+	if( flag ) {
+		menuEntry.classList.remove("disabled");
+	} else {
+		menuEntry.classList.add("disabled");
 	}
 }
 </script>

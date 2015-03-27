@@ -41,7 +41,7 @@
 
 <div class="row control">
 	<span class="spacer"></span>
-	{% if rights.write %}
+	{% if rights.write && beneficiary.active %}
 	<button type="button" class="blue" onclick="showForm()">{{'Add'|i18n}}</button>
 	{% endif %}
 </div>
@@ -136,7 +136,7 @@
 	
 	<div class="row h1 control">
 		<span class="spacer"></span>
-		{% if rights.write %}
+		{% if rights.write && beneficiary.active %}
 		<button type="button" onclick="showForm('{% raw %}{{data.ref}}{% endraw %}')" class="small blue">{{"Edit"|i18n}}</button>
 		{% endif %}
 	</div>

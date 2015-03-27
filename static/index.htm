@@ -33,6 +33,7 @@
 		<img src="/img/physiodom_logo.png" id="logo" style="height:150px;">
 	</div>
 	<div class="error">{{"Bad login or password"|i18n}}</div>
+	<div class="notactivate">{{"Your account is not activated"|i18n}}</div>
 	<div class="container" style="width:300px; background:#d6d6d6; margin-top:25px">
 		<div class="row">&nbsp;</div>
 		<div class="row">
@@ -61,13 +62,17 @@
 			}
 		}, false);
 		function login() {
+			document.querySelector(".error").style.display = "none";
+			document.querySelector(".notactivate").style.display = "none";
 			var xhr = new XMLHttpRequest();
 			xhr.open("POST","/api/login",false);
 			xhr.send( JSON.stringify({ login:document.querySelector("#login").value, password:document.querySelector("#passwd").value}));
-			console.log( xhr.status );
 			switch( xhr.status ) {
 				case 403 :
 					document.querySelector(".error").style.display = "block";
+					break;
+				case 405 :
+					document.querySelector(".notactivate").style.display = "block";
 					break;
 				case 200:
 					window.location.reload();

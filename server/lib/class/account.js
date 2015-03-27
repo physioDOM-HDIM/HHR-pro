@@ -47,7 +47,8 @@ function Account( obj ) {
 
 		return new promise(function ( resolv, reject ) {
 			if( !that.active ) {
-				return reject({code:403, message:"account not activate"});
+				// return reject({code:403, message:"account not activate"});
+				return resolv( false );
 			}
 			var obj = {
 				sessionID: new ObjectID(),
