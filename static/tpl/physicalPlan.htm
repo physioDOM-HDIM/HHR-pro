@@ -28,7 +28,7 @@
 
 <form name="recommendation" id="recommendation"></form>
 
-{% if rights.write %}
+{% if rights.write && beneficiary.active %}
 <div class="row control actions">
 	<span class="spacer"></span>
 	<div class="mode-update hidden">

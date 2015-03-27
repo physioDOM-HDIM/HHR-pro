@@ -45,7 +45,7 @@
 					<a 
 						class="button small blue" 
 						href={% if status.chairStandAnswer %}"/answers/{{status.chairStandAnswer}}"{% else %}"/questionnaire/CHAIR_TEST"{% endif %}
-						{% if status.validated && !status.chairStandScore %}disabled{% endif %}{% if !rights.write %}disabled{% endif %}>
+						{% if status.validated && !status.chairStandScore %}disabled{% endif %}{% if ( !rights.write || !beneficiary.active ) && !status.chairStandScore %}disabled{% endif %}>
 						{{'Questionnaire'|i18n}}
 					</a>
 				</div>
@@ -59,7 +59,7 @@
 					type="text"
 					name="commentchairStand"
 					value="{{status.commentchairStand}}"
-					{% if !rights.write %}disabled{% endif %}/>
+					{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
 			</div>
 
 			<div class="row value-row" style="padding-left: 210px">
@@ -73,7 +73,7 @@
 					style="width:100px" 
 					{% if status.normal %}checked{% endif %} 
 					{% if !status.normal && !status.risk %}checked{% endif %}
-					{% if !rights.write %}disabled{% endif %}/>
+					{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
 				
 				{{'Risk of fail'|i18n}} 
 				<input 
@@ -82,14 +82,14 @@
 					value="risk"
 					class="value-checkbox choice-risk" 
 					{% if status.risk %}checked{% endif %}
-					{% if !rights.write %}disabled{% endif %}/>
+					{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
 
 			</div>
 
 		</form>
 	</zdk-panel>
 
-	{% if rights.write %}
+	{% if rights.write && beneficiary.active %}
 		{% if !status.validated %}
 		<div id="buttons" class="row control">
 			<span class="spacer"></span>
