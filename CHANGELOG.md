@@ -1,3 +1,11 @@
+__v0.0.26-pre__
+
+  - \#171 : Bug 91 - [Select Beneficiary/Beneficiary list][physioDOM-v0.0.4] Ajouter un bénéficiaire
+  - \#173 : Bug 115 - [Create/Update Professional/Account][physioDOM-v0.0.4] Update du login
+  - \#174 : Bug 90 - [Rubrique Adresse][physioDOM-v0.0.4] Conformité champs de la rubrique adresse
+  - \#175 : Bug 255 - [update/create beneficiary][v0013-2] Alignement Professional list lors de l'assignement d'un professionel
+  - \#104 : [Data section/Results from Data Recording][physioDOM-v0.0.16] Difference record time
+  
 __v0.0.25__
 
   - \#167 : [Global] Inactive beneficiary
