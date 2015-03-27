@@ -184,6 +184,15 @@ function updateItem(obj) {
         delete data.address;
     } else {
         data.address.line = data.address.line.split("\n");
+		var indx = data.address.line.length - 1;
+		var done = false;
+		do {
+			if( !data.address.line[indx]) {
+				data.address.line.splice(indx,1);
+			} else {
+				done = true;
+			}
+		} while( --indx > 0 && done === false );
     }
     
     if (data._id) {

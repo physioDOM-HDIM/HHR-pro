@@ -14,6 +14,11 @@ infos.datasInit = null;
 window.addEventListener("DOMContentLoaded", function () {
 	infos.datasInit = form2js(document.forms.dataRecord);
 	infos.lang = Cookies.get("lang");
+
+	moment.locale(infos.lang === "en"?"en_gb":infos.lang );
+	var dateTime = document.querySelector("#datetime").innerHTML.trim();
+	document.querySelector("#datetime").innerHTML = moment(dateTime).format("L LT");
+	
 	getLists();
 
 	document.addEventListener('change', function (evt) {
@@ -33,7 +38,7 @@ window.addEventListener("DOMContentLoaded", function () {
 	}
 
 	if(!archiveUpdate) {
-		isHealthStatusValidated()
+		isHealthStatusValidated();
 	}
 
 }, false);

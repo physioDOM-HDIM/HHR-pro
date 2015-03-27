@@ -112,6 +112,7 @@
 			<label class="city mandatory">{{ "City"|i18n }} </label>
 			<input type="text" name="address[{%raw%}{{idx}}{%endraw%}].city" value="{{addressItem.city}}" required/>
 		</div>
+		<input type="hidden" name="address[{%raw%}{{idx}}{%endraw%}].country" value="{{country}}" required/>
 	</div>
 </script>
 
@@ -247,6 +248,7 @@
 					<div class="col">
 						<label class="city mandatory">{{ "City"|i18n }}</label>
 						<input type="text" name="address[{{loop.index}}].city" value="{{addressItem.city}}" required/>
+						<input type="hidden" name="address[{{loop.index}}].country" value="{{addressItem.country || country}}" required/>
 					</div>
 				</div>
 			</div>
@@ -568,6 +570,10 @@
 <zdk-modal id="calendarModal">
 	<zdk-calendar></zdk-calendar>
 </zdk-modal>
+
+<div style="display:none">
+	<div id="startDateError">{{"Please fill the start date" | i18n }}</div>	
+</div>
 
 <script>
 	{% if sessionBene %}

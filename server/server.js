@@ -65,6 +65,7 @@ if( program.config ) {
 		config.server = tmp.server;
 		config.agenda = tmp.agenda;
 		config.healthStatusValidation = tmp.healthStatusValidation;
+		config.country = tmp.country || '';
 		
 		if( tmp.queue ) {
 			config.queue = tmp.queue.protocol+"://"+tmp.queue.ip+":"+tmp.queue.port;
