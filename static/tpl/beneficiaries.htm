@@ -21,6 +21,7 @@
 {% endblock %}
 
 {% block content %}
+	{% if hasBeneficiary %}
 	<zdk-panel id="filter" heading="{{'Filter'|i18n}} / {{'Sort'|i18n}}" collapsable="true" collapsed={% if admin %}"false"{% else %}"true"{% endif %}>
 			<div>
 				<form class="filter" name="filter" autocomplete="off" onsubmit="validFilter(); return false;">
@@ -95,14 +96,16 @@
 				</form>
 			</div>
 	</zdk-panel>
+	{% endif %}
 
-	{% if rights.write %}
+	{% if rights.write && admin %}
 	<div class="row control" style="height:60px; align-content: center">
 		<span class="spacer"></span>
 		<a href="/beneficiaries/create"><button class="blue big">{{ "Add"|i18n }}</button></a>
 	</div>
 	{% endif %}
 	
+	{% if hasBeneficiary %}
 	<tsante-list url="/api/beneficiaries" pg="1" offset="25" auto="true" unresolved id="tsanteList">
 		<template is="auto-binding" repeat="{% raw %}{{item in list.items}}{% endraw %}">
 			<div class="item" style="height:70px">
@@ -135,12 +138,15 @@
 			</div>
 		</template>
 	</tsante-list>
+	{% endif %}
 
-	<div id="nobeneficiaries" class="hidden">
+	{% if !hasBeneficiary %}
+	<div id="nobeneficiaries">
 		You have no beneficiaries attached
 	</div>
+	{% endif %}
 	
-	{% if rights.write %}
+	{% if rights.write && admin %}
 	<div class="row control" style="height:60px; align-content: center">
 		<span class="spacer"></span>
 		<a href="/beneficiaries/create"><button class="blue big">{{ "Add"|i18n }}</button></a>
