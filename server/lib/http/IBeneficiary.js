@@ -223,8 +223,6 @@ var IBeneficiary = {
 	
 	beneficiaryProfessionals: function(req, res, next) {
 		logger.trace("beneficiaryProfessonnals");
-		var pg = parseInt(req.params.pg,10) || 1;
-		var offset = parseInt(req.params.offset,10) || 20;
 		
 		physioDOM.Beneficiaries()
 			.then( function(beneficiaries) {
@@ -235,7 +233,7 @@ var IBeneficiary = {
 				}
 			})
 			.then( function(beneficiary) {
-				return beneficiary.getProfessionals( pg, offset );
+				return beneficiary.getProfessionals();
 			})
 			.then( function( professionals ) {
 				res.send( professionals );
