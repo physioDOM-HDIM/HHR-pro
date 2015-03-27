@@ -268,7 +268,7 @@ function checkEntryForm() {
     var formObj = form2js(document.querySelector("form[name='entry']"));
 
     if (!formObj.entry || !Utils.parseDate(formObj.entry.startDate)) {
-        new Modal('errorDateRequired');
+        new Modal('errorDateRequired', null, document.querySelector("#startDateError").innerHTML );
         return false;
     }
 
