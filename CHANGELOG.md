@@ -1,3 +1,12 @@
+__v0.0.25__
+
+  - \#167 : [Global] Inactive beneficiary
+  - \#170 : Bug 278 - [Prescription of data monitoring/Symptom][v0020] desactivation d'un symptome
+  - \#169 : Bug 281 - [Prescription/all][v0024] Frequency Every2 weeks pour 1 semaine
+  - \#168 : Bug 280 - [Select beneficary/Filter][v0024] Panel Filter/Sort disparait quand le resultat du filtre n'a pas d'element
+  - \#166 : Bug 260 - [Data Section][v0013-2] Saisie des prescriptions
+  - \#63  : Bug 254 - [create/update/overview beneficiary][v0013-2] Champ profession
+
 __v0.0.24__
 
   - Hotfix : \#161 : Bug 171
