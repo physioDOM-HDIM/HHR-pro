@@ -407,11 +407,9 @@
 			<div class="row">
 				<label>{{ "Email"|i18n }}</label>
 				<input type="email" name="telecom.value"
-				       value="{% for telecom in beneficiary.telecom %}
-	                        {% if telecom.system === 'email' %}
-	                            {{telecom.value}}
-	                        {% endif %}
-	                    {% endfor %}"/>
+				       value="{%- for telecom in beneficiary.telecom -%}
+	                        {%- if telecom.system === 'email' -%}{{- telecom.value- }}{%- endif -%}
+	                    {%- endfor -%}"/>
 			</div>
 			{% if IDS %}
 			<div class="row">
@@ -571,6 +569,15 @@
 	<zdk-calendar></zdk-calendar>
 </zdk-modal>
 
+<script>
+	{% if sessionBene %}
+		{% if beneficiary.active %}
+		parent.enableDataRecord(true);
+		{% else %}
+		parent.enableDataRecord(false);
+		{% endif %}
+	{% endif %}
+</script>
 {% include 'modal.htm' %}
 
 {% endblock %}

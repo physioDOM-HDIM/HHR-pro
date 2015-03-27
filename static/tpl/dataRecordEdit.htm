@@ -118,7 +118,7 @@
 				</div>
 
 				<div>
-					{% if admin %}
+					{% if admin && beneficiary.active %}
 					<div style="width:100px; text-align:right">
 						<div>
 							<button type="button" class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">{{'Edit'|i18n}}</button>
@@ -218,7 +218,7 @@
 		</div>
 		<div class="row control">
 			<span class="spacer"></span>
-			{% if rights.write %}
+			{% if rights.write && beneficiary.active %}
 			<button type="button" class="green small" onclick="addLine('{{category}}')">{{'Add'|i18n}}</button>
 			{% endif %}
 		</div>
@@ -388,12 +388,12 @@
 		<div class="row control" style="height:60px; align-content: center">
 			<span class="spacer"></span>
 			{% if view === 'create'%}
-			{% if rights.write %}
+			{% if rights.write && beneficiary.active %}
 			<button id="saveBtn" class="green">{{'Save'|i18n}}</button>
 			{% endif %}
 			{% else %}
 			<a href="/datarecord"><button type="button" class="blue big not-disabled">{{'Back'|i18n}}</button></a>
-			{% if rights.write %}
+			{% if rights.write && beneficiary.active %}
 			<button id="saveBtn" class="green">{{'Save'|i18n}}</button>
 			{% endif %}
 			{% endif %}

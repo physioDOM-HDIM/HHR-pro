@@ -17,7 +17,6 @@ var _dataObj = null,
 var modified = false;
 
 function _findProfessionalInBeneficiary(id, obj) {
-    console.log("_findProfessionalInBeneficiary", arguments);
     var found = false,
         i = 0;
 
@@ -37,7 +36,6 @@ function _findProfessionalInBeneficiary(id, obj) {
 }
 
 function _findReferentInBeneficiary(obj) {
-    console.log("_findReferentInBeneficiary", arguments);
     var found = false,
         i = 0;
 
@@ -57,7 +55,6 @@ function _findReferentInBeneficiary(obj) {
 }
 
 function updateProfessionalReferent(node, idxItem) {
-    console.log("updateProfessionalReferent", arguments);
 
     var currentItem = _dataAllProfessionnalObj && _dataAllProfessionnalObj.items && _dataAllProfessionnalObj.items[idxItem];
     if (currentItem) {
@@ -86,7 +83,6 @@ function updateProfessionalReferent(node, idxItem) {
 }
 
 function updateProfessionalSelection(node, idxItem) {
-    console.log("updateProfessionalSelection", arguments);
 
     if (!node.checked && node.parentNode.parentNode.querySelector("input[name='referent']").checked) {
         //Can't unselect a referent professional
@@ -116,7 +112,6 @@ function updateProfessionalSelection(node, idxItem) {
 }
 
 function _removeAllProfessionals() {
-    console.log("_removeAllProfessionals");
     var items = document.querySelectorAll("form[name='professionals'] .proItemContainer"),
         form = document.querySelector("form[name='professionals']");
     [].map.call(items, function(item) {
@@ -125,7 +120,6 @@ function _removeAllProfessionals() {
 }
 
 function _addProfessional(professionalItem) {
-    console.log("_addProfessional", arguments);
     var html, div,
         elt = document.querySelector("#tplProfessionnalContainer").innerHTML,
         isFirstItem = true,
@@ -160,7 +154,6 @@ function _addProfessional(professionalItem) {
 }
 
 function _onHaveProfessionalsData(data) {
-    console.log("onHaveProfessionalsData", data);
     _dataAllProfessionnalObj = data.detail.list;
     //Check already selected professionals
     var proTab = _dataObjTmp.professionals;
@@ -208,7 +201,6 @@ function _convertDate(strDate) {
 }
 
 function showProfessionals() {
-    console.log("showProfessionals");
     //TODO: check the perimeter to filter the url for the listpager
     //var url = document.querySelector("#addProfessionalsModal #tsanteListProfessional") + "?filter={perimeter: xxx}";
     tsanteListProfessionalElt.go();
@@ -220,13 +212,11 @@ function showProfessionals() {
 }
 
 function closeProfessionals() {
-    console.log("closeProfessionals");
     _dataObjTmp = null;
     document.querySelector("#addProfessionalsModal").hide();
 }
 
 function addProfessionals() {
-    console.log("addProfessionals");
 
     //Case of new entry
     if (!_dataObj) {
@@ -246,7 +236,6 @@ function addProfessionals() {
 }
 
 function deleteProfessional(node) {
-    console.log("deleteProfessional", arguments);
     var child = node.parentNode.parentNode.parentNode,
         id = child.querySelector("input[name='professional_id']").value,
         idx;
@@ -263,7 +252,6 @@ function deleteProfessional(node) {
 }
 
 function updateProfessionals(obj) {
-    console.log("updateProfessionals", obj);
 
     if (obj && _dataObj && _dataObj._id) {
         Utils.promiseXHR("POST", "/api/beneficiaries/" + _dataObj._id + "/professionals", 200, JSON.stringify(obj)).then(function() {
@@ -278,8 +266,6 @@ function updateProfessionals(obj) {
 
 function checkEntryForm() {
     var formObj = form2js(document.querySelector("form[name='entry']"));
-
-    console.log('AAAAAAAAAA', formObj.entry);
 
     if (!formObj.entry || !Utils.parseDate(formObj.entry.startDate)) {
         new Modal('errorDateRequired');
@@ -314,7 +300,6 @@ function checkEntryForm() {
 }
 
 function checkLifeCondForm() {
-    console.log("checkLifeCondForm");
     var formObj = form2js(document.querySelector("form[name='life_condition']"));
 
 	/*
@@ -330,7 +315,6 @@ function checkLifeCondForm() {
 }
 
 function checkAccountForm() {
-    console.log("checkAccountForm");
     var formObj = form2js(document.querySelector("form[name='account']"));
 
     //Check if password are equals
@@ -362,8 +346,6 @@ function checkAccountForm() {
 }
 
 function checkProfessionalsForm(backgroundTask) {
-    console.log("checkProfessionalsForm");
-
     var obj = [];
 
     if (_dataObj && _dataObj.professionals) {
@@ -385,18 +367,18 @@ function checkProfessionalsForm(backgroundTask) {
 }
 
 function checkDiagnosisForm() {
-    console.log("checkDiagnosisForm");
     //Nothing to check
     return form2js(document.querySelector("form[name='diagnosis']"));
 }
 
 function updateAll(obj) {
-    console.log("updateAll", obj);
-
     if (obj._id) {
         Utils.promiseXHR("PUT", "/api/beneficiaries/" + obj._id, 200, JSON.stringify(obj)).then(function() {
 			modified = false;
-            new Modal('updateSuccess');
+            new Modal('updateSuccess', function() {
+				modified = false;
+				window.location.reload(true);
+			});
         }, function(error) {
             new Modal('errorOccured');
             console.log("updateAll - update error: ", error);
@@ -409,7 +391,6 @@ function checkAllForms(isValidate) {
 	if( !id ) {
 		return checkBeneficiaryForm(false);
 	}
-    console.log("checkAllForms");
     var forms = document.querySelectorAll("form"),
         formsObj = {},
         obj, invalid = false,
@@ -418,7 +399,6 @@ function checkAllForms(isValidate) {
     //form.submit() doesn't call the HTML5 form validation on elements
     [].map.call(forms, function(form) {
         if (!form.checkValidity()) {
-            console.log("form invalid", form.name);
             invalid = true;
             btn = document.querySelector("#" + form.name + "SubmitBtn");
             if (btn) {
@@ -497,15 +477,12 @@ function checkAllForms(isValidate) {
 
     new Modal('confirmSaveItem', function() {
         updateAll(formsObj);
-		modified = false;
-		window.location.reload(true);
     });
 
     return true;
 }
 
 function deleteTelecom(node) {
-    console.log("deleteTelecom", arguments);
     while (!node.classList.contains("telecomContainer")) {
         node = node.parentNode;
     }
@@ -513,7 +490,6 @@ function deleteTelecom(node) {
 }
 
 function addTelecom() {
-    console.log("addTelecom");
     var elt = document.querySelector("#tplTelecomContainer").innerHTML;
     var modelData = {
         idx: ++_idxNbTelecom
@@ -527,7 +503,6 @@ function addTelecom() {
 }
 
 function deleteAddress(node) {
-    console.log("deleteAddress", arguments);
     while (!node.classList.contains("addressContainer")) {
         node = node.parentNode;
     }
@@ -535,7 +510,6 @@ function deleteAddress(node) {
 }
 
 function addAddress() {
-    console.log("addAddress");
     var elt = document.querySelector("#tplAddressContainer").innerHTML;
     var modelData = {
         idx: ++_idxNbAddress
@@ -549,8 +523,6 @@ function addAddress() {
 }
 
 function updateBeneficiary(obj) {
-    console.log("updateBeneficiary", obj);
-
     if (obj._id) {
 
         Utils.promiseXHR("PUT", "/api/beneficiaries/" + obj._id, 200, JSON.stringify(obj)).then(function() {
@@ -576,6 +548,8 @@ function updateBeneficiary(obj) {
             //Display the delete button
             document.querySelector("#deleteBeneficiary").classList.remove("hidden");
 			document.querySelector("#hasPersonal").classList.remove("hidden");
+			// the created beneficiary is active by default
+			document.querySelector("input[name=active]").checked = true;
             new Modal('createSuccess');
 
         }, function(error) {
@@ -590,11 +564,10 @@ function confirmDeleteBeneficiary() {
 }
 
 function deleteBeneficiary() {
-    console.log("deleteBeneficiary");
-
     if (_dataObj && _dataObj._id) {
         Utils.promiseXHR("DELETE", "/api/beneficiaries/" + _dataObj._id, 410).then(function(response) {
             new Modal('deleteSuccess', function() {
+				modified = false;
                 window.history.back();
             });
         }, function(error) {
@@ -606,8 +579,6 @@ function deleteBeneficiary() {
 
 function checkBeneficiaryForm(backgroundTask) {
     var obj = form2js(document.querySelector("form[name='beneficiary']"));
-
-    console.log("checkBeneficiaryForm", obj);
 	
     if (!_checkDateFormat(obj.birthdate)) {
         new Modal('errorDateRequired');
@@ -680,7 +651,6 @@ function onHaveDateSelection(data) {
 }
 
 function init() {
-    console.log("init");
     tsanteListProfessionalElt = document.querySelector("#tsanteListProfessional");
     tsanteListProfessionalElt.addEventListener("tsante-response", _onHaveProfessionalsData, false);
 

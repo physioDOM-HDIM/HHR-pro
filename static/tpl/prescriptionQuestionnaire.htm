@@ -33,7 +33,7 @@
 
 <div class="row control">
 	<span class="spacer"></span>
-	{% if rights.write %}
+	{% if rights.write && beneficiary.active %}
 	<button type="button" class="green" onclick="saveData()">{{"Save"|i18n}}</button>
 	{% endif %}
 </div>
@@ -71,7 +71,7 @@
 				</ul>
 			</div>
 		</div>
-		{% if rights.write %}
+		{% if rights.write && beneficiary.active %}
 		<div class="row">
 			<div class="col vert" style="padding-left:50px">
 				<label></label>
@@ -101,7 +101,7 @@
 
 <script type="template" id="dateAddedTpl">
 	<li>
-		{% if rights.write %}
+		{% if rights.write && beneficiary.active %}
 		<button type="button" class="btn btn-delete" onclick="removeDate(this)">
 			<i class="icon icon-delete-circle"></i>
 		</button>
