@@ -166,11 +166,13 @@ function updateItem(obj) {
     }
 
     if(accountData && (accountData.password === passwordPlaceholder)) {
-        accountData = null;
+        accountData.password = accountData.hashPassword;
     }
 
     data = obj;
     delete data.account;
+    delete accountData.hashPassword;
+
     data.active = data.active?true:false;
     data.organization = data.organization?true:false;
     if( !data.organization ) {
