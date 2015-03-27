@@ -31,15 +31,28 @@ function init() {
 			return Mustache.render(dateAddedTpl.innerHTML, data);
 		};
 	}
-	
+
+	for(var i = 0; i<questionnairePlan.length; i++) {
+		var dataItem = questionnairePlan[i];
+		questionnairePlan[i].labelLang = dataItem.label[infos.lang] || dataItem.label || dataItem.ref;
+	}
+
+
 	for (var i = 0, len = questionnairePlan.length; i < len; i++) {
 		var dataItem = questionnairePlan[i];
-		dataItem.labelLang = dataItem.label[infos.lang] || dataItem.label || dataItem.ref;
 
 		var dataModel = {
 			idx         : idx,
 			lang        : infos.lang === "en" ? "en_gb":infos.lang ,
 			data        : dataItem,
+			dataList 	: questionnairePlan,
+			disable: function() {
+				return function (val, render) {
+					if(dataItem.ref === render(val)) {
+						return 'disabled';
+					}
+			};
+		},
 			setAddedDate: setAddedDate
 		};
 
@@ -57,6 +70,28 @@ function init() {
 			modified = true;
 		}, false);
 	});
+}
+
+function copySelection(refTo, elt) {
+	if(!elt.value) {
+		return;
+	}
+	var containerTo = document.querySelector('#'+refTo),
+		containerFrom = document.querySelector('#'+elt.value);
+
+	containerTo.querySelector('.data-frequency').value = containerFrom.querySelector('.data-frequency').value;
+	containerTo.querySelector('.data-comment').value = containerFrom.querySelector('.data-comment').value;
+	containerTo.querySelector('.dates-list').innerHTML = containerFrom.querySelector('.dates-list').innerHTML;
+
+	var datesContainer = containerTo.querySelector('.dates-list'),
+		dates = datesContainer.querySelectorAll('li');
+
+	for(var i = 0; i< dates.length; i++) {
+		var inputDate = dates[i].querySelector('input[type="hidden"]');
+		inputDate.name = 'questionnaire['+ datesContainer.id +'].date['+ i +']';
+	}
+
+	elt.querySelectorAll('option')[0].selected = true;
 }
 
 function addDate(elt, idx) {

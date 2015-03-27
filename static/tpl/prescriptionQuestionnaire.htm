@@ -33,7 +33,7 @@
 
 <div class="row control">
 	<span class="spacer"></span>
-	{% if rights.write %}
+	{% if rights.write && beneficiary.active %}
 	<button type="button" class="green" onclick="saveData()">{{"Save"|i18n}}</button>
 	{% endif %}
 </div>
@@ -62,7 +62,7 @@
 		<div class="row">
 			<div class="col" style="padding-left:50px">
 				<label>{{"Dates"|i18n}}</label>
-				<ul class="dates-list">
+				<ul class="dates-list" id="{% raw %}{{idx}}{% endraw %}">
 					{% raw %}
 					{{#date}}
 						{{#setAddedDate}}{{.}}{{/setAddedDate}}
@@ -71,7 +71,7 @@
 				</ul>
 			</div>
 		</div>
-		{% if rights.write %}
+		{% if rights.write && beneficiary.active %}
 		<div class="row">
 			<div class="col vert" style="padding-left:50px">
 				<label></label>
@@ -83,13 +83,27 @@
 		</div>
 	{% endif %}
 	</div>
+	{% if beneficiary.active %}
+	<div class="row control right">
+		<span class="spacer"></span>
+		<label class="spacing-around">Copy datas from</label>
+		<select onchange="copySelection('{% raw %}{{ref}}{% endraw %}', this)">
+			<option></option>
+			{% raw %}
+				{{#dataList}}
+					<option value="{{ref}}" {{#disable}}{{ref}}{{/disable}}>{{labelLang}}</option>
+				{{/dataList}}
+			{% endraw %}
+		</select>
+	</div>	
+	{% endif %}
 	<hr>
 	{% raw %}{{/data}}{% endraw %}
 </script>
 
 <script type="template" id="dateAddedTpl">
 	<li>
-		{% if rights.write %}
+		{% if rights.write && beneficiary.active %}
 		<button type="button" class="btn btn-delete" onclick="removeDate(this)">
 			<i class="icon icon-delete-circle"></i>
 		</button>

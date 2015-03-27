@@ -17,10 +17,6 @@ function init() {
 }
 
 function initQueue() {
-	/*
-	var dlg = document.querySelector("#initDlg");
-	dlg.toggle();
-	*/
 	
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET','/api/queue/init', true );
@@ -34,4 +30,5 @@ function initQueue() {
 	};
 	xhr.send();
 }
+
 window.addEventListener("polymer-ready", init, false);

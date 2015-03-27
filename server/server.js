@@ -318,11 +318,16 @@ function apiLogin(req, res, next) {
 					return account.createSession();
 				})
 				.then( function(session) {
-					cookies.set('sessionID', session.sessionID, cookieOptions);
-					cookies.set('role', session.role, { path: '/', httpOnly : false} );
-					cookies.set('lang', session.lang || physioDOM.lang, { path: '/', httpOnly : false});
-					res.send(200, { code:200, message:"logged" } );
-					return next();
+					if( session) {
+						cookies.set('sessionID', session.sessionID, cookieOptions);
+						cookies.set('role', session.role, {path: '/', httpOnly: false});
+						cookies.set('lang', session.lang || physioDOM.lang, {path: '/', httpOnly: false});
+						res.send(200, {code: 200, message: "logged"});
+						return next();
+					} else {
+						res.send(405, {code: 405, message: "account not activated"});
+						return next();
+					}
 				})
 				.catch( function(err) {
 					logger.warning(err.message || "bad login or password");

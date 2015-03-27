@@ -351,7 +351,7 @@ function Beneficiary( ) {
 							newAccount._id = result._id;
 						}
 						that.account = newAccount._id;
-						that.active = true;
+						// that.active = true;
 						that.save()
 							.then( function( beneficiary ) {
 								logger.info("benneficiary saved, OTP : ",newAccount.OTP );

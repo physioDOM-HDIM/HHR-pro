@@ -23,7 +23,7 @@ body {
 	padding-right: 15px;
 	box-sizing: border-box;
 }
-div.error {
+div.error, div.notactivate {
 	border: 2px solid red;
 	padding: 10px;
 	width: 300px;

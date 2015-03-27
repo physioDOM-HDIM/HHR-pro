@@ -348,7 +348,7 @@
   "The end date must be greater than the start date": "La date de fin doit être supérieure à la date de début",
   "Day": "Jour(s)",
   "week": "semaine",
-  "Every2": "Toutes les ",
+  "Everyweek": "Toutes les ",
   "months": "mois",
   "weeks": "semaines",
   "days": "jours",

@@ -21,9 +21,14 @@ var getList = function () {
 		lists.parameters = JSON.parse(results.parameterList);
 		if (infos.category) {
 			lists.parameters.items = lists.parameters.items.filter(function (item) {
-				return (item.category === infos.category && item.active === true);
+				return (item.category === infos.category);
 			});
 		}
+
+		lists.parameters.items = lists.parameters.items.filter(function (item) {
+				return (item.active === true);
+			});
+
 		lists.thresholds = JSON.parse(results.thresholds);
 
 		for (var i = 0, leni = lists.parameters.items.length; i < leni; i++) {
@@ -174,7 +179,26 @@ var showOptions = function (frequency, dataModel) {
  * Modal Form
  */
 
-function showForm(ref) {
+function showForm(ref, duplication) {
+
+	if(!ref || duplication) {
+		var freeParam = false;
+
+		for(var i = 0; i < lists.parameters.items.length; i++) {
+			var resultRefSearch = utils.findInObject(lists.dataprog, 'ref', lists.parameters.items[i].ref);
+
+			if(resultRefSearch === null) {
+				freeParam = true;
+				break;
+			}
+		}
+
+		if(!freeParam) {
+			new Modal('errorNoParamAvailable')
+			return;
+		}
+	}
+
 
 	if(infos.modal !== undefined && infos.modal.isOpen('dataProgModal')) {
 		return;
@@ -206,7 +230,7 @@ function showForm(ref) {
 		hasThresholds: infos.category,
 		selection: function () {
 			return function (val, render) {
-				if (ref === render(val)) {
+				if (ref === render(val) && !duplication) {
 					return 'selected';
 				}
 			};
@@ -263,7 +287,7 @@ function showForm(ref) {
 
 	formDiv.classList.add('modalContainer');
 	formDiv.innerHTML = Mustache.render(formTpl.innerHTML, dataModel);
-	if( !ref ) {
+	if( !ref || duplication) {
 		formDiv.querySelector("#delBtn").classList.add("hidden");
 	}
 	formContainer.appendChild(formDiv);
@@ -287,7 +311,7 @@ function showForm(ref) {
 	updateParam(select);
 
 
-	if(ref) {
+	if(ref && !duplication) {
 		select.disabled = true;
 		var inputHidden = document.createElement('input');
 		inputHidden.setAttribute('type', 'hidden');

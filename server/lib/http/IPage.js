@@ -467,6 +467,12 @@ function IPage() {
 			})
 			.then(function(beneficiaries) {
 				var beneficiaryID = req.params.beneficiaryID?req.params.beneficiaryID:req.session.beneficiary;
+				if( beneficiaryID === req.session.beneficiary) {
+					// indicate that we are editing the selected beneficiary
+					data.sessionBene = true;
+				} else {
+					data.sessionBene = false
+				}
 				return beneficiaries.getBeneficiaryAdminByID( req.session, beneficiaryID );
 			})
 			.then( function(beneficiary) {
@@ -563,8 +569,9 @@ function IPage() {
 			})
 			.then(function (beneficiary) {
 				data.beneficiary = beneficiary;
-			})
-			.then(function () {
+				var professional = req.session.person.item;
+				data.hasBeneficiary = (professional.nb !== 0 || ["coordinator", "administrator"].indexOf(professional.role) !== -1);
+
 				console.log("get beneficiaries page");
 				physioDOM.Lists.getList("perimeter", lang)
 					.then(function (list) {
@@ -1271,7 +1278,8 @@ function IPage() {
 				.then(function (beneficiary) {
 					data.beneficiary = beneficiary;
 					return beneficiary._id ? beneficiary.getProfessionals() : null;
-				}).then(function (professionalList) {
+				})
+				.then(function (professionalList) {
 					if (professionalList) {
 						data.professionalList = professionalList;
 					}
@@ -1504,7 +1512,7 @@ function IPage() {
 				data.parameters = {
 					stepsNumber: findInObj(parameters.items, 'ref', 'DIST'),
 					weight: findInObj(parameters.items, 'ref', 'WEG'),
-					lean: findInObj(parameters.items, 'ref', 'LEAN'),
+					lean: findInObj(parameters.items, 'ref', 'LFR'),
 					bmi: findInObj(parameters.items, 'ref', 'BMI')
 				}
 

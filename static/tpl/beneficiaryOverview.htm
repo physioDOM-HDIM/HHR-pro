@@ -51,11 +51,11 @@
 	
 	zdk-panel[heading="Details"] div.row {
 		display:block;
-		height:25px;
+		min-height:25px;
 	}
 	zdk-panel[heading="Details"] div.row * {
 		display:inline-block;
-		height:25px;
+		min-height:25px;
 		vertical-align: middle;
 	}
 	table#stakeholders {
@@ -74,7 +74,11 @@
 		font-weight:700;
 	}
 </style>
-  
+
+{% if !beneficiary.active %}
+<div class="alert-info-error">{{ "The beneficiary is not activate"|i18n}}</div>
+{% endif %}
+
 <div class="colContainer">
 	<zdk-panel id="personal" heading="{{ 'Personal'|i18n }}">
 		<div class="row">
@@ -119,7 +123,7 @@
 		</div>
 		{% if rights.write %}
 		<div class="row control">
-			{% if beneficiary.biomaster && queue %}
+			{% if beneficiary.biomaster && queue && beneficiary.active %}
 			<button class="red small" onclick="initQueue();">{{ "Init"|i18n }}</button>&nbsp;
 			{% if beneficiary.biomasterStatus %}( initialized ){% endif %}
 			{% endif %}
@@ -365,5 +369,10 @@
 <script>
 	parent.document.querySelector("#beneficiary a").innerHTML = '{{ beneficiary.name.family }} {{ beneficiary.name.given }}';
 	parent.highlight("/beneficiary/overview");
+	{% if beneficiary.active %}
+		parent.enableDataRecord(true);
+	{% else %}
+		parent.enableDataRecord(false);
+	{% endif %}
 </script>
 {% endblock %}
