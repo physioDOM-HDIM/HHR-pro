@@ -21,9 +21,14 @@ var getList = function () {
 		lists.parameters = JSON.parse(results.parameterList);
 		if (infos.category) {
 			lists.parameters.items = lists.parameters.items.filter(function (item) {
-				return (item.category === infos.category && item.active === true);
+				return (item.category === infos.category);
 			});
 		}
+
+		lists.parameters.items = lists.parameters.items.filter(function (item) {
+				return (item.active === true);
+			});
+
 		lists.thresholds = JSON.parse(results.thresholds);
 
 		for (var i = 0, leni = lists.parameters.items.length; i < leni; i++) {
