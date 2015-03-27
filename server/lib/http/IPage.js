@@ -270,6 +270,7 @@ function IPage() {
 		var data = {
 			admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
 			rights: { read:false, write:false, url: '/directory' },
+			country: physioDOM.config.country,
 			lang: physioDOM.lang
 		};
 
@@ -426,7 +427,8 @@ function IPage() {
 
 		var data = {
 			admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
-			rights: { read:false, write:false, url: '/beneficiaries' }
+			rights: { read:false, write:false, url: '/beneficiaries' },
+			country : physioDOM.config.country
 		};
 
 		var promises = [
@@ -1098,7 +1100,6 @@ function IPage() {
 
 	this.dataRecordDetail = function(req, res, next) {
 		logger.trace("DataRecordingEdit");
-		var html;
 
 		init(req);
 		var data = {
@@ -1123,17 +1124,10 @@ function IPage() {
 				return beneficiary.getCompleteDataRecordByID(req.params.dataRecordID);
 			})
 			.then(function(record) {
-				var lang = req.session.person.item.communication || physioDOM.lang;
-				lang = lang==="en"?"en_gb":lang;
-				moment.locale( lang );
-				
-				logger.debug( record );
 				data.dataRecordItems = record;
-				data.dataRecordItems.datetime = moment(data.dataRecordItems.datetime).format("L LT");
 				data.view = 'update';
 
 				render('/static/tpl/dataRecordEdit.htm' , data, res, next);
-
 			})
 			.catch(function(err) {
 				logger.error(err);
@@ -1145,7 +1139,6 @@ function IPage() {
 
 	this.dataRecordCreate = function(req, res, next) {
 		logger.trace("DataRecordingCreate");
-		var html;
 
 		init(req);
 		var data = {

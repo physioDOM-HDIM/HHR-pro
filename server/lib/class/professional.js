@@ -421,7 +421,7 @@ function Professional() {
 					}
 					var newAccount = {
 						login   : accountData.login,
-						password: md5(accountData.password),
+						password: accountData.password === account.password?account.password:md5(accountData.password),
 						active  : that.active,
 						role    : that.role,
 						email   : that.getEmail(),

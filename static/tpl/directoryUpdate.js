@@ -166,11 +166,13 @@ function updateItem(obj) {
     }
 
     if(accountData && (accountData.password === passwordPlaceholder)) {
-        accountData = null;
+        accountData.password = accountData.hashPassword;
     }
 
     data = obj;
     delete data.account;
+    delete accountData.hashPassword;
+
     data.active = data.active?true:false;
     data.organization = data.organization?true:false;
     if( !data.organization ) {
@@ -184,6 +186,15 @@ function updateItem(obj) {
         delete data.address;
     } else {
         data.address.line = data.address.line.split("\n");
+		var indx = data.address.line.length - 1;
+		var done = false;
+		do {
+			if( !data.address.line[indx]) {
+				data.address.line.splice(indx,1);
+			} else {
+				done = true;
+			}
+		} while( --indx > 0 && done === false );
     }
     
     if (data._id) {

@@ -50,7 +50,8 @@ var configSchema = {
 				ip    :   {type: "string", required: true},
 				appName : {type: "string", required: true}
 			}
-		}
+		},
+		"country": { type:"string" }
 	}
 };
 
