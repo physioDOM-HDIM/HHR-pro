@@ -270,6 +270,7 @@ function IPage() {
 		var data = {
 			admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
 			rights: { read:false, write:false, url: '/directory' },
+			country: physioDOM.config.country,
 			lang: physioDOM.lang
 		};
 
@@ -426,7 +427,8 @@ function IPage() {
 
 		var data = {
 			admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
-			rights: { read:false, write:false, url: '/beneficiaries' }
+			rights: { read:false, write:false, url: '/beneficiaries' },
+			country : physioDOM.config.country
 		};
 
 		var promises = [

@@ -230,6 +230,7 @@
                     <div class="col">
                         <label style="width:80px">{{ "City"|i18n }}</label>
                         <input type="text" name="address.city" value="{{professional.address.city}}" />
+	                    <input type="hidden" name="address.country" value="{{professional.address.country || country}}" />
                     </div>
                 </div>
             </zdk-panel>
