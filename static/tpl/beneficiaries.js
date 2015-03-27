@@ -75,29 +75,27 @@ function validFilter() {
 function init() {
 	moment.locale(Cookies.get("lang")=="en"?"en-gb":Cookies.get("lang"));
     var listPager = document.querySelector('tsante-list');
-    listPager.addEventListener('tsante-response', function(data) {
-        var list = data.detail.list;
-        var i = 0,
-            len = list.items.length;
-		if( list.nb === 0 ) {
-			document.querySelector("#tsanteList").classList.add("hidden");
-			document.querySelector("#filter").classList.add("hidden");
-			document.querySelector("#nobeneficiaries").classList.remove("hidden");
-		}
-        for (i; i < len; i++) {
-			if(list.items[i].birthdate) {
-				list.items[i].birthdate = moment(list.items[i].birthdate).format("L");
-			}
-        	if(list.items[i].lastEvent) {
-        		// the date is displayed in local time
-            	list.items[i].date = moment(list.items[i].lastEvent).format("L LT") ;
-            	list.items[i].dateFrom = " ("+moment(list.items[i].lastEvent).from(moment())+")";
-        	}
-			list.items[i].activeClass = list.items[i].active?"active":"inactive";
-			list.items[i].activeItem = list.items[i].active?"active":"hidden";
-        }
-        this.render(list);
-    });
+    if(listPager !== null) {
+    	listPager.addEventListener('tsante-response', function(data) {
+	        var list = data.detail.list;
+	        var i = 0,
+	            len = list.items.length;
+			
+	        for (i; i < len; i++) {
+				if(list.items[i].birthdate) {
+					list.items[i].birthdate = moment(list.items[i].birthdate).format("L");
+				}
+	        	if(list.items[i].lastEvent) {
+	        		// the date is displayed in local time
+	            	list.items[i].date = moment(list.items[i].lastEvent).format("L LT") ;
+	            	list.items[i].dateFrom = " ("+moment(list.items[i].lastEvent).from(moment())+")";
+	        	}
+				list.items[i].activeClass = list.items[i].active?"active":"inactive";
+				list.items[i].activeItem = list.items[i].active?"active":"hidden";
+	        }
+	        this.render(list);
+	    });
+    }
 }
 
 window.addEventListener("polymer-ready", init, false);
