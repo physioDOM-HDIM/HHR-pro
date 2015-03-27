@@ -83,6 +83,7 @@
 		</div>
 	{% endif %}
 	</div>
+	{% if beneficiary.active %}
 	<div class="row control right">
 		<span class="spacer"></span>
 		<label class="spacing-around">Copy datas from</label>
@@ -95,6 +96,7 @@
 			{% endraw %}
 		</select>
 	</div>	
+	{% endif %}
 	<hr>
 	{% raw %}{{/data}}{% endraw %}
 </script>
