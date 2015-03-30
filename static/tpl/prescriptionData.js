@@ -72,7 +72,9 @@ var init = function () {
 			dataItem.hasThreshold = false;
 		}
 		dataItem.startDate = moment(dataItem.startDate).format("L");
-		dataItem.endDate = moment(dataItem.endDate).format("L");
+		if(dataItem.endDate) {
+			dataItem.endDate = moment(dataItem.endDate).format("L");	
+		}
 		
 		if (dataItem.repeat > 1) {
 			dataItem.freqRepeat = true;
