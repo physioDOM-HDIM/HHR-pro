@@ -116,7 +116,7 @@ function Lists( ) {
 	};
 
 	this.getListItemsObj = function( listName ) {
-		logger.trace("getListItemsArray", listName );
+		logger.trace("getListItemsObj", listName );
 		var that = this;
 		var results = {};
 		return new promise( function(resolve, reject) {

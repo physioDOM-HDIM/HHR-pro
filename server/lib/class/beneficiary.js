@@ -623,6 +623,33 @@ function Beneficiary( ) {
 		});
 	};
 
+	/**
+	 * Get Professionals list attached to the beneficiary
+	 *
+	 * @returns {promise}
+	 */
+	this.getProfessionalsRoleClass = function(roleClass) {
+		var that = this,
+			proList = [];
+		
+		return new promise( function(resolve, reject) {
+			logger.trace("getProfessionalsRoleClass");
+			
+			physioDOM.Lists.getListItemsObj("role")
+				.then( function( list ) {
+					var keys = Object.keys(list);
+					keys.forEach( function(key) {
+						var item = list[key];
+						if( item.roleClass === roleClass ) {
+							proList.push( item.ref );
+						}
+					});
+					return that.getProfessionals(proList)
+				})
+				.then( resolve );
+		});
+	};
+
 	this.hasProfessional = function( professionalID ) {
 		var that = this;
 		if( that.professionals === undefined ) {

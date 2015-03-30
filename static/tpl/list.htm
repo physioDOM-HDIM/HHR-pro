@@ -79,6 +79,21 @@
 				{% raw %}{{/hasTVLabel}}{% endraw %}
 			</div>
 			
+			{% raw %}{{#hasRoleClass}}{% endraw %}
+			<div class="row">
+				<div class="col">
+					<label>{{"Role class"|i18n}} : </label>
+					<select name="{% raw %}items[{{idx}}].roleClass{% endraw %}">
+						{% raw %}
+						{{#roleClass}}
+						<option value="{{value}}" {{#selected}}selected{{/selected}} >{{label}}</option>
+						{{/roleClass}}
+						{% endraw %}
+					</select>
+				</div>
+			</div>
+			{% raw %}{{/hasRoleClass}}{% endraw %}
+			
 			{% raw %}{{#hasDietChoice}}{% endraw %}
 			<div class="row">
 				<div class="col">
@@ -251,7 +266,7 @@
 	<div class="row">
 		<span class="spacer"></span>
 		<button type="button" class="red" onclick="modified=false; window.history.back(1)">{{ "Cancel"|i18n }}</button>
-		<button class="blue btn-save" onclick="save()">{{ "Save"|i18n }}</button>
+		{% if list.editable %}<button class="blue btn-save" onclick="save()">{{ "Save"|i18n }}</button>{% endif %}
 	</div>
 </footer>
 
