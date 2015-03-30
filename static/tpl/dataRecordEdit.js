@@ -17,7 +17,11 @@ window.addEventListener("DOMContentLoaded", function () {
 
 	moment.locale(infos.lang === "en"?"en_gb":infos.lang );
 	var dateTime = document.querySelector("#datetime").innerHTML.trim();
-	document.querySelector("#datetime").innerHTML = moment(dateTime).format("L LT");
+	if( dateTime ) {
+		document.querySelector("#datetime").innerHTML = moment(dateTime).format("L LT");
+	} else {
+		document.querySelector("#datetime").innerHTML = "";
+	}
 	
 	getLists();
 
