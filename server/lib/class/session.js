@@ -27,6 +27,7 @@ function Session( obj ) {
 	this.createDate  = null;
 	this.expire      = null;
 	this.role        = null;
+	this.roleClass   = null;
 	this.person      = null;
 	this.beneficiary = null;
 	
@@ -43,6 +44,7 @@ function Session( obj ) {
 			createDate  : this.createDate,
 			expire      : this.expire,
 			role        : this.role,
+			roleClass   : this.roleClass,
 			person      : { id: this.person.id, collection : this.person.collection },
 			beneficiary : this.beneficiary
 		};

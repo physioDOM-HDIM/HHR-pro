@@ -40,7 +40,8 @@ var configSchema = {
 			properties : {
 				protocol: {type: "string", pattern: "^(http|https)", required: true},
 				ip      : {type: "string", required: true},
-				port    : {type: "integer", default: 9000, minimum: 9000, maximum: 9100}
+				port    : {type: "integer", default: 9000, minimum: 9000, maximum: 9100},
+				duration : { type:"integer", default : 3, minimum: 2}
 			},
 			"additionalProperties": false
 		},

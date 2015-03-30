@@ -19,6 +19,73 @@ function checkForm() {
 	});
 }
 
+function updateChildren(elt, idx) {
+	var itemGroup = elt.parentNode.parentNode.parentNode,
+		value = parseInt(elt.value),
+		role = elt.parentNode.getAttribute('data-role'),
+		dataRoleList = itemGroup.querySelectorAll('.roles');
+
+	var checkRadio = function(dataRoleItem) {
+		if(dataRoleItem.getAttribute('data-role') === role && role !== 'NONE') {
+			var radioInput = dataRoleItem.querySelector('input[type="radio"]');
+
+			if(parseInt(radioInput.value) === value) {
+				radioInput.checked = true;
+			}
+		}
+	}
+
+	var getCheckedValue = function(dataRoleListParent) {
+		var initValue;
+
+		for(var y = 0; y < dataRoleListParent.length; y++) {
+			if(dataRoleListParent[y].getAttribute('data-role') === role && role !== 'NONE') {
+				var inputRadio = dataRoleListParent[y].querySelector('input[type="radio"]');
+
+				if(inputRadio.checked === true) {
+					initValue = parseInt(inputRadio.value);
+					break;
+				}
+			}
+		}
+
+		return initValue;
+	}
+
+	//checking the children
+	for(var i = 0; i < dataRoleList.length; i++) {
+		checkRadio(dataRoleList[i]);
+	}
+
+	//checking the parent
+	if(value>0) {
+
+		var indexContainer = parseInt(idx),
+			container = null;
+
+		//loop through parents
+		for(indexContainer; indexContainer > 0; indexContainer--) {
+			if(container  === null) {
+				container = itemGroup.parentNode;
+			}
+				
+			var dataRoleListParent = container.children[0].querySelectorAll('.roles');
+
+			//change the parent radio input if init value is 'no access'
+			for(var i = 0; i < dataRoleListParent.length; i++) {
+				if(getCheckedValue(dataRoleListParent) === 0) {
+					checkRadio(dataRoleListParent[i]);	
+				}
+			}
+
+			container = container.parentNode;
+		} 
+
+
+	}
+
+}
+
 window.addEventListener('DOMContentLoaded', function() {
 
 	document.getElementById('roleSelect').addEventListener('change', function(e) {

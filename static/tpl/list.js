@@ -5,6 +5,7 @@ var list,            // the list to edit
     newItems= [],    // new items
     units,           // units list
     jobs,            // job list
+	roleClass,       // roleClass list
     regexRef = /^(?=.*[a-zA-Z])[a-zA-Z0-9!@#$%^&*§$£€+-\?\/\[\]\(\)\{\}\=]{1,}$/;
 
 var Utils = new Utils();
@@ -21,8 +22,12 @@ window.addEventListener('DOMContentLoaded', function() {
             return Utils.promiseXHR("GET", "/api/lists/job");
         })
         .then( function(response) {
-            var listName = document.querySelector('#list-name').value;
-            jobs = JSON.parse(response);
+			jobs = JSON.parse(response);
+			return Utils.promiseXHR("GET", "/api/lists/roleClass");
+		})
+		.then( function(response) {
+			roleClass = JSON.parse(response); 
+			var listName = document.querySelector('#list-name').value;
             return Utils.promiseXHR("GET", "/api/lists/"+listName);
         })
         .then( function(response) {
@@ -58,14 +63,15 @@ function showLang() {
         tpl = document.querySelector("#tplItems").innerHTML;
     }
 
-    var lang = document.querySelector("#lang");
+    var lang = document.querySelector("#lang").value;
     var modelData = {
         hasDietChoice: (list.name === 'socialServices' || list.name === 'healthServices'),
-        lang: lang.value,
+        lang: lang,
         editable: list.editable,
         service: list.service?list.service:false,
         hasRank: list.hasRank?list.hasRank:false,
         hasTVLabel: list.hasTVLabel?list.hasTVLabel:false,
+		hasRoleClass : list.name === 'role',
         items: []
     };
     list.items.forEach( function(item, i) {
@@ -74,8 +80,20 @@ function showLang() {
             if( item.hasOwnProperty(prop) ) {
                 switch(prop) {
                     case "label" :
-                        obj.label = item.label[lang.value];
+                        obj.label = item.label[lang];
                         break;
+					case "roleClass":
+						obj.roleClass = [];
+						roleClass.items.forEach( function( roleClassItem ) {
+							option = { value: roleClassItem.ref, label: roleClassItem.label[lang] || roleClassItem.label.en  };
+							if( item.roleClass === roleClassItem.ref) {
+								option.selected = true;
+							} else {
+								option.selected = false;
+							}
+							obj.roleClass.push(option);
+						});
+						break;
                     case "units":
                         obj.units = [];
                         units.items.forEach( function(unit) {

@@ -17,7 +17,11 @@ window.addEventListener("DOMContentLoaded", function () {
 
 	moment.locale(infos.lang === "en"?"en_gb":infos.lang );
 	var dateTime = document.querySelector("#datetime").innerHTML.trim();
-	document.querySelector("#datetime").innerHTML = moment(dateTime).format("L LT");
+	if( dateTime ) {
+		document.querySelector("#datetime").innerHTML = moment(dateTime).format("L LT");
+	} else {
+		document.querySelector("#datetime").innerHTML = "";
+	}
 	
 	getLists();
 
@@ -540,11 +544,13 @@ function toggleEditMode(id) {
 		readMode = line.querySelector('.readMode'),
 		paramSelect = updateMode.querySelector('select'),
 		paramValue = line.querySelector('.type').textContent,
-		initValue = line.querySelector('.item-value').innerHTML;
+		initValue = line.querySelector('.item-value').innerHTML,
+		initComment = line.querySelector('.item-comment').innerHTML;
 
 	//reinit values
 	updateParam(paramSelect, paramValue);
-	line.querySelector('input').value = initValue;
+	line.querySelector('input[type="number"]').value = initValue;
+	line.querySelector('input[type="text"]').value = initComment;
 
 	//toggling
 	if (hasClass(updateMode, 'hidden')) {

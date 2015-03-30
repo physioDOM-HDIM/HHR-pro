@@ -168,7 +168,7 @@ function IPage() {
 			.then( function( menu ) {
 				// logger.debug("menu",req.session.role, menu);
 				var data = {
-					admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
+					admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1 ? true : false,
 					idsUser: req.headers["ids-user"] || "",
 					items: menu
 				};
@@ -210,7 +210,7 @@ function IPage() {
 
 		init(req);
 		var data = {
-			admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
+			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1 ? true : false,
 			rights: { read:false, write:false, url: '/directory' }
 		};
 
@@ -268,7 +268,7 @@ function IPage() {
 
 		init(req);
 		var data = {
-			admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
+			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1 ? true : false,
 			rights: { read:false, write:false, url: '/directory' },
 			country: physioDOM.config.country,
 			lang: physioDOM.lang
@@ -345,7 +345,7 @@ function IPage() {
 		init(req);
 
 		var data = {
-			admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
+			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1 ? true : false,
 			rights: { read:false, write:false, url: '/beneficiaries' }
 		};
 
@@ -426,7 +426,7 @@ function IPage() {
 		init(req);
 
 		var data = {
-			admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
+			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1 ? true : false,
 			rights: { read:false, write:false, url: '/beneficiaries' },
 			country : physioDOM.config.country
 		};
@@ -543,6 +543,7 @@ function IPage() {
 		var html;
 		var that = this;
 		
+		console.log( req.session.roleClass );
 		if( req.session.role === "beneficiary" ) {
 			logger.warning("beneficiary connected redirect to overview");
 			res.header('Location', '/beneficiary/'+req.session.beneficiary.toString());
@@ -551,7 +552,7 @@ function IPage() {
 		}
 		init(req);
 		var data = {
-			admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
+			admin: ["COORD", "ADMIN"].indexOf(req.session.roleClass) !== -1 ? true : false,
 			rights: { read:false, write:false, url: '/beneficiaries'}
 		};
 
@@ -572,7 +573,7 @@ function IPage() {
 			.then(function (beneficiary) {
 				data.beneficiary = beneficiary;
 				var professional = req.session.person.item;
-				data.hasBeneficiary = (professional.nb !== 0 || ["coordinator", "administrator"].indexOf(professional.role) !== -1);
+				data.hasBeneficiary = (professional.nb !== 0 || ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1);
 
 				console.log("get beneficiaries page");
 				physioDOM.Lists.getList("perimeter", lang)
@@ -628,7 +629,7 @@ function IPage() {
 		}
 
 		var data = {
-			admin  : ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
+			admin  : ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1 ? true : false,
 			rights : { read:false, write:false, url: '/beneficiary/overview' },
 			queue  : physioDOM.config.queue ?true:false,
 			IDS    : physioDOM.config.IDS && req.headers["ids-user"]
@@ -711,7 +712,7 @@ function IPage() {
 		var IDSLog = require("./ILogIDS");
 		
 		var data = {
-			admin: ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false,
+			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1 ? true : false,
 			rights: { read:true, write:false, url: '/beneficiary/overview' },
 			prevMonth: moment(maxDate).date(1).subtract(1,"d").format("YYYY-MM-DD"),
 			nextMonth: moment(maxDate).add(1,"M").format("YYYY-MM-DD")
@@ -749,7 +750,7 @@ function IPage() {
 		var html;
 
 		init(req);
-		var admin = ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false;
+		var admin = ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1 ? true : false;
 		var data = {
 			admin: admin,
 			rights: { read: admin, write:admin, url:"/settings/lists" }
@@ -797,7 +798,7 @@ function IPage() {
 		var html;
 
 		init(req);
-		var admin = ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false;
+		var admin = ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1 ? true : false;
 		var data = {
 			admin: admin,
 			rights: { read: admin, write:admin, url:"/settings/lists" }
@@ -845,7 +846,7 @@ function IPage() {
 		var html;
 
 		init(req);
-		var admin = ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false;
+		var admin = ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1 ? true : false;
 		var data = {
 			admin: admin,
 			rights: { read: admin, write:admin, url:"/questionnaires" }
@@ -881,7 +882,7 @@ function IPage() {
 		var html;
 
 		init(req);
-		var admin = ["coordinator", "administrator"].indexOf(req.session.role) !== -1 ? true : false;
+		var admin = ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1 ? true : false;
 		var data = {
 			admin: admin,
 			rights: { read: admin, write:admin, url:"/questionnaires/create" }
@@ -928,7 +929,7 @@ function IPage() {
 		
 		var referer = URL.parse(req.headers.referer).pathname;
 		var data = {
-			admin: ['coordinator', 'administrator'].indexOf(req.session.role) !== -1 ? true : false,
+			admin: ['COORD', 'ADMIN'].indexOf(req.session.roleClass) !== -1 ? true : false,
 			rights: { read: false, write:false, url:referer }
 		};
 
@@ -973,7 +974,7 @@ function IPage() {
 		init(req);
 
 		var referer = URL.parse(req.headers.referer).pathname;
-		var admin = ['coordinator', 'administrator'].indexOf(req.session.role) !== -1 ? true : false;
+		var admin = ['COORD', 'ADMIN'].indexOf(req.session.roleClass) !== -1 ? true : false;
 		var data = {
 			admin: admin,
 			rights: { read: admin, write:admin, url:referer },
@@ -1012,7 +1013,7 @@ function IPage() {
 		init(req);
 		var referer = URL.parse(req.headers.referer).pathnme;
 		var data = {
-			admin: ['coordinator', 'administrator'].indexOf(req.session.role) !== -1 ? true : false,
+			admin: ['COORD', 'ADMIN'].indexOf(req.session.roleClass) !== -1 ? true : false,
 			rights: { read: false, write:false, url:referer }
 		};
 
@@ -1057,7 +1058,7 @@ function IPage() {
 
 		init(req);
 		var data = {
-			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false,
+			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1?true:false,
 			rights: { read:false, write:false, url: '/datarecord' }
 		};
 		
@@ -1103,7 +1104,7 @@ function IPage() {
 
 		init(req);
 		var data = {
-			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false,
+			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1?true:false,
 			rights: { read:false, write:false, url: '/datarecord' }
 		};
 
@@ -1142,11 +1143,12 @@ function IPage() {
 
 		init(req);
 		var data = {
-			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false,
+			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1?true:false,
 			rights: { read:false, write:false, url: '/datarecord/create' },
 			role: req.session.role
 		};
-
+		data.medical = data.admin || req.session.roleClass==="HEALTH"
+		
 		if( !req.session.beneficiary ) {
 			// logger.debug("no beneficiary selected");
 			res.header('Location', '/beneficiaries');
@@ -1168,8 +1170,7 @@ function IPage() {
 				})
 				.then(function (beneficiary) {
 					data.beneficiary = beneficiary;
-					var jobFilter = ['physician', 'medical'];
-					return beneficiary.getProfessionals(jobFilter);
+					return beneficiary.getProfessionalsRoleClass("HEALTH");
 				})
 				.then(function(professionals) {
 					data.professionals = professionals;
@@ -1198,7 +1199,7 @@ function IPage() {
 
 		init(req);
 		var data = {
-			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false,
+			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1?true:false,
 			rights: { read:false, write:false, url: '/datarecord/synthesis' }
 		};
 
@@ -1245,7 +1246,7 @@ function IPage() {
 
 		init(req);
 		var data = {
-			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1? true : false ,
+			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1? true : false ,
 			rights: { read:false, write:false, url: '/message' }
 		};
 		
@@ -1295,7 +1296,7 @@ function IPage() {
 
 		init(req);
 		var data = {
-			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false,
+			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1?true:false,
 			rights: { read:false, write:false, url: '/message' }
 		};
 
@@ -1361,7 +1362,7 @@ function IPage() {
 
 		init(req);
 		var data = {
-			admin: ['coordinator', 'administrator'].indexOf(req.session.role) !== -1 ? true : false,
+			admin: ['COORD', 'ADMIN'].indexOf(req.session.roleClass) !== -1 ? true : false,
 			rights: { read:false, write:false, url: '/healthServices' }
 		};
 
@@ -1375,7 +1376,7 @@ function IPage() {
 
 		init(req);
 		var data = {
-			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false,
+			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1?true:false,
 			rights: { read:false, write:false, url: '/physiological-data' }
 		};
 
@@ -1419,7 +1420,7 @@ function IPage() {
 
 		init(req);
 		var data = {
-			admin: ['coordinator', 'administrator'].indexOf(req.session.role) !== -1 ? true : false,
+			admin: ['COORD', 'ADMIN'].indexOf(req.session.roleClass) !== -1 ? true : false,
 			rights: { read:false, write:false, url: '/healthServices' }
 		};
 
@@ -1439,10 +1440,11 @@ function IPage() {
 		init(req);
 		
 		var data = {
-			admin: ['coordinator', 'administrator'].indexOf(req.session.role) !== -1 ? true : false,
+			admin: ['COORD', 'ADMIN'].indexOf(req.session.roleClass) !== -1 ? true : false,
 			rights: { read:false, write:false, url: req.url }
 		};
-
+		data.medical = data.admin || (req.session.roleClass === "HEALTH");
+		
 		if (!req.session.beneficiary) {
 			// logger.debug("No beneficiary selected");
 			res.header('Location', '/beneficiaries');
@@ -1532,7 +1534,7 @@ function IPage() {
 
 		init(req);
 		var data = {
-			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false,
+			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1?true:false,
 			rights: { read:false, write:false, url: req.url }
 		};
 
@@ -1572,7 +1574,7 @@ function IPage() {
 
 		init(req);
 		var data = {
-			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false,
+			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1?true:false,
 			rights: { read:false, write:false, url: req.url }
 		};
 
@@ -1612,7 +1614,7 @@ function IPage() {
 
 		init(req);
 		var data = {
-			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false,
+			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1?true:false,
 			rights: { read:false, write:false, url: req.url }
 		};
 
@@ -1652,7 +1654,7 @@ function IPage() {
 
 		init(req);
 		var data = {
-			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false,
+			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1?true:false,
 			rights: { read:false, write:false, url: req.url }
 		};
 
@@ -1710,7 +1712,7 @@ function IPage() {
 
 		var html;
 		init(req);
-		var admin = ['coordinator', 'administrator'].indexOf(req.session.role) !== -1 ? true : false;
+		var admin = ['COORD', 'ADMIN'].indexOf(req.session.roleClass) !== -1 ? true : false;
 		var data = {
 			admin: admin,
 			rights: { read:admin, write:admin }
@@ -1743,7 +1745,7 @@ function IPage() {
 
 		init(req);
 		var data = {
-			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false,
+			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1?true:false,
 			rights: { read:false, write:false, url: '/agenda' },
 			lang : lang
 		};
@@ -1787,7 +1789,7 @@ function IPage() {
 
 		init(req);
 		var data = {
-			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false,
+			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1?true:false,
 			rights: { read:false, write:false }
 		};
 		new Menu().rights( req.session.role, '/dietary-plan')
@@ -1822,7 +1824,7 @@ function IPage() {
 
 		init(req);
 		var data = {
-			admin: ["coordinator","administrator"].indexOf(req.session.role) !== -1?true:false,
+			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1?true:false,
 			rights: { read:false, write:false }
 		};
 

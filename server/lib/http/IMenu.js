@@ -55,14 +55,14 @@ var IMenu = {
 
 				new Menu().get(new ObjectID(id))
 				.then(function(item) {
-					var val = 0;
-					if (right[role] && right[role].write) {
-						val = 2;
+
+					right[role] = parseInt(right[role]);
+
+					if(right[role] !== 1 && right[role] !== 2) {
+						right[role] = 0;
 					}
-					else if (right[role] && right[role].read) {
-						val = 1;
-					}
-					item.rights[role] = val;
+
+					item.rights[role] = right[role];
 
 					return item.save();
 				})
