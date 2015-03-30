@@ -1,3 +1,7 @@
+__v0.0.27__
+
+  - \#176 : Bug 282 - [Prescription/all][v0024] end date
+
 __v0.0.26__
 
   - \#171 : Bug 91 - [Select Beneficiary/Beneficiary list][physioDOM-v0.0.4] Ajouter un bénéficiaire
