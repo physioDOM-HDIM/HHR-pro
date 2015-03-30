@@ -1,4 +1,4 @@
-__v0.0.28-pre__
+__v0.0.28__
 
   - \#181 : Bug 230 [Global/Account-Nomenclature][v009.1] RoleClass, RoleType
     - Only HEALTH could modify current Health Status
@@ -7,6 +7,10 @@ __v0.0.28-pre__
   - \#184 : Adds in configuration a duration parameter for the queue
   - \#178 : Bug 286 - [create/update bene][v0024] Mauvaise redirection après la sauvegarde
   - Fix Date Time when creating a new data record
+  - \#182 : Bug 283 - [Result from data recording][v0024] saisie et bouton Edit/back
+  - \#180 : Bug 216 - [Rights][physioDOM-v0.0.8] Heritage des droits
+  - \#179 : Bug 214 - [Right][PhysioDOM-v0.0.8] droit manquant et niveau d'access
+  - \#177 : Bug 284 - [Result from data recording][v0024] Retour à la ligne commentaire questionnaire
   
 __v0.0.27__
 
