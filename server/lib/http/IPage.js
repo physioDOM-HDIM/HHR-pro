@@ -1147,7 +1147,8 @@ function IPage() {
 			rights: { read:false, write:false, url: '/datarecord/create' },
 			role: req.session.role
 		};
-
+		data.medical = data.admin || req.session.roleClass==="HEALTH"
+		
 		if( !req.session.beneficiary ) {
 			// logger.debug("no beneficiary selected");
 			res.header('Location', '/beneficiaries');

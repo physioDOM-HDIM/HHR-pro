@@ -218,7 +218,7 @@
 		</div>
 		<div class="row control">
 			<span class="spacer"></span>
-			{% if rights.write && beneficiary.active %}
+			{% if rights.write && medical && beneficiary.active %}
 			<button type="button" class="green small" onclick="addLine('{{category}}')">{{'Add'|i18n}}</button>
 			{% endif %}
 		</div>
@@ -388,12 +388,12 @@
 		<div class="row control" style="height:60px; align-content: center">
 			<span class="spacer"></span>
 			{% if view === 'create'%}
-			{% if rights.write && beneficiary.active %}
+			{% if rights.write && medical && beneficiary.active %}
 			<button id="saveBtn" class="green">{{'Save'|i18n}}</button>
 			{% endif %}
 			{% else %}
 			<a href="/datarecord"><button type="button" class="blue big not-disabled">{{'Back'|i18n}}</button></a>
-			{% if rights.write && beneficiary.active %}
+			{% if rights.write && medical && beneficiary.active %}
 			<button id="saveBtn" class="green">{{'Save'|i18n}}</button>
 			{% endif %}
 			{% endif %}
