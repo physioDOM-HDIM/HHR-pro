@@ -1725,7 +1725,8 @@ function Beneficiary( ) {
 		var queue = new Queue(this._id);
 		
 		var today = moment().hour(12).minute(0).second(0);
-		var endDate = moment().add(14,'d').hour(12).minute(0).second(0);
+		var endDate = moment().add(physioDOM.config.duration,'d').hour(12).minute(0).second(0);
+		logger.debug( "MeasurePlan from "+today.toISOString()+" to "+endDate.toIsoString());
 		var dataProg = new DataProg( this._id );
 		var msgs = [];
 		var that = this;
@@ -2072,7 +2073,8 @@ function Beneficiary( ) {
 		var queue = new Queue(this._id);
 
 		var today = moment().hour(12).minute(0).second(0);
-		var endDate = moment().add(14,'d').hour(12).minute(0).second(0);
+		var endDate = moment().add(physioDOM.config.duration,'d').hour(12).minute(0).second(0);
+		logger.debug( "SymptomPlan from "+today.toISOString()+" to "+endDate.toIsoString());
 		var dataProg = new DataProg( this._id );
 		var msgs = [];
 		var that = this;
