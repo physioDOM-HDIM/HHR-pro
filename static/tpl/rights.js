@@ -19,6 +19,24 @@ function checkForm() {
 	});
 }
 
+function updateChildren(elt) {
+	var itemGroup = elt.parentNode.parentNode.parentNode,
+		value = parseInt(elt.value),
+		role = elt.parentNode.getAttribute('data-role'),
+		dataRoleList = itemGroup.querySelectorAll('.roles');
+
+	for(var i = 0; i < dataRoleList.length; i++) {
+		if(dataRoleList[i].getAttribute('data-role') === role && role !== 'NONE') {
+			var radioInput = dataRoleList[i].querySelector('input[type="radio"]');
+
+			if(parseInt(radioInput.value) === value) {
+				radioInput.checked = true;
+			}
+		}
+	}
+
+}
+
 window.addEventListener('DOMContentLoaded', function() {
 
 	document.getElementById('roleSelect').addEventListener('change', function(e) {

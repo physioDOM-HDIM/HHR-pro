@@ -29,14 +29,22 @@ div.row.items {
 	padding: 5px;
 }
 
-div.row.items:nth-child(even) {
+#form > .item-group {
+	background-color: #ccc;
+}
+
+.item-group > .item-group {
 	background-color: #eee;
 }
 
-.space0 { padding-left:5px }
-.space1 { padding-left:25px }
-.space2 { padding-left:50px }
-.space3 { padding-left:75px }
+.item-group > .item-group > .item-group{
+	background-color: #fff;
+}
+
+.space0 { padding-left:5px; font-weight: 700;}
+.space1 { padding-left:25px; font-weight: 500; }
+.space2 { padding-left:50px; }
+.space3 { padding-left:75px; }
 </style>
 
 <form id="form" onsubmit="checkForm(); return false;">
@@ -52,27 +60,32 @@ div.row.items:nth-child(even) {
 	</div>
 
 	{% macro displayItem(item, ind) %}
-
-		<div class="row items space{{ind}}">
-			
-			<div class="item-name"><div class="space{{ind}}">{{item.label | i18n }}</div></div>
-	
-			<input type="hidden" name="rights[{{item._id.toString()}}][id]" value="{{item._id.toString()}}" />
-	
-			{% for role in roles %}
-			<div class="roles hidden" data-role="{{role.ref}}">
-				<input type="checkbox" name="rights[{{item._id.toString()}}][{{role.ref}}][read]" value="1" {% if item.rights[role.ref] > 0 %}checked{% endif %} /> {{'Read' | i18n}}
-			</div>
-			<div class="roles hidden" data-role="{{role.ref}}">
-				<input type="checkbox" name="rights[{{item._id.toString()}}][{{role.ref}}][write]" value="1" {% if item.rights[role.ref] === 2 %}checked{% endif %} /> {{'Write' | i18n}}
-			</div>
-			{% endfor %}
-		</div>
-	
+		<div class="item-group">
+			<div class="row items space{{ind}}">
+				
+				<div class="item-name"><div class="space{{ind}}">{{item.label | i18n }}</div></div>
 		
-		{% for child in item.items %}
-			{{ displayItem(child, ind+1 ) }}
-		{% endfor %}
+				<input type="hidden" name="rights[{{item._id.toString()}}][id]" value="{{item._id.toString()}}" />
+		
+				{% for role in roles %}
+				<div class="roles hidden" data-role="{{role.ref}}">
+					<input type="radio" name="rights[{{item._id.toString()}}][{{role.ref}}]" onchange="updateChildren(this)" value="1" {% if item.rights[role.ref] === 1 %}checked{% endif %} /> {{'Read' | i18n}}
+				</div>
+				<div class="roles hidden" data-role="{{role.ref}}">
+					<input type="radio" name="rights[{{item._id.toString()}}][{{role.ref}}]" onchange="updateChildren(this)" value="2" {% if item.rights[role.ref] === 2 %}checked{% endif %} /> {{'Read/Write' | i18n}}
+				</div>
+				<div class="roles hidden" data-role="{{role.ref}}">
+					<input type="radio" name="rights[{{item._id.toString()}}][{{role.ref}}]" onchange="updateChildren(this)" value="0" {% if item.rights[role.ref] === 0 %}checked{% endif %} /> {{'No Access' | i18n}}
+				</div>
+				{% endfor %}
+			</div>
+		
+			
+			{% for child in item.items %}
+				{{ displayItem(child, ind+1 ) }}
+			{% endfor %}
+
+		</div>
 
 	{% endmacro %}
 	
