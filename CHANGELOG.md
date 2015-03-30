@@ -1,3 +1,13 @@
+__v0.0.28-pre__
+
+  - \#181 : Bug 230 [Global/Account-Nomenclature][v009.1] RoleClass, RoleType
+    - Only HEALTH could modify current Health Status
+    - Only HEALTH could add data records
+  - \#183 : a part of the login is enough to connect
+  - \#184 : Adds in configuration a duration parameter for the queue
+  - \#178 : Bug 286 - [create/update bene][v0024] Mauvaise redirection après la sauvegarde
+  - Fix Date Time when creating a new data record
+  
 __v0.0.27__
 
   - \#176 : Bug 282 - [Prescription/all][v0024] end date

@@ -151,7 +151,7 @@ function PhysioDOM( config ) {
 	this.getAccountByCredentials = function(login, passwd) {
 		logger.trace("getAccountByCredentials", login, passwd );
 		//using regex to find login searching with case insensitivity
-		var loginRegex = new RegExp(login, 'i');
+		var loginRegex = new RegExp('^'+login+'$', 'i');
 		var search = { login:loginRegex, '$or' : [ { password:md5(passwd) }, { tmpPasswd:md5(passwd) } ] };
 		var that = this;
 		return new promise( function(resolve, reject) {

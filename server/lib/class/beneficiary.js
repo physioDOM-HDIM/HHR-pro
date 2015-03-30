@@ -623,6 +623,33 @@ function Beneficiary( ) {
 		});
 	};
 
+	/**
+	 * Get Professionals list attached to the beneficiary
+	 *
+	 * @returns {promise}
+	 */
+	this.getProfessionalsRoleClass = function(roleClass) {
+		var that = this,
+			proList = [];
+		
+		return new promise( function(resolve, reject) {
+			logger.trace("getProfessionalsRoleClass");
+			
+			physioDOM.Lists.getListItemsObj("role")
+				.then( function( list ) {
+					var keys = Object.keys(list);
+					keys.forEach( function(key) {
+						var item = list[key];
+						if( item.roleClass === roleClass ) {
+							proList.push( item.ref );
+						}
+					});
+					return that.getProfessionals(proList)
+				})
+				.then( resolve );
+		});
+	};
+
 	this.hasProfessional = function( professionalID ) {
 		var that = this;
 		if( that.professionals === undefined ) {
@@ -1698,7 +1725,8 @@ function Beneficiary( ) {
 		var queue = new Queue(this._id);
 		
 		var today = moment().hour(12).minute(0).second(0);
-		var endDate = moment().add(14,'d').hour(12).minute(0).second(0);
+		var endDate = moment().add(physioDOM.config.duration,'d').hour(12).minute(0).second(0);
+		logger.debug( "MeasurePlan from "+today.toISOString()+" to "+endDate.toIsoString());
 		var dataProg = new DataProg( this._id );
 		var msgs = [];
 		var that = this;
@@ -2045,7 +2073,8 @@ function Beneficiary( ) {
 		var queue = new Queue(this._id);
 
 		var today = moment().hour(12).minute(0).second(0);
-		var endDate = moment().add(14,'d').hour(12).minute(0).second(0);
+		var endDate = moment().add(physioDOM.config.duration,'d').hour(12).minute(0).second(0);
+		logger.debug( "SymptomPlan from "+today.toISOString()+" to "+endDate.toIsoString());
 		var dataProg = new DataProg( this._id );
 		var msgs = [];
 		var that = this;
