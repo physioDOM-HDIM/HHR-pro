@@ -377,7 +377,7 @@ function updateAll(obj) {
 			modified = false;
             new Modal('updateSuccess', function() {
 				modified = false;
-				window.location.reload(true);
+				window.location.href = "/beneficiary/edit/"+obj._id;
 			});
         }, function(error) {
             new Modal('errorOccured');
