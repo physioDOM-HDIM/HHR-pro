@@ -42,7 +42,7 @@
 					<a 
 						class="button small blue" 
 						href={% if status.sf36Answer %}"/answers/{{status.sf36Answer}}"{% else %}"/questionnaire/SF36"{% endif %}
-						{% if status.validated && !status.sf36Score %}disabled{% endif %}{% if (!rights.write || !beneficiary.active) && !status.sf36Score %}disabled{% endif %}>
+						{% if status.validated && !status.sf36Score %}disabled{% endif %}{% if (!rights.write || !medical || !beneficiary.active) && !status.sf36Score %}disabled{% endif %}>
 						{{'Questionnaire'|i18n}}
 					</a>
 				</div>
@@ -56,13 +56,13 @@
 					type="text"
 					name="commentSf36"
 					value="{{status.commentSf36}}"
-					{% if !rights.write || !beneficiary.active %}disabled{% endif %}
+					{% if !rights.write || !medical || !beneficiary.active %}disabled{% endif %}
 					/>
 			</div>
 		</form>
 	</zdk-panel>
 
-	{% if rights.write && beneficiary.active %}
+	{% if rights.write && medical && beneficiary.active %}
 		{% if !status.validated %}
 		<div id="buttons" class="row control">
 			<span class="spacer"></span>
