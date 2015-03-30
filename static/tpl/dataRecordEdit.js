@@ -535,11 +535,13 @@ function toggleEditMode(id) {
 		readMode = line.querySelector('.readMode'),
 		paramSelect = updateMode.querySelector('select'),
 		paramValue = line.querySelector('.type').textContent,
-		initValue = line.querySelector('.item-value').innerHTML;
+		initValue = line.querySelector('.item-value').innerHTML,
+		initComment = line.querySelector('.item-comment').innerHTML;
 
 	//reinit values
 	updateParam(paramSelect, paramValue);
-	line.querySelector('input').value = initValue;
+	line.querySelector('input[type="number"]').value = initValue;
+	line.querySelector('input[type="text"]').value = initComment;
 
 	//toggling
 	if (hasClass(updateMode, 'hidden')) {
