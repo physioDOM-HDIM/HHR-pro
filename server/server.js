@@ -69,6 +69,7 @@ if( program.config ) {
 		
 		if( tmp.queue ) {
 			config.queue = tmp.queue.protocol+"://"+tmp.queue.ip+":"+tmp.queue.port;
+			config.duration = tmp.queue.duration;
 		}
 		if( tmp.IDS ) {
 			config.IDS = tmp.IDS;
