@@ -73,7 +73,7 @@ function updateChildren(elt, idx) {
 
 			//change the parent radio input if init value is 'no access'
 			for(var i = 0; i < dataRoleListParent.length; i++) {
-				if(getCheckedValue(dataRoleListParent) === 0) {
+				if(getCheckedValue(dataRoleListParent) < value) {
 					checkRadio(dataRoleListParent[i]);	
 				}
 			}
