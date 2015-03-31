@@ -430,6 +430,7 @@
 	<zdk-panel heading="{{'Professionals'|i18n}}" collapsable="true" collapsed="false">
 		<form name="professionals" autocomplete="off" onsubmit="checkProfessionalsForm(); return false;">
 			{% for professional in beneficiary.professionals %}
+			{% if professional.active %}
 			<div class="proItemContainer">
 				<div class="row {% if professional.referent %} referent {% endif %}" horizontal layout start>
 					<div class="col bold proName">{{professional.name.family}} {{professional.name.given}}</div>
@@ -453,6 +454,7 @@
 					<input type="hidden" name="professional_id" value="{{professional._id.toString()}}">
 				</div>
 			</div>
+			{% endif %}
 			{% endfor %}
 			<div class="row control">
 				<span class="spacer"></span>
@@ -531,7 +533,7 @@
 	<div class="modalContainer">
 		<div class="modalTitleContainer">{{ "Edit professionals"|i18n }}</div>
 		<div class="modalContentContainer">
-			<tsante-list url="/api/directory" auto="false" autoRender="false" unresolved id="tsanteListProfessional">
+			<tsante-list url='/api/directory?filter={"active":"true"}' auto="false" autoRender="false" unresolved id="tsanteListProfessional">
 				<div class="row">
 					<p>{{ "Choose your referent and check professionals you want to add"|i18n }}</p>
 				</div>
