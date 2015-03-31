@@ -437,7 +437,10 @@ function initParams() {
 			lineHTML = Mustache.render(lines[i].innerHTML, modelDataLine);
 
 		lines[i].innerHTML = lineHTML;
-		lines[i].querySelector('.item-text').innerHTML = selectHTML;
+
+		if(category !== 'questionnaire') {
+			lines[i].querySelector('.item-text').innerHTML = selectHTML;
+		}
 
 		if (categoryContainer) {
 			if (item.category) {
@@ -548,9 +551,13 @@ function toggleEditMode(id) {
 		initComment = line.querySelector('.item-comment').innerHTML;
 
 	//reinit values
-	updateParam(paramSelect, paramValue);
-	line.querySelector('input[type="number"]').value = initValue;
-	line.querySelector('input[type="text"]').value = initComment;
+	if(line.querySelector('input[type="text"]') !== null) {
+		updateParam(paramSelect, paramValue);
+		line.querySelector('input[type="number"]').value = initValue;
+		line.querySelector('input[type="text"]').value = initComment;	
+	} else {
+		line.querySelector('textarea').value = initComment;
+	}
 
 	//toggling
 	if (hasClass(updateMode, 'hidden')) {
