@@ -181,6 +181,11 @@
 				</div>
 				<div style="width:100px"></div>
 			</div>
+			{% else %}
+			<div class="row">
+				<textarea name="items[{{item._id.toString()}}].comment" class="questionnaire-comment" rows="10">{{ item.comment }}</textarea>
+			</div>
+			<input type="hidden" class="questionnaire-answer" name="items[{{item._id.toString()}}].ref" value="{{ item.ref }}" />
 			{% endif %}
 
 		</div>
