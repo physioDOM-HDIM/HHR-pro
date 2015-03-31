@@ -34,7 +34,7 @@ function Queue ( beneficiaryID ) {
 				})
 				.then( function( beneficiary ) {
 					var msg = {
-						"server":  physioDOM.config.server,
+						"server":  physioDOM.config.server.protocol+physioDOM.config.server.name,
 						"subject": beneficiary._id,
 						"gateway": beneficiary.biomaster,
 						"method": "DELETE",
@@ -101,7 +101,7 @@ function Queue ( beneficiaryID ) {
 				.then(function (beneficiary) {
 					if (beneficiary.biomasterStatus) {
 						var post = {
-							"server" : physioDOM.config.server,
+							"server" : physioDOM.config.server.protocol+physioDOM.config.server.name,
 							"subject": beneficiary._id,
 							"gateway": beneficiary.biomaster,
 							"method" : "DELETE",
@@ -133,7 +133,7 @@ function Queue ( beneficiaryID ) {
 				.then(function (beneficiary) {
 					if (beneficiary.biomasterStatus) {
 						var post = {
-							"server" : physioDOM.config.server,
+							"server" : physioDOM.config.server.protocol+physioDOM.config.server.name,
 							"subject": beneficiary._id,
 							"gateway": beneficiary.biomaster,
 							"method" : "POST",
@@ -234,7 +234,7 @@ function Queue ( beneficiaryID ) {
 			type : "string"
 		};
 		var msg = {
-			"server" : physioDOM.config.server,
+			"server" : physioDOM.config.server.protocol+physioDOM.config.server.name,
 			"subject": beneficiary._id,
 			"gateway": beneficiary.biomaster,
 			"method" : "POST",
@@ -253,7 +253,7 @@ function Queue ( beneficiaryID ) {
 			type : "string"
 		};
 		var msg = {
-			"server" : physioDOM.config.server,
+			"server" : physioDOM.config.server.protocol+physioDOM.config.server.name,
 			"subject": beneficiary._id,
 			"gateway": beneficiary.biomaster,
 			"method" : "POST",
