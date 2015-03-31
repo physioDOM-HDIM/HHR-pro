@@ -1,6 +1,10 @@
 {
   "port":8001,
   "cache":true,
+  "server": {
+    "protocol":"http://",
+    "name":"test.physiodom.loc"
+  }
   "mongo": {
     "ip":"127.0.0.1",
     "db":"physioDOM"
