@@ -50,13 +50,13 @@
 		<div class="row">
 			<div class="col" style="padding-left:50px">
 				<label>{{"Frequency"|i18n}}</label>
-				<input type="text" name="questionnaire[{% raw %}{{idx}}{% endraw %}].frequency" value="{% raw %}{{frequency}}{% endraw %}" {% if !rights.write %}disabled{% endif %}/>
+				<input type="text" class="data-frequency" name="questionnaire[{% raw %}{{idx}}{% endraw %}].frequency" value="{% raw %}{{frequency}}{% endraw %}" {% if !rights.write %}disabled{% endif %}/>
 			</div>
 		</div>
 		<div class="row">
 			<div class="col" style="padding-left:50px">
 				<label>{{"Comment"|i18n}}</label>
-				<input type="text" name="questionnaire[{% raw %}{{idx}}{% endraw %}].comment" value="{% raw %}{{comment}}{% endraw %}" {% if !rights.write %}disabled{% endif %}>
+				<input type="text" class="data-comment" name="questionnaire[{% raw %}{{idx}}{% endraw %}].comment" value="{% raw %}{{comment}}{% endraw %}" {% if !rights.write %}disabled{% endif %}>
 			</div>
 		</div>
 		<div class="row">
@@ -83,7 +83,7 @@
 		</div>
 	{% endif %}
 	</div>
-	{% if beneficiary.active %}
+	{% if beneficiary.active && rights.write %}
 	<div class="row control right">
 		<span class="spacer"></span>
 		<label class="spacing-around">Copy datas from</label>

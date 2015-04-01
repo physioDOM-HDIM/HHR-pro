@@ -6,10 +6,17 @@ var configSchema = {
 	properties  : {
 		"port" : {type: "integer", minimum: 8000, maximum: 8080, required: true},
 		"cache": {type: "boolean", default: true},
-		"server": { type:"string", required: true },
+		"server": { 
+			type:"object", 
+			required: true,
+			properties  : {
+				protocol : { type:"string", required:true, description: "protocol http:// or https://" },
+				name     : { type:"string", required:true, description: "dns name of the service" }
+			}
+		},
 		"mongo": {
-			type                  : "object",
-			properties            : {
+			type               : "object",
+			properties         : {
 				ip  : {type: "string", description: "ip of the mongo server", required: true},
 				db  : {type: "string", description: "name of the database", required: true},
 				port: {

@@ -1,3 +1,21 @@
+__v0.0.29__
+
+  - Configuration modification for prod deployment
+  - \#188 : Bug 277 - [Directory][v0020] Activation d'un professionnel
+  - \#166 : Bug 260 - [Data Section][v0013-2] Saisie des prescriptions
+  - \#182 : Bug 283 - [Result from data recording][v0024] saisie et bouton Edit/back
+  - \#102 : [Beneficiary/Bene_edit][physioDOM-v0.0.16] Diagnosis
+  - \#180 : Bug 216 - [Rights][physioDOM-v0.0.8] Heritage des droits
+  - \#94  : [Rights] Input should be only readable.
+  - \#185 : [Data section/Results from Data Recording][physioDOM-v0.0.28] Save edited parameter
+  - \#186 : [Beneficiary/Bene_overview][physioDOM-v0.0.28] Event Log
+  - \#94  : [Rights] Input should be only readable.
+  - \#102 - [Beneficiary/Bene_edit][physioDOM-v0.0.16] Diagnosis
+  
+> __Nota__ : 
+>  - to fix the issue \#102, it's necessary to import the lists.json file from 'initDB'
+>  - it's necessary to update the configuration file, see config.json.sample in the install directory
+  
 __v0.0.28__
 
   - \#181 : Bug 230 [Global/Account-Nomenclature][v009.1] RoleClass, RoleType
