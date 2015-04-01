@@ -1107,7 +1107,8 @@ function IPage() {
 			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1?true:false,
 			rights: { read:false, write:false, url: '/datarecord' }
 		};
-
+		data.medical = data.admin || req.session.roleClass==="HEALTH";
+		
 		new Menu().rights( req.session.role, data.rights.url )
 			.then( function( _rights ) {
 				data.rights = _rights;
@@ -1147,7 +1148,7 @@ function IPage() {
 			rights: { read:false, write:false, url: '/datarecord/create' },
 			role: req.session.role
 		};
-		data.medical = data.admin || req.session.roleClass==="HEALTH"
+		data.medical = data.admin || req.session.roleClass==="HEALTH";
 		
 		if( !req.session.beneficiary ) {
 			// logger.debug("no beneficiary selected");
