@@ -83,7 +83,7 @@
 		</div>
 	{% endif %}
 	</div>
-	{% if beneficiary.active %}
+	{% if beneficiary.active && rights.write %}
 	<div class="row control right">
 		<span class="spacer"></span>
 		<label class="spacing-around">Copy datas from</label>
