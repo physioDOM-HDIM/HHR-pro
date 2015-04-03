@@ -128,8 +128,7 @@ I18n.expressBind(server, {
 });
 
 server.pre(function(req, res, next) {
-	var ipAddress = req.headers['x-forwarded-for'] === undefined ? req.connection.remoteAddress : req.headers['x-forwarded-for'];
-	req.ipAddress = ipAddress;
+	req.ipAddress = req.headers['x-forwarded-for'] === undefined ? req.connection.remoteAddress : req.headers['x-forwarded-for'];
 	return next();
 });
 
@@ -281,7 +280,7 @@ function checkPasswd(req, res, next ) {
 					.catch(function (err) {
 						logger.info("not a valid user");
 						res.send(200, {valid: false});
-					})
+					});
 			}
 		} catch( err ) {
 			res.send(200, { valid: false } );
@@ -409,7 +408,6 @@ server.on("after",function(req,res) {
 					case "DELETE":
 						patientID = req.params.entryID;
 						msg = "remove a professional attached to the beneficiary";
-						break;
 						break;
 				}
 				break;
@@ -700,25 +698,13 @@ server.put( '/api/beneficiary/datarecords/:dataRecordID', IBeneficiary.updateDat
 server.post('/api/beneficiary/thresholds', IBeneficiary.setThreshold);
 server.get( '/api/beneficiary/thresholds', IBeneficiary.getThreshold);
 server.del( '/api/beneficiary/datarecords/:dataRecordID', IBeneficiary.removeDataRecord );
-
+server.get( '/api/beneficiary/status', IBeneficiary.getBioMasterStatus );
 
 // messages to home
 server.get( '/api/beneficiary/messages', IBeneficiary.getMessages );
 server.get( '/api/beneficiaries/:entryID/messages', IBeneficiary.getMessages );
 server.post('/api/beneficiary/messages', IBeneficiary.createMessage );
 server.post('/api/beneficiaries/:entryID/messages', IBeneficiary.createMessage );
-
-server.get( '/api/sessions/', getSessions);
-
-server.get( '/api/lists', ILists.getLists );
-server.get( '/api/lists/:listName', ILists.getList );
-server.get( '/api/lists/:listName/array', ILists.getListArray );
-server.get( '/api/lists/:listName/translate', ILists.getListTranslate );
-server.get( '/api/lists/:listName/:itemRef', ILists.getItem );
-server.put( '/api/lists/:listName', ILists.updateList );
-server.post('/api/lists/:listName', ILists.addItem );
-server.put( '/api/lists/:listName/:itemRef', ILists.translateItem );
-server.post('/api/lists/:listName/:itemRef', ILists.activateItem );
 
 server.get( '/api/beneficiary/dataprog', IBeneficiary.getDataProg );
 server.get( '/api/beneficiary/dataprog/:category', IBeneficiary.getDataProgCategory );
@@ -765,6 +751,18 @@ server.get( '/api/questionnaires/:entryID', IQuestionnaire.getQuestionnaire );
 server.post('/api/questionnaires', IQuestionnaire.createQuestionnaire);
 server.put( '/api/questionnaires/:entryID', IQuestionnaire.updateQuestionnaire);
 //DEV ONLY
+
+server.get( '/api/sessions/', getSessions);
+
+server.get( '/api/lists', ILists.getLists );
+server.get( '/api/lists/:listName', ILists.getList );
+server.get( '/api/lists/:listName/array', ILists.getListArray );
+server.get( '/api/lists/:listName/translate', ILists.getListTranslate );
+server.get( '/api/lists/:listName/:itemRef', ILists.getItem );
+server.put( '/api/lists/:listName', ILists.updateList );
+server.post('/api/lists/:listName', ILists.addItem );
+server.put( '/api/lists/:listName/:itemRef', ILists.translateItem );
+server.post('/api/lists/:listName/:itemRef', ILists.activateItem );
 
 server.post('/api/login', apiLogin);
 server.get( '/api/logout', logout);

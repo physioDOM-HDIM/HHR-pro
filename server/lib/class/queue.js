@@ -29,7 +29,7 @@ function Queue ( beneficiaryID ) {
 					return beneficiaries.getHHR( that.subject );
 				})
 				.then(function (beneficiary) {
-					beneficiary.biomasterStatus = false;
+					beneficiary.biomasterStatus = "pending";
 					return beneficiary.save();
 				})
 				.then( function( beneficiary ) {
