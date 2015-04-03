@@ -260,6 +260,7 @@
 		</thead>
 		<tbody>
 		{% for prof in beneficiary.professionals %}
+		{% if prof.active %}
 		<tr {% if prof.referent %}class="referent"{% endif %}>
 			<td>{{prof.name.family}} {{prof.name.given}}</td>
 			<td>{% if roleArray.items[prof.role] %} {{roleArray.items[prof.role]}} {% else %} {{prof.role}} {% endif %}</td>
@@ -279,6 +280,7 @@
 				{% endfor %}
 			</td>
 		</tr>
+		{% endif %}
 		{% endfor %}
 		</tbody>
 	</table>
