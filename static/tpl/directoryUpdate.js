@@ -170,8 +170,12 @@ function updateItem(obj) {
     }
 
     data = obj;
-    delete data.account;
-    delete accountData.hashPassword;
+	if( data.account ) {
+		delete data.account;
+	}
+	if( accountData && accountData.hashPassword ) {
+		delete accountData.hashPassword;
+	}
 
     data.active = data.active?true:false;
     data.organization = data.organization?true:false;
