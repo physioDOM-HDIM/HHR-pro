@@ -141,6 +141,23 @@ var IBeneficiary = {
 				next(false);
 			});
 	},
+	
+	getBioMasterStatus: function(req, res, next) {
+		logger.trace("getBioMasterStatus");
+		physioDOM.Beneficiaries()
+			.then( function(beneficiaries) {
+				return beneficiaries.getHHR(req.session.beneficiary );
+			})
+			.then( function(beneficiary) {
+				res.send( { biomasterStatus : beneficiary.biomasterStatus } );
+				next();
+			})
+			.catch( function(err) {
+				console.log(err, err.stack);
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
 
 	updateBeneficiary: function(req, res, next) {
 		logger.trace("updateBeneficiary");

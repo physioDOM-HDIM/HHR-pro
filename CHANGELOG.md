@@ -1,3 +1,9 @@
+__v0.0.30__
+
+  - \#191 : Bug 296 - [Beneficiary overview/Professional contacts][v029] Ne pas afficher les professionnels desactivés
+  - \#189 : Bug 293 - [Beneficiary overview][v027] Bouton init
+  - \#190 : Bug 294 - [create/update a professional][v029] Button yes de confirmation de sauvegarde KO
+
 __v0.0.29__
 
   - Configuration modification for prod deployment

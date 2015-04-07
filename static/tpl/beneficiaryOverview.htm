@@ -73,6 +73,7 @@
 		background: LightSkyBlue;
 		font-weight:700;
 	}
+	
 </style>
 
 {% if !beneficiary.active %}
@@ -121,11 +122,15 @@
 		<div class="row">
 			<label>{{ "PhysioDom-Box"|i18n }} : </label><div>{{beneficiary.biomaster}}</div>
 		</div>
+		{{beneficiary.biomasterStatus}}
 		{% if rights.write %}
 		<div class="row control">
 			{% if beneficiary.biomaster && queue && beneficiary.active %}
-			<button class="red small" onclick="initQueue();">{{ "Init"|i18n }}</button>&nbsp;
-			{% if beneficiary.biomasterStatus %}( initialized ){% endif %}
+			<button class="red small" onclick="initQueueDlg();">{{ "Init"|i18n }}</button>&nbsp;
+			<span id="queueStatusOK" {% if beneficiary.biomasterStatus !== true %}class="hidden"{% endif %}>( {{"initialized"|i18n}} )</span>
+			<span id="queueStatusUnknown" {% if beneficiary.biomasterStatus !== false %}class="hidden"{% endif %}>( {{"unknown box"|i18n}} )</span>
+			<span id="queueStatusPending" {% if beneficiary.biomasterStatus !== "pending" %}class="hidden"{% endif %}>( {{"pending"|i18n}}... )</span>
+			<input type="hidden" id="biomasterStatus" value="{{beneficiary.biomasterStatus}}" />
 			{% endif %}
             <span class="spacer"></span>
             <a href="/beneficiary/update"><button class="green small">{{ "Edit"|i18n }}</button></a>
@@ -255,6 +260,7 @@
 		</thead>
 		<tbody>
 		{% for prof in beneficiary.professionals %}
+		{% if prof.active %}
 		<tr {% if prof.referent %}class="referent"{% endif %}>
 			<td>{{prof.name.family}} {{prof.name.given}}</td>
 			<td>{% if roleArray.items[prof.role] %} {{roleArray.items[prof.role]}} {% else %} {{prof.role}} {% endif %}</td>
@@ -274,6 +280,7 @@
 				{% endfor %}
 			</td>
 		</tr>
+		{% endif %}
 		{% endfor %}
 		</tbody>
 	</table>
@@ -359,12 +366,18 @@
 	</div>
 </zdk-panel>
 
-<paper-action-dialog id="initDlg" heading="{{'Box initialization'|i18n}}" backdrop >
-	<p>The initialization of the box will reset all datas for the beneficiary. </p>
-	
-	<button affirmative style="border-radius: 2px;height: 30px;min-width: 100px;font-size: inherit;font-family: inherit;margin-left: 5px;border: none;box-sizing: border-box;">Decline</button>
-	<button affirmative style="border-radius: 2px;height: 30px;min-width: 100px;font-size: inherit;font-family: inherit;margin-left: 5px;border: none;box-sizing: border-box;" class="blue">Accept</button>
-</paper-action-dialog>
+<zdk-modal id="initDlg"  closeButton="false">
+	<div class="modalContainer">
+		<div class="modalTitleContainer">{{'Box initialization'|i18n}}</div>
+		<div class="modalContentContainer">
+			<p>The initialization of the box will reset all datas for the beneficiary. </p>
+		</div>
+		<div class="modalButtonContainer">
+			<button class="blue" onclick="document.querySelector('#initDlg').hide()">Decline</button>
+			<button class="blue" onclick="initQueue()">Accept</button>
+		</div>
+	</div>
+</zdk-modal>
 
 <script>
 	parent.document.querySelector("#beneficiary a").innerHTML = '{{ beneficiary.name.family }} {{ beneficiary.name.given }}';
