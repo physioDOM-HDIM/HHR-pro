@@ -261,25 +261,23 @@
                     {{"Info: The password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters" | i18n }}
                 </div>
                 <div class="hidden" id="has-password">{{ professional.hasPassword }}</div>
-                {% if professional.hasPassword %}
+	            
                 <div class="row">
                     <label>{{ "Active"|i18n }}:</label>
-                    <input type="checkbox" name="active" class="account-activation" {% if professional && professional.active===true %}checked{% endif %}/>
+                    <input type="checkbox" name="active" class="account-activation" {% if (professional && professional.active===true) || !professional._id %}checked{% endif %}/>
                 </div>
-	                {% if IDS %}
-	                <div class="row">
-		                <label>{{ "Withdrawal code"|i18n }} : </label>
-		                <span style="font-weight:bold" id="OTP">{% if professional.account.OTP %}{{professional.account.OTP }}{% endif %}</span>
-	                </div>
-	                <div class="row">
-		                <span class="spacer"></span>
-		                <button type="button" class="red {% if !professional.account.OTP %}hidden{% endif %}" id="revokeCert">Revoke certificate</button>
-		                <button type="button" class="blue {% if professional.account.OTP %}hidden{% endif %}" id="createCert">Generate certificate</button>
-	                </div>
-	                {% endif %}
-                {% else %}
-                    <input type="checkbox" name="active" class="hidden" checked />
-                {% endif %}
+	            {% if professional.hasPassword  && IDS %}
+	            <div class="row">
+		            <label>{{ "Withdrawal code"|i18n }} : </label>
+		            <span style="font-weight:bold" id="OTP">{% if professional.account.OTP %}{{professional.account.OTP }}{% endif %}</span>
+	            </div>
+	            <div class="row">
+		            <span class="spacer"></span>
+		            <button type="button" class="red {% if !professional.account.OTP %}hidden{% endif %}" id="revokeCert">Revoke certificate</button>
+		            <button type="button" class="blue {% if professional.account.OTP %}hidden{% endif %}" id="createCert">Generate certificate</button>
+	            </div>
+	            {% endif %}
+                
             </zdk-panel>
             <br />
 	        {% if professional.nb %}

@@ -291,21 +291,17 @@ function Professional() {
 						var key;
 						for (key in entry) {
 							if (entry.hasOwnProperty(key) && ["_id", "account"].indexOf(key) === -1) {
-								if (key === "active" && entry.active === true && that.active !== entry.active && !that.account) {
-									that.active = false;
-								} else {
-									that[key] = entry[key];
-									switch (key) {
-										case "name":
-											if (that.name.family) {
-												that.name.family = capitalize(that.name.family);
-											}
-											if (that.name.given) {
-												that.name.given = capitalize(that.name.given);
-											}
-											break;
-										default:
-									}
+								that[key] = entry[key];
+								switch (key) {
+									case "name":
+										if (that.name.family) {
+											that.name.family = capitalize(that.name.family);
+										}
+										if (that.name.given) {
+											that.name.given = capitalize(that.name.given);
+										}
+										break;
+									default:
 								}
 							}
 						}
@@ -442,7 +438,7 @@ function Professional() {
 							newAccount._id = result._id;
 						}
 						that.account = newAccount._id;
-						that.active = true;
+						// that.active = true;
 						that.save()
 							.then( function( professional ) {
 								logger.info("professional saved",newAccount.OTP );
