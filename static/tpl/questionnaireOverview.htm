@@ -81,7 +81,7 @@
 
 <div class="mainContainer">
 	{% if preview %}
-	<div class="preview">{{'Preview display'|i18n}}</div>
+	<div class="preview">{{"Preview display"|i18n}}</div>
 	{% endif %}
 	<h2>{{questionnaire.label[lang] || questionnaire.label["en"] }} {% if !questionnaire.label[lang] %}<span class="warn">( en )</span>{% endif %}</h2>
 	<form autocomplete="off" name="questionnaire" onsubmit="checkForm(); return false;">
@@ -99,13 +99,13 @@
 		{% if preview %}
 		<div class="row control">
 			<span class="spacer"></span>
-			<button type="button" class="blue" onclick="window.history.back()">{{'Back' | i18n}}</button>
+			<button type="button" class="blue" onclick="window.history.back()">{{"Back" | i18n}}</button>
 		</div>
 		{% else %}
 		<div class="row control">
 			<span class="spacer"></span>
-			<button type="button" class="red" onclick="window.parent.closeQuestionnaire()">{{'Cancel'|i18n}}</button>
-			<button class="green">{{'OK' | i18n}}</button>
+			<button type="button" class="red" onclick="window.parent.closeQuestionnaire()">{{"Cancel"|i18n}}</button>
+			<button class="green">{{"Ok" | i18n}}</button>
 		</div>
 		{% endif %}
 	</form>
@@ -113,7 +113,7 @@
 <div id="questionnaireName" class="hidden">{{questionnaire.name}}</div>
 
 <div class="hidden">
-	<div id="trad_info_result_score_questionnaire">{{'Your score is: ' |i18n}}<span id="score">{{score}}</span></div>
+	<div id="trad_info_result_score_questionnaire">{{"The score is" |i18n}} :<span id="score">{{score}}</span></div>
 </div>
 {% include "./modal.htm" %}
 {% endblock %}

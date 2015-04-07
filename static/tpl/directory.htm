@@ -31,11 +31,11 @@
                 </select>
                 </div>
                 <div class="col">
-                    <label>{{'Active status'|i18n}}:</label>
+                    <label>{{"Active status"|i18n}}:</label>
                     <select name="active">
-                        <option value="all">{{'all'|i18n}}</option>
-                        <option value="true">{{'active'|i18n}}</option>
-                        <option value="false">{{'not active'|i18n}}</option>
+                        <option value="all">{{"All"|i18n}}</option>
+                        <option value="true">{{"Active"|i18n}}</option>
+                        <option value="false">{{"Not active"|i18n}}</option>
                     </select>
                 </div>
             </div>
@@ -52,17 +52,17 @@
 	    <form class="order" name="order" autocomplete="off" onsubmit="validFilter(); return false;">
             <div class="row">
                 <div class="col">
-                    <label>{{'Sort'|i18n}}:</label>
+                    <label>{{"Sort"|i18n}}:</label>
                     <select name="sort">
-                        <option value="name.family">{{'name'|i18n}}</option>
-                        <option value="perimeter">{{'perimeter'|i18n}}</option>
+                        <option value="name.family">{{"Name"|i18n}}</option>
+                        <option value="perimeter">{{"P"erimeter"|i18n}}</option>
                     </select>
                 </div>
                 <div class="col">
-                    <label>{{'Direction'|i18n}}:</label>
+                    <label>{{"Direction"|i18n}}:</label>
                     <select name="dir">
-                        <option value="1">{{'ascending'|i18n}}</option>
-                        <option value="-1">{{'descending'|i18n}}</option>
+                        <option value="1">{{"ascending"|i18n}}</option>
+                        <option value="-1">{{"descending"|i18n}}</option>
                     </select>
                 </div>
             </div>
@@ -131,7 +131,7 @@
                     </div>
                     <div style="width:60px">
                         <template if="{% raw %}{{item.address && item.address.line && item.address.line.length > 0 || item.address.zip || item.address.city}}{% endraw %}">
-                            <button type="button" class="green small" onclick="toggleHiddenNode(this, '.address')">{{'Detail'|i18n}}</button><br/>
+                            <button type="button" class="green small" onclick="toggleHiddenNode(this, '.address')">{{"Detail"|i18n}}</button><br/>
                         </template>
                         {% if rights.write %}
                         <a href="/directory/{% raw %}{{item._id}}{% endraw %}" class="button blue small">{{"Edit"|i18n}}</a>
@@ -167,6 +167,6 @@
 <div class="hidden">
     <div id="trad_error">{{ "Error"|i18n }}</div>
     <div id="trad_error_occured">{{ "An error occured"|i18n }}</div>
-    <div id="trad_ok">{{ "OK"|i18n }}</div>
+    <div id="trad_ok">{{ "Ok"|i18n }}</div>
 </div>
 {% endblock %}

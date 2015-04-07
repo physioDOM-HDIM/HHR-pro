@@ -167,6 +167,7 @@ ul.tree li {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: hidden;
+	cursor: pointer;
 }
 
 ul.tree li {

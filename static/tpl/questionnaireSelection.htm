@@ -48,7 +48,7 @@
 	{% for q in questionnaires.items %}
 		<li>
 			<a href="/questionnaires/edit/{{q.name}}">
-				<button class="small blue">{{'Edit'|i18n}} (dev only)</button>
+				<button class="small blue">{{"Edit"|i18n}} (dev only)</button>
 			</a>
 			<a class="link" href="/questionnaires/preview/{{q.name}}">{{q.label[lang] || q.name }} </a>
 		</li>
@@ -57,7 +57,7 @@
 	<div class="row control">
 		<span class="spacer"></span>
 		<a href="/questionnaire/create">
-			<button class="blue">{{'Create Questionnaire'|i18n}} (dev only)</button>
+			<button class="blue">{{"Create Questionnaire"|i18n}} (dev only)</button>
 		</a>
 	</div>
 </div>

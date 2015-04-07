@@ -1,6 +1,6 @@
 {% extends '../page.htm' %}
 
-{% block title %}{{ 'Frailty status' | i18n }}{% endblock %}
+{% block title %}{{ "Frailty status" | i18n }}{% endblock %}
 
 {% block head %}
 {% parent %}
@@ -37,7 +37,7 @@
 	
 		<form name="form" id="form" autocomplete="off">
 			<div class="row value-row questionnaire-row" data-name="CHAIR_TEST">
-				<div class="quest-name">{{'Chair stand results' | i18n }}</div>
+				<div class="quest-name">{{"Chair stand results" | i18n }}</div>
 				<div class="questionnaire-date">{% if status.chairStandDate %}{{ status.chairStandDate | date }}{% endif %}</div>
 				<input type="text" class="questionnaire-score" value="{{status.chairStandScore}}" readonly />
 				<input type="hidden" class="questionnaire-answer" name="chairStandAnswer" value="{{status.chairStandAnswer}}" />
@@ -46,12 +46,12 @@
 						class="button small blue" 
 						href={% if status.chairStandAnswer %}"/answers/{{status.chairStandAnswer}}"{% else %}"/questionnaire/CHAIR_TEST"{% endif %}
 						{% if status.validated && !status.chairStandScore %}disabled{% endif %}{% if ( !rights.write || !medical || !beneficiary.active ) && !status.chairStandScore %}disabled{% endif %}>
-						{{'Questionnaire'|i18n}}
+						{{"Questionnaire"|i18n}}
 					</a>
 				</div>
 			</div>
 			<div class="row value-row">
-				<label class="comment-label" for="commentchairStand">{{'Status' | i18n}}</label>
+				<label class="comment-label" for="commentchairStand">{{"Status" | i18n}}</label>
 				<input
 					flex
 					id="commentchairStand"
@@ -64,7 +64,7 @@
 
 			<div class="row value-row" style="padding-left: 210px">
 
-				{{'Normal'|i18n}} 
+				{{"Normal"|i18n}} 
 				<input 
 					type="radio" 
 					name="choice"
@@ -75,7 +75,7 @@
 					{% if !status.normal && !status.risk %}checked{% endif %}
 					{% if !rights.write || !medical || !beneficiary.active %}disabled{% endif %}/>
 				
-				{{'Risk of fail'|i18n}} 
+				{{"Risk of fail"|i18n}} 
 				<input 
 					type="radio" 
 					name="choice"
@@ -93,9 +93,9 @@
 		{% if !status.validated %}
 		<div id="buttons" class="row control">
 			<span class="spacer"></span>
-			<button type="button" class="blue" onclick="showConfirm();">{{'Validate'|i18n}}</button>
-			<button type="button" class="red" onclick="modified=false; location.reload();">{{'Cancel'|i18n}}</button>
-			<button type="button" class="green" onclick="checkForm();">{{'Save'|i18n}}</button>
+			<button type="button" class="blue" onclick="showConfirm();">{{"Validate"|i18n}}</button>
+			<button type="button" class="red" onclick="modified=false; location.reload();">{{"Cancel"|i18n}}</button>
+			<button type="button" class="green" onclick="checkForm();">{{"Save"|i18n}}</button>
 		</div>
 		{% endif %}
 	{% endif %}
@@ -106,16 +106,16 @@
 
 <zdk-modal id="confirmModal" closebutton="false">
 	<div class="modalContainer">
-		<div class="modalTitleContainer">{{'Confirmation' | i18n}}</div>
+		<div class="modalTitleContainer">{{"Confirmation"| i18n}}</div>
 		<div class="modalContentContainer">
-			<p>{{'This action will lock all the datas entered. There is no going back to edit the datas.'|i18n}}<br>
-			{{'Are you sure you want to continue ?' |i18n}}</p>
+			<p>{{"This action will lock all the datas entered. There is no going back to edit the datas."|i18n}}</p>>
+			<p>{{"Are you sure you want to continue ?" |i18n}}</p>
 		</div>
 		<div class="modalButtonContainer">
-			<button class="red" onclick="hideConfirm();">{{'Cancel' | i18n}}</script>
-			<button class="green" onclick="hideConfirm(); checkForm(true);">{{'Validate' | i18n}}</script>
+			<button class="red" onclick="hideConfirm();">{{ "Cancel" | i18n}}</button>
+			<button class="green" onclick="hideConfirm(); checkForm(true);">{{"Validate" | i18n}}</button>
 		</div>
-	</button>
+	</div>
 </zdk-modal>
 
 <script src="/scripts/questionnaireButton.js"></script>

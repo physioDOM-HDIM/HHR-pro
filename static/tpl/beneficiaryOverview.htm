@@ -92,7 +92,7 @@
 			<label>{{ "Height"|i18n }} :</label><div>{{(beneficiary.size*100)}}{{ "cm"|i18n }}</div>
 		</div>
 		<div class="row">
-			<label>{{ "Social id"|i18n }} : </label><div>{{beneficiary.socialID}}</div>
+			<label>{{ "Social ID"|i18n }} : </label><div>{{beneficiary.socialID}}</div>
 		</div>
 		<div class="row">
 			<label>{{ "Perimeter"|i18n }} : </label>
@@ -245,7 +245,7 @@
 
 
 <zdk-panel heading="{{ 'Active services'|i18n }}" collapsable="true" collapsed="true">
-	<div>{{'Not yet implemented'|i18n}}</div>
+	<div>{{"Not yet implemented"|i18n}}</div>
 </zdk-panel>
 
 <zdk-panel heading="{{ 'Professional contacts'|i18n }}" collapsable="true" collapsed="false">
@@ -368,13 +368,13 @@
 
 <zdk-modal id="initDlg"  closeButton="false">
 	<div class="modalContainer">
-		<div class="modalTitleContainer">{{'Box initialization'|i18n}}</div>
+		<div class="modalTitleContainer">{{"Box initialization"|i18n}}</div>
 		<div class="modalContentContainer">
-			<p>The initialization of the box will reset all datas for the beneficiary. </p>
+			<p>{{"The initialization of the box will reset all datas for the beneficiary."|i18n}}</p>
 		</div>
 		<div class="modalButtonContainer">
-			<button class="blue" onclick="document.querySelector('#initDlg').hide()">Decline</button>
-			<button class="blue" onclick="initQueue()">Accept</button>
+			<button class="blue" onclick="document.querySelector('#initDlg').hide()">{{"Decline"|i18n}}</button>
+			<button class="blue" onclick="initQueue()">{{"Accept"|i18n}}</button>
 		</div>
 	</div>
 </zdk-modal>
