@@ -1,8 +1,10 @@
+  
 __v0.0.30__
 
   - \#191 : Bug 296 - [Beneficiary overview/Professional contacts][v029] Ne pas afficher les professionnels desactivés
   - \#189 : Bug 293 - [Beneficiary overview][v027] Bouton init
   - \#190 : Bug 294 - [create/update a professional][v029] Button yes de confirmation de sauvegarde KO
+  - HotFix : Allow to deactivate a professionnal that have no password
 
 __v0.0.29__
 
