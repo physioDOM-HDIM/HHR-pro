@@ -55,7 +55,7 @@
                     <label>{{"Sort"|i18n}}:</label>
                     <select name="sort">
                         <option value="name.family">{{"Name"|i18n}}</option>
-                        <option value="perimeter">{{"P"erimeter"|i18n}}</option>
+                        <option value="perimeter">{{"Perimeter"|i18n}}</option>
                     </select>
                 </div>
                 <div class="col">
@@ -120,8 +120,8 @@
                                 <template repeat="{% raw %}{{telecomItem in item.telecom}}{% endraw %}">
                                     <template if="{% raw %}{{telecomItem.system !== 'email'}}{% endraw %}">
                                         <div style="-webkit-flex:1; -ms-flex:1; flex:1;">
-                                            <template if="{% raw %}{{telecomItem.system === 'mobile'}}{% endraw %}">Mobile</template>
-                                            <template if="{% raw %}{{telecomItem.system === 'phone'}}{% endraw %}">Phone</template>
+                                            <template if="{% raw %}{{telecomItem.system === 'mobile'}}{% endraw %}">{{"Mobile"|i18n}}</template>
+                                            <template if="{% raw %}{{telecomItem.system === 'phone'}}{% endraw %}">{{"Phone"|i18n}}</template>
                                             {% raw %}: {{telecomItem.value}}{% endraw %}</div>
                                         <!--<span class="{% raw %}{{telecomItem.system}}{% endraw %}">{% raw %}{{telecomItem.system}} : {{telecomItem.value}}{% endraw %}</span>-->
                                     </template>
