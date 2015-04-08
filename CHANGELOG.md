@@ -1,4 +1,10 @@
+__v0.0.31-pre__
   
+  - Bug 300 & 299 [Message to Home][v029]
+  
+> Nota : Les listes "msgStatus" et "msgSeverity" ont été supprimée car relative aux messages inter-professionnels,
+ rubrique qui n'existe plus.
+
 __v0.0.30__
 
   - \#191 : Bug 296 - [Beneficiary overview/Professional contacts][v029] Ne pas afficher les professionnels desactivés
