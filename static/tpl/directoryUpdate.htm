@@ -281,6 +281,9 @@
             </zdk-panel>
             <br />
 	        {% if professional.nb %}
+	        {% if lang=="es" %}
+	        <div class="row"><span class="spacer"></span><div id="hasBeneficiary"><b>{{ "Nota"|i18n }} :</b> Este profesional ha afectado a {{professional.nb}}  beneficiarios</div></div>
+	        {% else %}
 	        <div class="row"><span class="spacer"></span><div id="hasBeneficiary"><b>{{ "Nota"|i18n }} :</b> {{"this professional has"|i18n}} {{professional.nb}} {% if professional.nb == 1 %}{{"beneficiary"|i18n}}{% else %}{{"beneficiaries"|i18n}}{% endif %} {{"affected"|i18n}}</div></div>
 	        {% endif %}
             <div class="row">
