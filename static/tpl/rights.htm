@@ -1,6 +1,6 @@
 {% extends './page.htm' %}
 
-{% block title %}{{ 'Access management' | i18n }}{% endblock %}
+{% block title %}{{ "Access management" | i18n }}{% endblock %}
 
 {% block head %}
 {% parent %}
@@ -50,7 +50,7 @@ div.row.items {
 <form id="form" onsubmit="checkForm(); return false;">
 
 	<div class="row">
-		<label for="roleSelect">{{'Select role :' | i18n}}</label>
+		<label for="roleSelect">{{"Select role"|i18n }} :</label>
 		<select id="roleSelect" name="role">
 		{% for role in roles %}
 			<option value="{{role.ref}}">{{role.label.en || role.ref}}</option>
@@ -69,13 +69,13 @@ div.row.items {
 		
 				{% for role in roles %}
 				<div class="roles hidden" data-role="{{role.ref}}">
-					<input type="radio" name="rights[{{item._id.toString()}}][{{role.ref}}]" onchange="updateChildren(this, '{{ind}}')" value="1" {% if item.rights[role.ref] === 1 %}checked{% endif %} /> {{'Read' | i18n}}
+					<input type="radio" name="rights[{{item._id.toString()}}][{{role.ref}}]" onchange="updateChildren(this, '{{ind}}')" value="1" {% if item.rights[role.ref] === 1 %}checked{% endif %} /> {{"ReadRight" | i18n}}
 				</div>
 				<div class="roles hidden" data-role="{{role.ref}}">
-					<input type="radio" name="rights[{{item._id.toString()}}][{{role.ref}}]" onchange="updateChildren(this, '{{ind}}')" value="2" {% if item.rights[role.ref] === 2 %}checked{% endif %} /> {{'Read/Write' | i18n}}
+					<input type="radio" name="rights[{{item._id.toString()}}][{{role.ref}}]" onchange="updateChildren(this, '{{ind}}')" value="2" {% if item.rights[role.ref] === 2 %}checked{% endif %} /> {{"Read/Write" | i18n}}
 				</div>
 				<div class="roles hidden" data-role="{{role.ref}}">
-					<input type="radio" name="rights[{{item._id.toString()}}][{{role.ref}}]" onchange="updateChildren(this, '{{ind}}')" value="0" {% if item.rights[role.ref] === 0 %}checked{% endif %} /> {{'No Access' | i18n}}
+					<input type="radio" name="rights[{{item._id.toString()}}][{{role.ref}}]" onchange="updateChildren(this, '{{ind}}')" value="0" {% if item.rights[role.ref] === 0 %}checked{% endif %} /> {{"No access" | i18n}}
 				</div>
 				{% endfor %}
 			</div>
@@ -96,8 +96,8 @@ div.row.items {
 
 	<div id="buttons" class="row control">
 		<span class="spacer"></span>
-		<button type="button" class="red" onclick="cancel();">{{'Cancel' | i18n}}</button>
-		<button class="green">{{'Save' | i18n}}</button>
+		<button type="button" class="red" onclick="cancel();">{{"Cancel" | i18n}}</button>
+		<button class="green">{{"Save" | i18n}}</button>
 	</div>
 </form>
 

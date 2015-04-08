@@ -1,6 +1,6 @@
 {% extends './page.htm' %}
 
-{% block title %}{{ "create/update a beneficiary"|i18n }}{% endblock %}
+{% block title %}{{ "Create/Update a beneficiary"|i18n }}{% endblock %}
 
 {% block head %}
 {% parent %}
@@ -404,7 +404,7 @@
 				<input type="password" name="checkAccountPassword" value="{{beneficiary.account.password}}"/>
 			</div>
 			<div class="row tip" style="line-height:initial;margin-top:5px; margin-bottom:5px;">
-				{{"Info: The password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters" | i18n}}
+				{{"Info"|i18n}}: {{"The password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters" | i18n}}
 			</div>
 			<div class="row">
 				<label>{{ "Email"|i18n }}</label>
@@ -538,7 +538,7 @@
 					<p>{{ "Choose your referent and check professionals you want to add"|i18n }}</p>
 				</div>
 				<div class="row refProLabelBox">
-					<label>{{'Referent' | i18n}}</label>
+					<label>{{"Referent" | i18n}}</label>
 				</div>
 				<template is="auto-binding" repeat="{% raw %}{{item, i in list.items}}{% endraw %}">
 					<div class="item">

@@ -237,6 +237,7 @@ function IPage() {
 					html = swig.renderFile(DOCUMENTROOT + '/static/tpl/directory.htm', data, function (err, output) {
 						if (err) {
 							console.log("error", err);
+							console.log(err.stack);
 							console.log("output", output);
 							res.write(err);
 							res.end();

@@ -1,6 +1,6 @@
 {% extends '../page.htm' %}
 
-{% block title %}{{ 'Activity/Motricity status' | i18n }}{% endblock %}
+{% block title %}{{ "Activity/Motricity status" | i18n }}{% endblock %}
 
 {% block head %}
 {% parent %}
@@ -34,16 +34,16 @@
 
 				<div class="row value-row">
 
-					<div class="value-name">{{'Number of steps'|i18n}}</div>
+					<div class="value-name">{{"Number of steps"|i18n}}</div>
 					<div class="value-date stepsNumberDate">{% if status.stepsNumberDate %}{{status.stepsNumberDate}}{% endif %}</div>
 					<input type="number" step="1" min="{{parameters.stepsNumber.range.min}}" max="{{parameters.stepsNumber.range.max}}" name="stepsNumber" class="value-input" value="{{status.stepsNumber}}" {% if !rights.write || !medical || !beneficiary.active %}disabled{% endif %} />
-					<div class="value-unit">{{'steps per week'|i18n}}</div>
+					<div class="value-unit">{{"steps per week"|i18n}}</div>
 
 				</div>
 
 				<div class="row value-row">
 
-					<label class="comment-label" for="commentStepsNumber">{{'Status' | i18n}}</label>
+					<label class="comment-label" for="commentStepsNumber">{{"Status" | i18n}}</label>
 					<input
 						flex
 						id="commentStepsNumber"
@@ -62,9 +62,9 @@
 			{% if !status.validated %}
 			<div id="buttons" class="row control">
 				<span class="spacer"></span>
-				<button type="submit" class="blue to-valid" onclick="showConfirm();">{{'Validate'|i18n}}</button>
-				<button type="button" class="red" onclick="modified=false; location.reload();">{{'Cancel'|i18n}}</button>
-				<button type="submit" class="green to-valid" onclick="checkForm();">{{'Save'|i18n}}</button>
+				<button type="submit" class="blue to-valid" onclick="showConfirm();">{{"Validate"|i18n}}</button>
+				<button type="button" class="red" onclick="modified=false; location.reload();">{{"Cancel"|i18n}}</button>
+				<button type="submit" class="green to-valid" onclick="checkForm();">{{"Save"|i18n}}</button>
 			</div>
 			{% endif %}
 		{% endif %}
@@ -76,16 +76,16 @@
 
 <zdk-modal id="confirmModal" closebutton="false">
 	<div class="modalContainer">
-		<div class="modalTitleContainer">{{'Confirmation' | i18n}}</div>
+		<div class="modalTitleContainer">{{"Confirmation" | i18n}}</div>
 		<div class="modalContentContainer">
-			<p>{{'This action will lock all the datas entered. There is no going back to edit the datas.'|i18n}}<br>
-			{{'Are you sure you want to continue ?' |i18n}}</p>
+			<p>{{"This action will lock all the datas entered. There is no going back to edit the datas."|i18n}}</p>
+			<p>{{"Are you sure you want to continue ?" |i18n}}</p>
 		</div>
 		<div class="modalButtonContainer">
-			<button class="red" onclick="hideConfirm();">{{'Cancel' | i18n}}</script>
-			<button class="green" onclick="hideConfirm(); checkForm(true);">{{'Validate' | i18n}}</script>
+			<button class="red" onclick="hideConfirm();">{{"Cancel" | i18n}}</button>
+			<button class="green" onclick="hideConfirm(); checkForm(true);">{{"Validate" | i18n}}</button>
 		</div>
-	</button>
+	</div>
 </zdk-modal>
 
 <script src="/scripts/questionnaireButton.js"></script>

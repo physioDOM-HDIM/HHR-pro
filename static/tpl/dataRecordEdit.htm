@@ -1,5 +1,5 @@
 {% extends './page.htm' %}
-{% block title %}{{'Data Recording'|i18n}}{% endblock %}
+{% block title %}{{"Data Recording"|i18n}}{% endblock %}
 {% block head %}
 {% parent %}
 <script src="/bower_components/mustache/mustache.js"></script>
@@ -121,10 +121,10 @@
 					{% if admin && beneficiary.active %}
 					<div style="width:100px; text-align:right">
 						<div>
-							<button type="button" class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">{{'Edit'|i18n}}</button>
+							<button type="button" class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">{{"Edit"|i18n}}</button>
 						</div>
 						<div>
-							<button type="button" class="red small" onclick="confirmDeleteItem('{{item._id.toString()}}')">{{'Delete'|i18n}}</button>
+							<button type="button" class="red small" onclick="confirmDeleteItem('{{item._id.toString()}}')">{{"Delete"|i18n}}</button>
 						</div>
 					</div>
 					{% else %}
@@ -183,10 +183,10 @@
 				<div style="width:100px; text-align:right">
 					{% if admin %}
 					<div>
-						<button type="button" class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">{{'Back'|i18n}}</button>
+						<button type="button" class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">{{"Back"|i18n}}</button>
 					</div>
 					<div>
-						<button type="button" class="red small" onclick="confirmDeleteItem('{{item._id.toString()}}')">{{'Delete'|i18n}}</button>
+						<button type="button" class="red small" onclick="confirmDeleteItem('{{item._id.toString()}}')">{{"Delete"|i18n}}</button>
 					</div>
 					{% endif %}
 				</div>
@@ -219,7 +219,7 @@
 		<div class="row control">
 			<span class="spacer"></span>
 			{% if rights.write && medical && beneficiary.active %}
-			<button type="button" class="green small" onclick="addLine('{{category}}')">{{'Add'|i18n}}</button>
+			<button type="button" class="green small" onclick="addLine('{{category}}')">{{"Add"|i18n}}</button>
 			{% endif %}
 		</div>
 	</div>
@@ -238,7 +238,7 @@
 			<input type="hidden" class="questionnaire-answer" name="items[{% raw %}{{idx}}{% endraw %}].ref" value="" />
 			<div class="col questionnaire-button-container" style="max-width:150px">
 				<span></span>
-				<a class="button small blue disabled" href="">{{'Questionnaire'|i18n}}</a>
+				<a class="button small blue disabled" href="">{{"Questionnaire"|i18n}}</a>
 			</div>
 			<div class="col" style="max-width:150px"></div>
 			<div class="col" style="max-width:150px"></div>
@@ -257,7 +257,7 @@
 
 		<input name="items[{% raw %}{{idx}}{% endraw %}].category" id="new-item-category" type="hidden">
 		<div style="width:100px; text-align:right">
-			<button type="button" class="blue small" onclick="removeLine(this)">{{'Cancel'|i18n}}</button>
+			<button type="button" class="blue small" onclick="removeLine(this)">{{"Cancel"|i18n}}</button>
 		</div>
 	</div>
 	{% raw %}{{#questionnaire}}{% endraw %}
@@ -322,22 +322,22 @@
 	<form name="dataRecord" id="dataRecord" onsubmit="create(); return false;">
 		<zdk-panel heading="{{'Physiological parameters' |i18n}}" collapsable="false" collapsed="false">
 			<div class="row row-legend">
-				<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{{ 'Parameter'|i18n }}</div>
-				<div class="col bold" style="max-width:150px">{{ 'Value'|i18n }}</div>
-				<div class="col bold" style="max-width:150px">{{ 'Unit'|i18n }}</div>
-				<div class="col bold" style="max-width:150px">{{ 'Min threshold' | i18n }}</div>
-				<div class="col bold" style="max-width:150px">{{ 'Max threshold' | i18n }}</div>
+				<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{{ "Parameter"|i18n }}</div>
+				<div class="col bold" style="max-width:150px">{{ "Value"|i18n }}</div>
+				<div class="col bold" style="max-width:150px">{{ "Unit"|i18n }}</div>
+				<div class="col bold" style="max-width:150px">{{ "Threshold min" | i18n }}</div>
+				<div class="col bold" style="max-width:150px">{{ "Threshold max" | i18n }}</div>
 			</div>
 			{% if view === 'create'%}
 				{{ addItem('General') }}
 			{% else %}
-				<h2 class="bold">{{'Général'|i18n}}</h1>
+				<h2 class="bold">{{"General"|i18n}}</h1>
 				{% for item in dataRecordItems.items.items %}
 					{% if item.category === 'General' %}
 						{{ line('General') }}
 					{% endif %}
 				{% endfor %}
-				<h2 class="bold">{{'HDIM'|i18n}}</h1>
+				<h2 class="bold">{{"HDIM"|i18n}}</h1>
 				{% for item in dataRecordItems.items.items %}
 					{% if item.category === 'HDIM' %}
 						{{ line('HDIM') }}
@@ -348,8 +348,8 @@
 		</zdk-panel>
 		<zdk-panel heading="{{'Symptoms assessments' |i18n}}" collapsable="false" collapsed="false">
 			<div class="row row-legend">
-				<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{{ 'Assessment'|i18n }}</div>
-				<div class="col bold" style="max-width:150px">{{ 'Value'|i18n }}</div>
+				<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{{ "Assessment"|i18n }}</div>
+				<div class="col bold" style="max-width:150px">{{ "Value"|i18n }}</div>
 				<div class="col bold" style="max-width:150px"></div>
 				<div class="col bold" style="max-width:150px"></div>
 				<div class="col bold" style="max-width:150px"></div>
@@ -367,8 +367,8 @@
 		</zdk-panel>
 		<zdk-panel heading="{{'Questionnaires' |i18n}}" collapsable="false" collapsed="false">
 			<div class="row row-legend">
-				<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{{ 'Questionnaire'|i18n }}</div>
-				<div class="col bold" style="max-width:150px">{{ 'Value'|i18n }}</div>
+				<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{{ "Questionnaire"|i18n }}</div>
+				<div class="col bold" style="max-width:150px">{{ "Value"|i18n }}</div>
 				<div class="col bold" style="max-width:150px"></div>
 				<div class="col bold" style="max-width:150px"></div>
 				<div class="col bold" style="max-width:150px"></div>
@@ -389,12 +389,12 @@
 			<span class="spacer"></span>
 			{% if view === 'create'%}
 			{% if rights.write && medical && beneficiary.active %}
-			<button id="saveBtn" class="green">{{'Save'|i18n}}</button>
+			<button id="saveBtn" class="green">{{"Save"|i18n}}</button>
 			{% endif %}
 			{% else %}
-			<a href="/datarecord"><button type="button" class="blue big not-disabled">{{'Back'|i18n}}</button></a>
+			<a href="/datarecord"><button type="button" class="blue big not-disabled">{{"Back"|i18n}}</button></a>
 			{% if rights.write && medical && beneficiary.active %}
-			<button id="saveBtn" class="green">{{'Save'|i18n}}</button>
+			<button id="saveBtn" class="green">{{"Save"|i18n}}</button>
 			{% endif %}
 			{% endif %}
 		</div>

@@ -1,6 +1,6 @@
 {% extends './page.htm' %}
 
-{% block title %}{{'Message to Home' | i18n}}{% endblock %}
+{% block title %}{{"Message to Home" | i18n}}{% endblock %}
 
 {% block head %}
 {% parent %}
@@ -27,13 +27,13 @@
 <form name="message">
 	<div class="row spaced-down">
 		<div class="col">
-			<label for="title">{{'Title'|i18n}} : </label>
+			<label for="title">{{"Title"|i18n}} : </label>
 			<input type="text" id="title" name="title" maxlength="100">
 		</div>
 		<input type="hidden" name="author" id="author" value="{{session.person.id.toString()}}">
 	</div>
 	<div class="row spaced-side">
-		<label for="content">{{'Content'|i18n}} : </label> <div class="spacer limitInfo"></div>
+		<label for="content">{{"Content"|i18n}} : </label> <div class="spacer limitInfo"></div>
 	</div>
 	<div class="row spaced-down">
 		<textarea name="content" id="content" rows="10"></textarea>

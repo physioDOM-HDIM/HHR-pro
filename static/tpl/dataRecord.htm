@@ -117,8 +117,8 @@
 								</template>
 								<template if="{% raw %}{{!item.home}}{% endraw %}">
 									<div>
-										<span class="{% raw %}{{ item.self ? 'show':'hide'}}{% endraw %}">{{ "From beneficiary" |i18n}}</span>
-										<span class="{% raw %}{{ item.self ? 'hide':'show'}}{% endraw %}">{{ "From consultation" |i18n}}</span>
+										<span class="{% raw %}{{ item.self ? 'show':'hide'}}{% endraw %}">{{ "From Beneficiary" |i18n}}</span>
+										<span class="{% raw %}{{ item.self ? 'hide':'show'}}{% endraw %}">{{ "From Consultation" |i18n}}</span>
 									</div>
 								</template>
 							</template>
@@ -128,7 +128,7 @@
 					</div>
 				</div>
 				<div><a href="/datarecord/{%raw%}{{item._id}}{% endraw %}">
-					<button class="blue small" style="margin:5px">{{'View'|i18n}}</button>
+					<button class="blue small" style="margin:5px">{{"View"|i18n}}</button>
 				</a></div>
 			</div>
 		</div>
