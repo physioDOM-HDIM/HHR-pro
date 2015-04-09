@@ -1,5 +1,5 @@
 {% extends './page.htm' %}
-{% block title %}{{'Message to Home' | i18n }}{% endblock %}
+{% block title %}{{"Message to Home" | i18n }}{% endblock %}
 {% block head %}
 {% parent %}
 
@@ -124,8 +124,8 @@
 					<div class="bold">{% raw %}{{ item.datetime }}{% endraw %}</div>
 					<div>&nbsp;{% raw %}{{ item.from }}{% endraw %}</div>
 				</div>
-				<div class="col">{{"send by"|i18n}}: {% raw %}{{item.author.name.family}} {{item.author.name.given}}{% endraw %}</div>
-				<div class="col">{{"status"|i18n}}: {% raw %}{{item.status}}{% endraw %}</div>
+				<div class="col">{{"Send by"|i18n}}: {% raw %}{{item.author.name.family}} {{item.author.name.given}}{% endraw %}</div>
+				<div class="col">{{"Status"|i18n}}: {% raw %}{{item.status}}{% endraw %}</div>
 			</div>
 			<div class="row message-detail hidden">
 				<div style="display:block">

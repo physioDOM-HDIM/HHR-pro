@@ -1,6 +1,6 @@
 {% extends './page.htm' %}
 
-{% block title %}{{ "create/update a professional"|i18n }}{% endblock %}
+{% block title %}{{ "Create/Update a professional"|i18n }}{% endblock %}
 
 {% block head %}
 {% parent %}
@@ -159,7 +159,7 @@
                         <div class="col">
                             <label>{{"Type"|i18n}} :</label>
 	                        <input type="hidden"  name="telecom[0].system" value="email">
-	                        <label>{{"email"|i18n}}</label>
+	                        <label>{{"Email"|i18n}}</label>
                         </div>
                     </div>
                     <div class="row">
@@ -258,7 +258,7 @@
                     <input type="password" name="checkAccountPassword" class="account-check-password" onkeyup="checkPassword(this)" />
                 </div>
                 <div class="row tip">
-                    {{"Info: The password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters" | i18n }}
+                    {{"Info"|i18n}}: {{"The password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters" | i18n }}
                 </div>
                 <div class="hidden" id="has-password">{{ professional.hasPassword }}</div>
 	            
@@ -281,6 +281,9 @@
             </zdk-panel>
             <br />
 	        {% if professional.nb %}
+	        {% if lang=="es" %}
+	        <div class="row"><span class="spacer"></span><div id="hasBeneficiary"><b>{{ "Nota"|i18n }} :</b> Este profesional ha afectado a {{professional.nb}}  beneficiarios</div></div>
+	        {% else %}
 	        <div class="row"><span class="spacer"></span><div id="hasBeneficiary"><b>{{ "Nota"|i18n }} :</b> {{"this professional has"|i18n}} {{professional.nb}} {% if professional.nb == 1 %}{{"beneficiary"|i18n}}{% else %}{{"beneficiaries"|i18n}}{% endif %} {{"affected"|i18n}}</div></div>
 	        {% endif %}
             <div class="row">

@@ -109,11 +109,17 @@
 		-webkit-align-items: center;
 		align-items: center;
 		margin-left:0px;
+		min-width: 44px;
+	}
+	core-toolbar div.title {
+		font-size:16px;
+		overflow: hidden;
 	}
 	core-toolbar div.beneficiary {
-		text-align: left; 
-		width:100px;
-		font-size: 70%;
+		text-align: left;
+		min-width:150px;
+		max-width:200px;
+		font-size: 80%;
 		overflow: hidden;
 	}
 	core-toolbar div.beneficiary label {
@@ -121,14 +127,19 @@
 		text-overflow: ellipsis;
 		width: 100%;
 		overflow: hidden;
+		font-size: 70%;
 	}
 	div.professional {
-		width: 100px;
+		min-width: 100px;
+		max-width: 150px;
 		text-align: right;
 		font-size: 70%;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 		overflow: hidden;
+	}
+	div.professional label {
+		font-size:80%;
 	}
 </style>
 <style shim-shadowdom>
@@ -151,7 +162,8 @@
 	<form method="post" id="disconnect" action="/disconnect">
 		<input id="requester" name="requester" type="hidden" value="{{idsUser}}"/>
 	</form>
-	<div class="professional">{{account.firstname}}. {{account.lastname}}<br/>
+	<div class="professional">
+		<label>{{account.firstname}}. {{account.lastname}}</label><br/>
 		<a href="javascript:logout()">{{"Disconnect"|i18n}}</a>
 	</div>
 	<script>
@@ -167,7 +179,9 @@
 		}
 	</script>
 	{% else %}
-	<div class="professional">{{account.firstname}}. {{account.lastname}}<br/><a href="/logout">{{"Disconnect"|i18n}}</a></div>
+	<div class="professional">
+		<label>{{account.firstname}}. {{account.lastname}}</label><br/>
+		<a href="/logout">{{"Disconnect"|i18n}}</a></div>
 	{% endif %}
 </core-toolbar>
 

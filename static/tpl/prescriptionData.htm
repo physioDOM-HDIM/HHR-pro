@@ -42,7 +42,7 @@
 <div class="row control">
 	<span class="spacer"></span>
 	{% if rights.write && beneficiary.active %}
-	<button type="button" class="blue" onclick="showForm()">{{'Add'|i18n}}</button>
+	<button type="button" class="blue" onclick="showForm()">{{"Add"|i18n}}</button>
 	{% endif %}
 </div>
 
@@ -61,10 +61,10 @@
 	<div class="row h1">
 		<div class="col05"></div>
 		<div class="col">
-			<label>{{"threshold min"|i18n}}</label><span>{% raw %}{{ data.threshold.min }}{% endraw %}</span>
+			<label>{{"Threshold min"|i18n}}</label><span>{% raw %}{{ data.threshold.min }}{% endraw %}</span>
 		</div>
 		<div class="col">
-			<label>{{"threshold max"|i18n}}</label><span>{% raw %}{{ data.threshold.max }}{% endraw %}</span>
+			<label>{{"Threshold max"|i18n}}</label><span>{% raw %}{{ data.threshold.max }}{% endraw %}</span>
 		</div>
 	</div>
 	{% raw %}
@@ -126,10 +126,9 @@
 			{% raw %}{{#data.when.weekSecond}}{% endraw %}{{"The second"|i18n}}{% raw %}{{/data.when.weekSecond}}{% endraw %}
 			{% raw %}{{#data.when.weekThird}}{% endraw %}{{"The third"|i18n}}{% raw %}{{/data.when.weekThird}}{% endraw %}
 			{% raw %}{{#data.when.weekFourth}}{% endraw %}{{"The fourth"|i18n}}{% raw %}{{/data.when.weekFourth}}{% endraw %}
-			&nbsp;{{"week from the"|i18n}} 
-			{% raw %}{{#data.when.orderBegin}}{% endraw %}{{"beginning"|i18n}}{% raw %}{{/data.when.orderBegin}}{% endraw %}
-			{% raw %}{{#data.when.orderEnd}}{% endraw %}{{"end"|i18n}}{% raw %}{{/data.when.orderEnd}}{% endraw %}
-			&nbsp;{{"of the month"|i18n}}
+			&nbsp; 
+			{% raw %}{{#data.when.orderBegin}}{% endraw %}{{"week from the beginning of the month"|i18n}}{% raw %}{{/data.when.orderBegin}}{% endraw %}
+			{% raw %}{{#data.when.orderEnd}}{% endraw %}{{"week from the end of the month"|i18n}}{% raw %}{{/data.when.orderEnd}}{% endraw %}
 		</div>
 	</div>
 	{% raw %}{{/data.hasMoreDetail}}{% endraw %}
@@ -164,12 +163,12 @@
 	{{#hasThresholds}}
 	{% endraw %}
 	<div class="row h1">
-		<label>{{"threshold min"|i18n}}</label>
+		<label>{{"Threshold min"|i18n}}</label>
 		<input type="number" value="" name="threshold.min" class="min-threshold">
 	</div>
 
 	<div class="row h1">
-		<label>{{"threshold max"|i18n}}</label>
+		<label>{{"Threshold max"|i18n}}</label>
 		<input type="number" value="" name="threshold.max" class="max-threshold">
 	</div>
 	{% raw %}
@@ -250,7 +249,7 @@
 			<option value="2" {% raw %}{{#getWeekDefault}}2{{/getWeekDefault}}{% endraw %}>{{"second"|i18n}}</option>
 			<option value="3" {% raw %}{{#getWeekDefault}}3{{/getWeekDefault}}{% endraw %}>{{"third"|i18n}}</option>
 			<option value="4" {% raw %}{{#getWeekDefault}}4{{/getWeekDefault}}{% endraw %}>{{"fourth"|i18n}}</option>
-		</select> {{'week'|i18n}}
+		</select> {{"week"|i18n}}
 	</div>
 	<div class="row h1">
 		{{"from the"|i18n}} <select name="when.order" class="spacing-around">

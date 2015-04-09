@@ -1,4 +1,11 @@
+__v0.0.31__
   
+  - Bug 300 & 299 [Message to Home][v029]
+  - update translation files
+  - update translation lists
+  
+> Nota : Lists "msg Status" and "msg severity" were deleted as on inter-professional messages, heading that no longer exists.
+
 __v0.0.30__
 
   - \#191 : Bug 296 - [Beneficiary overview/Professional contacts][v029] Ne pas afficher les professionnels desactivés
