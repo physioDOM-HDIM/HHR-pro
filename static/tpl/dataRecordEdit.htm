@@ -305,17 +305,8 @@
 			{% endif %}
 		</label>
 		{% if !dataRecordItems.home && view === 'create' %}
-			{% if admin  %}
-			<div class="spacer"></div>
-				<select name="sourceID" id="sourceID" class="float-right">
-					{% for professional in professionals %}
-					<option value="{{ professional._id.toString() }}">{{professional.name.family}} {{professional.name.given}}</option>
-					{% endfor %}
-				</select>
-			{% else %}
 			<label class="title">{{source.name.family}} {{source.name.given}}</label>
 			<input type="hidden" name="sourceID" id="sourceID" value="{{source._id.toString()}}">
-			{% endif %}
 		{% endif %}
 		<input type="hidden" id="createdDataRecordID" value="{{dataRecordItems._id}}">
 	</div>
