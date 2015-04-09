@@ -85,7 +85,7 @@ function showLang() {
 					case "roleClass":
 						obj.roleClass = [];
 						roleClass.items.forEach( function( roleClassItem ) {
-							option = { value: roleClassItem.ref, label: roleClassItem.label[lang] || roleClassItem.label.en  };
+							option = { value: roleClassItem.ref, label: roleClassItem.label[lang] || roleClassItem.label.en || ""  };
 							if( item.roleClass === roleClassItem.ref) {
 								option.selected = true;
 							} else {

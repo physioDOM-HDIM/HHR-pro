@@ -1114,7 +1114,6 @@ function IPage() {
 			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1?true:false,
 			rights: { read:false, write:false, url: '/datarecord' }
 		};
-		data.medical = data.admin || req.session.roleClass==="HEALTH";
 		
 		new Menu().rights( req.session.role, data.rights.url )
 			.then( function( _rights ) {
@@ -1155,7 +1154,6 @@ function IPage() {
 			rights: { read:false, write:false, url: '/datarecord/create' },
 			role: req.session.role
 		};
-		data.medical = data.admin || req.session.roleClass==="HEALTH";
 		
 		if( !req.session.beneficiary ) {
 			// logger.debug("no beneficiary selected");
@@ -1163,8 +1161,10 @@ function IPage() {
 			res.send(302);
 			return next();
 		} else {
+			console.log( req.session.role );
 			new Menu().rights( req.session.role, data.rights.url )
 				.then( function( _rights ) {
+					console.log( _rights );
 					// logger.debug("rights", _rights );
 					data.rights = _rights;
 					return physioDOM.Beneficiaries();
@@ -1451,7 +1451,6 @@ function IPage() {
 			admin: ['COORD', 'ADMIN'].indexOf(req.session.roleClass) !== -1 ? true : false,
 			rights: { read:false, write:false, url: req.url }
 		};
-		data.medical = data.admin || (req.session.roleClass === "HEALTH");
 		
 		if (!req.session.beneficiary) {
 			// logger.debug("No beneficiary selected");
@@ -1728,6 +1727,7 @@ function IPage() {
 
 		physioDOM.Lists.getList('role')
 		.then(function(list) {
+				console.log(list.items );
 				data.roles = list.items;
 				return new Menu().getAll();
 			})
