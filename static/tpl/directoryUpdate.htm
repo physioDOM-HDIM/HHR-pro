@@ -21,287 +21,336 @@
 
 {% block content %}
 <style>
-    .telecomContainer {
-        margin-top: 5px;
-        border-top: none;
-        padding-top: 5px;
-    }
-    .telecomContainer:nth-child(n+3) {
-        border-top: 1px solid black;
-    }
-    div.row {
-        min-height: 30px;
-    }
+	.telecomContainer {
+		margin-top: 5px;
+		border-top: none;
+		padding-top: 5px;
+	}
+	
+	.telecomContainer:nth-child(n+3) {
+		border-top: 1px solid black;
+	}
+	
+	div.row {
+		min-height: 30px;
+	}
 </style>
 <script type="template" id="tplTelecomContainer">
-    <div class="row">
-        <input type="hidden" name="telecom[{%raw%}{{indx}}{%endraw%}].use" value="work">
-        <div class="col">
-            <label>{{"Type"|i18n}} :</label>
-            <select name="telecom[{%raw%}{{indx}}{%endraw%}].system" style="min-width: 150px;" onchange="checkEmailTypeValidation(this)">
-                {% for item in system.items %}
-	            {% if item.value !== "email" %}
-                <option value="{{item.value}}" {{telecom_system_selected}}>{{item.label}}</option>
-	            {% endif %}
-                {% endfor %}
-            </select>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <label>{{"Value"|i18n}} :</label>
-            <input name="telecom[{%raw%}{{indx}}{%endraw%}].value" required type="{%raw%}{{telecom_email_type_default}}{%endraw%}" class="text" />
-        </div>
-        <div>
-            <span class="spacer"></span>
-            <button type="button" class="red small" onclick="deleteTelecom(this)">{{"Delete"|i18n}}</button>
-        </div>
-    </div>
+	<div class="row">
+		<input type="hidden" name="telecom[{%raw%}{{indx}}{%endraw%}].use" value="work">
+		
+		<div class="col">
+			<label>{{"Type"|i18n}} :</label>
+			<select name="telecom[{%raw%}{{indx}}{%endraw%}].system" style="min-width: 150px;"
+			        onchange="checkEmailTypeValidation(this)">
+				{% for item in system.items %}
+				{% if item.value !== "email" %}
+				<option value="{{item.value}}" {{telecom_system_selected}}>{{item.label}}</option>
+				{% endif %}
+				{% endfor %}
+			</select>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<label>{{"Value"|i18n}} :</label>
+			<input name="telecom[{%raw%}{{indx}}{%endraw%}].value" required
+			       type="{%raw%}{{telecom_email_type_default}}{%endraw%}" class="text"/>
+		</div>
+		<div>
+			<span class="spacer"></span>
+			<button type="button" class="red small" onclick="deleteTelecom(this)">{{"Delete"|i18n}}</button>
+		</div>
+	</div>
 </script>
 <div class="hidden" id="unsave">{{"You have unsaved data"|i18n}}</div>
 <div class="hidden" id="changelang">{{"Are you sure to cancel your changes ?"|i18n}}</div>
 
-    <div class="mainContainer">
-        <form name="directoryForm" onsubmit="checkForm(); return false;" autocomplete="off">
-            <zdk-panel heading="{{'Identity' |i18n}}" collapsable="false" collapsed="false">
-                <input type="hidden" name="_id" value="{{professional._id.toString()}}">
-	            {% if !professional._id %}
-                <div class="row">
-                    <label {{organization_disabled}}>{{"Organization"|i18n}}:</label>
-                    <input type="checkbox" name="organization" onchange="checkOrganization()" {% if professional && professional.organization===true %}checked{% endif %} />
-                </div>
-	            {% endif %}
-	            {% if professional._id && professional.organization %}
-	            <div class="row">
-		            <label></label>
-		            {{"Organization"|i18n}}
-		            <input type="hidden"  name="organization" value="true">
-	            </div>
-	            {% endif %}
-                <div class="row">
-                    <label class="mandatory">{{"Name"|i18n}} :</label>
-                    <input type="text" name="name.family" placeholder="Mandatory field" required value="{{professional.name.family}}" />
-                </div>
-	            {% if professional._id && professional.organization %}
-	            <div class="row">
-		            <label class="mandatory">{{"Organization type"|i18n}} :</label>
-		            <select name="organizationType" required>
-			            {% for item in organizationType.items %}
-			            <option value="{{item.value}}" {% if professional.organizationType == item.value %}selected{% endif %}>{{item.label}}</option>
-			            {% endfor %}
-		            </select>
-	            </div>
-	            {% endif %}
-                {% if !professional._id || !professional.organization %}
-                <div id="nonOrgContainer">
-                    <div class="row">
-                        <label class="mandatory">{{"Given"|i18n}} :</label>
-                        <input type="text" name="name.given" placeholder="Mandatory field" required value="{{professional.name.given}}" />
-                    </div>
-                    <div class="row">
-                        <label class="mandatory">{{"Civility"|i18n}} :</label>
-                        <input type="radio" name="gender" value="M" required {% if professional.gender == 'M' %}checked{% endif %} />{{"Man"|i18n}}
-                        <input type="radio" name="gender" value="F" {% if professional.gender == 'F' %}checked{% endif %} />{{"Woman"|i18n}}
-                    </div>
-                    <div class="row">
-                        <label class="mandatory">{{ "Job" | i18n }} :</label>
-                        <select name="job" required>
-                            {% for item in job.items %}
-                            <option value="{% if item.value!='NONE' %}{{item.value}}{% endif %}" {% if  professional.job == item.value %}selected{% endif %}>{{item.label}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-	            {% endif %}
-	            {% if !professional._id %}
-	            <div id="OrgContainer" class="hidden">
-		            <div class="row">
-			            <label class="mandatory">{{"Organization type"|i18n}} :</label>
-			            <select name="organizationType" required>
-				            {% for item in organizationType.items %}
-				            <option value="{% if item.value!='NONE' %}{{item.value}}{% endif %}" {% if professional.organizationType == item.value %}selected{% endif %}>{{item.label}}</option>
-				            {% endfor %}
-			            </select>
-		            </div>
-		        </div>
-	            {% endif %}
-                <div class="row">
-                    <label class="mandatory">{{ "Role" | i18n }}:</label>
-                    <select name="role" required>
-                        {% for item in role.items %}
-                        <option value="{% if item.value!='NONE' %}{{item.value}}{% endif %}" {% if professional.role == item.value %}selected{% endif %}>{{item.label}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="row">
-                    <label class="mandatory">{{ "Language" | i18n }} :</label>
-                    <select name="communication">
-                        {% for item in communication.items %}
-                        <option value="{{item.value}}" {% if professional.communication %}{% if professional.communication == item.value %}selected{% endif %}{% else %}{% if lang == item.value %}selected{% endif %}{% endif %}>{{item.label}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="row">
-                    <label>{{ "Perimeter" | i18n }}:</label>
-                    <select name="perimeter">
-                        {% for item in perimeter.items %}
-                        <option value="{{item.value}}" {% if professional.perimeter == item.value %}selected{% endif %}>{{item.label}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </zdk-panel>
-            <zdk-panel heading="{{'Telecom' |i18n}}" collapsable="false" collapsed="false">
-	            <span style="color:tomato">{{"An email address is mandatory"|i18n}}</span>
-                {% if !professional.telecom %}
-                <div class="telecomContainer">
-                    <div class="row" style="height:35px">
-                        <input type="hidden" name="telecom[0].use" value="work">
-                        <div class="col">
-                            <label>{{"Type"|i18n}} :</label>
-	                        <input type="hidden"  name="telecom[0].system" value="email">
-	                        <label>{{"Email"|i18n}}</label>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <label class="mandatory">{{"Value"|i18n}} :</label>
-                            <input name="telecom[0].value" value="" type="email" required />
-                        </div>
-                        <div>
-                            <span class="spacer"></span>
-                        </div>
-                    </div>
-                </div>
-                {% else %}
-                {% for entry in professional.telecom %}
-	                <div class="telecomContainer">
-	                    <div class="row">
-	                        <input type="hidden" name="telecom[{{loop.index}}].use" value="work">
-	                        <div class="col">
-	                            <label>{{"Type"|i18n}} :</label>
-		                        <input type="hidden"  name="telecom[{{loop.index}}].use" value="work">
-		                        {% if entry.value %}
-			                        <label>{{entry.system|i18n}}</label>
-			                        <input type="hidden"  name="telecom[{{loop.index}}].system" value="{{entry.system}}">
-		                        {% else %}
-	                            <select name="telecom[{{loop.index}}].system" style="min-width: 150px;" onchange="checkEmailTypeValidation(this)" required>
-	                                {% for item in system.items %}
-		                            {% if item.value !== "email" %}
-	                                <option value="{{item.value}}" {% if entry.system==item.value %}selected{% endif %}>{{item.label}}</option>
-	                                {% endif %}
-		                            {% endfor %}
-	                            </select>
-		                        {% endif %}
-	                        </div>
-	                    </div>
-	                    <div class="row">
-	                        <div class="col">
-	                            <label>{{"Value"|i18n}} :</label>
-	                            <input name="telecom[{{loop.index}}].value" value="{{entry.value}}" required type="{% if entry.system=='email' %}email{% else %}text{% endif %}" />
-	                        </div>
-	                        <div>
-	                            <span class="spacer"></span>
-		                        {% if entry.system !== 'email' %}
-	                            <button type="button" class="red small" onclick="deleteTelecom(this)">{{"Delete"|i18n}}</button>
-		                        {% endif %}
-	                        </div>
-	                    </div>
-	                </div>
-	                {% endfor %}
-                {% endif %}
-                <div id="addTelecomBtn" class="row control">
-                    <span class="spacer"></span>
-                    <button class="blue small" type="button" onclick="addTelecom()">{{"Add"|i18n}}</button>
-                </div>
-            </zdk-panel>
-            <zdk-panel heading="{{'Address' |i18n}}" collapsable="false" collapsed="false">
-                <input type="hidden" name="address.use" value="work">
-                <div class="row">
-                    <label>{{"Street"|i18n}} :</label>
-                    <!-- Line break is needed to place each line -->
+<div class="mainContainer">
+	<form name="directoryForm" onsubmit="checkForm(); return false;" autocomplete="off">
+		<zdk-panel heading="{{'Identity' |i18n}}" collapsable="false" collapsed="false">
+			<input type="hidden" name="_id" value="{{professional._id.toString()}}">
+			{% if !professional._id %}
+			<div class="row">
+				<label {{organization_disabled}}>{{"Organization"|i18n}}:</label>
+				<input type="checkbox" name="organization" onchange="checkOrganization()" {% if professional &&
+				       professional.organization===true %}checked{% endif %}/>
+			</div>
+			{% endif %}
+			{% if professional._id && professional.organization %}
+			<div class="row">
+				<label></label>
+				{{"Organization"|i18n}}
+				<input type="hidden" name="organization" value="true">
+			</div>
+			{% endif %}
+			<div class="row">
+				<label class="mandatory">{{"Name"|i18n}} :</label>
+				<input type="text" name="name.family" placeholder="Mandatory field" required
+				       value="{{professional.name.family}}"/>
+			</div>
+			{% if professional._id && professional.organization %}
+			<div class="row">
+				<label class="mandatory">{{"Organization type"|i18n}} :</label>
+				<select name="organizationType" required>
+					{% for item in organizationType.items %}
+					<option value="{{item.value}}" {% if professional.organizationType== item.value %}selected{% endif
+					        %}>{{item.label}}
+					</option>
+					{% endfor %}
+				</select>
+			</div>
+			{% endif %}
+			{% if !professional._id || !professional.organization %}
+			<div id="nonOrgContainer">
+				<div class="row">
+					<label class="mandatory">{{"Given"|i18n}} :</label>
+					<input type="text" name="name.given" placeholder="Mandatory field" required
+					       value="{{professional.name.given}}"/>
+				</div>
+				<div class="row">
+					<label class="mandatory">{{"Civility"|i18n}} :</label>
+					<input type="radio" name="gender" value="M" required {% if professional.gender=='M' %}checked{%
+					endif %} />{{"Man"|i18n}}
+					<input type="radio" name="gender" value="F" {% if professional.gender=='F' %}checked{% endif %}
+					/>{{"Woman"|i18n}}
+				</div>
+				<div class="row">
+					<label class="mandatory">{{ "Job" | i18n }} :</label>
+					<select name="job" required>
+						{% for item in job.items %}
+						<option value="{% if item.value!='NONE' %}{{item.value}}{% endif %}" {% if professional.job==item.value %}selected{% endif %}>{{item.label}}
+						</option>
+						{% endfor %}
+					</select>
+				</div>
+			</div>
+			{% endif %}
+			{% if !professional._id %}
+			<div id="OrgContainer" class="hidden">
+				<div class="row">
+					<label class="mandatory">{{"Organization type"|i18n}} :</label>
+					<select name="organizationType" required>
+						{% for item in organizationType.items %}
+						<option value="{% if item.value!='NONE' %}{{item.value}}{% endif %}" {% if
+						        professional.organizationType== item.value %}selected{% endif %}>{{item.label}}
+						</option>
+						{% endfor %}
+					</select>
+				</div>
+			</div>
+			{% endif %}
+			<div class="row">
+				<label class="mandatory">{{ "Role" | i18n }}:</label>
+				<select name="role" required>
+					{% for item in role.items %}
+					<option value="{% if item.value!='NONE' %}{{item.value}}{% endif %}" {% if professional.role==
+					        item.value %}selected{% endif %}>{{item.label}}
+					</option>
+					{% endfor %}
+				</select>
+			</div>
+			<div class="row">
+				<label class="mandatory">{{ "Language" | i18n }} :</label>
+				<select name="communication">
+					{% for item in communication.items %}
+					<option value="{{item.value}}" {% if professional.communication %}{% if professional.communication==
+					        item.value %}selected{% endif %}{% else %}{% if lang== item.value %}selected{% endif %}{%
+					        endif %}>{{item.label}}
+					</option>
+					{% endfor %}
+				</select>
+			</div>
+			<div class="row">
+				<label>{{ "Perimeter" | i18n }}:</label>
+				<select name="perimeter">
+					{% for item in perimeter.items %}
+					<option value="{{item.value}}" {% if professional.perimeter== item.value %}selected{% endif %}>
+						{{item.label}}
+					</option>
+					{% endfor %}
+				</select>
+			</div>
+		</zdk-panel>
+		<zdk-panel heading="{{'Telecom' |i18n}}" collapsable="false" collapsed="false">
+			<span style="color:tomato">{{"An email address is mandatory"|i18n}}</span>
+			{% if !professional.telecom %}
+			<div class="telecomContainer">
+				<div class="row" style="height:35px">
+					<input type="hidden" name="telecom[0].use" value="work">
+					
+					<div class="col">
+						<label>{{"Type"|i18n}} :</label>
+						<input type="hidden" name="telecom[0].system" value="email">
+						<label>{{"Email"|i18n}}</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						<label class="mandatory">{{"Value"|i18n}} :</label>
+						<input name="telecom[0].value" value="" type="email" required/>
+					</div>
+					<div>
+						<span class="spacer"></span>
+					</div>
+				</div>
+			</div>
+			{% else %}
+			{% for entry in professional.telecom %}
+			<div class="telecomContainer">
+				<div class="row">
+					<input type="hidden" name="telecom[{{loop.index}}].use" value="work">
+					
+					<div class="col">
+						<label>{{"Type"|i18n}} :</label>
+						<input type="hidden" name="telecom[{{loop.index}}].use" value="work">
+						{% if entry.value %}
+						<label>{{entry.system|i18n}}</label>
+						<input type="hidden" name="telecom[{{loop.index}}].system" value="{{entry.system}}">
+						{% else %}
+						<select name="telecom[{{loop.index}}].system" style="min-width: 150px;"
+						        onchange="checkEmailTypeValidation(this)" required>
+							{% for item in system.items %}
+							{% if item.value !== "email" %}
+							<option value="{{item.value}}" {% if entry.system==item.value %}selected{% endif %}>
+								{{item.label}}
+							</option>
+							{% endif %}
+							{% endfor %}
+						</select>
+						{% endif %}
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						<label>{{"Value"|i18n}} :</label>
+						<input name="telecom[{{loop.index}}].value" value="{{entry.value}}" required
+						       type="{% if entry.system=='email' %}email{% else %}text{% endif %}"/>
+					</div>
+					<div>
+						<span class="spacer"></span>
+						{% if entry.system !== 'email' %}
+						<button type="button" class="red small" onclick="deleteTelecom(this)">{{"Delete"|i18n}}</button>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+			{% endif %}
+			<div id="addTelecomBtn" class="row control">
+				<span class="spacer"></span>
+				<button class="blue small" type="button" onclick="addTelecom()">{{"Add"|i18n}}</button>
+			</div>
+		</zdk-panel>
+		<zdk-panel heading="{{'Address' |i18n}}" collapsable="false" collapsed="false">
+			<input type="hidden" name="address.use" value="work">
+			
+			<div class="row">
+				<label>{{"Street"|i18n}} :</label>
+				<!-- Line break is needed to place each line -->
                     <textarea name="address.line">{% for line in professional.address.line %}{{line}}
 {% endfor %}</textarea>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <label>{{ "Zip code"|i18n }}</label>
-                        <input type="text" name="address.zip" value="{{professional.address.zip}}" />
-                    </div>
-                    <div class="col">
-                        <label style="width:80px">{{ "City"|i18n }}</label>
-                        <input type="text" name="address.city" value="{{professional.address.city}}" />
-	                    <input type="hidden" name="address.country" value="{{professional.address.country || country}}" />
-                    </div>
-                </div>
-            </zdk-panel>
-            <zdk-panel heading="{{'Account' |i18n}}" collapsable="false" collapsed="false">
-	            {% if !IDS %}
-	            <input type="hidden" name="account.IDS" value="false">
-                <div class="row">
-                    <label>{{"Login"|i18n}} :</label>
-                    <input type="text" name="account.login" value="{{professional.account.login}}" />
-                </div>
-	            {% else %}
-	            <input type="hidden" name="account.IDS" value="true">
-	            <div class="row">
-		            <label>{{"Login"|i18n}} :</label>
-		            <span>On IDS, the identifier is the mail address</span>
-	            </div>
-	            {% endif %}
-                <div class="row">
-                    <label>{{"Change password"|i18n}} :</label>
-                    <input type="password" name="account.password" class="account-password" onkeyup="checkPassword(this)" />
-                    <input type="hidden" name="account.hashPassword" value="{{professional.account.password}}">
-                </div>
-                <div class="row">
-                    <label>{{"Confirm password"}} :</label>
-                    <input type="password" name="checkAccountPassword" class="account-check-password" onkeyup="checkPassword(this)" />
-                </div>
-                <div class="row tip">
-                    {{"Info"|i18n}}: {{"The password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters" | i18n }}
-                </div>
-                <div class="hidden" id="has-password">{{ professional.hasPassword }}</div>
-	            
-                <div class="row">
-                    <label>{{ "Active"|i18n }}:</label>
-                    <input type="checkbox" name="active" class="account-activation" {% if (professional && professional.active===true) || !professional._id %}checked{% endif %}/>
-                </div>
-	            {% if professional.hasPassword  && IDS %}
-	            <div class="row">
-		            <label>{{ "Withdrawal code"|i18n }} : </label>
-		            <span style="font-weight:bold" id="OTP">{% if professional.account.OTP %}{{professional.account.OTP }}{% endif %}</span>
-	            </div>
-	            <div class="row">
-		            <span class="spacer"></span>
-		            <button type="button" class="red {% if !professional.account.OTP %}hidden{% endif %}" id="revokeCert">Revoke certificate</button>
-		            <button type="button" class="blue {% if professional.account.OTP %}hidden{% endif %}" id="createCert">Generate certificate</button>
-	            </div>
-	            {% endif %}
-                
-            </zdk-panel>
-            <br />
-	        {% if professional.nb %}
-	        {% if lang=="es" %}
-	        <div class="row"><span class="spacer"></span><div id="hasBeneficiary"><b>{{ "Nota"|i18n }} :</b> Este profesional ha afectado a {{professional.nb}}  beneficiarios</div></div>
-	        {% else %}
-	        <div class="row"><span class="spacer"></span><div id="hasBeneficiary"><b>{{ "Nota"|i18n }} :</b> {{"this professional has"|i18n}} {{professional.nb}} {% if professional.nb == 1 %}{{"beneficiary"|i18n}}{% else %}{{"beneficiaries"|i18n}}{% endif %} {{"affected"|i18n}}</div></div>
-	        {% endif %}
-            <div class="row">
-                <span class="spacer"></span>
-	            <div class="buttonContainer">
-	                {% if professional._id && sessionID.toString() !== professional._id.toString() %}
-	                <button id="deleteItem" class="red" type="button" onclick="confirmDelete()">{{"Delete"|i18n}}</button>
-	                {% endif %}
-	                <button type="button" class="blue" onclick="modified=false; window.history.back()">{{"Cancel"|i18n}}</button>
-	                {% if professional._id %}
-	                <button id="saveItemBtn" class="green">{{"Save"|i18n}}</button>
-	                {% else %}
-	                <button id="createItemBtn" class="green">{{"Create"|i18n}}</button>
-	                {% endif %}
-	            </div>
-            </div>
-        </form>
-    </div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<label>{{ "Zip code"|i18n }}</label>
+					<input type="text" name="address.zip" value="{{professional.address.zip}}"/>
+				</div>
+				<div class="col">
+					<label style="width:80px">{{ "City"|i18n }}</label>
+					<input type="text" name="address.city" value="{{professional.address.city}}"/>
+					<input type="hidden" name="address.country" value="{{professional.address.country || country}}"/>
+				</div>
+			</div>
+		</zdk-panel>
+		<zdk-panel heading="{{'Account' |i18n}}" collapsable="false" collapsed="false">
+			{% if !IDS %}
+			<input type="hidden" name="account.IDS" value="false">
+			
+			<div class="row">
+				<label>{{"Login"|i18n}} :</label>
+				<input type="text" name="account.login" value="{{professional.account.login}}"/>
+			</div>
+			{% else %}
+			<input type="hidden" name="account.IDS" value="true">
+			
+			<div class="row">
+				<label>{{"Login"|i18n}} :</label>
+				<span>On IDS, the identifier is the mail address</span>
+			</div>
+			{% endif %}
+			<div class="row">
+				<label>{{"Change password"|i18n}} :</label>
+				<input type="password" name="account.password" class="account-password" onkeyup="checkPassword(this)"/>
+				<input type="hidden" name="account.hashPassword" value="{{professional.account.password}}">
+			</div>
+			<div class="row">
+				<label>{{"Confirm password"}} :</label>
+				<input type="password" name="checkAccountPassword" class="account-check-password"
+				       onkeyup="checkPassword(this)"/>
+			</div>
+			<div class="row tip">
+				{{"Info"|i18n}}: {{"The password must contain at least 1 uppercase, 1 lowercase, 1 special character and
+				have at least 8 characters" | i18n }}
+			</div>
+			<div class="hidden" id="has-password">{{ professional.hasPassword }}</div>
+			
+			<div class="row">
+				<label>{{ "Active"|i18n }}:</label>
+				<input type="checkbox" name="active" class="account-activation" {% if (professional &&
+				       professional.active===true) || !professional._id %}checked{% endif %}/>
+			</div>
+			{% if professional.hasPassword && IDS %}
+			<div class="row">
+				<label>{{ "Withdrawal code"|i18n }} : </label>
+				<span style="font-weight:bold" id="OTP">{% if professional.account.OTP %}{{professional.account.OTP }}{% endif %}</span>
+			</div>
+			<div class="row">
+				<span class="spacer"></span>
+				<button type="button" class="red {% if !professional.account.OTP %}hidden{% endif %}" id="revokeCert">
+					Revoke certificate
+				</button>
+				<button type="button" class="blue {% if professional.account.OTP %}hidden{% endif %}" id="createCert">
+					Generate certificate
+				</button>
+			</div>
+			{% endif %}
+		
+		</zdk-panel>
+		<br/>
+		{% if professional && professional.nb %}
+			{% if lang=="es" %}
+				<div class="row"><span class="spacer"></span>   
+					<div id="hasBeneficiary"><b>{{ "Nota"|i18n }} :</b> Este profesional ha afectado a {{professional.nb}}
+						beneficiarios
+					</div>
+				</div>
+			{% else %}
+				<div class="row"><span class="spacer"></span>
+					<div id="hasBeneficiary"><b>{{ "Nota"|i18n }} :</b> {{"this professional has"|i18n}} {{professional.nb}} {%
+						if professional.nb == 1 %}{{"beneficiary"|i18n}}{% else %}{{"beneficiaries"|i18n}}{% endif %}
+						{{"affected"|i18n}}
+					</div>
+				</div>
+			{% endif %}
+		{% endif %}
+		<div class="row">
+			<span class="spacer"></span>
+			
+			<div class="buttonContainer">
+				{% if professional._id && sessionID.toString() !== professional._id.toString() %}
+				<button id="deleteItem" class="red" type="button" onclick="confirmDelete()">{{"Delete"|i18n}}</button>
+				{% endif %}
+				<button type="button" class="blue" onclick="modified=false; window.history.back()">{{"Cancel"|i18n}}</button>
+				{% if professional._id %}
+				<button id="saveItemBtn" class="green">{{"Save"|i18n}}</button>
+				{% else %}
+				<button id="createItemBtn" class="green">{{"Create"|i18n}}</button>
+				{% endif %}
+			</div>
+		</div>
+	</form>
+</div>
 
 {% include 'modal.htm' %}
 
