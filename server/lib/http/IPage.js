@@ -880,7 +880,6 @@ function IPage() {
 	 */
 	this.createQuestionnaire = function(req, res, next) {
 		logger.trace("createQuestionnaire");
-		var html;
 
 		init(req);
 		var admin = ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1 ? true : false;
@@ -912,6 +911,13 @@ function IPage() {
 				}
 				data.lang = lang;
 				render('/static/tpl/questionnaireCreation.htm' , data, res, next);
+			})
+			.catch( function(err) {
+				logger.error(err);
+				console.log( err.stack );
+				res.write(err);
+				res.end();
+				next();
 			});
 	};
 
@@ -1873,6 +1879,7 @@ function IPage() {
 			swig.renderFile(DOCUMENTROOT + tpl, data, function (err, output) {
 				if (err) {
 					console.log('error', err);
+					console.log( err.stack );
 					console.log('output', output);
 					res.write(err);
 					res.end();
