@@ -222,7 +222,7 @@
   "Data curves": "Datos Curve",
   "General physiological data": "Datos fisiológicos general",
   "HDIM Data": "Datos HDIM",
-  "Symptom assessments": "Evaluación de symtômes",
+  "Symptom assessments": "evaluación de los síntomas",
   "Every": "Cada",
   "months": "meses",
   "Everyweek": "Cada",
@@ -363,5 +363,7 @@
   "Symptoms assessments": "Síntomas evaluaciones",
   "Identity": "Identidad",
   "Account": "Cuenta",
-  "Distance travelled": "Distancia recorrida"
+  "Distance travelled": "Distancia recorrida",
+  "Copy datas from":"Copiar datas de",
+  "Create questionnaire":"Crear un cuestionario"
 }

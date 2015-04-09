@@ -86,7 +86,7 @@
 	{% if beneficiary.active && rights.write %}
 	<div class="row control right">
 		<span class="spacer"></span>
-		<label class="spacing-around">Copy datas from</label>
+		<label class="spacing-around">{{"Copy datas from"|i18n}}</label>
 		<select onchange="copySelection('{% raw %}{{ref}}{% endraw %}', this)">
 			<option></option>
 			{% raw %}
