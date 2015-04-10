@@ -287,7 +287,7 @@
 				<input type="hidden" name="account.hashPassword" value="{{professional.account.password}}">
 			</div>
 			<div class="row">
-				<label>{{"Confirm password"}} :</label>
+				<label>{{"Confirm password"|i18n}} :</label>
 				<input type="password" name="checkAccountPassword" class="account-check-password"
 				       onkeyup="checkPassword(this)"/>
 			</div>
@@ -310,10 +310,10 @@
 			<div class="row">
 				<span class="spacer"></span>
 				<button type="button" class="red {% if !professional.account.OTP %}hidden{% endif %}" id="revokeCert">
-					Revoke certificate
+					{{"Revoke certificate"|i18n}}
 				</button>
 				<button type="button" class="blue {% if professional.account.OTP %}hidden{% endif %}" id="createCert">
-					Generate certificate
+					{{"Generate certificate"|i18n}}
 				</button>
 			</div>
 			{% endif %}

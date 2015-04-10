@@ -1,3 +1,21 @@
+__v0.0.32__
+
+  - \#201 [Beneficiary/Bene_select][physioDOM-v0.0.31] sort by city
+  - Fix missing translate label
+  
+> Nota : to apply the bugfix for \#201 execute the following command on mongo :
+>
+>    cursor = db.beneficiaries.find(); 
+>    while( cursor.hasNext() ) { 
+>        var tmp = cursor.next(); 
+>        if( tmp.address ) { 
+>            tmp.address.forEach( function(address) { 
+>                address.city = address.city.toUpperCase(); 
+>            });
+>        }
+>        db.beneficiaries.save( tmp ); 
+>    }
+
 __v0.0.31__
   
   - Bug 300 & 299 [Message to Home][v029]

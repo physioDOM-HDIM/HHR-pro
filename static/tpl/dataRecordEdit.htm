@@ -194,7 +194,7 @@
 			</div>
 			{% if cat !== 'questionnaire' %}
 			<div class="row">
-				<div class="col" style="max-width:200px"><span class="spacer"></span><span>Comment : </span></div>
+				<div class="col" style="max-width:200px"><span class="spacer"></span><span>{{"Comment"|i18n}} : </span></div>
 				<div class="col">
 					<input type="text" name="items[{{item._id.toString()}}].comment" value="{{ item.comment }}">
 				</div>
@@ -268,7 +268,7 @@
 	{% raw %}{{/questionnaire}}{% endraw %}
 	{% raw %}{{^questionnaire}}{% endraw %}
 		<div class="row">
-			<div class="col" style="max-width:200px"><span class="spacer"></span><span>Comment : </span></div>
+			<div class="col" style="max-width:200px"><span class="spacer"></span><span>{{"Comment"|i18n}} : </span></div>
 			<div class="col">
 				<input type="text" name="items[{% raw %}{{idx}}{% endraw %}].comment">
 			</div>

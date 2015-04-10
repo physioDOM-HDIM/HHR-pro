@@ -47,18 +47,22 @@
 	<ul>
 	{% for q in questionnaires.items %}
 		<li>
+			{% if roleClass === "ADMIN" %}
 			<a href="/questionnaires/edit/{{q.name}}">
-				<button class="small blue">{{"Edit"|i18n}} (dev only)</button>
+				<button class="small blue">{{"Edit"|i18n}}</button>
 			</a>
+			{% endif %}
 			<a class="link" href="/questionnaires/preview/{{q.name}}">{{q.label[lang] || q.name }} </a>
 		</li>
 	{% endfor %}
 	</ul>
+	<!--
 	<div class="row control">
 		<span class="spacer"></span>
 		<a href="/questionnaires/create">
-			<button class="blue">{{"Create questionnaire"|i18n}} (dev only)</button>
+			<button class="blue">{{"Create questionnaire"|i18n}}</button>
 		</a>
 	</div>
+	-->
 </div>
 {% endblock %}

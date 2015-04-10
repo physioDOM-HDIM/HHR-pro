@@ -284,6 +284,12 @@ function Beneficiary( ) {
 										that.name.given = capitalize(that.name.given);
 									}
 									break;
+								case "address":
+									that.address = updatedEntry.address;
+									that.address.forEach( function(address) {
+										address.city = address.city.toUpperCase();
+									});
+									break;
 								default:
 									that[key] = newEntry[key];
 							}
@@ -399,6 +405,12 @@ function Beneficiary( ) {
 									break;
 								case "account":
 									accountData = updatedEntry.account;
+									break;
+								case "address":
+									that.address = updatedEntry.address;
+									that.address.forEach( function(address) {
+										address.city = address.city.toUpperCase();
+									});
 									break;
 								default:
 									that[key] = updatedEntry[key];
