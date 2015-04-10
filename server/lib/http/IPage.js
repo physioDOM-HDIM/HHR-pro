@@ -169,6 +169,7 @@ function IPage() {
 				// logger.debug("menu",req.session.role, menu);
 				var data = {
 					admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1 ? true : false,
+					roleClass: req.session.roleClass,
 					idsUser: req.headers["ids-user"] || "",
 					items: menu
 				};
@@ -802,6 +803,7 @@ function IPage() {
 		var admin = ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1 ? true : false;
 		var data = {
 			admin: admin,
+			roleClass: req.session.roleClass,
 			rights: { read: admin, write:admin, url:"/settings/lists" }
 		};
 
@@ -850,6 +852,7 @@ function IPage() {
 		var admin = ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1 ? true : false;
 		var data = {
 			admin: admin,
+			roleClass: req.session.roleClass,
 			rights: { read: admin, write:admin, url:"/questionnaires" }
 		};
 
@@ -1722,12 +1725,12 @@ function IPage() {
 		var admin = ['COORD', 'ADMIN'].indexOf(req.session.roleClass) !== -1 ? true : false;
 		var data = {
 			admin: admin,
+			roleClass : req.session.roleClass,
 			rights: { read:admin, write:admin }
 		};
 
 		physioDOM.Lists.getList('role')
 		.then(function(list) {
-				console.log(list.items );
 				data.roles = list.items;
 				return new Menu().getAll();
 			})

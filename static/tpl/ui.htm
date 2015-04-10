@@ -214,8 +214,9 @@
 		{% if admin %}
 		<ul class="admin tree">
 			<li class="menuitem" data-link="/settings/lists">{{"Lists management"|i18n}}</li>
+			{% if roleClass === "ADMIN" %}
 			<li class="menuitem" data-link="/questionnaires">{{"Questionnaires"|i18n}}</li>
-			<!-- <li class="menuitem"><a href="/services/health/create" target="main">Healthcare: add a basic health service</a></li> -->
+			{% endif %}
 			<li class="menuitem" data-link="/admin/rights">{{"Rights"|i18n}}</li>
 		</ul>
 		{% endif %}
