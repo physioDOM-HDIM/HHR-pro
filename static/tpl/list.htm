@@ -105,7 +105,7 @@
 			{% raw %}{{/hasDietChoice}}{% endraw %}
 
 			{% raw %}{{#service}}{% endraw %}
-			<div class="row">{{"Provider roles"|i18n}} {% if roleClass==="ADMIN" %}<button type="button" class="small blue" style="margin-left:20px" onclick="editRole({% raw %}{{idx}},{{roles}}{{#new}},true{{/new}}{% endraw %})" >Edit</button>{% endif %}</div>
+			<div class="row">{{"Provider roles"|i18n}} {% if roleClass==="ADMIN" %}<button type="button" class="small blue" style="margin-left:20px" onclick="editRole({% raw %}{{idx}},{{roles}}{{#new}},true{{/new}}{% endraw %})" >{{"Edit"|i18n}}</button>{% endif %}</div>
 			<div class="row" style="padding-left:50px">
 				{% raw %}{{roleTypeCode}}{% endraw %}
 			</div>
