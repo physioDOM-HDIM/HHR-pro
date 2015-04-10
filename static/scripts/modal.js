@@ -470,7 +470,7 @@ Modal.prototype.closeModal = function(modalName) {
 
     } else {
 
-        console.log("closeModal", arguments);
+        // console.log("closeModal", arguments);
         document.querySelector("#statusModal").hide();
 
         var elt = document.querySelector("#statusModal"),
@@ -504,7 +504,7 @@ Modal.prototype.showModal = function(modalObj, modalName) {
 
     } else {
 
-        console.log("showModal", arguments);
+        // console.log("showModal", arguments);
 
         //to lose focus from save/cancel..etc buttons
         
