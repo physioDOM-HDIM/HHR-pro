@@ -144,9 +144,11 @@
 				<label class="mandatory">{{ "Role" | i18n }}:</label>
 				<select name="role" required>
 					{% for item in role.items %}
+					{% if item.roleClass !== "PAT" %}
 					<option value="{% if item.value!='NONE' %}{{item.value}}{% endif %}" {% if professional.role==
 					        item.value %}selected{% endif %}>{{item.label}}
 					</option>
+					{% endif %}
 					{% endfor %}
 				</select>
 			</div>

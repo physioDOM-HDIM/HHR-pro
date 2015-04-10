@@ -110,7 +110,13 @@ function List() {
 						} else {
 							label = listItem.label[lang] || listItem.label.en;
 						}
-						options.items.push({value: listItem.ref, label: label  });
+						var tmp = { value: listItem.ref, label: label };
+						for( var prop in listItem ) {
+							if( ["ref","label"].indexOf(prop) === -1 ) {
+								tmp[prop] = listItem[prop];
+							}
+						}
+						options.items.push( tmp );
 					}
 					if (--count === 0) {
 						// logger.debug("-> Lang ", options );
