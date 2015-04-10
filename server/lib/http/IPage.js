@@ -1752,7 +1752,6 @@ function IPage() {
 	
 	this.agenda = function(req, res, next) {
 		logger.trace("agenda");
-		var html;
 
 		init(req);
 		var data = {
