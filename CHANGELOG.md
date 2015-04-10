@@ -1,7 +1,9 @@
 __v0.0.32__
 
-  - \#201 [Beneficiary/Bene_select][physioDOM-v0.0.31] sort by city
-  - Fix missing translate label
+  - \#201 : [Beneficiary/Bene_select][physioDOM-v0.0.31] sort by city
+  - \#207 : Fix missing translate label
+  - \#204 : [Beneficiary/Bene_overview][physioDOM-v0.0.31] Init
+  - \#205 : Bug 214 - [Right][PhysioDOM-v0.0.8] droit manquant et niveau d'access
   
 > Nota : to apply the bugfix for \#201 execute the following command on mongo :
 >
