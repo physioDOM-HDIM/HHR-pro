@@ -163,7 +163,7 @@ function Queue ( beneficiaryID ) {
 					return beneficiaries.getHHR( that.subject );
 				})
 				.then(function (beneficiary) {
-					if( !beneficiary.biomasterStatus ) {
+					if( beneficiary.biomasterStatus === "pending" && msg.status === true ) {
 						init = true;
 					}
 					beneficiary.biomasterStatus = msg.status;
@@ -200,7 +200,7 @@ function Queue ( beneficiaryID ) {
 							})
 							.then( function() {
 								logger.info("All data sent for ", beneficiary._id );
-								resolve()
+								resolve();
 							});
 					} else {
 						logger.info("already initialized");
