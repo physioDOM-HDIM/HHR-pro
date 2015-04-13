@@ -32,7 +32,7 @@ window.addEventListener('DOMContentLoaded', function() {
         })
         .then( function(response) {
             list = JSON.parse(response);
-            console.log(list);
+            // console.log(list);
             showLang();
         });
 	
@@ -85,7 +85,7 @@ function showLang() {
 					case "roleClass":
 						obj.roleClass = [];
 						roleClass.items.forEach( function( roleClassItem ) {
-							option = { value: roleClassItem.ref, label: roleClassItem.label[lang] || roleClassItem.label.en  };
+							option = { value: roleClassItem.ref, label: roleClassItem.label[lang] || roleClassItem.label.en || ""  };
 							if( item.roleClass === roleClassItem.ref) {
 								option.selected = true;
 							} else {
@@ -324,14 +324,19 @@ function save() {
 	if ( list.defaultValue === "null" ) {
 		list.defaultValue = null;
 	}
+	list.editable = document.getElementById("editable").checked;
     newItems = [];
 
     Utils.promiseXHR("PUT", "/api/lists/" + list.name, 200, JSON.stringify(list)).then(function(response) {
 		modified = false;
-        new Modal('updateSuccess', showLang);
+		if( list.editable ) {
+			new Modal('updateSuccess', showLang);
+		} else {
+			new Modal('updateSuccess', function() { window.location.reload(); } );
+		}
     }, function(error) {
         new Modal('errorOccured', showLang);
-        console.log("updateItem - error: ", error);
+        // console.log("updateItem - error: ", error);
     });
 }
 
@@ -343,7 +348,7 @@ function deleteItem(obj) {
 }
 
 function valueExists(formName) {
-    console.log("valueExists", arguments);
+    // console.log("valueExists", arguments);
     var res = false,
         values = [],
         items = document.querySelectorAll("form[name='" + formName + "'] input[name*='].ref']");
@@ -359,7 +364,7 @@ function valueExists(formName) {
 }
 
 function refreshDefaultValue(formName) {
-    console.log("refreshDefaultValue", arguments);
+    // console.log("refreshDefaultValue", arguments);
     var select = document.querySelector("form[name='" + formName + "'] select[name='defaultValue']"),
         selectedItemValue = select.options[select.selectedIndex].value;
     //Don't delete the first item ('no default value')
@@ -382,7 +387,7 @@ function refreshDefaultValue(formName) {
 }
 
 function addItem(node) {
-    console.log("addItem");
+    // console.log("addItem");
     var cn = "hidden",
         isMeasurableItem = false,
         form = node,

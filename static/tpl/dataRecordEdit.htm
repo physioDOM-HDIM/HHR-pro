@@ -112,8 +112,9 @@
 						{% raw %}{{/item}}{% endraw %}
 					</div>
 				
-					<div class="row marged">
-						<pre class="item-comment">{{ item.comment }}</pre>
+					<div class="row marged" >
+						<pre class="item-comment hidden">{{ item.comment }}</pre>
+						{{ item.comment }}
 					</div>
 				</div>
 
@@ -193,7 +194,7 @@
 			</div>
 			{% if cat !== 'questionnaire' %}
 			<div class="row">
-				<div class="col" style="max-width:200px"><span class="spacer"></span><span>Comment : </span></div>
+				<div class="col" style="max-width:200px"><span class="spacer"></span><span>{{"Comment"|i18n}} : </span></div>
 				<div class="col">
 					<input type="text" name="items[{{item._id.toString()}}].comment" value="{{ item.comment }}">
 				</div>
@@ -218,7 +219,7 @@
 		</div>
 		<div class="row control">
 			<span class="spacer"></span>
-			{% if rights.write && medical && beneficiary.active %}
+			{% if rights.write && beneficiary.active %}
 			<button type="button" class="green small" onclick="addLine('{{category}}')">{{"Add"|i18n}}</button>
 			{% endif %}
 		</div>
@@ -267,7 +268,7 @@
 	{% raw %}{{/questionnaire}}{% endraw %}
 	{% raw %}{{^questionnaire}}{% endraw %}
 		<div class="row">
-			<div class="col" style="max-width:200px"><span class="spacer"></span><span>Comment : </span></div>
+			<div class="col" style="max-width:200px"><span class="spacer"></span><span>{{"Comment"|i18n}} : </span></div>
 			<div class="col">
 				<input type="text" name="items[{% raw %}{{idx}}{% endraw %}].comment">
 			</div>
@@ -304,17 +305,8 @@
 			{% endif %}
 		</label>
 		{% if !dataRecordItems.home && view === 'create' %}
-			{% if admin  %}
-			<div class="spacer"></div>
-				<select name="sourceID" id="sourceID" class="float-right">
-					{% for professional in professionals %}
-					<option value="{{ professional._id.toString() }}">{{professional.name.family}} {{professional.name.given}}</option>
-					{% endfor %}
-				</select>
-			{% else %}
 			<label class="title">{{source.name.family}} {{source.name.given}}</label>
 			<input type="hidden" name="sourceID" id="sourceID" value="{{source._id.toString()}}">
-			{% endif %}
 		{% endif %}
 		<input type="hidden" id="createdDataRecordID" value="{{dataRecordItems._id}}">
 	</div>
@@ -388,12 +380,12 @@
 		<div class="row control" style="height:60px; align-content: center">
 			<span class="spacer"></span>
 			{% if view === 'create'%}
-			{% if rights.write && medical && beneficiary.active %}
+			{% if rights.write && beneficiary.active %}
 			<button id="saveBtn" class="green">{{"Save"|i18n}}</button>
 			{% endif %}
 			{% else %}
 			<a href="/datarecord"><button type="button" class="blue big not-disabled">{{"Back"|i18n}}</button></a>
-			{% if rights.write && medical && beneficiary.active %}
+			{% if rights.write && beneficiary.active %}
 			<button id="saveBtn" class="green">{{"Save"|i18n}}</button>
 			{% endif %}
 			{% endif %}

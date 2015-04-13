@@ -30,16 +30,16 @@
 		{% endfor %}
 	</select>
 </div>
-	
+
 <div class="content">
 	<div class="row">
 		<label>{{ "Editable"|i18n }}:</label>
-		<input type="checkbox" name="editable" value="true" {% if list.editable %}checked{% else %}disabled{% endif %} />
+		<input type="checkbox" id="editable" name="editable" value="true" {% if list.editable %}checked{% endif %} {% if !list.editable || roleClass!=="ADMIN" %}disabled{% endif %} />
 	</div>
 	
 	<div class="row">
 		<label>{{ "Default reference"|i18n }}:</label>
-		<select name="defaultValue" id="defaultValue" {% if !list.editable %}disabled{% endif%}>
+		<select name="defaultValue" id="defaultValue" {% if !list.editable || roleClass!=="ADMIN" %}disabled{% endif%}>
 			<option value="null" {% if list.defaultValue === null %}selected{% endif %}>{{ "-- No default value --"|i18n }}</option>
 			{% for item in list.items %}
 			<option value="{{item.ref}}" {% if list.defaultValue === item.ref %}selected{% endif %}>{{item.ref}}</option>
@@ -57,24 +57,24 @@
 				</div>
 				<div class="col">
 					<label>{{ "Active"|i18n }}:</label>
-					<input type="checkbox" name="{% raw %}items[{{idx}}].active{% endraw %}" value="true" {%raw%}{{#active}}checked{{/active}}{%endraw%}/>
+					<input type="checkbox" name="{% raw %}items[{{idx}}].active{% endraw %}" value="true" {%raw%}{{#active}}checked{{/active}}{%endraw%} {% if !list.editable || roleClass!=="ADMIN" %}disabled{% endif%}/>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col">
 					<label>{{ "Label"|i18n }}:</label>
-					<input type="text" name="{% raw %}items[{{idx}}].label.{{lang}}{% endraw %}" value="{% raw %}{{label}}{% endraw %}" {% raw %}{{^editable}}disabled{{/editable}}{% endraw %} />
+					<input type="text" name="{% raw %}items[{{idx}}].label.{{lang}}{% endraw %}" value="{% raw %}{{label}}{% endraw %}" {% raw %}{{^editable}}disabled{{/editable}}{% endraw %} {% if roleClass!=="ADMIN" %}disabled{% endif%} />
 				</div>
 				{% raw %}{{#hasRank}}{% endraw %}
 				<div class="col">
 					<label>{{ "Rank"|i18n }}:</label>
-					<input type="number" name="{% raw %}items[{{idx}}].rank{% endraw %}" value="{% raw %}{{rank}}{% endraw %}" />
+					<input type="number" name="{% raw %}items[{{idx}}].rank{% endraw %}" value="{% raw %}{{rank}}{% endraw %}" {% if roleClass!=="ADMIN" %}disabled{% endif%}/>
 				</div>
 				{% raw %}{{/hasRank}}{% endraw %}
 				{% raw %}{{#hasTVLabel}}{% endraw %}
 				<div class="col">
 					<label>{{ "TVLabel"|i18n }}:</label>
-					<input type="text" name="{% raw %}items[{{idx}}].TVLabel{% endraw %}" value="{% raw %}{{TVLabel}}{% endraw %}" />
+					<input type="text" name="{% raw %}items[{{idx}}].TVLabel{% endraw %}" value="{% raw %}{{TVLabel}}{% endraw %}" {% if roleClass!=="ADMIN" %}disabled{% endif%}/>
 				</div>
 				{% raw %}{{/hasTVLabel}}{% endraw %}
 			</div>
@@ -83,7 +83,7 @@
 			<div class="row">
 				<div class="col">
 					<label>{{"Role class"|i18n}} : </label>
-					<select name="{% raw %}items[{{idx}}].roleClass{% endraw %}">
+					<select name="{% raw %}items[{{idx}}].roleClass{% endraw %}" {% if roleClass!=="ADMIN" %}disabled{% endif%}>
 						{% raw %}
 						{{#roleClass}}
 						<option value="{{value}}" {{#selected}}selected{{/selected}} >{{label}}</option>
@@ -98,14 +98,14 @@
 			<div class="row">
 				<div class="col">
 					<label>{{"Type of service"|i18n}} : </label>
-					<input type="radio" name="{% raw %}items[{{idx}}].diet{% endraw %}" value="true" {% raw %}{{#diet}}checked{{/diet}}{% endraw %}> {{ "Diet"|i18n }}
-					<input type="radio" name="{% raw %}items[{{idx}}].diet{% endraw %}" value="false" {% raw %}{{^diet}}checked{{/diet}}{% endraw %}> {{ "Basic"|i18n }}
+					<input type="radio" name="{% raw %}items[{{idx}}].diet{% endraw %}" value="true" {% raw %}{{#diet}}checked{{/diet}}{% endraw %} {% if roleClass!=="ADMIN" %}disabled{% endif%}> {{ "Diet"|i18n }}
+					<input type="radio" name="{% raw %}items[{{idx}}].diet{% endraw %}" value="false" {% raw %}{{^diet}}checked{{/diet}}{% endraw %} {% if roleClass!=="ADMIN" %}disabled{% endif%}> {{ "Basic"|i18n }}
 				</div>	
 			</div>
 			{% raw %}{{/hasDietChoice}}{% endraw %}
 
 			{% raw %}{{#service}}{% endraw %}
-			<div class="row">{{"Provider roles"|i18n}} <button type="button" class="small blue" style="margin-left:20px" onclick="editRole({% raw %}{{idx}},{{roles}}{{#new}},true{{/new}}{% endraw %})" >Edit</button></div>
+			<div class="row">{{"Provider roles"|i18n}} {% if roleClass==="ADMIN" %}<button type="button" class="small blue" style="margin-left:20px" onclick="editRole({% raw %}{{idx}},{{roles}}{{#new}},true{{/new}}{% endraw %})" >{{"Edit"|i18n}}</button>{% endif %}</div>
 			<div class="row" style="padding-left:50px">
 				{% raw %}{{roleTypeCode}}{% endraw %}
 			</div>
@@ -127,29 +127,29 @@
 			<div class="row">
 				<div class="col">
 					<label>{{ "Reference"|i18n }}:</label>
-					<input class="ref-unique" type="text" name="{% raw %}items[{{idx}}].ref{% endraw %}" value="{% raw %}{{ref}}{% endraw %}" required />
+					<input class="ref-unique" type="text" name="{% raw %}items[{{idx}}].ref{% endraw %}" value="{% raw %}{{ref}}{% endraw %}" required {% if roleClass!=="ADMIN" %}disabled{% endif%} />
 				</div>
 				<div class="col">
 					<label>{{ "Active"|i18n }}:</label>
-					<input type="checkbox" name="{% raw %}items[{{idx}}].active{% endraw %}" value="true" {%raw%}{{#active}}checked{{/active}}{%endraw%} />
+					<input type="checkbox" name="{% raw %}items[{{idx}}].active{% endraw %}" value="true" {%raw%}{{#active}}checked{{/active}}{%endraw%} {% if roleClass!=="ADMIN" %}disabled{% endif%} />
 				</div>
 			</div>
 			<div class="row">
 				<div class="col">
-					<label>{{ "General"|i18n }}</label><input type="radio" name="{% raw %}items[{{idx}}].category{% endraw %}" value="General" {%raw%}{{#general}}checked{{/general}}{%endraw%} />
+					<label>{{ "General"|i18n }}</label><input type="radio" name="{% raw %}items[{{idx}}].category{% endraw %}" value="General" {%raw%}{{#general}}checked{{/general}}{%endraw%} {% if roleClass!=="ADMIN" %}disabled{% endif%}/>
 				</div>
 				<div class="col">
-					<label>{{ "HDIM"|i18n }}</label><input type="radio" name="{% raw %}items[{{idx}}].category{% endraw %}" value="HDIM" {%raw%}{{^general}}checked{{/general}}{%endraw%} />
+					<label>{{ "HDIM"|i18n }}</label><input type="radio" name="{% raw %}items[{{idx}}].category{% endraw %}" value="HDIM" {%raw%}{{^general}}checked{{/general}}{%endraw%} {% if roleClass!=="ADMIN" %}disabled{% endif%}/>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col">
 					<label>{{ "Label"|i18n }}:</label>
-					<input type="text" name="{% raw %}items[{{idx}}].label.{{lang}}{% endraw %}" value="{% raw %}{{label}}{% endraw %}" />
+					<input type="text" name="{% raw %}items[{{idx}}].label.{{lang}}{% endraw %}" value="{% raw %}{{label}}{% endraw %}" {% if roleClass!=="ADMIN" %}disabled{% endif%} />
 				</div>
 				<div class="col">
 					<label>{{ "Unit"|i18n }}:</label>
-					<select name="{% raw %}items[{{idx}}].units{% endraw %}">
+					<select name="{% raw %}items[{{idx}}].units{% endraw %}" {% if roleClass!=="ADMIN" %}disabled{% endif%}>
 						{% raw %}
 						{{#units}}
 						<option value="{{value}}" {{#selected}}selected{{/selected}} >{{label}}</option>
@@ -162,49 +162,49 @@
 				{% raw %}{{#hasRank}}{% endraw %}
 				<div class="col">
 					<label>{{ "Rank"|i18n }}:</label>
-					<input type="number" name="{% raw %}items[{{idx}}].rank{% endraw %}" value="{% raw %}{{rank}}{% endraw %}" />
+					<input type="number" name="{% raw %}items[{{idx}}].rank{% endraw %}" value="{% raw %}{{rank}}{% endraw %}" {% if roleClass!=="ADMIN" %}disabled{% endif%} />
 				</div>
 				{% raw %}{{/hasRank}}{% endraw %}
 				<div class="col">
 					<label>{{ "Automatic input"|i18n }}:</label>
-					<input type="checkbox" name="{% raw %}items[{{idx}}].autoInput{% endraw %}" value="true" {%raw%}{{#autoInput}}checked{{/autoInput}}{%endraw%} />
+					<input type="checkbox" name="{% raw %}items[{{idx}}].autoInput{% endraw %}" value="true" {%raw%}{{#autoInput}}checked{{/autoInput}}{%endraw%} {% if roleClass!=="ADMIN" %}disabled{% endif%} />
 				</div>
 			</div>
 			<div class="row">
 				<div class="col">
 					<label>{{ "Precision"|i18n }}:</label>
-					<input type="radio" name="{% raw %}items[{{idx}}].precision{% endraw %}" value="false" {%raw%}{{^precision}}checked{{/precision}}{% endraw %}/> {{ "integer" | i18n }}
+					<input type="radio" name="{% raw %}items[{{idx}}].precision{% endraw %}" value="false" {%raw%}{{^precision}}checked{{/precision}}{% endraw %} {% if roleClass!=="ADMIN" %}disabled{% endif%}/> {{ "integer" | i18n }}
 				</div>
 				<div class="col">
-					<input type="radio" name="{% raw %}items[{{idx}}].precision{% endraw %}" value="true" {%raw%}{{#precision}}checked{{/precision}}{% endraw %}/> {{ "decimal" | i18n }}
+					<input type="radio" name="{% raw %}items[{{idx}}].precision{% endraw %}" value="true" {%raw%}{{#precision}}checked{{/precision}}{% endraw %} {% if roleClass!=="ADMIN" %}disabled{% endif%}/> {{ "decimal" | i18n }}
 				</div>
 			</div>
 			<div class="row">
 				<div class="col">
 					<label>{{ "Threshold min"|i18n }}:</label>
-					<input type="text" name="{% raw %}items[{{idx}}].threshold.min{% endraw %}" value="{% raw %}{{threshold.min}}{% endraw %}"/>
+					<input type="text" name="{% raw %}items[{{idx}}].threshold.min{% endraw %}" value="{% raw %}{{threshold.min}}{% endraw %}" {% if roleClass!=="ADMIN" %}disabled{% endif%}/>
 				</div>
 				<div class="col">
 					<label>{{ "Threshold max"|i18n }}:</label>
-					<input type="text" name="{% raw %}items[{{idx}}].threshold.max{% endraw %}" value="{% raw %}{{threshold.max}}{% endraw %}" />
+					<input type="text" name="{% raw %}items[{{idx}}].threshold.max{% endraw %}" value="{% raw %}{{threshold.max}}{% endraw %}" {% if roleClass!=="ADMIN" %}disabled{% endif%} />
 				</div>
 			</div>
 			<div class="row">
 				<div class="col">
 					<label>{{ "Range min"|i18n }}:</label>
-					<input type="text" name="{% raw %}items[{{idx}}].range.min{% endraw %}" value="{% raw %}{{range.min}}{% endraw %}" />
+					<input type="text" name="{% raw %}items[{{idx}}].range.min{% endraw %}" value="{% raw %}{{range.min}}{% endraw %}" {% if roleClass!=="ADMIN" %}disabled{% endif%} />
 				</div>
 				<div class="col">
 					<label>{{ "Range max"|i18n }}:</label>
-					<input type="text" name="{% raw %}items[{{idx}}].range.max{% endraw %}" value="{% raw %}{{range.max}}{% endraw %}" />
+					<input type="text" name="{% raw %}items[{{idx}}].range.max{% endraw %}" value="{% raw %}{{range.max}}{% endraw %}" {% if roleClass!=="ADMIN" %}disabled{% endif%} />
 				</div>
 			</div>
 
 			{% raw %}{{#hasDietChoice}}{% endraw %}
 			<div class="row">
 				<div class="col">
-					<input type="radio" name="{% raw %}items[{{idx}}].diet{% endraw %}" value="true" {% raw %}{{#diet}}checked{{/diet}}{% endraw %}> {{ "Diet"|i18n }}
-					<input type="radio" name="{% raw %}items[{{idx}}].diet{% endraw %}" value="false" {% raw %}{{^diet}}checked{{/diet}}{% endraw %}> {{ "Basic"|i18n }}
+					<input type="radio" name="{% raw %}items[{{idx}}].diet{% endraw %}" value="true" {% raw %}{{#diet}}checked{{/diet}}{% endraw %} {% if roleClass!=="ADMIN" %}disabled{% endif%}> {{ "Diet"|i18n }}
+					<input type="radio" name="{% raw %}items[{{idx}}].diet{% endraw %}" value="false" {% raw %}{{^diet}}checked{{/diet}}{% endraw %} {% if roleClass!=="ADMIN" %}disabled{% endif%}> {{ "Basic"|i18n }}
 				</div>	
 			</div>
 			{% raw %}{{/hasDietChoice}}{% endraw %}
@@ -254,7 +254,7 @@
 		<div id="newItems" style="margin:20px 0px">
 			
 		</div>
-		{% if list.editable %}
+		{% if list.editable && roleClass==="ADMIN" %}
 		<div class="row" style="margin-bottom:20px">
 			<span class="spacer"></span>
 			<button type="button" class="blue" onclick="addItem(this)">{{ "New item"|i18n }}</button>
@@ -265,8 +265,12 @@
 <footer>
 	<div class="row">
 		<span class="spacer"></span>
+		{% if roleClass==="ADMIN" %}
 		<button type="button" class="red" onclick="modified=false; window.history.back(1)">{{ "Cancel"|i18n }}</button>
 		{% if list.editable %}<button class="blue btn-save" onclick="save()">{{ "Save"|i18n }}</button>{% endif %}
+		{% else %}
+		<button type="button" class="blue" onclick="modified=false; window.history.back(1)">{{ "Back"|i18n }}</button>
+		{% endif %}
 	</div>
 </footer>
 

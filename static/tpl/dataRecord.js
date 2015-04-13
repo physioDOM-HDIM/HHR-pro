@@ -1,4 +1,7 @@
 'use strict';
+
+/* global moment, Cookies */
+
 //Get the base url of the tsante-list component (without potential params)
 function getBaseURL(url) {
     console.log("getBaseURL", arguments);
@@ -16,7 +19,7 @@ function paginate(init, params) {
     if (init) {
         listPagerElt.pg = 1;
     }
-    console.log("url: ", listPagerElt.url);
+    // console.log("url: ", listPagerElt.url);
     listPagerElt.go();
 }
 
@@ -75,9 +78,9 @@ function updateCal() {
 }
 
 function init() {
-	moment.locale(Cookies.get("lang")=="en"?"en-gb":Cookies.get("lang"));
+	moment.locale(Cookies.get("lang")==="en"?"en-gb":Cookies.get("lang"));
 	[].slice.call(document.querySelectorAll("zdk-input-date")).forEach( function(item) {
-		item.setAttribute("i18n", Cookies.get("lang")=="en"?"en-gb":Cookies.get("lang") );
+		item.setAttribute("i18n", Cookies.get("lang")==="en"?"en-gb":Cookies.get("lang") );
 	});
 	
     var listPager = document.querySelector('tsante-list');

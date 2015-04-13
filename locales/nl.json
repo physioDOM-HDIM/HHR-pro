@@ -365,5 +365,18 @@
   "Account":"Rekening",
   "Distance travelled":"Afstand afgelegd",
   "Copy datas from":"Kopieer datas van",
-  "Create questionnaire":"Maak een vragenlijst"
+  "Create questionnaire":"Maak een vragenlijst",
+  "Change password":"wachtwoord wijzigen",
+  "Revoke certificate":"Certificaat intrekken",
+  "Generate certificate":"Certificaat genereren",
+  "week":"week",
+  "first":"eerste",
+  "second":"tweede",
+  "third":"derde",
+  "fourth":"vierde",
+  "from the":"van de",
+  "of the month":"de maand",
+  "beginning":"begin",
+  "end":"einde",
+  "Day":"dag(en)"
 }

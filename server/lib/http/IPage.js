@@ -169,6 +169,7 @@ function IPage() {
 				// logger.debug("menu",req.session.role, menu);
 				var data = {
 					admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1 ? true : false,
+					roleClass: req.session.roleClass,
 					idsUser: req.headers["ids-user"] || "",
 					items: menu
 				};
@@ -802,6 +803,7 @@ function IPage() {
 		var admin = ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1 ? true : false;
 		var data = {
 			admin: admin,
+			roleClass: req.session.roleClass,
 			rights: { read: admin, write:admin, url:"/settings/lists" }
 		};
 
@@ -850,6 +852,7 @@ function IPage() {
 		var admin = ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1 ? true : false;
 		var data = {
 			admin: admin,
+			roleClass: req.session.roleClass,
 			rights: { read: admin, write:admin, url:"/questionnaires" }
 		};
 
@@ -1114,7 +1117,6 @@ function IPage() {
 			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1?true:false,
 			rights: { read:false, write:false, url: '/datarecord' }
 		};
-		data.medical = data.admin || req.session.roleClass==="HEALTH";
 		
 		new Menu().rights( req.session.role, data.rights.url )
 			.then( function( _rights ) {
@@ -1155,7 +1157,6 @@ function IPage() {
 			rights: { read:false, write:false, url: '/datarecord/create' },
 			role: req.session.role
 		};
-		data.medical = data.admin || req.session.roleClass==="HEALTH";
 		
 		if( !req.session.beneficiary ) {
 			// logger.debug("no beneficiary selected");
@@ -1163,8 +1164,10 @@ function IPage() {
 			res.send(302);
 			return next();
 		} else {
+			console.log( req.session.role );
 			new Menu().rights( req.session.role, data.rights.url )
 				.then( function( _rights ) {
+					console.log( _rights );
 					// logger.debug("rights", _rights );
 					data.rights = _rights;
 					return physioDOM.Beneficiaries();
@@ -1451,7 +1454,6 @@ function IPage() {
 			admin: ['COORD', 'ADMIN'].indexOf(req.session.roleClass) !== -1 ? true : false,
 			rights: { read:false, write:false, url: req.url }
 		};
-		data.medical = data.admin || (req.session.roleClass === "HEALTH");
 		
 		if (!req.session.beneficiary) {
 			// logger.debug("No beneficiary selected");
@@ -1723,6 +1725,7 @@ function IPage() {
 		var admin = ['COORD', 'ADMIN'].indexOf(req.session.roleClass) !== -1 ? true : false;
 		var data = {
 			admin: admin,
+			roleClass : req.session.roleClass,
 			rights: { read:admin, write:admin }
 		};
 
@@ -1749,7 +1752,6 @@ function IPage() {
 	
 	this.agenda = function(req, res, next) {
 		logger.trace("agenda");
-		var html;
 
 		init(req);
 		var data = {

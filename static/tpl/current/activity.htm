@@ -36,7 +36,7 @@
 
 					<div class="value-name">{{"Number of steps"|i18n}}</div>
 					<div class="value-date stepsNumberDate">{% if status.stepsNumberDate %}{{status.stepsNumberDate}}{% endif %}</div>
-					<input type="number" step="1" min="{{parameters.stepsNumber.range.min}}" max="{{parameters.stepsNumber.range.max}}" name="stepsNumber" class="value-input" value="{{status.stepsNumber}}" {% if !rights.write || !medical || !beneficiary.active %}disabled{% endif %} />
+					<input type="number" step="1" min="{{parameters.stepsNumber.range.min}}" max="{{parameters.stepsNumber.range.max}}" name="stepsNumber" class="value-input" value="{{status.stepsNumber}}" {% if !rights.write || !beneficiary.active %}disabled{% endif %} />
 					<div class="value-unit">{{"steps per week"|i18n}}</div>
 
 				</div>
@@ -51,14 +51,14 @@
 						type="text"
 						name="commentStepsNumber"
 						value="{{status.commentStepsNumber}}"
-						{% if !rights.write || !medical || !beneficiary.active %}disabled{% endif %}
+						{% if !rights.write || !beneficiary.active %}disabled{% endif %}
 						/>
 
 				</div>
 
 		</zdk-panel>
 
-		{% if rights.write && medical && beneficiary.active %}
+		{% if rights.write && beneficiary.active %}
 			{% if !status.validated %}
 			<div id="buttons" class="row control">
 				<span class="spacer"></span>
