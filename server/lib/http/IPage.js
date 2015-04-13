@@ -19,6 +19,7 @@ var swig = require("swig"),
 	promise = RSVP.Promise,
 	moment = require("moment"),
 	Menu     = require('../class/menu'),
+	SpecialRights = require('../class/specialRights'),
 	URL = require("url"),
 	ObjectID = require("mongodb").ObjectID;
 
@@ -1620,7 +1621,6 @@ function IPage() {
 
 	this.prescriptionDataSymptom = function(req, res, next) {
 		logger.trace("PrescriptionDataSymptom");
-		var html;
 
 		init(req);
 		var data = {
@@ -1660,7 +1660,6 @@ function IPage() {
 
 	this.prescriptionQuestionnaire = function(req, res, next) {
 		logger.trace("PrescriptionQuestionnaire");
-		var html;
 
 		init(req);
 		var data = {
@@ -1719,8 +1718,7 @@ function IPage() {
 
 	this.rights = function(req, res, next) {
 		logger.trace('page');
-
-		var html;
+		
 		init(req);
 		var admin = ['COORD', 'ADMIN'].indexOf(req.session.roleClass) !== -1 ? true : false;
 		var data = {
@@ -1728,18 +1726,24 @@ function IPage() {
 			roleClass : req.session.roleClass,
 			rights: { read:admin, write:admin }
 		};
-
+		
 		physioDOM.Lists.getList('role')
-		.then(function(list) {
+			.then(function(list) {
 				data.roles = list.items;
 				return new Menu().getAll();
 			})
-		.then( function(menu) {
+			.then( function(menu) {
 				data.items = menu;
+				console.log( "menu", menu );
+				return new SpecialRights().getAll();
+			})
+			.then( function( rights ) {
+				data.spItems = rights;
+				console.log( "spRights", rights );
 				render('/static/tpl/rights.htm', data, res, next);
 			})
-		.catch(function(err) {
-				logger.error(err);
+			.catch(function(err) {
+				console.log( err.stack );
 				res.write(err);
 				res.end();
 				next();
@@ -1816,11 +1820,10 @@ function IPage() {
 			})
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
-
 				render('/static/tpl/dietaryPlan.htm' , data, res, next);
-
 			})
 			.catch(function(err) {
+				console.log( err.stack );
 				logger.error(err);
 				res.write(err);
 				res.end();
