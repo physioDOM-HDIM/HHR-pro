@@ -4,6 +4,11 @@ __v0.0.32__
   - \#207 : Fix missing translate label
   - \#204 : [Beneficiary/Bene_overview][physioDOM-v0.0.31] Init
   - \#205 : Bug 214 - [Right][PhysioDOM-v0.0.8] droit manquant et niveau d'access
+  - \#187 : Traductions, fautes de frappe et d'orthographe
+  - \#102 : [Beneficiary/Bene_edit][physioDOM-v0.0.16] Diagnosis
+  - \#195 : Bug 302 - [Result form data recording][Ergonomie][v029] Dépassement commentaire paramètre et symptomes
+  - \#197 : Bug 230 - [Global/Account-Nomenclature][v009.1] RoleClass, RoleType
+  - \#199 : Bug 241 - [Message to Home&Data recording][v009.1] Ursupation d'utilisateur (part 2)
   
 > Nota : to apply the bugfix for \#201 execute the following command on mongo :
 >
