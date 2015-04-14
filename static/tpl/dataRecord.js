@@ -82,7 +82,10 @@ function updateCal() {
 
 function viewRecord(itemID, indx) {
 	var listPagerElt = document.querySelector("tsante-list");
-	var url = "/datarecord/"+itemID+"?indx="+(indx+ (listPagerElt.pg - 1)*10)+"&filter="+filterParam;
+	var url = "/datarecord/"+itemID+"?indx="+(indx+1+ (listPagerElt.pg - 1)*10);
+	if( filterParam ) {
+		url += "&"+filterParam; 
+	}
 	console.log( url );
 	window.location.href = url;
 }
@@ -105,6 +108,32 @@ function init() {
         }
         this.render(list);
     });
+
+	if( location.search ) {
+		var navs = document.querySelectorAll(".nav");
+		[].slice.call(navs).forEach( function(elt) {
+			elt.classList.remove("hidden");
+		});
+
+		var filter = {};
+		var qs = location.search.slice(1).split("&");
+		qs.forEach(function (item) {
+			var tmp = item.split("=");
+			filter[tmp[0]] = isNaN(tmp[1]) || !tmp[1].length ? tmp[1] : parseInt(tmp[1], 10);
+		});
+		console.log(filter);
+		if (filter.filter) { 
+			filter.filter = JSON.parse(decodeURI(filter.filter));
+			if( filter.filter.startDate ) { document.querySelector('.startDate').value = filter.filter.startDate; }
+			if( filter.filter.endDate ) { document.querySelector('.endDate').value = filter.filter.endDate; }
+			if( filter.filter.professionals) {
+				console.log( filter.filter.professionals );
+			}
+		}
+		if (filter.sort) { document.querySelector("select[name=sort]").value = filter.sort; }
+		if (filter.dir) { document.querySelector("select[name=dir]").value = filter.dir; }
+		validFilter();
+	}
 }
 window.addEventListener("polymer-ready", init, false);
 
