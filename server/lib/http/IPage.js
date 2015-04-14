@@ -679,6 +679,9 @@ function IPage() {
 			.then( function( beneficiary ) {
 				moment.locale(req.cookies.lang==="en"?"en-gb":req.cookies.lang);
 				data.beneficiary = beneficiary;
+				data.beneficiary.address.forEach( function(address) {
+					address.use = data.useArray.items[address.use];
+				});
 				data.beneficiary.birthdate = moment(data.beneficiary.birthdate).format("L");
 				return beneficiary._id ? beneficiary.getProfessionals() : null;
 			}).then(function(professionals){
