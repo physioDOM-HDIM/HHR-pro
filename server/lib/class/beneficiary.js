@@ -285,7 +285,7 @@ function Beneficiary( ) {
 									}
 									break;
 								case "address":
-									that.address = updatedEntry.address;
+									that.address = newEntry.address;
 									that.address.forEach( function(address) {
 										address.city = address.city.toUpperCase();
 									});
@@ -298,7 +298,10 @@ function Beneficiary( ) {
 					return that.save();
 				})
 				.then(resolve)
-				.catch(reject);
+				.catch(function(err) {
+					logger.error(err.stack);
+					reject(err);
+				});
 		});
 	};
 

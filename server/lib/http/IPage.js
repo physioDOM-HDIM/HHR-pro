@@ -689,9 +689,14 @@ function IPage() {
 			})
 			.catch( function(err) {
 				logger.error(err);
-				res.write(err);
-				res.end();
-				next();
+				req.session.beneficiary = null;
+				req.session.save()
+					.then( function() {
+						res.header('Location', '/beneficiaries');
+						res.send(302);
+						res.end();
+						next();
+					});
 			});
 	};
 
