@@ -381,5 +381,6 @@
   "Day":"day(s)",
   "Previous":"Previous",
   "Next":"Next",
-  "Validate":"Validation"
+  "Validate":"Validation",
+  "This login is already used, please choose another one":"This login is already used, please choose another one"
 }

@@ -381,5 +381,6 @@
   "Day":"jour(s)",
   "Previous":"Précédent",
   "Next":"Suivant",
-  "Validate":"Validation"
+  "Validate":"Validation",
+  "This login is already used, please choose another one":"Cet identifiant est déjà utilisé, choisissez en un autre"
 }

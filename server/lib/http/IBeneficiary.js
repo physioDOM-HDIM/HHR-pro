@@ -178,8 +178,7 @@ var IBeneficiary = {
 					}
 				})
 				.then(function (beneficiary) {
-
-					beneficiary.hasProfessional(req.session.person.id)
+					return beneficiary.hasProfessional(req.session.person.id)
 						.then(function(hasProfessional) {
 							if(hasProfessional || ["administrator","coordinator"].indexOf(req.session.role) !== -1) {
 								return beneficiary.update(updateItem, req.session.person.id);
@@ -187,17 +186,19 @@ var IBeneficiary = {
 								throw { code:403, message:"not authorized"};
 							}
 						});
-
 				})
 				.then( function (beneficiary ) {
+					console.log("test1");
 					res.send( beneficiary );
 					next();
 				})
 				.catch(function (err) {
+					console.log("test2");
 					res.send(err.code || 400, err);
 					next(false);
 				});
 		} catch( err ) {
+			console.log("test3");
 			res.send(err.code || 400, err);
 			next(false);
 		}

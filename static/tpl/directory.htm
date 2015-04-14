@@ -129,7 +129,7 @@
                             </div>
                         </div>
                     </div>
-                    <div style="width:60px">
+                    <div style="width:80px">
                         <template if="{% raw %}{{item.address && item.address.line && item.address.line.length > 0 || item.address.zip || item.address.city}}{% endraw %}">
                             <button type="button" class="green small" onclick="toggleHiddenNode(this, '.address')">{{"Detail"|i18n}}</button><br/>
                         </template>

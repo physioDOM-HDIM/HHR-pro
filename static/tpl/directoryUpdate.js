@@ -211,7 +211,15 @@ function updateItem(obj) {
 								modified = false;
 								window.history.back();
 							});
-						});
+						})
+						.catch( function() {
+							new Modal('conflictLogin', function() {
+								var login = document.getElementById("login");
+								login.scrollIntoView();
+								login.style.border = "2px solid red";
+								login.focus();
+							});
+						})
 				} else {
 					new Modal('updateSuccess', function() {
 						modified = false;

@@ -380,8 +380,17 @@ function updateAll(obj) {
 				window.location.href = "/beneficiary/edit/"+obj._id;
 			});
         }, function(error) {
-            new Modal('errorOccured');
-            console.log("updateAll - update error: ", error);
+			if( error.status === 409 ) {
+				new Modal('conflictLogin', function() {
+					var login = document.getElementById("login");
+					login.scrollIntoView();
+					login.style.border = "2px solid red";
+					login.focus();
+				});
+			} else {
+				new Modal('errorOccured');
+				console.log("updateBeneficiary - update error: ", error);
+			}
         });
     }
 }
@@ -530,8 +539,12 @@ function updateBeneficiary(obj) {
                 window.location.href = "/beneficiary/overview";
             });
         }, function(error) {
-            new Modal('errorOccured');
-            console.log("updateBeneficiary - update error: ", error);
+			if( error.status === 409 ) {
+				new Modal('conflictLogin');
+			} else {
+				new Modal('errorOccured');
+				console.log("updateBeneficiary - update error: ", error);
+			}
         });
 
     } else {

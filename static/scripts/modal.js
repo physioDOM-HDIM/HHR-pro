@@ -338,6 +338,20 @@ function Modal (type, callback, log) {
         }]
     };
 
+	content.conflictLogin = {
+		title: "trad_errorFormConflict",
+		content: "trad_conflict_login",
+		buttons: [{
+			id: "trad_ok",
+			action: function() {
+				if(callback) {
+					callback();
+				}
+				self.closeModal();
+			}
+		}]
+	};
+
     content.deleteSuccess = {
         title: "trad_delete",
         content: "trad_success_delete",

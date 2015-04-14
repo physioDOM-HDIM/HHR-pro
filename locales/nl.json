@@ -381,5 +381,6 @@
   "Day":"dag(en)",
   "Previous":"Vorig",
   "Next":"Volgende",
-  "Validate":"Bevestiging"
+  "Validate":"Bevestiging",
+  "This login is already used, please choose another one":"Deze aanduiding is al in gebruik, dan kunt u kiezen voor een ander"
 }
