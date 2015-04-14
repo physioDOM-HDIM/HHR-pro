@@ -82,26 +82,33 @@ function dietaryPlan(beneficiaryID) {
 		var that = this;
 		return new promise( function(resolve, reject) {
 			logger.trace("save");
+			var search = {beneficiary: that.beneficiary};
 
-			physioDOM.db.collection("dietaryPlan").save( that, function(err, result) {
-				if(err) {
+			physioDOM.db.collection("dietaryPlan").count(search, function (err, count) {
+				if (err) {
 					throw err;
 				}
-				if( isNaN(result)) {
-					that._id = result._id;
-				}
-				physioDOM.Beneficiaries()
-					.then(function (beneficiaries) {
-						logger.debug("subject", that.beneficiary);
-						return beneficiaries.getHHR( that.beneficiary );
-					})
-					.then(function (beneficiary) {
-						beneficiary.pushDietaryPlanToQueue( that, true );
-					})
-					.then( function(msg) {
-						logger.debug("msg to queue", msg);
-						resolve(that);
-					});
+				physioDOM.db.collection("dietaryPlan").save(that, function (err, result) {
+					if (err) {
+						throw err;
+					}
+					if (isNaN(result)) {
+						that._id = result._id;
+					}
+					physioDOM.Beneficiaries()
+						.then(function (beneficiaries) {
+							logger.debug("subject", that.beneficiary);
+							return beneficiaries.getHHR(that.beneficiary);
+						})
+						.then(function (beneficiary) {
+							beneficiary.pushDietaryPlanToQueue(that, true);
+						})
+						.then(function (msg) {
+							logger.debug("msg to queue", msg);
+							if( count ) { that.count = count; }
+							resolve(that);
+						});
+				});
 			});
 		});
 	};

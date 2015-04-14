@@ -83,24 +83,31 @@ function physicalPlan(beneficiaryID) {
 		var that = this;
 		return new promise( function(resolve, reject) {
 			logger.trace("save");
-
-			physioDOM.db.collection("physicalPlan").save( that, function(err, result) {
-				if(err) {
+			var search = {beneficiary: that.beneficiary};
+			
+			physioDOM.db.collection("physicalPlan").count(search, function (err, count) {
+				if (err) {
 					throw err;
 				}
-				if( isNaN(result)) {
-					that._id = result._id;
-				}
-				physioDOM.Beneficiaries()
-					.then(function (beneficiaries) {
-						return beneficiaries.getHHR( that.beneficiary );
-					})
-					.then(function (beneficiary) {
-						beneficiary.pushPhysicalPlanToQueue( that, true );
-					})
-					.then( function(msg) {
-						resolve(that);
-					});
+				physioDOM.db.collection("physicalPlan").save(that, function (err, result) {
+					if (err) {
+						throw err;
+					}
+					if (isNaN(result)) {
+						that._id = result._id;
+					}
+					physioDOM.Beneficiaries()
+						.then(function (beneficiaries) {
+							return beneficiaries.getHHR(that.beneficiary);
+						})
+						.then(function (beneficiary) {
+							beneficiary.pushPhysicalPlanToQueue(that, true);
+						})
+						.then(function (msg) {
+							if( count ) { that.count = count; }
+							resolve(that);
+						});
+				});
 			});
 		});
 	};

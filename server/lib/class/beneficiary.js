@@ -1495,7 +1495,7 @@ function Beneficiary( ) {
 			var dietaryPlan = new DietaryPlan(new ObjectID(that._id));
 			dietaryPlan.setup(that._id, dietaryPlanObj, professionalID)
 				.then(function(item) {
-					that.createEvent("Dietary plan","update", that._id, professionalID);
+					that.createEvent("Dietary plan", item.count?"update":"create", that._id, professionalID);
 				})
 				.then( resolve )
 				.catch(reject);
@@ -1537,7 +1537,7 @@ function Beneficiary( ) {
 			var physicalPlan = new PhysicalPlan(new ObjectID(that._id));
 			physicalPlan.setup(that._id, physicalPlanObj, professionalID)
 				.then(function(item) {
-					that.createEvent("Physical plan","update", that._id, professionalID);
+					that.createEvent("Physical plan",item.count?"update":"create", that._id, professionalID);
 				})
 				.then(resolve)
 				.catch(reject);
