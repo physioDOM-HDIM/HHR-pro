@@ -697,7 +697,9 @@ var IBeneficiary = {
 			})
 			.then( function(selectedBeneficiary) {
 				beneficiary = selectedBeneficiary;
-				return beneficiary.getGraphDataList( req.session.lang || physioDOM.lang );
+				console.log( req.session );
+				console.log("lang ", req.session.person.item.communication || physioDOM.lang );
+				return beneficiary.getGraphDataList( req.session.person.item.communication|| physioDOM.lang );
 			}).then( function( graphList) {
 				res.send(graphList);
 				next();
