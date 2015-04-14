@@ -19,6 +19,7 @@ var swig = require("swig"),
 	promise = RSVP.Promise,
 	moment = require("moment"),
 	Menu     = require('../class/menu'),
+	SpecialRights = require('../class/specialRights'),
 	URL = require("url"),
 	ObjectID = require("mongodb").ObjectID;
 
@@ -1405,7 +1406,6 @@ function IPage() {
 			})
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
-				logger.trace(data.beneficiary);
 				data.lang = lang;
 
 				render('/static/tpl/physiologicalData.htm' , data, res, next);
@@ -1465,76 +1465,78 @@ function IPage() {
 			new Menu().rights( req.session.role, data.rights.url )
 				.then( function( _rights ) {
 					data.rights = _rights;
+					return new SpecialRights().rights( req.session.role, "Validate" );
+				}).then( function(_rights) {
+					data.validate = _rights;
 					return physioDOM.Beneficiaries();
 				})
-			.then(function(beneficiaries) {
+				.then(function(beneficiaries) {
 					if( req.session.role === "beneficiary") {
 						return beneficiaries.getHHR(req.session.beneficiary );
 					} else {
 						return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
 					}
-			})
-			.then(function(beneficiary) {
-				data.beneficiary = beneficiary;
-				return new CurrentStatus().get(beneficiary._id, name);
-			})
-			.then(function(status) {
-				data.status = status;
-				return physioDOM.Directory();
-			})
-			.then( function(directory) {
-				if(data.status.validatedAuthor) {
-					return directory.getEntryByID(data.status.validatedAuthor.toString());
-				} else {
-					return null;
-				}
-			})
-			.then(function(author) {
-				logger.trace(author);
-				if(author !== null) {
-					data.author = author;
-					logger.trace(data);
-				}
-				return physioDOM.Lists.getList('parameters');
-			})
-			.then(function(parameters) {
-
-				var findInObj = function(obj, item, value) {
-				    var i = 0,
-				        len = obj.length,
-				        result = null;
-
-				    for(i; i<len; i++) {
-				        if(obj[i][item] === value) {
-				            result = obj[i];
-				            break;
-				        }
-				    }
-
-				    return result;
-				};
-				
-				data.parameters = {
-					stepsNumber: findInObj(parameters.items, 'ref', 'DIST'),
-					weight: findInObj(parameters.items, 'ref', 'WEG'),
-					lean: findInObj(parameters.items, 'ref', 'LFR'),
-					bmi: findInObj(parameters.items, 'ref', 'BMI')
-				}
-
-				render('/static/tpl/current/' + name + '.htm', data, res, next);
-			})
-			.catch(function(err) {
-				if (err.code && err.code === 404) {
-					data.status = {};
+				})
+				.then(function(beneficiary) {
+					data.beneficiary = beneficiary;
+					return new CurrentStatus().get(beneficiary._id, name);
+				})
+				.then(function(status) {
+					data.status = status;
+					return physioDOM.Directory();
+				})
+				.then( function(directory) {
+					if(data.status.validatedAuthor) {
+						return directory.getEntryByID(data.status.validatedAuthor.toString());
+					} else {
+						return null;
+					}
+				})
+				.then(function(author) {
+					if(author !== null) {
+						data.author = author;
+					}
+					return physioDOM.Lists.getList('parameters');
+				})
+				.then(function(parameters) {
+	
+					var findInObj = function(obj, item, value) {
+					    var i = 0,
+					        len = obj.length,
+					        result = null;
+	
+					    for(i; i<len; i++) {
+					        if(obj[i][item] === value) {
+					            result = obj[i];
+					            break;
+					        }
+					    }
+	
+					    return result;
+					};
+					
+					data.parameters = {
+						stepsNumber: findInObj(parameters.items, 'ref', 'DIST'),
+						weight: findInObj(parameters.items, 'ref', 'WEG'),
+						lean: findInObj(parameters.items, 'ref', 'LFR'),
+						bmi: findInObj(parameters.items, 'ref', 'BMI')
+					}
+	
 					render('/static/tpl/current/' + name + '.htm', data, res, next);
-				}
-				else {
-					logger.error(err);
-					res.write(err);
-					res.end();
-					next();
-				}
-			});
+				})
+				.catch(function(err) {
+					if (err.code && err.code === 404) {
+						data.status = {};
+						render('/static/tpl/current/' + name + '.htm', data, res, next);
+					}
+					else {
+						logger.error(err);
+						logger.error(err.stack);
+						res.write(err);
+						res.end();
+						next();
+					}
+				});
 		}
 	};
 
@@ -1620,7 +1622,6 @@ function IPage() {
 
 	this.prescriptionDataSymptom = function(req, res, next) {
 		logger.trace("PrescriptionDataSymptom");
-		var html;
 
 		init(req);
 		var data = {
@@ -1660,7 +1661,6 @@ function IPage() {
 
 	this.prescriptionQuestionnaire = function(req, res, next) {
 		logger.trace("PrescriptionQuestionnaire");
-		var html;
 
 		init(req);
 		var data = {
@@ -1719,8 +1719,7 @@ function IPage() {
 
 	this.rights = function(req, res, next) {
 		logger.trace('page');
-
-		var html;
+		
 		init(req);
 		var admin = ['COORD', 'ADMIN'].indexOf(req.session.roleClass) !== -1 ? true : false;
 		var data = {
@@ -1728,18 +1727,24 @@ function IPage() {
 			roleClass : req.session.roleClass,
 			rights: { read:admin, write:admin }
 		};
-
+		
 		physioDOM.Lists.getList('role')
-		.then(function(list) {
+			.then(function(list) {
 				data.roles = list.items;
 				return new Menu().getAll();
 			})
-		.then( function(menu) {
+			.then( function(menu) {
 				data.items = menu;
+				console.log( "menu", menu );
+				return new SpecialRights().getAll();
+			})
+			.then( function( rights ) {
+				data.spItems = rights;
+				console.log( "spRights", rights );
 				render('/static/tpl/rights.htm', data, res, next);
 			})
-		.catch(function(err) {
-				logger.error(err);
+			.catch(function(err) {
+				console.log( err.stack );
 				res.write(err);
 				res.end();
 				next();
@@ -1816,11 +1821,10 @@ function IPage() {
 			})
 			.then(function(beneficiary) {
 				data.beneficiary = beneficiary;
-
 				render('/static/tpl/dietaryPlan.htm' , data, res, next);
-
 			})
 			.catch(function(err) {
+				console.log( err.stack );
 				logger.error(err);
 				res.write(err);
 				res.end();
