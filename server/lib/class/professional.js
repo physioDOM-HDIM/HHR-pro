@@ -403,9 +403,25 @@ function Professional() {
 	 */
 	this.accountUpdate = function( accountData ) {
 		var that = this;
+		
+		function checkUniqLogin() {
+			return new promise( function(resolve, reject) {
+				physioDOM.db.collection("account").count( { login: accountData.login.toLowerCase(), 'person.id': {'$ne': that._id }}, function (err, count) {
+					resolve( count );
+				});
+			});
+		}
+		
 		return new promise( function(resolve, reject) {
 			logger.trace( "accountUpdate" );
-			that.getAccount()
+			checkUniqLogin()
+				.then( function(count) {
+					if(count) {
+						reject( { code:409, message:"login already used"} );
+					} else {
+						return that.getAccount();
+					}
+				})
 				.then( function(account) {
 					logger.trace("account", accountData );
 					if ( accountData.IDS==="true" ) {
@@ -416,7 +432,7 @@ function Professional() {
 						return reject({error: "account data incomplete"});
 					}
 					var newAccount = {
-						login   : accountData.login,
+						login   : accountData.login.toLowerCase(),
 						password: accountData.password === account.password?account.password:md5(accountData.password),
 						active  : that.active,
 						role    : that.role,

@@ -285,7 +285,7 @@ function Beneficiary( ) {
 									}
 									break;
 								case "address":
-									that.address = updatedEntry.address;
+									that.address = newEntry.address;
 									that.address.forEach( function(address) {
 										address.city = address.city.toUpperCase();
 									});
@@ -298,7 +298,10 @@ function Beneficiary( ) {
 					return that.save();
 				})
 				.then(resolve)
-				.catch(reject);
+				.catch(function(err) {
+					logger.error(err);
+					reject(err);
+				});
 		});
 	};
 
@@ -322,9 +325,26 @@ function Beneficiary( ) {
 	 */
 	this.accountUpdate = function( accountData ) {
 		var that = this;
+
+		function checkUniqLogin() {
+			return new promise( function(resolve, reject) {
+				physioDOM.db.collection("account").count( { login: accountData.login.toLowerCase(), 'person.id': {'$ne': that._id }}, function (err, count) {
+					resolve( count );
+				});
+			});
+		}
+		
 		return new promise( function(resolve, reject) {
 			logger.trace( "accountUpdate" );
-			that.getAccount()
+			checkUniqLogin()
+				.then( function(count) {
+					if(count) {
+						logger.warning("login conflict");
+						reject({ code:409, message:"login already used"});
+					} else {
+						return that.getAccount();
+					}
+				})
 				.then( function(account) {
 					logger.trace("account", accountData );
 					if ( accountData.IDS==="true" ) {
@@ -335,7 +355,7 @@ function Beneficiary( ) {
 						return reject({error: "account data incomplete"});
 					}
 					var newAccount = {
-						login   : accountData.login,
+						login   : accountData.login.toLowerCase(),
 						password: accountData.password === account.password?account.password:md5(accountData.password),
 						active  : that.active,
 						role    : "beneficiary",
@@ -365,8 +385,7 @@ function Beneficiary( ) {
 							})
 							.catch( reject );
 					});
-				})
-				.catch( reject );
+				});
 		});
 	};
 	
@@ -420,21 +439,27 @@ function Beneficiary( ) {
 					return that.save();
 				})
 				.then( function() {
+					return that.createEvent("Beneficiary","update", updatedEntry._id, professionalID);
+				})
+				.then( function() {
 					return new promise( function(resolve, reject) {
 						if (accountData) {
 							that.accountUpdate(accountData)
 								.then( resolve )
-								.catch( resolve );
+								.catch( function(err) {
+									logger.warning("accountUpdate", err );
+									reject(err);
+								});
 						} else {
 							resolve( that );
 						}
 					});
 				})
-				.then( function() {
-					that.createEvent("Beneficiary","update", updatedEntry._id, professionalID);
-				})
-				.then(resolve)
-				.catch(reject);
+				.then( resolve )
+				.catch( function(err) {
+					logger.warning("catch", err );
+					reject(err);
+				});
 		});
 	};
 
@@ -1492,7 +1517,7 @@ function Beneficiary( ) {
 			var dietaryPlan = new DietaryPlan(new ObjectID(that._id));
 			dietaryPlan.setup(that._id, dietaryPlanObj, professionalID)
 				.then(function(item) {
-					that.createEvent("Dietary plan","update", that._id, professionalID);
+					that.createEvent("Dietary plan", item.count?"update":"create", that._id, professionalID);
 				})
 				.then( resolve )
 				.catch(reject);
@@ -1534,7 +1559,7 @@ function Beneficiary( ) {
 			var physicalPlan = new PhysicalPlan(new ObjectID(that._id));
 			physicalPlan.setup(that._id, physicalPlanObj, professionalID)
 				.then(function(item) {
-					that.createEvent("Physical plan","update", that._id, professionalID);
+					that.createEvent("Physical plan",item.count?"update":"create", that._id, professionalID);
 				})
 				.then(resolve)
 				.catch(reject);

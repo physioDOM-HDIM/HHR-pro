@@ -1,6 +1,7 @@
 'use strict';
 
 /* global moment, Cookies */
+var filterParam = "";
 
 //Get the base url of the tsante-list component (without potential params)
 function getBaseURL(url) {
@@ -12,8 +13,10 @@ function getBaseURL(url) {
 function paginate(init, params) {
     var listPagerElt = document.querySelector("tsante-list");
     if (params) {
-        listPagerElt.url = getBaseURL(listPagerElt.url) + params;
+		filterParam = params;
+        listPagerElt.url = getBaseURL(listPagerElt.url) + "?"+ params;
     } else {
+		filterParam = "";
         listPagerElt.url = getBaseURL(listPagerElt.url);
     }
     if (init) {
@@ -31,13 +34,13 @@ function getParams() {
         params = "";
     
     if (JSON.stringify(objFilter) !== "{}") {
-        params += "?filter=" + JSON.stringify(objFilter);
+        params += "filter=" + JSON.stringify(objFilter);
     }
     if (objOrder.sort) {
-        params += (params ? "&" : "?") + "sort=" + objOrder.sort;
+        params += (params ? "&" : "") + "sort=" + objOrder.sort;
     }
     if (objOrder.dir) {
-        params += (params ? "&" : "?") + "dir=" + objOrder.dir;
+        params += (params ? "&" : "") + "dir=" + objOrder.dir;
     }
     return params;
 }
@@ -77,6 +80,16 @@ function updateCal() {
 	}
 }
 
+function viewRecord(itemID, indx) {
+	var listPagerElt = document.querySelector("tsante-list");
+	var url = "/datarecord/"+itemID+"?indx="+(indx+1+ (listPagerElt.pg - 1)*10);
+	if( filterParam ) {
+		url += "&"+filterParam; 
+	}
+	console.log( url );
+	window.location.href = url;
+}
+
 function init() {
 	moment.locale(Cookies.get("lang")==="en"?"en-gb":Cookies.get("lang"));
 	[].slice.call(document.querySelectorAll("zdk-input-date")).forEach( function(item) {
@@ -95,6 +108,32 @@ function init() {
         }
         this.render(list);
     });
+
+	if( location.search ) {
+		var navs = document.querySelectorAll(".nav");
+		[].slice.call(navs).forEach( function(elt) {
+			elt.classList.remove("hidden");
+		});
+
+		var filter = {};
+		var qs = location.search.slice(1).split("&");
+		qs.forEach(function (item) {
+			var tmp = item.split("=");
+			filter[tmp[0]] = isNaN(tmp[1]) || !tmp[1].length ? tmp[1] : parseInt(tmp[1], 10);
+		});
+		console.log(filter);
+		if (filter.filter) { 
+			filter.filter = JSON.parse(decodeURI(filter.filter));
+			if( filter.filter.startDate ) { document.querySelector('.startDate').value = filter.filter.startDate; }
+			if( filter.filter.endDate ) { document.querySelector('.endDate').value = filter.filter.endDate; }
+			if( filter.filter.professionals) {
+				console.log( filter.filter.professionals );
+			}
+		}
+		if (filter.sort) { document.querySelector("select[name=sort]").value = filter.sort; }
+		if (filter.dir) { document.querySelector("select[name=dir]").value = filter.dir; }
+		validFilter();
+	}
 }
 window.addEventListener("polymer-ready", init, false);
 

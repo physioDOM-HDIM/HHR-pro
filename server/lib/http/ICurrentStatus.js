@@ -67,8 +67,10 @@ var ICurrentStatus = {
 
 				var createDataRecord = function(currentStatus) {
 					return new RSVP.Promise(function(resolve, reject) {
+						logger.trace( "createDataRecord");
+						console.log( 'Health status : '+ currentStatus.name, 'validate', currentStatus._id, req.session.person.id );
 						if (updateItem.validated) {
-
+							
 							var dataRecord = {
 								items: [],
 								healthStatus: true
@@ -129,18 +131,21 @@ var ICurrentStatus = {
 									break;
 							}
 
-							if(dataRecord.items.length === 0) {
-								resolve(currentStatus);
-							} else {
-								beneficiary.createDataRecord(dataRecord, req.session.person.id)
-									.then(function() {
+							beneficiary.createEvent('Health status : '+ currentStatus.name, 'validate', currentStatus._id, req.session.person.id)
+								.then( function() {
+									if (dataRecord.items.length === 0) {
 										resolve(currentStatus);
-									})
-									.catch(function(err) {
-										logger.trace('Error', err);
-										reject(err);
-									});
-							}
+									} else {
+										beneficiary.createDataRecord(dataRecord, req.session.person.id)
+											.then(function () {
+												resolve(currentStatus);
+											})
+											.catch(function (err) {
+												logger.error(err.stack ? err.stack : err);
+												reject(err);
+											});
+									}
+								});
 
 						}
 						else {
@@ -182,7 +187,8 @@ var ICurrentStatus = {
 					var newCurrentStatus;
 					new CurrentStatus().update(updateItem)
 						.then(function (current) {
-							return beneficiary.createEvent('Health status', 'create', current._id, req.session.person.id)
+							console.log( "validated ? ", current.validated );
+							return beneficiary.createEvent('Health status : '+ current.name, 'create', current._id, req.session.person.id)
 								.then( function() {
 									return createDataRecord(current);
 								});

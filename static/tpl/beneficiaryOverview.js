@@ -14,7 +14,7 @@ function init() {
 		}
 		this.render(list);
 	});
-	if( document.querySelector("#biomasterStatus").value === "pending" ) {
+	if( document.querySelector("#biomasterStatus") && document.querySelector("#biomasterStatus").value === "pending" ) {
 		setTimeout(getQueueStatus,2000);
 	}
 }

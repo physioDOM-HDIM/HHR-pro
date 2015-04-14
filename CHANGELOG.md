@@ -1,3 +1,26 @@
+__v0.0.33__
+
+  - \#208 : Bug 287 - [Result from data recording list][v027] Navigation d'un result a un autre
+  - \#198 : Bug 290 - [Current Health status][v027] Droit pour Validation
+  - \#212 : Bug 308 - [Login][v031] Le login doit être unique
+  - \#211 : Bug 305 - [Langue][Page de login][v031] Chargement langue par défaut du serveur
+  - \#210 : Bug 292 - [Beneficiary overview/Event log][v027] Intitulé des events
+  - \#209 : Bug 303 - [Create-Update Beneficiary][v031] Problème sauvegarde numéros de telephone
+
+> __Nota :__ to apply the bugfix for \#212 execute the following command on mongo :
+>
+>     cursor = db.account.find();
+>     while( cursor.hasNext() ) { 
+>         var tmp = cursor.next(); 
+>         tmp.login=tmp.login.toLowerCase(); 
+>         db.account.save( tmp ); 
+>     }
+
+<br/>
+> __Nota :__ to apply bugfix \#198, execute the following command :
+>
+>     mongoimport -d physioDOM --drop -c specialRights --file initDB/specialRights.json
+  
 __v0.0.32__
 
   - \#201 : [Beneficiary/Bene_select][physioDOM-v0.0.31] sort by city
@@ -10,18 +33,18 @@ __v0.0.32__
   - \#197 : Bug 230 - [Global/Account-Nomenclature][v009.1] RoleClass, RoleType
   - \#199 : Bug 241 - [Message to Home&Data recording][v009.1] Ursupation d'utilisateur (part 2)
   
-> Nota : to apply the bugfix for \#201 execute the following command on mongo :
+> __Nota :__ to apply the bugfix for \#201 execute the following command on mongo :
 >
->    cursor = db.beneficiaries.find(); 
->    while( cursor.hasNext() ) { 
->        var tmp = cursor.next(); 
->        if( tmp.address ) { 
->            tmp.address.forEach( function(address) { 
->                address.city = address.city.toUpperCase(); 
->            });
->        }
->        db.beneficiaries.save( tmp ); 
->    }
+>     cursor = db.beneficiaries.find(); 
+>     while( cursor.hasNext() ) { 
+>         var tmp = cursor.next(); 
+>         if( tmp.address ) { 
+>             tmp.address.forEach( function(address) { 
+>                 address.city = address.city.toUpperCase(); 
+>             });
+>         }
+>         db.beneficiaries.save( tmp ); 
+>     }
 
 __v0.0.31__
   
@@ -29,7 +52,7 @@ __v0.0.31__
   - update translation files
   - update translation lists
   
-> Nota : Lists "msg Status" and "msg severity" were deleted as on inter-professional messages, heading that no longer exists.
+> __Nota :__ Lists "msg Status" and "msg severity" were deleted as on inter-professional messages, heading that no longer exists.
 
 __v0.0.30__
 

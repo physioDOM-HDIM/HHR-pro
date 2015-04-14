@@ -284,7 +284,13 @@
 	#}
 
 	<div class="hidden health-status">{{dataRecordItems.healthStatus}}</div>
-
+	
+	<div class="nav row hidden" style="margin-bottom:20px">
+		<button class="previous blue not-disabled" onclick="previousItem()">{{"Previous"|i18n}}</button>
+		<span class="spacer"></span>
+		<button class="next blue not-disabled" onclick="nextItem()">{{"Next"|i18n}}</button>
+	</div>
+	
 	<div class="row title">
 		<label class="title">
 			<span id="datetime">
@@ -384,7 +390,7 @@
 			<button id="saveBtn" class="green">{{"Save"|i18n}}</button>
 			{% endif %}
 			{% else %}
-			<a href="/datarecord"><button type="button" class="blue big not-disabled">{{"Back"|i18n}}</button></a>
+			<button type="button" class="blue big not-disabled" onclick="backDatarecord()">{{"Back"|i18n}}</button>
 			{% if rights.write && beneficiary.active %}
 			<button id="saveBtn" class="green">{{"Save"|i18n}}</button>
 			{% endif %}
@@ -393,7 +399,11 @@
 	</form>
 	
 </div>
-
+<div class="nav row hidden">
+	<button class="previous blue not-disabled" onclick="previousItem()">{{"Previous"|i18n}}</button>
+	<span class="spacer"></span>
+	<button class="next blue not-disabled" onclick="nextItem()">{{"Next"|i18n}}</button>
+</div>
 {% include "./modal.htm" %}
 {% endblock %}
 

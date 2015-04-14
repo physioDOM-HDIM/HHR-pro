@@ -108,7 +108,7 @@ function Beneficiaries( ) {
 	 */
 	this.createBeneficiary = function( session, newBeneficiary ) {
 		return new promise( function(resolve, reject) {
-			logger.trace("createBeneficiary", newBeneficiary);
+			logger.trace("createBeneficiary");
 			if( !session.role || ["administrator","coordinator"].indexOf(session.role)===-1 ) {
 				logger.debug("not authorized");
 				reject( { code:403, message:"not authorized"});

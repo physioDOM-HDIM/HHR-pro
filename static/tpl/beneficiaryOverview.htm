@@ -197,6 +197,7 @@
 								<template if="{% raw %}{{ item.operation == 'create' }}{% endraw %}">{{"Create"|i18n}}</template>
 								<template if="{% raw %}{{ item.operation == 'update' }}{% endraw %}">{{"Update"|i18n}}</template>
 								<template if="{% raw %}{{ item.operation == 'overtake' }}{% endraw %}">{{"Overtake"|i18n}}</template>
+								<template if="{% raw %}{{ item.operation == 'validate' }}{% endraw %}">{{"Validate"|i18n}}</template>
 							</div>
 							<div style="-webkit-flex:1; -ms-flex:1; flex:1; text-align:right">
 								<template if="{% raw %}{{ item.service == 'Beneficiary' }}{% endraw %}">

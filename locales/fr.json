@@ -378,5 +378,9 @@
   "of the month":"du mois",
   "beginning":"début",
   "end":"fin",
-  "Day":"jour(s)"
+  "Day":"jour(s)",
+  "Previous":"Précédent",
+  "Next":"Suivant",
+  "Validate":"Validation",
+  "This login is already used, please choose another one":"Cet identifiant est déjà utilisé, choisissez en un autre"
 }

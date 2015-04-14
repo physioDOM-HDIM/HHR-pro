@@ -2,12 +2,15 @@
 
 var utils = new Utils(),
 	infos = {},
+	filter={},
 	idx = 0,
 	createdDataRecordID = null,
 	lists = {},
 	modified = false,
 	createdNew = false,
-	archiveUpdate = false;
+	archiveUpdate = false,
+	next = "",
+	prev = "";
 
 infos.datasInit = null;
 
@@ -15,6 +18,46 @@ window.addEventListener("DOMContentLoaded", function () {
 	infos.datasInit = form2js(document.forms.dataRecord);
 	infos.lang = Cookies.get("lang");
 
+	if( location.search ) {
+		var navs = document.querySelectorAll(".nav");
+		[].slice.call(navs).forEach( function(elt) {
+			elt.classList.remove("hidden");
+		});
+			
+		var qs = location.search.slice(1).split("&");
+		qs.forEach(function (item) {
+			var tmp = item.split("=");
+			filter[tmp[0]] = isNaN(tmp[1]) || !tmp[1].length ? tmp[1] : parseInt(tmp[1], 10);
+		});
+		console.log(filter);
+		var url = '/api/beneficiary/datarecords?pg=1&offset=1000';
+		if (filter.filter) { url += "&filter=" + filter.filter; }
+		if (filter.sort) { url += "&sort=" + filter.sort; }
+		if (filter.dir) { url += "&dir=" + filter.dir; }
+		
+		var xhrItems = new XMLHttpRequest();
+		xhrItems.open("GET", url, true);
+		xhrItems.onload = function (e) {
+			var list = JSON.parse(this.responseText);
+			if( filter.indx === 1 ) {
+				[].slice.call(document.querySelectorAll("button.previous")).forEach( function(elt) {
+					elt.disabled = true;
+				});
+				
+			} else {
+				prev = list.items[filter.indx-2]._id;
+			}
+			if( list.nb <= filter.indx ) {
+				[].slice.call(document.querySelectorAll("button.next")).forEach( function(elt) {
+					elt.disabled = true;
+				});
+			} else {
+				next = list.items[filter.indx]._id;
+			}
+		};
+		xhrItems.send();
+	}
+	
 	moment.locale(infos.lang === "en"?"en_gb":infos.lang );
 	var dateTime = document.querySelector("#datetime").innerHTML.trim();
 	if( dateTime ) {
@@ -46,6 +89,36 @@ window.addEventListener("DOMContentLoaded", function () {
 	}
 
 }, false);
+
+function previousItem() {
+	filter.indx--;
+	var tmp = "";
+	for( var prop in filter ) {
+		tmp += (tmp.length?"&":"")+prop+"="+filter[prop];
+	}
+	window.location.href = "/datarecord/"+prev+"?"+tmp;
+}
+
+function nextItem() {
+	filter.indx++;
+	var tmp = "";
+	for( var prop in filter ) {
+		tmp += (tmp.length?"&":"")+prop+"="+filter[prop];
+	}
+	window.location.href = "/datarecord/"+next+"?"+tmp;
+}
+
+function backDatarecord() {
+	var url = "/datarecord";
+	if( filter ) {
+		var tmp = "";
+		for( var prop in filter ) {
+			tmp += (tmp.length?"&":"")+prop+"="+filter[prop];
+		}
+		url += "?"+tmp;
+	}
+	window.location.href = url;
+}
 
 function isHealthStatusValidated() {
 	utils.promiseXHR("GET", "/api/beneficiary/current/validation", 200)
