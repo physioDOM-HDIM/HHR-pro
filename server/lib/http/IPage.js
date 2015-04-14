@@ -640,6 +640,7 @@ function IPage() {
 		
 		var promisesArray = [
 			"role",
+			"civility",
 			"system",
 			"use",
 			"wayOfLife",
@@ -682,6 +683,7 @@ function IPage() {
 				data.beneficiary.address.forEach( function(address) {
 					address.use = data.useArray.items[address.use];
 				});
+				data.beneficiary.gender = data.civilityArray.items[data.beneficiary.gender];
 				data.beneficiary.birthdate = moment(data.beneficiary.birthdate).format("L");
 				return beneficiary._id ? beneficiary.getProfessionals() : null;
 			}).then(function(professionals){
