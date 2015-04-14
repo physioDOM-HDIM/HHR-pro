@@ -8,6 +8,7 @@
 'use strict';
 
 var RSVP       = require('rsvp');
+var Promise    = RSVP.Promise;
 var Logger     = require('logger');
 var ObjectID   = require('mongodb').ObjectID;
 var database   = require("./database.js");

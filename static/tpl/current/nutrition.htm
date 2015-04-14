@@ -301,7 +301,9 @@
 		{% if !status.validated %}
 		<div id="buttons" class="row control">
 			<span class="spacer"></span>
+			{% if validate.write %}
 			<button type="submit" class="blue to-valid validate-button" onclick="showConfirm();">{{"Validate"|i18n}}</button>
+			{% endif %}
 			<button type="button" class="red" onclick="modified=false; location.reload();">{{"Cancel"|i18n}}</button>
 			<button type="submit" class="green to-valid" onclick="saveDatas();">{{"Save"|i18n}}</button>
 		</div>
