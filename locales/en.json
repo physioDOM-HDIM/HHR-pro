@@ -378,5 +378,8 @@
   "of the month":"of the month",
   "beginning":"beginning",
   "end":"end",
-  "Day":"day(s)"
+  "Day":"day(s)",
+  "Previous":"Previous",
+  "Next":"Next",
+  "Validate":"Validation"
 }

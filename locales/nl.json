@@ -378,5 +378,8 @@
   "of the month":"de maand",
   "beginning":"begin",
   "end":"einde",
-  "Day":"dag(en)"
+  "Day":"dag(en)",
+  "Previous":"Vorig",
+  "Next":"Volgende",
+  "Validate":"Bevestiging"
 }
