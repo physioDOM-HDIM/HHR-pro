@@ -361,7 +361,6 @@ function IPage() {
 			"diagnosis",
 			"destination",
 			"communication",
-			"profession",
 			"perimeter",
 			"nutritionalStatus",
 			"generalStatus"
@@ -394,17 +393,7 @@ function IPage() {
 				if( data.rights.read === false ) {
 					noacess( res, next);
 				} else {
-					html = swig.renderFile(DOCUMENTROOT + '/static/tpl/beneficiaryCreate.htm', data, function (err, output) {
-						if (err) {
-							console.log("error", err);
-							console.log("output", output);
-							res.write(err);
-							res.end();
-							next();
-						} else {
-							sendPage(output, res, next);
-						}
-					});
+					render('/static/tpl/beneficiaryCreate.htm', data, res, next);
 				}
 			})
 			.catch(function(err) {
@@ -513,17 +502,7 @@ function IPage() {
 				if( data.rights.read === false ) {
 					noacess( res, next);
 				} else {
-					html = swig.renderFile(DOCUMENTROOT + '/static/tpl/beneficiaryCreate.htm', data, function (err, output) {
-						if (err) {
-							console.log("error", err);
-							console.log("output", output);
-							res.write(err);
-							res.end();
-							next();
-						} else {
-							sendPage(output, res, next);
-						}
-					});
+					render('/static/tpl/beneficiaryCreate.htm', data, res, next);
 				}
 			})
 			.catch(function(err) {
@@ -640,6 +619,7 @@ function IPage() {
 		
 		var promisesArray = [
 			"role",
+			"civility",
 			"system",
 			"use",
 			"wayOfLife",
@@ -679,10 +659,17 @@ function IPage() {
 			.then( function( beneficiary ) {
 				moment.locale(req.cookies.lang==="en"?"en-gb":req.cookies.lang);
 				data.beneficiary = beneficiary;
+				data.beneficiary.address.forEach( function(address) {
+					address.use = data.useArray.items[address.use];
+				});
+				data.beneficiary.gender = data.civilityArray.items[data.beneficiary.gender];
 				data.beneficiary.birthdate = moment(data.beneficiary.birthdate).format("L");
 				return beneficiary._id ? beneficiary.getProfessionals() : null;
 			}).then(function(professionals){
 				if( professionals ){
+					professionals.forEach( function(professional) {
+						professional.job = data.jobArray.items[professional.job];
+					});
 					data.beneficiary.professionals = professionals;
 				}
 				render('/static/tpl/beneficiaryOverview.htm', data, res, next);
