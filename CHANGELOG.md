@@ -1,3 +1,7 @@
+__v0.0.33__
+
+  - \#198 : Bug 290 - [Current Health status][v027] Droit pour Validation
+  
 __v0.0.32__
 
   - \#201 : [Beneficiary/Bene_select][physioDOM-v0.0.31] sort by city
