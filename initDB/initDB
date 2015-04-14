@@ -26,6 +26,7 @@ mongoimport -h ${IP} -d ${DBNAME} --drop -c lists --file lists.json
 mongoimport -h ${IP} -d ${DBNAME} --drop -c questionnaires --file questionnaires.json
 mongoimport -h ${IP} -d ${DBNAME} --drop -c menus --file menus.json
 mongoimport -h ${IP} -d ${DBNAME} --drop -c professionals --file professionals.json
-mongoimport -h ${IP} -d physioDOM --drop -c account --file account.json
+mongoimport -h ${IP} -d ${DBNAME} --drop -c account --file account.json
+mongoimport -h ${IP} -d ${DBNAME} --drop -c specialRights --file specialRights.json
 
 echo "database initialized"
