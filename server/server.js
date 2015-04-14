@@ -971,6 +971,7 @@ function logout(req, res, next ) {
 			logger.info('unset cookies');
 			cookies.set('sessionID');
 			cookies.set('role');
+			cookies.set("lang");
 			if(req.url.match(/^\/api/)) {
 				// res.send(200);
 				res.send(403, { error:403, message:"no session"} );
