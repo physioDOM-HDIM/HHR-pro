@@ -125,7 +125,14 @@
 					<div>&nbsp;{% raw %}{{ item.from }}{% endraw %}</div>
 				</div>
 				<div class="col">{{"Send by"|i18n}}: {% raw %}{{item.author.name.family}} {{item.author.name.given}}{% endraw %}</div>
-				<div class="col">{{"Status"|i18n}}: {% raw %}{{item.status}}{% endraw %}</div>
+				<div class="col">{{"Status"|i18n}}:
+					<template if="{% raw %}{{ item.status === 'transmitting' }}{% endraw %}">
+						{{"Transmitting"|i18n}}
+					</template>
+					<template if="{% raw %}{{ item.status !== 'transmitting' }}{% endraw %}">
+						{{"Read"|i18n}}
+					</template>
+				</div>
 			</div>
 			<div class="row message-detail hidden">
 				<div style="display:block">
