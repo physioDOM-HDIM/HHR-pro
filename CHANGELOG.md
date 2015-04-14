@@ -1,3 +1,7 @@
+__v0.0.33__
+
+  - \#208 : Bug 287 - [Result from data recording list][v027] Navigation d'un result a un autre
+  
 __v0.0.32__
 
   - \#201 : [Beneficiary/Bene_select][physioDOM-v0.0.31] sort by city
