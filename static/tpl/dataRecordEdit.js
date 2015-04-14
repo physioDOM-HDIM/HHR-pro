@@ -15,6 +15,16 @@ window.addEventListener("DOMContentLoaded", function () {
 	infos.datasInit = form2js(document.forms.dataRecord);
 	infos.lang = Cookies.get("lang");
 
+	var filter = {};
+	if( location.search ) {
+		var qs = location.search.slice(1).split("&");
+		qs.forEach(function (item) {
+			var tmp = item.split("=");
+			filter[tmp[0]] = isNaN(tmp[1]) || !tmp[1].length ? tmp[1] : parseInt(tmp[1], 10);
+		});
+		console.log( filter );
+	}
+	
 	moment.locale(infos.lang === "en"?"en_gb":infos.lang );
 	var dateTime = document.querySelector("#datetime").innerHTML.trim();
 	if( dateTime ) {

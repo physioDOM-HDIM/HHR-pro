@@ -1,6 +1,7 @@
 'use strict';
 
 /* global moment, Cookies */
+var filterParam = "";
 
 //Get the base url of the tsante-list component (without potential params)
 function getBaseURL(url) {
@@ -12,8 +13,10 @@ function getBaseURL(url) {
 function paginate(init, params) {
     var listPagerElt = document.querySelector("tsante-list");
     if (params) {
-        listPagerElt.url = getBaseURL(listPagerElt.url) + params;
+		filterParam = params;
+        listPagerElt.url = getBaseURL(listPagerElt.url) + "?"+ params;
     } else {
+		filterParam = "";
         listPagerElt.url = getBaseURL(listPagerElt.url);
     }
     if (init) {
@@ -31,13 +34,13 @@ function getParams() {
         params = "";
     
     if (JSON.stringify(objFilter) !== "{}") {
-        params += "?filter=" + JSON.stringify(objFilter);
+        params += "filter=" + JSON.stringify(objFilter);
     }
     if (objOrder.sort) {
-        params += (params ? "&" : "?") + "sort=" + objOrder.sort;
+        params += (params ? "&" : "") + "sort=" + objOrder.sort;
     }
     if (objOrder.dir) {
-        params += (params ? "&" : "?") + "dir=" + objOrder.dir;
+        params += (params ? "&" : "") + "dir=" + objOrder.dir;
     }
     return params;
 }
@@ -75,6 +78,13 @@ function updateCal() {
 	if( endDateContainer.value ) {
 		startDateContainer.stop = endDateContainer.value;
 	}
+}
+
+function viewRecord(itemID, indx) {
+	var listPagerElt = document.querySelector("tsante-list");
+	var url = "/datarecord/"+itemID+"?indx="+(indx+ (listPagerElt.pg - 1)*10)+"&filter="+filterParam;
+	console.log( url );
+	window.location.href = url;
 }
 
 function init() {
