@@ -128,9 +128,8 @@ function _addProfessional(professionalItem) {
             display_job: function(){
                 var str = professionalItem.job;
                 if(_dataLists && _dataLists.job && _dataLists.job.items && 
-                    _dataLists.job.items[professionalItem.job] && 
-                    _dataLists.job.items[professionalItem.job][_langCookie]){
-                    str = _dataLists.job.items[professionalItem.job][_langCookie];
+                    _dataLists.job.items[professionalItem.job] ) {
+                    str = _dataLists.job.items[professionalItem.job][_langCookie] || _dataLists.job.items[professionalItem.job]["en"];
                 }
                 return str;
             },
@@ -229,7 +228,9 @@ function addProfessionals() {
         _dataObj.professionals = JSON.parse(JSON.stringify(_dataObjTmp.professionals));
         _removeAllProfessionals();
         _dataObj.professionals.map(function(proItem) {
-            _addProfessional(proItem);
+			if( proItem.active ) {
+				_addProfessional(proItem);
+			}
         });
     }
     closeProfessionals();

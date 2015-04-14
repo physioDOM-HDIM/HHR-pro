@@ -554,7 +554,7 @@
 								       onchange="updateProfessionalReferent(this, {% raw %}'{{i}}'{% endraw %})"/>
 							</div>
 							<div class="col bold">{% raw %}{{item.name.family}} {{item.name.given}}{% endraw %}</div>
-							<div class="col">{% raw %}{{list.dataLists.job.items[item.job][list.lang] || item.job}}{%
+							<div class="col">{% raw %}{{list.dataLists.job.items[item.job][list.lang] || list.dataLists.job.items[item.job]["en"] || item.job}}{%
 								endraw %}
 							</div>
 						</div>
