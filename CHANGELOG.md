@@ -1,5 +1,6 @@
 __v0.0.33__
 
+  - \#208 : Bug 287 - [Result from data recording list][v027] Navigation d'un result a un autre
   - \#198 : Bug 290 - [Current Health status][v027] Droit pour Validation
   
 __v0.0.32__

@@ -329,12 +329,13 @@ button.small {
 */
 button.small,
 a.button.small {
-	min-width: 50px;
+	min-width: 75px;
 	font-size: 75%;
 	/* height: 75%; */
 	height: 19px;
 	line-height:19px;
 	box-sizing: border-box;
+	margin: 5px 0px;
 }
 a.button.small {
 	line-height: 19px;

@@ -99,7 +99,7 @@
 </zdk-panel>
 
 <tsante-list url="/api/beneficiary/datarecords" pg="1" auto="true" autoRender="false" unresolved id="tsanteList">
-	<template is="auto-binding" repeat="{% raw %}{{item in list.items}}{% endraw %}">
+	<template is="auto-binding" repeat="{% raw %}{{item, indx in list.items}}{% endraw %}">
 		<div class="item">
 			<div class="row">
 				<div class="flex-line">
@@ -127,9 +127,9 @@
 						</div>
 					</div>
 				</div>
-				<div><a href="/datarecord/{%raw%}{{item._id}}{% endraw %}">
-					<button class="blue small" style="margin:5px">{{"View"|i18n}}</button>
-				</a></div>
+				<div>
+					<button class="blue small" style="margin:5px" onclick="viewRecord('{%raw%}{{item._id}}{% endraw %}',{%raw%}{{indx}}{%endraw%})">{{"View"|i18n}}</button>
+				</div>
 			</div>
 		</div>
 	</template>
