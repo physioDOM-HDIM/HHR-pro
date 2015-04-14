@@ -6,6 +6,7 @@ __v0.0.33__
   - \#211 : Bug 305 - [Langue][Page de login][v031] Chargement langue par défaut du serveur
   - \#210 : Bug 292 - [Beneficiary overview/Event log][v027] Intitulé des events
   - \#209 : Bug 303 - [Create-Update Beneficiary][v031] Problème sauvegarde numéros de telephone
+  - \#200 : [Data curves] the parameter's labels are not translated
 
 > __Nota :__ to apply the bugfix for \#212 execute the following command on mongo :
 >
