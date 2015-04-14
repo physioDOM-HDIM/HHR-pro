@@ -25,7 +25,7 @@ var eventsSchema = {
 		"sender": 	{ type: "object" },
 		"datetime": { type: "string", format: "date-time", required: true},
 		"service":  { type: "string", enum: eventService , required: true },
-		"operation":{ type: "string", enum: ["create", "update", "overtake"] , required: true },
+		"operation":{ type: "string", enum: ["create", "update", "overtake","validate"] , required: true },
 		"subject": { type:"object", description:"beneficiary ID" }
 	},
 	"additionalProperties":false
