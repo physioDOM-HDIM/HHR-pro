@@ -7,6 +7,7 @@ __v0.0.33__
   - \#210 : Bug 292 - [Beneficiary overview/Event log][v027] Intitulé des events
   - \#209 : Bug 303 - [Create-Update Beneficiary][v031] Problème sauvegarde numéros de telephone
   - \#200 : [Data curves] the parameter's labels are not translated
+  - \#213 : Bug 288 - [current health status][v027] verrouillage menu/fonctionnalité avant validation
   - Fix some translate
 
 > __Nota :__ to apply the bugfix for \#212 execute the following command on mongo :
