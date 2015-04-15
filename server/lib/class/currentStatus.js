@@ -32,20 +32,21 @@ function CurrentStatus() {
 					logger.alert('Database error');
 					throw err;
 				}
-				if (!doc) {
-					reject({code: 404, error: 'not found'});
+				if ( doc.length === 0 ) {
+					// reject({code: 404, error: 'not found'});
+					resolve(false);
 				}
 				else {
 					var valid = true;
-					for(var i = 0; i< doc.length; i++) {
-						if(physioDOM.config.healthStatusValidation && physioDOM.config.healthStatusValidation.indexOf( doc[i].name ) > -1) {
-							if(!doc[i].validated) {
-								valid = false;
-								break;
-							}
+					var statuses = {};
+					doc.forEach( function(status) {
+						statuses[status.name] = status.validated?status.validated:false;
+					});
+					physioDOM.config.healthStatusValidation.forEach( function( name ) {
+						if( !statuses[name] || !statuses[name].validated ) {
+							valid = false;
 						}
-					}
-					
+					});
 					resolve(valid);
 				}
 			});
