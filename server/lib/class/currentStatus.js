@@ -43,7 +43,7 @@ function CurrentStatus() {
 						statuses[status.name] = status.validated?status.validated:false;
 					});
 					physioDOM.config.healthStatusValidation.forEach( function( name ) {
-						if( !statuses[name] || !statuses[name].validated ) {
+						if( !statuses[name] || !statuses[name] ) {
 							valid = false;
 						}
 					});
