@@ -1,3 +1,7 @@
+__v0.0.33-2__ ( hotfix release )
+
+ - \#213 : Bug 288 - [current health status][v027] verrouillage menu/fonctionnalité avant validation
+
 __v0.0.33__
 
   - \#208 : Bug 287 - [Result from data recording list][v027] Navigation d'un result a un autre
