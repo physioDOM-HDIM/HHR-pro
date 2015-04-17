@@ -1,7 +1,8 @@
 __v0.0.34__
 
   - \#212 : Bug 305 - [Langue][Page de login][v031] Chargement langue par défaut du serveur
-  - #216 : Bug 230 - [Global/Account-Nomenclature][v009.1] RoleClass, RoleType
+  - \#216 : Bug 230 - [Global/Account-Nomenclature][v009.1] RoleClass, RoleType
+  - \#215 : [Beneficiary/Bene_edit][physioDOM-v0.0.33] HRR-Pro access
  
 __v0.0.33-2__ ( hotfix release )
 
