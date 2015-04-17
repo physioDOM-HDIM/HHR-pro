@@ -408,6 +408,9 @@ function checkAllForms(isValidate) {
     //To force the HTML5 form validation on each form if needed, set click on hidden submit button
     //form.submit() doesn't call the HTML5 form validation on elements
     [].map.call(forms, function(form) {
+		if( form.name === "account" && !form.login.value ) {
+			return;
+		}
         if (!form.checkValidity()) {
             invalid = true;
             btn = document.querySelector("#" + form.name + "SubmitBtn");
