@@ -53,7 +53,7 @@ function IPage() {
 		if(req.session) {
 			lang = req.session.lang || req.cookies.lang || req.params.lang || physioDOM.lang;
 		} else {
-			lang = req.cookies.lang || req.params.lang || physioDOM.lang;
+			lang = physioDOM.lang;
 		}
 		logger.info("lang", lang);
 		
@@ -138,18 +138,8 @@ function IPage() {
 			version: pkg.version,
 			lang: physioDOM.config.Lang,
 			queue: physioDOM.config.queue
-		}
-		html = swig.renderFile(DOCUMENTROOT+'/static/index.htm', data, function(err, output) {
-			if (err) {
-				console.log("error", err);
-				console.log("output", output);
-				res.write(err);
-				res.end();
-				next(false);
-			} else {
-				sendPage(output, res, next);
-			}
-		});
+		};
+		render('/static/index.htm', data, res, next);
 	};
 	
 	/**
@@ -1871,7 +1861,7 @@ function IPage() {
 	 * @param  {Function} next
 	 */
 	function render(tpl, data, res, next) {
-		if( !data.rights || data.rights.read === false ) {
+		if( tpl !== "/static/index.htm" && (!data.rights || data.rights.read === false) ) {
 			noaccess( res, next );
 		} else {
 			swig.renderFile(DOCUMENTROOT + tpl, data, function (err, output) {

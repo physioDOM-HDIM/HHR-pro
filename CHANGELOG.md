@@ -1,6 +1,11 @@
+__v0.0.34__
+
+  - \#212 : Bug 305 - [Langue][Page de login][v031] Chargement langue par défaut du serveur
+  - #216 : Bug 230 - [Global/Account-Nomenclature][v009.1] RoleClass, RoleType
+ 
 __v0.0.33-2__ ( hotfix release )
 
- - \#213 : Bug 288 - [current health status][v027] verrouillage menu/fonctionnalité avant validation
+  - \#213 : Bug 288 - [current health status][v027] verrouillage menu/fonctionnalité avant validation
 
 __v0.0.33__
 
