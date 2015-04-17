@@ -397,21 +397,21 @@
 			<div class="row">
 				<label>{{ "Password" | i18n }}</label>
 				<input type="hidden" name="password"  value="{{beneficiary.account.password}}" />
-				<input type="password" name="account.password" value="{{beneficiary.account.password}}"/>
+				<input type="password" name="account.password" value="{{beneficiary.account.password}}" required />
 			</div>
 			<div class="row">
 				<label>{{ "Confirm password" | i18n }}</label>
-				<input type="password" name="checkAccountPassword" value="{{beneficiary.account.password}}"/>
+				<input type="password" name="checkAccountPassword" value="{{beneficiary.account.password}}" required />
 			</div>
 			<div class="row tip" style="line-height:initial;margin-top:5px; margin-bottom:5px;">
 				{{"Info"|i18n}}: {{"The password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters" | i18n}}
 			</div>
 			<div class="row">
 				<label>{{ "Email"|i18n }}</label>
-				<input type="email" name="telecom.value"
+				<input type="email" name="telecom.value" required
 				       value="{%- for telecom in beneficiary.telecom -%}
 	                        {%- if telecom.system === 'email' -%}{{- telecom.value- }}{%- endif -%}
-	                    {%- endfor -%}"/>
+	                    {%- endfor -%}"  />
 			</div>
 			{% if IDS %}
 			<div class="row">
@@ -424,6 +424,7 @@
 				<button type="button" class="blue {% if professional.account.OTP %}hidden{% endif %}" id="createCert">Generate certificate</button>
 			</div>
 			{% endif %}
+			<button id="accountSubmitBtn" class="hidden"></button>
 		</form>
 	</zdk-panel>
 	
