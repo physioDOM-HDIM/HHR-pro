@@ -402,7 +402,8 @@ function addItem(node) {
         hasDietChoice: (list.name === 'socialServices' || list.name === 'healthServices'),
         editable: true,
         hasRank: list.hasRank?list.hasRank:false,
-        hasTVLabel: list.hasTVLabel?list.hasTVLabel:false,
+		hasRoleClass: (list.name === 'role'),
+		hasTVLabel: list.hasTVLabel?list.hasTVLabel:false,
         lang    : lang,
         items   : []
     };
@@ -449,6 +450,17 @@ function addItem(node) {
         };
         modelData.items.push(obj);
     }
+	if( list.name === 'role' ) {
+		obj.roleClass = [];
+		roleClass.items.forEach( function( roleClassItem ) {
+			var option = { 
+				value: roleClassItem.ref, 
+				label: roleClassItem.label[lang] || roleClassItem.label.en || ""  
+			};
+			obj.roleClass.push(option);
+		});
+		modelData.items.push(obj);
+	}
     newItem = JSON.parse(JSON.stringify(obj));
     delete newItem.idx;
     newItem.label = {};
