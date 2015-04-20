@@ -24,42 +24,81 @@
 <div class="hidden" id="validate-status">{{status.validated}}</div>
 
 <div id="content">
-	{% if status.validated && status.validatedDate %}
-		<div class="validated-date right">
-			{{ status.validatedDate | date }} {{"by"|i18n}} {{ author.name.family + ' ' + author.name.given }}
-		</div>
+	{% if status.validated.status && status.validated.date %}
+	<div class="validated-date right">
+		{{ status.validated.date | date }} {{"by"|i18n}} {{ author.name.family + ' ' + author.name.given }}
+	</div>
 	{% endif %}
+	
 	<form name="form" id="form" autocomplete="off" onsubmit="return false;">
 		<zdk-panel heading="{{ 'Distance travelled' | i18n }}">
-
-				<div class="row value-row">
-
-					<div class="value-name">{{"Number of steps"|i18n}}</div>
-					<div class="value-date stepsNumberDate">{% if status.stepsNumberDate %}{{status.stepsNumberDate}}{% endif %}</div>
-					<input type="number" step="1" min="{{parameters.stepsNumber.range.min}}" max="{{parameters.stepsNumber.range.max}}" name="stepsNumber" class="value-input" value="{{status.stepsNumber}}" {% if !rights.write || !beneficiary.active %}disabled{% endif %} />
-					<div class="value-unit">{{"steps per week"|i18n}}</div>
-
+			
+			<!- Parameters ->
+			{% for parameter in status.parameters %}
+			<div class="row value-row">
+				<div class="value-name">{{ parameter.name | i18n }}</div>
+				<input type="hidden" name="parameters[{{ parameter.name }}].name" value="{{ parameter.name }}" >
+				<div class="value-date">{% if parameter.date %}{{ parameter.date | date }}{% endif %}</div>
+				<input
+					flex
+					class="value-input"
+					type="number"
+					name="parameters[{{ parameter.name }}].value"
+					step="any"
+					min="{{parameters.weight.range.min}}"
+					max="{{parameters.weight.range.max}}"
+					value="{{parameter.value}}"
+					{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
+				<div class="value-unit">{{"steps per week"|i18n}}</div>
+			</div>
+			<div class="row value-row">
+				<label class="comment-label">{{"Status" | i18n}}</label>
+				<input
+					flex
+					class="comment-input"
+					type="text"
+					name="parameters[{{ parameter.name }}].comment"
+					value="{{parameter.comment}}"
+					{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
+			</div>
+			{% endfor %}
+			
+			<!- Questionnaires ->
+			{% for questionnaire in status.questionnaires %}
+			<div class="row value-row questionnaire-row" data-name="{{questionnaire.name}}">
+				<div class="quest-name">{{ questionnaire.name+" score" |i18n}}</div>
+				<input type="hidden" name="questionnaires[{{ questionnaire.name }}].name" value="{{ questionnaire.name }}" >
+				<div class="questionnaire-date">{% if questionnaire.date %}{{ questionnaire.date | date }}{% endif %}</div>
+				<input type="hidden" name="questionnaires[{{ questionnaire.name }}].date" value="{{ questionnaire.date.toString() }}" >
+				<input type="number" class="questionnaire-score" value="{{ questionnaire.score }}" readonly />
+				<input type="hidden" name="questionnaires[{{ questionnaire.name }}].score" value="{{ questionnaire.score }}" >
+				<input type="hidden" class="questionnaire-answer" name="questionnaires[{{ questionnaire.name }}].answerID" value="{{ questionnaire.answerID }}" />
+				<div class="questionnaire-button-container">
+					<a
+						class="button small blue"  style="margin-right: 10px;"
+						href={% if questionnaire.answerID %}"/answers/{{questionnaire.answerID}}"{% else %}"/questionnaire/{{questionnaire.name}}"{% endif %}
+					{% if status.validated.status && !questionnaire.score %}disabled{% endif %}{% if (!rights.write || !beneficiary.active) && !questionnaire.score %}disabled{% endif %}>
+					{{"Questionnaire"|i18n}}
+					</a>
+					<button class="remove button small red {% if !questionnaire.answerID || status.validated.status %}hidden{% endif %}" data-answer="{{questionnaire.answerID}}" onclick="removeAnswer(this)">{{"Delete"|i18n}}</button>
 				</div>
-
-				<div class="row value-row">
-
-					<label class="comment-label" for="commentStepsNumber">{{"Status" | i18n}}</label>
-					<input
-						flex
-						id="commentStepsNumber"
-						class="comment-input to-disable"
-						type="text"
-						name="commentStepsNumber"
-						value="{{status.commentStepsNumber}}"
-						{% if !rights.write || !beneficiary.active %}disabled{% endif %}
-						/>
-
-				</div>
-
+			</div>
+			<div class="row value-row">
+				<label class="comment-label" >{{"Status" | i18n}}</label>
+				<input
+					flex
+					id="comment{{questionnaire.name}}"
+					class="comment-input"
+					type="text"
+					name="questionnaires[{{ questionnaire.name }}].comment"
+					value="{{questionnaire.comment}}"
+					{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
+			</div>
+			{% endfor %}
 		</zdk-panel>
 
 		{% if rights.write && beneficiary.active %}
-			{% if !status.validated %}
+			{% if !status.validated.status %}
 			<div id="buttons" class="row control">
 				<span class="spacer"></span>
 				{% if validate.write %}

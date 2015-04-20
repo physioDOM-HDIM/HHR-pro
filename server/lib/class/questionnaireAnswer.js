@@ -119,6 +119,20 @@ function QuestionnaireAnswer() {
 			});
 		});
 	};
+
+	this.remove = function( ) {
+		var that = this;
+		return new promise( function(resolve, reject) {
+			logger.trace('remove', that._id);
+			physioDOM.db.collection('questionnaireAnswers').remove({ _id: that._id }, function (err, doc) {
+				if (err) {
+					logger.alert('Database Error');
+					throw err;
+				}
+				resolve();
+			});
+		});
+	};
 }
 
 module.exports = QuestionnaireAnswer;

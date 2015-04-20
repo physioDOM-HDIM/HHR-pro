@@ -1468,8 +1468,8 @@ function IPage() {
 					return physioDOM.Directory();
 				})
 				.then( function(directory) {
-					if(data.status.validatedAuthor) {
-						return directory.getEntryByID(data.status.validatedAuthor.toString());
+					if(data.status.validated.author) {
+						return directory.getEntryByID(data.status.validated.author.toString());
 					} else {
 						return null;
 					}
@@ -1497,12 +1497,14 @@ function IPage() {
 					    return result;
 					};
 					
+					/*
 					data.parameters = {
 						stepsNumber: findInObj(parameters.items, 'ref', 'DIST'),
 						weight: findInObj(parameters.items, 'ref', 'WEG'),
 						lean: findInObj(parameters.items, 'ref', 'LFR'),
 						bmi: findInObj(parameters.items, 'ref', 'BMI')
-					}
+					};
+					*/
 	
 					render('/static/tpl/current/' + name + '.htm', data, res, next);
 				})

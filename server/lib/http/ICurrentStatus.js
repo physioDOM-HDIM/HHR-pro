@@ -36,7 +36,7 @@ var ICurrentStatus = {
 	get: function(req, res, next) {
 		logger.trace('get', req.params.name);
 
-		new CurrentStatus().get(req.params.subject, req.params.name)
+		new CurrentStatus().get(req.session.beneficiary, req.params.name)
 			.then( function(current) {
 				res.send(current);
 				next();
@@ -97,6 +97,7 @@ var ICurrentStatus = {
 									if(currentStatus.bmi) {
 										dataRecord.items.push({category: 'HDIM', text: 'BMI', value: currentStatus.bmi, comment: currentStatus.commentBmi});
 									}
+						
 
 									if(currentStatus.mnaAnswer) {
 										dataRecord.items.push({category: 'questionnaire', text: 'MNA', value: currentStatus.mnaScore, ref: currentStatus.mnaAnswer, comment: currentStatus.commentMna});
@@ -130,7 +131,9 @@ var ICurrentStatus = {
 
 									break;
 							}
-
+							
+							console.log(datarecord);
+							/*
 							beneficiary.createEvent('Health status : '+ currentStatus.name, 'validate', currentStatus._id, req.session.person.id)
 								.then( function() {
 									if (dataRecord.items.length === 0) {
@@ -146,7 +149,7 @@ var ICurrentStatus = {
 											});
 									}
 								});
-
+							*/
 						}
 						else {
 							resolve(currentStatus);

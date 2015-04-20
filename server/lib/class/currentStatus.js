@@ -14,17 +14,119 @@ var CurrentStatusSchema = require("../schema/currentStatusSchema");
 
 var logger = new Logger('CurrentStatus');
 
+function questionnaire(name) {
+	return {
+		"name":name,
+		"date":null,
+		"score":null,
+		"answerID":null,
+		"comment":""
+	};
+}
+
+function param(name) {
+	return {
+		"name": name,
+		"value":null,
+		"comment":"",
+		"date":null
+	};
+}
+
+function currentNutrition() {
+	return {
+		name : 'nutrition',
+		subject: null,
+		size: null,
+		validated: {
+			status: false,
+			author : null,
+			date: null
+		},
+		questionnaires : {
+			"MNA"     : new questionnaire("MNA"),
+			"MNA_MINI": new questionnaire("MNA_MINI"),
+			"SNAQ"    : new questionnaire("SNAQ"),
+			"DHD-FFQ" : new questionnaire("DHD-FFQ")
+		},
+		parameters : {
+			"WEG":  new param("WEG"),
+			"LFR" : new param("LFR"),
+			"BMI":  new param("BMI")
+		},
+		dietPresc : {
+			prescription:null,
+			date: null,
+			comment:null
+		}
+	};
+}
+
+function currentActivity() {
+	return {
+		name : 'activity',
+		subject: null,
+		validated: {
+			status: false,
+			author : null,
+			date: null
+		},
+		parameters : {
+			"DIST": new param("DIST")
+		}
+	};
+}
+
+function currentWell() {
+	return {
+		name : 'well',
+		subject: null,
+		validated: {
+			status: false,
+			author : null,
+			date: null
+		},
+		questionnaires : {
+			"SF36"     : new questionnaire("SF36")
+		},
+		parameters : null
+	};
+}
+
+function currentFrailty() {
+	return {
+		name : 'frailty',
+		subject: null,
+		validated: {
+			status: false,
+			author : null,
+			date: null
+		},
+		questionnaires : {
+			"CHAIR_TEST" : new questionnaire("CHAIR_TEST")
+		},
+		failRisk: false
+	};
+}
+
+
 /**
  * Manage a questionnaire record
  * 
  * @constructor
  */
 function CurrentStatus() {
-
+	this._id = null;
+	this.name = "";
+	this.subject = null;
+	this.validated = { status: false, author:null, date:null };
+	this.questionnaires = [];
+	this.parameters = [];
+	
 	this.isValidated = function(beneficiaryID) {
 		return new Promise( function(resolve, reject) {
 			logger.trace('isValidated', beneficiaryID);
-
+			
 			physioDOM.db.collection('currentStatuses').find({
 				subject: beneficiaryID
 			}).toArray( function (err, doc) {
@@ -55,7 +157,7 @@ function CurrentStatus() {
 
 	/**
 	 * Get a current status from the database known by its subject (beneficiary 
-	 * ID) and its name (well, nutrition, activity).
+	 * ID) and its name (well, nutrition, activity, frailty).
 	 * 
 	 * On success the promise returns the current status record,
 	 * else return a 404 error.
@@ -65,11 +167,30 @@ function CurrentStatus() {
 	 * @returns {Promise}
 	 */
 	this.get = function(beneficiaryID, name) {
-
 		var that = this;
 		return new Promise( function(resolve, reject) {
-			logger.trace('get', beneficiaryID);
-
+			logger.trace('get', beneficiaryID, name);
+			var status;
+			
+			switch( name ) {
+				case "nutrition":
+					status = currentNutrition();
+					break;
+				case "activity":
+					status = currentActivity();
+					break;
+				case "well":
+					status = currentWell();
+					break;
+				case "frailty":
+					status = currentFrailty();
+					break;
+			}
+			/*
+			if( name === "nutrition" ) {
+				status = currentNutrition;
+			}
+			*/
 			physioDOM.db.collection('currentStatuses').findOne({
 				subject: beneficiaryID,
 				name: name
@@ -81,16 +202,16 @@ function CurrentStatus() {
 				}
 				if (!doc) {
 					logger.trace('not found', beneficiaryID);
-					reject({code: 404, error: 'not found'});
+					resolve(status);
 				}
 				else {
 					logger.trace('found', doc);
 					for (var prop in doc) {
-						if (doc.hasOwnProperty(prop)) {
-							that[prop] = doc[prop];
+						if (status.hasOwnProperty(prop)) {
+							status[prop] = doc[prop];
 						}
 					}
-					resolve(that);
+					resolve(status);
 				}
 			});
 		});
@@ -131,6 +252,7 @@ function CurrentStatus() {
 			var schema = '/' + entry.name;
 			var check = CurrentStatusSchema.validator.validate( entry, {'$ref': schema} );
 			if (check.errors.length) {
+				logger.warning( JSON.stringify(check.errors,"",4) );
 				reject({error: 'bad format', detail: check.errors});
 			}
 			else {
@@ -157,18 +279,20 @@ function CurrentStatus() {
 				throw {code: 405, message: 'Not same current status'};
 			}
 			updatedEntry._id = that._id;
-			checkSchema(updatedEntry)
-				.then(function (updatedEntry) {
+			//checkSchema(updatedEntry)
+			//	.then(function (updatedEntry) {
 					logger.debug('Schema is valid');
 					for (var key in updatedEntry) {
 						if (key !== '_id' && updatedEntry.hasOwnProperty(key)) {
 							that[key] = updatedEntry[key];
 						}
 					}
-					return that.save();
-				})
-				.then(resolve)
-				.catch(reject);
+					console.log( that );
+					// return that.save();
+					resolve(that);
+				//})
+				//.then(resolve)
+				//.catch(reject);
 		});
 	};
 

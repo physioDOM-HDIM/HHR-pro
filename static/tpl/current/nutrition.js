@@ -98,12 +98,13 @@ function saveDatas(validate) {
 	var formObj = form2js(formElt);
 
 	addValue('size', formObj, true);
+	/*
 	addValue('weight', formObj, true);
 	addValue('lean', formObj, true);
 	addValue('bmi', formObj, true);
 
 	addValue('dietPresc', formObj, false);
-
+	*/
 	if(!formObj.assistance) {
 		formObj.assistance = [];
 	}
@@ -166,7 +167,7 @@ function getAssistanceList(callback) {
 					var list = parsedList.items;
 					for(var i in list) {
 						if(list[i].diet) {
-							list[i].labelLang = list[i].label[Cookies.get("lang")];						
+							list[i].labelLang = list[i].label[Cookies.get("lang")];
 							assistanceList.push(list[i]);
 						}
 					}
