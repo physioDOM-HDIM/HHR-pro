@@ -16,261 +16,137 @@
 {% endblock %}
 
 {% block content %}
+<style>
+	span.assistance-label { 
+		width: 200px;
+		text-overflow: ellipsis;
+	}
+</style>
+
 <div class="hidden" id="unsave">{{"You have unsaved data"|i18n}}</div>
 <div class="hidden" id="changelang">{{"Are you sure to cancel your changes ?"|i18n}}</div>
-
 
 <div class="hidden" id="validate-status">{{status.validated}}</div>
 
 <div id="content">
 
 	<form name="form" id="formDiet" autocomplete="off" onsubmit="return false;">
-	{% if status.validated && status.validatedDate %}
+	{% if status.validated.status && status.validated.date %}
 		<div class="validated-date right">
-			{{ status.validatedDate | date }} {{"by"|i18n}} {{ author.name.family + ' ' + author.name.given }}
+			{{ status.validated.date | date }} {{"by"|i18n}} {{ author.name.family + ' ' + author.name.given }}
 		</div>
 	{% endif %}
 
 	<zdk-panel heading="{{ 'Diet values' | i18n }}">
+		<fieldset>
+			<legend>{{"Diet values"|i18n}}</legend>
+			<div class="row value-row">
+				<div class="value-name">{{"Height"|i18n}}</div>
+				<div class="value-date sizeDate">{% if status.sizeDate %}{{status.sizeDate}}{% endif %}</div>
+				<input
+					flex
+					id="sizeInput"
+					class="value-input"
+					type="number"
+					name="size"
+					step="any"
+					value="{{beneficiary.size}}"
+					readonly />
+				<div class="value-unit">{{"meter"|i18n}}</div>
+			</div>
+			
+			<!- Parameters ->
+			<div class="parameters">
+			{% for parameter in status.parameters %}
+			<div class="row value-row"  data-name="{{ parameter.name }}">
+				<div class="value-name">{{ parameter.name | i18n }}</div>
+				<input type="hidden" name="parameters[{{ parameter.name }}].name" value="{{ parameter.name }}" >
+				<div class="value-date">{% if parameter.date %}{{ parameter.date | date }}{% endif %}</div>
+				<input type="hidden" class="param-date" name="parameters[{{ parameter.name }}].date" value="{{ parameter.date }}" >
+				<input
+					flex
+					id="weightInput"
+					class="value-input"
+					type="number"
+					name="parameters[{{ parameter.name }}].value"
+					step="any"
+					min="{{parameters.weight.range.min}}"
+					max="{{parameters.weight.range.max}}"
+					value="{{parameter.value}}"
+					onchange="paramChange(this,{{ parameter.value }} || null )"
+					{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
+				<div class="value-unit">{{"kilogram"|i18n}}</div>
+			</div>
+			<div class="row value-row">
+				<label class="comment-label" for="commentWeight">{{"Status" | i18n}}</label>
+				<input
+					flex
+					id="commentWeight"
+					class="comment-input"
+					type="text"
+					name="parameters[{{ parameter.name }}].comment"
+					value="{{parameter.comment}}"
+					{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
+			</div>
+			{% endfor %}
+			</div>
+			
+			<div class="questionnaires">
+			<!- Questionnaires ->
+			{% for questionnaire in status.questionnaires %}
+			<div class="row value-row questionnaire-row" data-name="{{questionnaire.name}}">
+				<div class="quest-name">{{ "score" |i18n}}</div>
+				<input type="hidden" name="questionnaires[{{ questionnaire.name }}].name" value="{{ questionnaire.name }}" >
+				<div class="questionnaire-date">{% if questionnaire.date %}{{ questionnaire.date | date }}{% endif %}</div>
+				<input type="hidden" class="questionnaire-dateFormat" name="questionnaires[{{ questionnaire.name }}].date" value="{{ questionnaire.dateFormat }}" >
+				<input type="number" class="questionnaire-score" name="questionnaires[{{ questionnaire.name }}].score" value="{{ questionnaire.score }}" readonly />
+				<input type="hidden" class="questionnaire-score" name="questionnaires[{{ questionnaire.name }}].score" value="{{ questionnaire.score }}" >
+				<input type="hidden" class="questionnaire-answer" name="questionnaires[{{ questionnaire.name }}].answerID" value="{{ questionnaire.answerID }}" />
+				<div class="questionnaire-button-container">
+					<a
+						class="button small blue"  style="margin-right: 10px;"
+						href={% if questionnaire.answerID %}"/answers/{{questionnaire.answerID}}"{% else %}"/questionnaire/{{questionnaire.name}}"{% endif %}
+					{% if status.validated.status && !questionnaire.score %}disabled{% endif %}{% if (!rights.write || !beneficiary.active) && !questionnaire.score %}disabled{% endif %}>
+					{{"Questionnaire"|i18n}}
+					</a>
+					<button type="button" class="remove button small red {% if !questionnaire.answerID || status.validated.status %}hidden{% endif %}" data-answer="{{questionnaire.answerID}}" onclick="removeAnswer(this)">{{"Delete"|i18n}}</button>
+				</div>
+			</div>
+			<div class="row value-row">
+				<label class="comment-label" >{{"Status" | i18n}}</label>
+				<input
+					flex
+					id="comment{{questionnaire.name}}"
+					class="comment-input"
+					type="text"
+					name="questionnaires[{{ questionnaire.name }}].comment"
+					value="{{questionnaire.comment}}"
+					{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
+			</div>
+			{% endfor %}
+			</div>
+		</fieldset>
 		
-			<fieldset>
-				<legend>{{"Diet values"|i18n}}</legend>
-				<div class="row value-row">
-					<div class="value-name">{{"Height"|i18n}}</div>
-					<div class="value-date sizeDate">{% if status.sizeDate %}{{status.sizeDate}}{% endif %}</div>
-					<input
-						flex
-						id="sizeInput"
-						class="value-input"
-						type="number"
-						name="size"
-						step="any"
-						value="{{beneficiary.size}}"
-						readonly />
-					<div class="value-unit">{{"meter"|i18n}}</div>
-				</div>
-				<div class="row value-row">
-					<label class="comment-label" for="commentHeight">{{"Status" | i18n}}</label>
-					<input
-						flex
-						id="commentHeight"
-						class="comment-input"
-						type="text"
-						name="commentHeight"
-						value="{{status.commentHeight}}"
-						{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
-				</div>
-
-
-				<div class="row value-row">
-					<div class="value-name">{{"Weight"|i18n}}</div>
-					<div class="value-date weightDate">{% if status.weightDate %}{{status.weightDate}}{% endif %}</div>
-					<input
-						flex
-						id="weightInput"
-						class="value-input"
-						type="number"
-						name="weight"
-						step="any"
-						min="{{parameters.weight.range.min}}" 
-						max="{{parameters.weight.range.max}}"
-						value="{{status.weight}}"
-						{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
-					<div class="value-unit">{{"kilogram"|i18n}}</div>
-				</div>
-				<div class="row value-row">
-					<label class="comment-label" for="commentWeight">{{"Status" | i18n}}</label>
-					<input
-						flex
-						id="commentWeight"
-						class="comment-input"
-						type="text"
-						name="commentWeight"
-						value="{{status.commentWeight}}"
-						{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
-				</div>
-
-				<div class="row value-row">
-					<div class="value-name">{{"Lean/fat ratio"|i18n}}</div>
-					<div class="value-date leanDate">{% if status.leanDate %}{{status.leanDate}}{% endif %}</div>
-					<input 
-						type="number" 
-						name="lean" 
-						class="value-input" 
-						min="{{parameters.lean.range.min}}" 
-						max="{{parameters.lean.range.max}}"
-						value="{{status.lean}}"
-						{% if !rights.write || !beneficiary.active %}disabled{% endif %} />
-					<div class="value-unit">%</div>
-				</div>
-				<div class="row value-row">
-					<label class="comment-label" for="commentLean">{{"Status" | i18n}}</label>
-					<input
-						flex
-						id="commentLean"
-						class="comment-input"
-						type="text"
-						name="commentLean"
-						value="{{status.commentLean}}"
-						{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
-				</div>
-
-				<div class="row value-row">
-					<div class="value-name">{{"BMI"|i18n}}</div>
-					<div class="value-date bmiDate">{% if status.bmiDate %}{{status.bmiDate}}{% endif %}</div>
-					<input
-						flex
-						id="bmiInput"
-						class="value-input"
-						type="number"
-						name="bmi"
-						step="any"
-						min="{{parameters.bmi.range.min}}" 
-						max="{{parameters.bmi.range.max}}"
-						value="{{status.bmi}}"
-						{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
-					<div class="value-unit">kg/m²</div>
-				</div>
-				<div class="row value-row">
-					<label class="comment-label" for="commentBmi">{{"Status" | i18n}}</label>
-					<input
-						flex
-						id="commentBmi"
-						class="comment-input"
-						type="text"
-						name="commentBmi"
-						value="{{status.commentBmi}}"
-						{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
-				</div>
-
-				<div class="row value-row questionnaire-row" data-name="MNA">
-					<div class="quest-name">{{"MNA score"|i18n}}</div>
-					<div class="questionnaire-date">{% if status.mnaDate %}{{status.mnaDate | date }}{% endif %}</div>
-					<input type="number" class="questionnaire-score" value="{{status.mnaScore}}" readonly />
-					<input type="hidden" class="questionnaire-answer" name="mnaAnswer" value="{{status.mnaAnswer}}" />
-					<div class="questionnaire-button-container">
-						<a 
-							class="button small blue" 
-							href={% if status.mnaAnswer %}"/answers/{{status.mnaAnswer}}"{% else %}"/questionnaire/MNA"{% endif %}
-							{% if status.validated && !status.mnaScore %}disabled{% endif %}{% if ( !rights.write || !beneficiary.active ) && !status.mnaScore %}disabled{% endif %}>
-							{{"Questionnaire"|i18n}}
-						</a>
-					</div>
-				</div>
-				<div class="row value-row">
-					<label class="comment-label" for="commentMna">{{"Status" | i18n}}</label>
-					<input
-						flex
-						id="commentMna"
-						class="comment-input"
-						type="text"
-						name="commentMna"
-						value="{{status.commentMna}}"
-						{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
-				</div>
-
-				<div class="row value-row questionnaire-row" data-name="MNA_MINI">
-					<div class="quest-name">{{"MNA SF score"|i18n}}</div>
-					<div class="questionnaire-date">{% if status.mnaSfDate %}{{status.mnaSfDate | date }}{% endif %}</div>
-					<input type="number" class="questionnaire-score" value="{{status.mnaSfScore}}" readonly />
-					<input type="hidden" class="questionnaire-answer" name="mnaSfAnswer" value="{{status.mnaSfAnswer}}" />
-					<div class="questionnaire-button-container">
-						<a 
-							class="button small blue" 
-							href={% if status.mnaSfAnswer %}"/answers/{{status.mnaSfAnswer}}"{% else %}"/questionnaire/MNA_MINI"{% endif %}
-							{% if status.validated && !status.mnaSfScore %}disabled{% endif %}{% if ( !rights.write || !beneficiary.active ) && !status.mnaSfScore %}disabled{% endif %}>
-							{{"Questionnaire"|i18n}}
-						</a>
-					</div>
-				</div>
-				<div class="row value-row">
-					<label class="comment-label" for="commentMnaSf">{{"Status" | i18n}}</label>
-					<input
-						flex
-						id="commentMnaSf"
-						class="comment-input"
-						type="text"
-						name="commentMnaSf"
-						value="{{status.commentMnaSf}}"
-						{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
-				</div>
-
-				<div class="row value-row questionnaire-row" data-name="SNAQ">
-					<div class="quest-name">{{"SNAQ score" | i18n }}</div>
-					<div class="questionnaire-date">{% if status.snaqDate %}{{status.snaqDate | date }}{% endif %}</div>
-					<input type="number" class="questionnaire-score" value="{{status.snaqScore}}" readonly />
-					<input type="hidden" class="questionnaire-answer" name="snaqAnswer" value="{{status.snaqAnswer}}" />
-					<div class="questionnaire-button-container">
-						<a 
-							class="button small blue" 
-							href={% if status.snaqAnswer %}"/answers/{{status.snaqAnswer}}"{% else %}"/questionnaire/SNAQ"{% endif %}
-							{% if status.validated && !status.snaqScore %}disabled{% endif %}{% if (!rights.write || !beneficiary.active) && !status.snaqScore %}disabled{% endif %}>
-							{{"Questionnaire"|i18n}}
-						</a>
-					</div>
-				</div>
-				<div class="row value-row">
-					<label class="comment-label" for="commentSnaq">{{"Status" | i18n}}</label>
-					<input
-						flex
-						id="commentSnaq"
-						class="comment-input"
-						type="text"
-						name="commentSnaq"
-						value="{{status.commentSnaq}}"
-						{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
-				</div>
-
-				<div class="row value-row questionnaire-row" data-name="DHD-FFQ">
-					<div class="quest-name">{{"Eetscore"|i18n}}</div>
-					<div class="questionnaire-date">{% if status.dhdDate %}{{status.dhdDate | date }}{% endif %}</div>
-					<input type="number" class="questionnaire-score" value="{{status.dhdScore}}" readonly />
-					<input type="hidden" class="questionnaire-answer" name="dhdAnswer" value="{{status.dhdAnswer}}" />
-					<div class="questionnaire-button-container">
-						<a 
-							class="button small blue" 
-							href={% if status.dhdAnswer %}"/answers/{{status.dhdAnswer}}"{% else %}"/questionnaire/DHD-FFQ"{% endif %}
-							{% if status.validated && !status.dhdScore %}disabled{% endif %}{% if (!rights.write || !beneficiary.active) && !status.dhdScore %}disabled{% endif %}>
-							{{"Questionnaire"|i18n}}
-						</a>
-					</div>
-				</div>
-				<div class="row value-row">
-					<label class="comment-label" for="commentDhd">{{"Status" | i18n}}</label>
-					<input
-						flex
-						id="commentDhd"
-						class="comment-input"
-						type="text"
-						name="commentDhd"
-						value="{{status.commentDhd}}"
-						{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
-				</div>
-
-			</fieldset>
-
-			<fieldset>
-				<legend>
-					{{"Special diet prescriptions"|i18n}}
-					<div class="value-date-textarea dietPrescDate">{% if status.dietPrescDate %}{{status.dietPrescDate}}{% endif %}</div>
-				</legend>
-
-				<div class="row value-row">
-					<textarea flex name="dietPresc" {% if !rights.write || !beneficiary.active %}disabled{% endif %}>{{status.dietPresc}}</textarea>
-				</div>
-				<div class="row value-row">
-					<label class="comment-label-full" for="commentDietPresc">{{"Status" | i18n}}</label>
-					<input
-						flex
-						id="commentDietPresc"
-						class="comment-input"
-						type="text"
-						name="commentDietPresc"
-						value="{{status.commentDietPresc}}"
-						{% if !rights.write || !beneficiary.active %}disabled{% endif %} />
-				</div>
-			</fieldset>
-
+		<fieldset>
+			<legend>
+				{{"Special diet prescriptions"|i18n}}
+				<div class="value-date-textarea dietPrescDate">{% if status.dietPresc.date %}{{status.dietPresc.date | date }}{% endif %}</div>
+			</legend>
+			
+			<div class="row value-row">
+				<textarea flex name="dietPresc.prescription" {% if !rights.write || !beneficiary.active %}disabled{% endif %}>{{status.dietPresc.prescription}}</textarea>
+			</div>
+			<div class="row value-row">
+				<label class="comment-label-full" >{{"Status" | i18n}}</label>
+				<input
+					flex
+					class="comment-input"
+					type="text"
+					name="dietPresc.comment"
+					value="{{status.dietPresc.comment}}"
+					{% if !rights.write || !beneficiary.active %}disabled{% endif %} />
+			</div>
+		</fieldset>
 	</zdk-panel>
 
 	<zdk-panel heading="{{ 'Assistance services' | i18n }}">
@@ -281,7 +157,7 @@
 						<span class="assistance-label">{{assistance.ref}}</span>
 						<input type="hidden" name="assistance[{{ idx }}].ref" value="{{ assistance.ref }}">
 						<input type="text" class="value-input assist" name="assistance[{{ idx }}].information" value="{{ assistance.information }}" {% if !rights.write || !beneficiary.active %}disabled{% endif %}>
-						{% if !status.validated && rights.write %}
+						{% if !status.validated.status && rights.write %}
 						<button type="button" class="red small" onclick="removeAssistance(this)" {% if !rights.write || !beneficiary.active %}disabled{% endif %}>{{"Delete"|i18n}}</button>
 						{% endif %}
 					</div>
@@ -289,7 +165,7 @@
 			</div>
 			<div class="hidden" id="idxValue">{{idx}}</div>
 
-			{% if !status.validated && rights.write && beneficiary.active %}
+			{% if !status.validated.status && rights.write && beneficiary.active %}
 			<div class="row control">
 				<span class="spacer"></span>
 				<button type="button" onclick="addAssistance()" class="green small" {% if !rights.write || !beneficiary.active %}disabled{% endif %}>{{"Add"|i18n}}</button>
@@ -298,7 +174,7 @@
 	</zdk-panel>
 
 	{% if rights.write && beneficiary.active %}
-		{% if !status.validated %}
+		{% if !status.validated.status %}
 		<div id="buttons" class="row control">
 			<span class="spacer"></span>
 			{% if validate.write %}

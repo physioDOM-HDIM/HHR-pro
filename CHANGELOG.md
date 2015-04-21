@@ -1,3 +1,9 @@
+__v0.0.35-pre__
+
+  - \#196 Bug 259 - [Current Health Status][v0013-2] Saisie questionnaire
+    - refactoring des ecrans du Current Health Status
+  
+
 __v0.0.34__
 
   - \#212 : Bug 305 - [Langue][Page de login][v031] Chargement langue par défaut du serveur

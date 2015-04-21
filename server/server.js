@@ -721,6 +721,7 @@ server.put( '/api/beneficiary/current/:name', ICurrentStatus.put);
 
 // Questionnaire answers for the current beneficiary
 server.post('/api/beneficiary/questionnaires/:entryID/answers', IBeneficiary.createQuestionnaireAnswers);
+server.del('/api/beneficiary/questionnaires/answers/:entryID', IBeneficiary.removeQuestionnaireAnswers);
 
 //Events
 server.get( '/api/beneficiary/events', IBeneficiary.getEventList);

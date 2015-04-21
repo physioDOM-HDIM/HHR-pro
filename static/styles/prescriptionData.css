@@ -40,3 +40,7 @@ select {
 .vert {
 	align-items: center;
 }
+
+div.control button { margin-left:10px; }
+
+button.small { margin-left:10px; }

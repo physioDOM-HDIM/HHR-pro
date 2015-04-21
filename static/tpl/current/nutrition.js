@@ -2,7 +2,9 @@
 
 var Utils = new Utils(),
 	modified = false,
-	datas = {};
+	datas = {},
+	infos = {},
+	lists= {};
 
 
 /**
@@ -18,10 +20,10 @@ function computeBMI() {
 	}
 	else {
 		var bmi = weight / (size * size);
-		document.getElementById('bmiInput').value = bmi.toFixed(2);
+		document.querySelector("[data-name=BMI] .value-input").value = bmi.toFixed(2);
+		document.querySelector("[data-name=BMI] .value-date").innerHTML = "";
+		document.querySelector("[data-name=BMI] .param-date").value = moment().format("YYYY-MM-DD");
 	}
-
-	//validateChecking();
 }
 
 function showConfirm() {
@@ -37,15 +39,6 @@ function showConfirm() {
 function hideConfirm() {
 	document.getElementById('confirmModal').hide();
 }
-
-// function validateChecking() {
-// 	var validateButton = document.querySelector('.validate-button');
-
-// 	if(validateButton) {
-// 		var formObj = form2js(document.getElementById('formDiet'));
-// 		validateButton.disabled = (!formObj.weight || !formObj.lean || !formObj.bmi || !formObj.mnaAnswer || !formObj.mnaSfAnswer || !formObj.snaqAnswer || !formObj.dhdAnswer);
-// 	}
-// }
 
 /**
  * ACTIONS
@@ -98,26 +91,61 @@ function saveDatas(validate) {
 	var formObj = form2js(formElt);
 
 	addValue('size', formObj, true);
-	addValue('weight', formObj, true);
-	addValue('lean', formObj, true);
-	addValue('bmi', formObj, true);
-
-	addValue('dietPresc', formObj, false);
-
+	
 	if(!formObj.assistance) {
 		formObj.assistance = [];
 	}
 
+	if( formObj.questionnaires ) {
+		formObj.questionnaires.forEach(function (questionnaire) {
+			if (!questionnaire.answerID) {
+				questionnaire.answerID = null;
+				questionnaire.date = null;
+				questionnaire.score = null;
+			} else {
+				questionnaire.score = parseInt(questionnaire.score, 10);
+			}
+			if (!questionnaire.comment) {
+				questionnaire.comment = "";
+			}
+		});
+	}
+
+	if( formObj.parameters ) {
+		formObj.parameters.forEach(function (parameter) {
+			if (!parameter.value) {
+				parameter.value = null;
+				parameter.date = null;
+			} else {
+				if (!parameter.date) {
+					parameter.date = moment().format("YYYY-MM-DD");
+				}
+			}
+			if (!parameter.comment) {
+				parameter.comment = "";
+			}
+		});
+	}	
+	console.log( formObj );
+	
 	if(!validate) {
 		sendDatas(formObj, function() {
-			new Modal('saveSuccess');
-			modified = false;
+			new Modal('saveSuccess', function() {
+				modified = false;
+				window.location.href = '/current/nutrition';
+			});
 		});
 	} else {
 		return formObj;
 	}
 }
 
+function paramChange( obj, oldValue) {
+	if( obj.value !== oldValue ) {
+		obj.parentNode.querySelector(".value-date").innerHTML = "";
+		obj.parentNode.querySelector(".param-date").value = moment().format("YYYY-MM-DD");
+	}
+}
 
 function validate() {
 	var formObj = saveDatas(true);
@@ -166,7 +194,7 @@ function getAssistanceList(callback) {
 					var list = parsedList.items;
 					for(var i in list) {
 						if(list[i].diet) {
-							list[i].labelLang = list[i].label[Cookies.get("lang")];						
+							list[i].labelLang = list[i].label[Cookies.get("lang")];
 							assistanceList.push(list[i]);
 						}
 					}
@@ -191,8 +219,64 @@ function getAssistanceList(callback) {
 		});
 }
 
+function getLists() {
+	var promises = {
+		params: Utils.promiseXHR("GET", "/api/lists/parameters", 200),
+		quests: Utils.promiseXHR("GET", "/api/lists/questionnaire", 200),
+		units: Utils.promiseXHR("GET", "/api/lists/units", 200)
+	};
+
+	RSVP.hash(promises)
+		.then(function (results) {
+			var params = JSON.parse(results.params).items;
+			var quests = JSON.parse(results.quests).items;
+			var unitsList = JSON.parse(results.units).items;
+			
+			var i = 0,
+				leni = params.length;
+			
+			for (i; i < leni; i++) {
+				var y = 0,
+					leny = unitsList.length;
+	
+				for (y; y < leny; y++) {
+					if ( params[i].units === unitsList[y].ref) {
+						params[i].unitsLabel = unitsList[y].label[infos.lang]?unitsList[y].label[infos.lang]:unitsList[y].label["en"];
+						break;
+					}
+				}
+			}
+			
+			lists.params = {};
+			lists.quests = {};
+			params.forEach( function(param) {
+				lists.params[param.ref] = param;
+			});
+			quests.forEach( function(quest) {
+				lists.quests[quest.ref] = quest;
+			});
+			console.log(lists);
+	
+			quests = document.querySelector(".questionnaires");
+			[].slice.call(quests.querySelectorAll("[data-name]")).forEach( function(quest) {
+				var name = quest.getAttribute("data-name");
+				quest.querySelector(".quest-name").innerHTML = lists.quests[name].label[infos.lang];
+			});
+			params = document.querySelector(".parameters");
+			[].slice.call(params.querySelectorAll("[data-name]")).forEach( function(param) {
+				var name = param.getAttribute("data-name");
+				param.querySelector(".value-name").innerHTML = lists.params[name].label[infos.lang];
+				param.querySelector(".value-unit").innerHTML = lists.params[name].unitsLabel || "";
+				param.querySelector(".value-input").min = lists.params[name].range.min;
+				param.querySelector(".value-input").max = lists.params[name].range.max;
+				param.querySelector(".value-input").step = lists.params[name].precision?"any":1;
+			});
+		});
+}
+
 window.addEventListener('DOMContentLoaded', function() {
 	moment.locale(Cookies.get("lang")=="en"?"en-gb":Cookies.get("lang"));
+	infos.lang = Cookies.get("lang");
 	document.getElementById('sizeInput').addEventListener('change', computeBMI);
 	document.getElementById('weightInput').addEventListener('change', computeBMI);
 	document.addEventListener('change', function( evt ) {
@@ -200,15 +284,9 @@ window.addEventListener('DOMContentLoaded', function() {
 	}, true );
 
 	datas.idxValue = document.querySelector('#idxValue').innerHTML;
-	var inputList = document.querySelectorAll('input');
-
-	// for(var i=0; i<inputList.length; i++) {
- //        inputList[i].addEventListener('input', validateChecking, false);
- //    }
-
-    //validateChecking();
     getAssistanceList();
-
+	getLists();
+	
     datas.savedData = form2js(document.getElementById('formDiet'));
 
     //init lockdown

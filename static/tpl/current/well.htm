@@ -24,46 +24,92 @@
 <div class="hidden" id="validate-status">{{status.validated}}</div>
 
 <div id="content">
-
-	{% if status.validated && status.validatedDate %}
-		<div class="validated-date right">
-			{{ status.validatedDate | date }} {{"by"|i18n}} {{ author.name.family + ' ' + author.name.given }}
-		</div>
+	
+	{% if status.validated.status && status.validated.date %}
+	<div class="validated-date right">
+		{{ status.validated.date | date }} {{"by"|i18n}} {{ author.name.family + ' ' + author.name.given }}
+	</div>
 	{% endif %}
 
 	<zdk-panel heading="{{ 'Well being' | i18n }}">
 		<form name="form" id="form" autocomplete="off">
-			<div class="row value-row questionnaire-row" data-name="SF36">
-				<div class="quest-name">{{"SF 36 score"|i18n}}</div>
-				<div class="questionnaire-date">{% if status.sf36Date %}{{status.sf36Date | date }}{% endif %}</div>
-				<input type="text" class="questionnaire-score" value="{{status.sf36Score}}" readonly />
-				<input type="hidden" class="questionnaire-answer" name="sf36Answer" value="{{status.sf36Answer}}" />
-				<div class="questionnaire-button-container">
-					<a 
-						class="button small blue" 
-						href={% if status.sf36Answer %}"/answers/{{status.sf36Answer}}"{% else %}"/questionnaire/SF36"{% endif %}
-						{% if status.validated && !status.sf36Score %}disabled{% endif %}{% if (!rights.write || !beneficiary.active) && !status.sf36Score %}disabled{% endif %}>
-						{{"Questionnaire"|i18n}}
-					</a>
+			
+			<!- Parameters ->
+			<div class="parameters">
+				{% for parameter in status.parameters %}
+				<div class="row value-row"  data-name="{{ parameter.name }}">
+					<div class="value-name">{{ parameter.name | i18n }}</div>
+					<input type="hidden" name="parameters[{{ parameter.name }}].name" value="{{ parameter.name }}" >
+					<div class="value-date">{% if parameter.date %}{{ parameter.date | date }}{% endif %}</div>
+					<input type="hidden" class="param-date" name="parameters[{{ parameter.name }}].date" value="{{ parameter.date }}" >
+					<input
+						flex
+						id="weightInput"
+						class="value-input"
+						type="number"
+						name="parameters[{{ parameter.name }}].value"
+						step="any"
+						min="{{parameters.weight.range.min}}"
+						max="{{parameters.weight.range.max}}"
+						value="{{parameter.value}}"
+						onchange="paramChange(this,{{ parameter.value }} || null )"
+						{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
+					<div class="value-unit">{{"kilogram"|i18n}}</div>
 				</div>
+				<div class="row value-row">
+					<label class="comment-label" for="commentWeight">{{"Status" | i18n}}</label>
+					<input
+						flex
+						id="commentWeight"
+						class="comment-input"
+						type="text"
+						name="parameters[{{ parameter.name }}].comment"
+						value="{{parameter.comment}}"
+						{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
+				</div>
+				{% endfor %}
 			</div>
-			<div class="row value-row">
-				<label class="comment-label" for="commentSf36">{{"Status" | i18n}}</label>
-				<input
-					flex
-					id="commentSf36"
-					class="comment-input to-disable"
-					type="text"
-					name="commentSf36"
-					value="{{status.commentSf36}}"
-					{% if !rights.write || !beneficiary.active %}disabled{% endif %}
-					/>
+			
+			<div class="questionnaires">
+				<!- Questionnaires ->
+				{% for questionnaire in status.questionnaires %}
+				<div class="row value-row questionnaire-row" data-name="{{questionnaire.name}}">
+					<div class="quest-name">{{ "score" |i18n}}</div>
+					<input type="hidden" name="questionnaires[{{ questionnaire.name }}].name" value="{{ questionnaire.name }}" >
+					<div class="questionnaire-date">{% if questionnaire.date %}{{ questionnaire.date | date }}{% endif %}</div>
+					<input type="hidden" class="questionnaire-dateFormat" name="questionnaires[{{ questionnaire.name }}].date" value="{{ questionnaire.dateFormat }}" >
+					<input type="number" class="questionnaire-score" name="questionnaires[{{ questionnaire.name }}].score" value="{{ questionnaire.score }}" readonly />
+					<input type="hidden" class="questionnaire-score" name="questionnaires[{{ questionnaire.name }}].score" value="{{ questionnaire.score }}" >
+					<input type="hidden" class="questionnaire-answer" name="questionnaires[{{ questionnaire.name }}].answerID" value="{{ questionnaire.answerID }}" />
+					<div class="questionnaire-button-container">
+						<a
+							class="button small blue"  style="margin-right: 10px;"
+							href={% if questionnaire.answerID %}"/answers/{{questionnaire.answerID}}"{% else %}"/questionnaire/{{questionnaire.name}}"{% endif %}
+						{% if status.validated.status && !questionnaire.score %}disabled{% endif %}{% if (!rights.write || !beneficiary.active) && !questionnaire.score %}disabled{% endif %}>
+						{{"Questionnaire"|i18n}}
+						</a>
+						<button type="button" class="remove button small red {% if !questionnaire.answerID || status.validated.status %}hidden{% endif %}" data-answer="{{questionnaire.answerID}}" onclick="removeAnswer(this)">{{"Delete"|i18n}}</button>
+					</div>
+				</div>
+				<div class="row value-row">
+					<label class="comment-label" >{{"Status" | i18n}}</label>
+					<input
+						flex
+						id="comment{{questionnaire.name}}"
+						class="comment-input"
+						type="text"
+						name="questionnaires[{{ questionnaire.name }}].comment"
+						value="{{questionnaire.comment}}"
+						{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
+				</div>
+				{% endfor %}
 			</div>
+			
 		</form>
 	</zdk-panel>
 
 	{% if rights.write && beneficiary.active %}
-		{% if !status.validated %}
+		{% if !status.validated.status %}
 		<div id="buttons" class="row control">
 			<span class="spacer"></span>
 			{% if validate.write %}

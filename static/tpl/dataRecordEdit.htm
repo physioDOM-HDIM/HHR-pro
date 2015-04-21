@@ -39,6 +39,7 @@
 		top: 0;
 		bottom: 0;
 		margin: 0;
+		background: white;
 	}
 </style>
 {% endblock %}
@@ -119,7 +120,7 @@
 				</div>
 
 				<div>
-					{% if admin && beneficiary.active %}
+					{% if admin && beneficiary.active && !dataRecordItems.healthStatus %}
 					<div style="width:100px; text-align:right">
 						<div>
 							<button type="button" class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">{{"Edit"|i18n}}</button>
@@ -182,7 +183,7 @@
 				<input name="items[{{item._id.toString()}}].dataRecordID" type="hidden" value="{{item.dataRecordID.toString()}}">
 				
 				<div style="width:100px; text-align:right">
-					{% if admin %}
+					{% if admin && !dataRecordItems.healthStatus %}
 					<div>
 						<button type="button" class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">{{"Back"|i18n}}</button>
 					</div>
@@ -386,12 +387,12 @@
 		<div class="row control" style="height:60px; align-content: center">
 			<span class="spacer"></span>
 			{% if view === 'create'%}
-			{% if rights.write && beneficiary.active %}
+			{% if rights.write && beneficiary.active && !dataRecordItems.healthStatus %}
 			<button id="saveBtn" class="green">{{"Save"|i18n}}</button>
 			{% endif %}
 			{% else %}
 			<button type="button" class="blue big not-disabled" onclick="backDatarecord()">{{"Back"|i18n}}</button>
-			{% if rights.write && beneficiary.active %}
+			{% if rights.write && beneficiary.active && !dataRecordItems.healthStatus %}
 			<button id="saveBtn" class="green">{{"Save"|i18n}}</button>
 			{% endif %}
 			{% endif %}
