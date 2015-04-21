@@ -16,9 +16,15 @@
 {% endblock %}
 
 {% block content %}
+<style>
+	span.assistance-label { 
+		width: 200px;
+		text-overflow: ellipsis;
+	}
+</style>
+
 <div class="hidden" id="unsave">{{"You have unsaved data"|i18n}}</div>
 <div class="hidden" id="changelang">{{"Are you sure to cancel your changes ?"|i18n}}</div>
-
 
 <div class="hidden" id="validate-status">{{status.validated}}</div>
 
@@ -50,11 +56,13 @@
 			</div>
 			
 			<!- Parameters ->
+			<div class="parameters">
 			{% for parameter in status.parameters %}
-			<div class="row value-row">
+			<div class="row value-row"  data-name="{{ parameter.name }}">
 				<div class="value-name">{{ parameter.name | i18n }}</div>
 				<input type="hidden" name="parameters[{{ parameter.name }}].name" value="{{ parameter.name }}" >
 				<div class="value-date">{% if parameter.date %}{{ parameter.date | date }}{% endif %}</div>
+				<input type="hidden" class="param-date" name="parameters[{{ parameter.name }}].date" value="{{ parameter.date }}" >
 				<input
 					flex
 					id="weightInput"
@@ -65,6 +73,7 @@
 					min="{{parameters.weight.range.min}}"
 					max="{{parameters.weight.range.max}}"
 					value="{{parameter.value}}"
+					onchange="paramChange(this,{{ parameter.value }} || null )"
 					{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
 				<div class="value-unit">{{"kilogram"|i18n}}</div>
 			</div>
@@ -80,16 +89,18 @@
 					{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
 			</div>
 			{% endfor %}
+			</div>
 			
+			<div class="questionnaires">
 			<!- Questionnaires ->
 			{% for questionnaire in status.questionnaires %}
 			<div class="row value-row questionnaire-row" data-name="{{questionnaire.name}}">
-				<div class="quest-name">{{ questionnaire.name+" score" |i18n}}</div>
+				<div class="quest-name">{{ "score" |i18n}}</div>
 				<input type="hidden" name="questionnaires[{{ questionnaire.name }}].name" value="{{ questionnaire.name }}" >
 				<div class="questionnaire-date">{% if questionnaire.date %}{{ questionnaire.date | date }}{% endif %}</div>
-				<input type="hidden" name="questionnaires[{{ questionnaire.name }}].date" value="{{ questionnaire.date.toString() }}" >
-				<input type="number" class="questionnaire-score" value="{{ questionnaire.score }}" readonly />
-				<input type="hidden" name="questionnaires[{{ questionnaire.name }}].score" value="{{ questionnaire.score }}" >
+				<input type="hidden" class="questionnaire-dateFormat" name="questionnaires[{{ questionnaire.name }}].date" value="{{ questionnaire.dateFormat }}" >
+				<input type="number" class="questionnaire-score" name="questionnaires[{{ questionnaire.name }}].score" value="{{ questionnaire.score }}" readonly />
+				<input type="hidden" class="questionnaire-score" name="questionnaires[{{ questionnaire.name }}].score" value="{{ questionnaire.score }}" >
 				<input type="hidden" class="questionnaire-answer" name="questionnaires[{{ questionnaire.name }}].answerID" value="{{ questionnaire.answerID }}" />
 				<div class="questionnaire-button-container">
 					<a
@@ -98,7 +109,7 @@
 					{% if status.validated.status && !questionnaire.score %}disabled{% endif %}{% if (!rights.write || !beneficiary.active) && !questionnaire.score %}disabled{% endif %}>
 					{{"Questionnaire"|i18n}}
 					</a>
-					<button class="remove button small red {% if !questionnaire.answerID || status.validated.status %}hidden{% endif %}" data-answer="{{questionnaire.answerID}}" onclick="removeAnswer(this)">{{"Delete"|i18n}}</button>
+					<button type="button" class="remove button small red {% if !questionnaire.answerID || status.validated.status %}hidden{% endif %}" data-answer="{{questionnaire.answerID}}" onclick="removeAnswer(this)">{{"Delete"|i18n}}</button>
 				</div>
 			</div>
 			<div class="row value-row">
@@ -113,6 +124,7 @@
 					{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
 			</div>
 			{% endfor %}
+			</div>
 		</fieldset>
 		
 		<fieldset>

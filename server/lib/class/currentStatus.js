@@ -58,7 +58,8 @@ function currentNutrition() {
 			prescription:null,
 			date: null,
 			comment:null
-		}
+		},
+		assistance:[]
 	};
 }
 
@@ -120,8 +121,8 @@ function CurrentStatus() {
 	this.name = "";
 	this.subject = null;
 	this.validated = { status: false, author:null, date:null };
-	this.questionnaires = [];
-	this.parameters = [];
+	this.questionnaires = {};
+	this.parameters = {};
 	
 	this.isValidated = function(beneficiaryID) {
 		return new Promise( function(resolve, reject) {
@@ -186,34 +187,36 @@ function CurrentStatus() {
 					status = currentFrailty();
 					break;
 			}
-			/*
-			if( name === "nutrition" ) {
-				status = currentNutrition;
-			}
-			*/
-			physioDOM.db.collection('currentStatuses').findOne({
+			Object.keys(status).forEach( function(key) {
+				that[key] = status[key];
+			});
+			
+			var search = {
 				subject: beneficiaryID,
 				name: name
-			},
-			function (err, doc) {
-				if (err) {
-					logger.alert('Database error');
-					throw err;
-				}
-				if (!doc) {
-					logger.trace('not found', beneficiaryID);
-					resolve(status);
-				}
-				else {
-					logger.trace('found', doc);
-					for (var prop in doc) {
-						if (status.hasOwnProperty(prop)) {
-							status[prop] = doc[prop];
-						}
+			};
+			physioDOM.db.collection('currentStatuses').findOne(search,
+				function (err, doc) {
+					if (err) {
+						logger.alert('Database error');
+						throw err;
 					}
-					resolve(status);
+					if (!doc) {
+						logger.trace('not found', beneficiaryID);
+						resolve(status);
+					}
+					else {
+						logger.trace('found');
+						for (var prop in doc) {
+							if (that.hasOwnProperty(prop)) {
+								that[prop] = doc[prop];
+							}
+						}
+						// logger.debug(JSON.stringify( that, "", 4));
+						resolve(that);
+					}
 				}
-			});
+			);
 		});
 	};
 
@@ -273,26 +276,42 @@ function CurrentStatus() {
 
 		var that = this;
 		return new Promise( function(resolve, reject) {
-			logger.trace('update', updatedEntry);
+			logger.trace('update');
+			// logger.debug( JSON.stringify(updatedEntry,"",4));
 			if (that._id && that._id !== updatedEntry._id) {
 				logger.warning('Not same current status');
 				throw {code: 405, message: 'Not same current status'};
 			}
 			updatedEntry._id = that._id;
-			//checkSchema(updatedEntry)
-			//	.then(function (updatedEntry) {
-					logger.debug('Schema is valid');
-					for (var key in updatedEntry) {
-						if (key !== '_id' && updatedEntry.hasOwnProperty(key)) {
-							that[key] = updatedEntry[key];
-						}
-					}
-					console.log( that );
-					// return that.save();
-					resolve(that);
-				//})
-				//.then(resolve)
-				//.catch(reject);
+			
+			for (var key in updatedEntry) {
+				switch( key ) {
+					case '_id':
+						break;
+					case 'questionnaires':
+						var questionnaires = updatedEntry[key];
+						questionnaires.forEach( function(questionnaire ) {
+							that.questionnaires[questionnaire.name] = questionnaire;
+						});
+						break;
+					case 'parameters':
+						var parameters = updatedEntry[key];
+						parameters.forEach( function(parameter ) {
+							that.parameters[parameter.name] = parameter;
+						});
+						break;
+					default:
+						that[key] = updatedEntry[key];
+						break;
+				}
+			}
+			
+			// console.log( "saving");
+			// console.log( JSON.stringify(that, "", 4));
+			that.save()
+				.then( resolve )
+				.catch( reject );
+			
 		});
 	};
 

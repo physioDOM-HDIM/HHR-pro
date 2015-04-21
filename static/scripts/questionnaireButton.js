@@ -24,6 +24,7 @@ function onQuestionnaireValidate(name, date, score, answerID) {
 	var eltScore = document.querySelectorAll('.questionnaire-row[data-name="' + name + '"] .questionnaire-score');
 	var eltAnswerId = document.querySelector('.questionnaire-row[data-name="' + name + '"] .questionnaire-answer');
 	var eltAnswerText = document.querySelector('.questionnaire-row[data-name="' + name + '"] .questionnaire-text');
+	var eltAnswerDate = document.querySelector('.questionnaire-row[data-name="' + name + '"] .questionnaire-dateFormat');
 	var select = document.querySelector('.questionnaire-row[data-name="' + name + '"] select');
 
 	if (select) {
@@ -33,6 +34,7 @@ function onQuestionnaireValidate(name, date, score, answerID) {
 
 	if (eltDate) {
 		eltDate.innerHTML = moment(date, moment.ISO_8601).format('L');
+		if(eltAnswerDate) { eltAnswerDate.value = date; }
 	}
 
 	if (eltScore.length) {
@@ -79,12 +81,6 @@ function onQuestionnaireButtonClick(e) {
 
 function showAnswer(answerID) {
 	// console.log(answerID);
-	var navs = document.querySelectorAll("div.nav");
-	if( navs.length ) {
-		[].slice.call(navs).forEach( function(nav) {
-			nav.classList.add("hidden");
-		});
-	}
 	var iframe = document.createElement('iframe');
 	iframe.id = 'questionnaireIframe';
 	iframe.setAttribute('scrolling', 'no');
@@ -96,54 +92,44 @@ function showAnswer(answerID) {
 function closeAnswer() {
 	document.getElementById('questionnaireIframe').parentNode.removeChild(document.getElementById('questionnaireIframe'));
 	document.getElementById('content').style.display = '';
-	var navs = document.querySelectorAll("div.nav");
-	if( navs.length ) {
-		[].slice.call(navs).forEach( function(nav) {
-			nav.classList.remove("hidden");
-		});
-	}
 }
 
 function removeAnswer( button ) {
 	var answerID = button.getAttribute("data-answer");
 	var questionnaireName = button.parentNode.parentNode.getAttribute("data-name");
 	
-	promiseXHR('DELETE', '/api/beneficiary/questionnaires/answers/'+answerID, 200, "")
-		.then(function(res) {
-			var eltDate = document.querySelector('.questionnaire-row[data-name="' + questionnaireName + '"] .questionnaire-date');
-			var eltScore = document.querySelectorAll('.questionnaire-row[data-name="' + questionnaireName + '"] .questionnaire-score');
-			var eltAnswerId = document.querySelector('.questionnaire-row[data-name="' + questionnaireName + '"] .questionnaire-answer');
-			var eltAnswerText = document.querySelector('.questionnaire-row[data-name="' + questionnaireName + '"] .questionnaire-text');
-			var select = document.querySelector('.questionnaire-row[data-name="' + questionnaireName + '"] select');
+	var eltDate = document.querySelector('.questionnaire-row[data-name="' + questionnaireName + '"] .questionnaire-date');
+	var eltScore = document.querySelectorAll('.questionnaire-row[data-name="' + questionnaireName + '"] .questionnaire-score');
+	var eltAnswerId = document.querySelector('.questionnaire-row[data-name="' + questionnaireName + '"] .questionnaire-answer');
+	var eltAnswerText = document.querySelector('.questionnaire-row[data-name="' + questionnaireName + '"] .questionnaire-text');
+	var eltAnswerDate = document.querySelector('.questionnaire-row[data-name="' + name + '"] .questionnaire-dateFormat');
+	var select = document.querySelector('.questionnaire-row[data-name="' + questionnaireName + '"] select');
 
-			if (select) {
-				select.disabled = false;
-			}
+	if (select) {
+		select.disabled = false;
+	}
 
-			if (eltDate) {
-				eltDate.innerHTML = "";
-			}
+	if (eltDate) {
+		eltDate.innerHTML = "";
+		if(eltAnswerDate) { eltAnswerDate.value = ""; }
+	}
 
-			if (eltScore.length) {
-				[].slice.call(eltScore).forEach( function(elt) {
-					elt.value = "";
-					elt.readonly = false;
-				});
-			}
-
-			if (eltAnswerId) {
-				eltAnswerId.value = "";
-			}
-			document.querySelector('.questionnaire-row[data-name="' + questionnaireName + '"] .questionnaire-button-container a.button').setAttribute('href', '/questionnaire/'+questionnaireName);
-			
-			var rmButton = document.querySelector('.questionnaire-row[data-name="' + questionnaireName + '"] .questionnaire-button-container button');
-			if( rmButton ) {
-				rmButton.classList.add("hidden");
-			}
-		})
-		.catch( function(err) {
-			console.log(err);
+	if (eltScore.length) {
+		[].slice.call(eltScore).forEach( function(elt) {
+			elt.value = "";
+			elt.readonly = false;
 		});
+	}
+
+	if (eltAnswerId) {
+		eltAnswerId.value = "";
+	}
+	document.querySelector('.questionnaire-row[data-name="' + questionnaireName + '"] .questionnaire-button-container a.button').setAttribute('href', '/questionnaire/'+questionnaireName);
+	
+	var rmButton = document.querySelector('.questionnaire-row[data-name="' + questionnaireName + '"] .questionnaire-button-container button');
+	if( rmButton ) {
+		rmButton.classList.add("hidden");}
+	
 }
 
 window.onpopstate = function(event) {
