@@ -441,7 +441,7 @@
 					<div class="col" vertical layout>
 						{% for telecom in professional.telecom %}
 						{% if telecom.system !== "email" %}
-						<div>{{telecom.value}} ({{telecom.use}})</div>
+						<div>{{systemArray.items[telecom.system]}} {{telecom.value}}</div>
 						{% endif %}
 						{% endfor %}
 					</div>

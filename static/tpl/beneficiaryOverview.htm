@@ -267,7 +267,7 @@
 			<td>
 				{% for telecom in prof.telecom %}
 					{% if telecom.system !== "email" %}
-						<span class="bold">{{telecom.system}}: </span>
+						<span class="bold">{{systemArray.items[telecom.system]}}: </span>
 						<span>{{telecom.value}}</span><br>
 					{% endif %}
 				{% endfor %}

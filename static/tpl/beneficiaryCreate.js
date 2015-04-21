@@ -136,7 +136,8 @@ function _addProfessional(professionalItem) {
             display_phone: function() {
                 var res = "";
                 if (this.system !== "email") {
-                    return this.value + ' (' + this.use + ')';
+					var syst = _dataLists.system.items[this.system][_langCookie] || _dataLists.system.items[this.system]["en"];
+                    return syst+' '+this.system+' '+this.value;
                 }
                 return "";
             },
@@ -712,8 +713,8 @@ function init() {
     }
 
     promises = {
-        job: Utils.promiseXHR("GET", "/api/lists/job/array", 200)/*,
-        role: Utils.promiseXHR("GET", "/api/lists/role/array", 200)*/
+        job: Utils.promiseXHR("GET", "/api/lists/job/array", 200),
+        system: Utils.promiseXHR("GET", "/api/lists/system/array", 200)
     };
 
     var errorCB = function(error){
@@ -726,7 +727,7 @@ function init() {
         try{
             _dataLists = {};
             _dataLists.job = JSON.parse(results.job);
-            /*_dataLists.role = JSON.parse(results.role);*/
+			_dataLists.system = JSON.parse(results.system);
         }
         catch(err){
             errorCB(err);

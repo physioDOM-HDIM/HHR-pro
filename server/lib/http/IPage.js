@@ -429,6 +429,7 @@ function IPage() {
 		].map( promiseList);
 
 		var promisesArray = [
+			"system",
 			"job"
 		].map( promiseListArray);
 
