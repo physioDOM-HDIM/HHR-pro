@@ -143,7 +143,7 @@ function CurrentStatus() {
 					var valid = true;
 					var statuses = {};
 					doc.forEach( function(status) {
-						statuses[status.name] = status.validated?status.validated:false;
+						statuses[status.name] = status.validated && status.validated.status ?status.validated.status:false;
 					});
 					physioDOM.config.healthStatusValidation.forEach( function( name ) {
 						if( !statuses[name] || !statuses[name] ) {
