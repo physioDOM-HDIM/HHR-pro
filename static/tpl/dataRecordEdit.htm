@@ -115,7 +115,11 @@
 				
 					<div class="row marged" >
 						<pre class="item-comment hidden">{{ item.comment }}</pre>
+						{% if cat !== 'questionnaire' %}
 						{{ item.comment }}
+						{% else %}
+						<pre>{{ item.comment }}</pre>
+						{% endif %}
 					</div>
 				</div>
 
