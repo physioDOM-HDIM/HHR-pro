@@ -207,7 +207,11 @@
 						<label>{{"Type"|i18n}} :</label>
 						<input type="hidden" name="telecom[{{loop.index}}].use" value="work">
 						{% if entry.value %}
-						<label>{{entry.system|i18n}}</label>
+						{% for item in system.items %}
+						{% if item.value == entry.system %}
+						<label>{{item.label}}</label>
+						{% endif %}
+						{% endfor %}
 						<input type="hidden" name="telecom[{{loop.index}}].system" value="{{entry.system}}">
 						{% else %}
 						<select name="telecom[{{loop.index}}].system" style="min-width: 150px;"
