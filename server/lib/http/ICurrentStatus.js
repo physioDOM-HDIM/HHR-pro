@@ -11,6 +11,7 @@ var RSVP          = require('rsvp');
 var ObjectID      = require('mongodb').ObjectID;
 var logger        = new Logger('ICurrentStatus');
 var CurrentStatus = require('../class/currentStatus');
+var moment = require('moment');
 
 /**
  * ICurrentStatus
@@ -36,7 +37,7 @@ var ICurrentStatus = {
 	get: function(req, res, next) {
 		logger.trace('get', req.params.name);
 
-		new CurrentStatus().get(req.params.subject, req.params.name)
+		new CurrentStatus().get(req.session.beneficiary, req.params.name)
 			.then( function(current) {
 				res.send(current);
 				next();
@@ -62,75 +63,61 @@ var ICurrentStatus = {
 
 				//adding author to health entry
 				if(updateItem.validated) {
-					updateItem.validatedAuthor = req.session.person.id;	
+					updateItem.validated = {
+						status:true,
+						date: updateItem.validatedDate,
+						author: req.session.person.id
+					}
+					delete updateItem.validatedDate;
+					// updateItem.validatedAuthor = req.session.person.id;
+					console.log( updateItem );
 				}
 
 				var createDataRecord = function(currentStatus) {
 					return new RSVP.Promise(function(resolve, reject) {
 						logger.trace( "createDataRecord");
 						console.log( 'Health status : '+ currentStatus.name, 'validate', currentStatus._id, req.session.person.id );
-						if (updateItem.validated) {
+						if (updateItem.validated && updateItem.validated.status) {
 							
 							var dataRecord = {
 								items: [],
 								healthStatus: true
 							};
-
-							switch (currentStatus.name) {
-								case 'well':
-
-									if(currentStatus.sf36Answer) {
-										dataRecord.items.push({category: 'questionnaire', text: 'SF36', value: currentStatus.sf36Score, ref: currentStatus.sf36Answer, comment: currentStatus.commentSf36});
+							
+							if( Object.keys(currentStatus.parameters).length ) {
+								Object.keys(currentStatus.parameters).forEach(function (key) {
+									var parameter = currentStatus.parameters[key];
+									if( parameter.value ) {
+										var item = {
+											category: 'HDIM',
+											text    : parameter.name,
+											value   : parseFloat(parameter.value),
+											comment : parameter.comment
+										};
+										// console.log("item", item);
+										dataRecord.items.push(item);
 									}
-
-									break;
-								case 'nutrition':
-
-									if(currentStatus.weight) {
-										dataRecord.items.push({category: 'HDIM', text: 'WEG', value: currentStatus.weight, comment: currentStatus.commentWeight});
-									}
-
-									if(currentStatus.lean) {
-										dataRecord.items.push({category: 'HDIM', text: 'LFR', value: currentStatus.lean, comment: currentStatus.commentLean});
-									}
-
-									if(currentStatus.bmi) {
-										dataRecord.items.push({category: 'HDIM', text: 'BMI', value: currentStatus.bmi, comment: currentStatus.commentBmi});
-									}
-
-									if(currentStatus.mnaAnswer) {
-										dataRecord.items.push({category: 'questionnaire', text: 'MNA', value: currentStatus.mnaScore, ref: currentStatus.mnaAnswer, comment: currentStatus.commentMna});
-									}
-
-									if(currentStatus.mnaSfAnswer) {
-										dataRecord.items.push({category: 'questionnaire', text: 'MNA_MINI', value: currentStatus.mnaSfScore, ref: currentStatus.mnaSfAnswer, comment: currentStatus.commentMnaSf});
-									}
-
-									if(currentStatus.snaqAnswer) {
-										dataRecord.items.push({category: 'questionnaire', text: 'SNAQ', value: currentStatus.snaqScore, ref: currentStatus.snaqAnswer, comment: currentStatus.commentSnaq});
-									}
-
-									if(currentStatus.dhdAnswer) {
-										dataRecord.items.push({category: 'questionnaire', text: 'DHD-FFQ', value: currentStatus.dhdScore, ref: currentStatus.dhdAnswer, comment: currentStatus.commentDhd});
-									}
-										
-									break;
-								case 'activity':
-
-									if(currentStatus.stepsNumber) {
-										dataRecord.items.push({category: 'HDIM', text: 'DIST', value: currentStatus.stepsNumber, comment: currentStatus.commentStepsNumber});
-									}
-
-									break;
-								case 'frailty':
-
-									if(currentStatus.chairStandAnswer) {
-										dataRecord.items.push({category: 'questionnaire', text: 'CHAIR_TEST', value: currentStatus.chairStandScore, ref: currentStatus.chairStandAnswer, comment: currentStatus.commentchairStand});
-									}
-
-									break;
+								});
 							}
-
+							
+							if( Object.keys(currentStatus.questionnaires).length ) {
+								Object.keys(currentStatus.questionnaires).forEach( function( key ) {
+									var questionnaire = currentStatus.questionnaires[key];
+									if( questionnaire.score ) {
+										var item = {
+											category: 'questionnaire',
+											text    : questionnaire.name,
+											value   : questionnaire.score,
+											comment : questionnaire.comment,
+											ref     : questionnaire.answerID
+										};
+										dataRecord.items.push(item);
+									}
+								});
+							}
+							
+							// console.log(dataRecord);
+							
 							beneficiary.createEvent('Health status : '+ currentStatus.name, 'validate', currentStatus._id, req.session.person.id)
 								.then( function() {
 									if (dataRecord.items.length === 0) {
@@ -146,7 +133,6 @@ var ICurrentStatus = {
 											});
 									}
 								});
-
 						}
 						else {
 							resolve(currentStatus);
@@ -170,7 +156,8 @@ var ICurrentStatus = {
 								next();
 							})
 							.catch (function (err) {
-								updateItem.validated = false;
+								console.log( JSON.stringify(err.stack,"",4) );
+								updateItem.validated = { status:false };
 								current.update(updateItem)
 									.then(function() {
 										res.send(err.code || 400, err);
@@ -221,6 +208,7 @@ var ICurrentStatus = {
 			}
 			catch (err) {
 				logger.trace('Error', err);
+				if(err.stack) { logger.warning(err.stack); }
 				res.send(500, {error: 'Bad json format'});
 				next(false);
 			}

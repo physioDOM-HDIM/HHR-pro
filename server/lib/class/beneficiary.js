@@ -1427,6 +1427,7 @@ function Beneficiary( ) {
 				.then( function( param ) {
 					graphData.label = param.label[session.lang || "en"] || paramName;
 					graphData.unit = param.unitLabel;
+					graphData.unitRef = param.units;
 					var search = {
 						subject : that._id,
 						text    : paramName,

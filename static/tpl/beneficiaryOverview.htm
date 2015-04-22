@@ -89,7 +89,7 @@
 			<label>{{ "Birth date"|i18n }} :</label><div>{{beneficiary.birthdate}}</div>
 		</div>
 		<div class="row">
-			<label>{{ "Height"|i18n }} :</label><div>{{(beneficiary.size*100)}}{{ "cm"|i18n }}</div>
+			<label>{{ "Height"|i18n }} :</label><div>{{ Math.round(beneficiary.size*100) }}{{ "cm"|i18n }}</div>
 		</div>
 		<div class="row">
 			<label>{{ "Social ID"|i18n }} : </label><div>{{beneficiary.socialID}}</div>
@@ -267,7 +267,7 @@
 			<td>
 				{% for telecom in prof.telecom %}
 					{% if telecom.system !== "email" %}
-						<span class="bold">{{telecom.system}}: </span>
+						<span class="bold">{{systemArray.items[telecom.system]}}: </span>
 						<span>{{telecom.value}}</span><br>
 					{% endif %}
 				{% endfor %}

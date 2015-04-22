@@ -24,6 +24,7 @@ function onQuestionnaireValidate(name, date, score, answerID) {
 	var eltScore = document.querySelectorAll('.questionnaire-row[data-name="' + name + '"] .questionnaire-score');
 	var eltAnswerId = document.querySelector('.questionnaire-row[data-name="' + name + '"] .questionnaire-answer');
 	var eltAnswerText = document.querySelector('.questionnaire-row[data-name="' + name + '"] .questionnaire-text');
+	var eltAnswerDate = document.querySelector('.questionnaire-row[data-name="' + name + '"] .questionnaire-dateFormat');
 	var select = document.querySelector('.questionnaire-row[data-name="' + name + '"] select');
 
 	if (select) {
@@ -33,6 +34,7 @@ function onQuestionnaireValidate(name, date, score, answerID) {
 
 	if (eltDate) {
 		eltDate.innerHTML = moment(date, moment.ISO_8601).format('L');
+		if(eltAnswerDate) { eltAnswerDate.value = date; }
 	}
 
 	if (eltScore.length) {
@@ -46,7 +48,12 @@ function onQuestionnaireValidate(name, date, score, answerID) {
 		eltAnswerId.value = answerID;
 	}
 	document.querySelector('.questionnaire-row[data-name="' + name + '"] .questionnaire-button-container a.button').setAttribute('href', '/answers/' + answerID);
-
+	var rmButton = document.querySelector('.questionnaire-row[data-name="' + name + '"] .questionnaire-button-container button');
+	if( rmButton ) {
+		rmButton.classList.remove("hidden");
+		rmButton.setAttribute("data-answer",answerID);
+	}
+	
 	document.getElementById('questionnaireIframe').parentNode.removeChild(document.getElementById('questionnaireIframe'));
 	document.getElementById('content').style.display = '';
 
@@ -73,7 +80,7 @@ function onQuestionnaireButtonClick(e) {
 }
 
 function showAnswer(answerID) {
-	console.log(answerID);
+	// console.log(answerID);
 	var iframe = document.createElement('iframe');
 	iframe.id = 'questionnaireIframe';
 	iframe.setAttribute('scrolling', 'no');
@@ -85,6 +92,44 @@ function showAnswer(answerID) {
 function closeAnswer() {
 	document.getElementById('questionnaireIframe').parentNode.removeChild(document.getElementById('questionnaireIframe'));
 	document.getElementById('content').style.display = '';
+}
+
+function removeAnswer( button ) {
+	var answerID = button.getAttribute("data-answer");
+	var questionnaireName = button.parentNode.parentNode.getAttribute("data-name");
+	
+	var eltDate = document.querySelector('.questionnaire-row[data-name="' + questionnaireName + '"] .questionnaire-date');
+	var eltScore = document.querySelectorAll('.questionnaire-row[data-name="' + questionnaireName + '"] .questionnaire-score');
+	var eltAnswerId = document.querySelector('.questionnaire-row[data-name="' + questionnaireName + '"] .questionnaire-answer');
+	var eltAnswerText = document.querySelector('.questionnaire-row[data-name="' + questionnaireName + '"] .questionnaire-text');
+	var eltAnswerDate = document.querySelector('.questionnaire-row[data-name="' + name + '"] .questionnaire-dateFormat');
+	var select = document.querySelector('.questionnaire-row[data-name="' + questionnaireName + '"] select');
+
+	if (select) {
+		select.disabled = false;
+	}
+
+	if (eltDate) {
+		eltDate.innerHTML = "";
+		if(eltAnswerDate) { eltAnswerDate.value = ""; }
+	}
+
+	if (eltScore.length) {
+		[].slice.call(eltScore).forEach( function(elt) {
+			elt.value = "";
+			elt.readonly = false;
+		});
+	}
+
+	if (eltAnswerId) {
+		eltAnswerId.value = "";
+	}
+	document.querySelector('.questionnaire-row[data-name="' + questionnaireName + '"] .questionnaire-button-container a.button').setAttribute('href', '/questionnaire/'+questionnaireName);
+	
+	var rmButton = document.querySelector('.questionnaire-row[data-name="' + questionnaireName + '"] .questionnaire-button-container button');
+	if( rmButton ) {
+		rmButton.classList.add("hidden");}
+	
 }
 
 window.onpopstate = function(event) {

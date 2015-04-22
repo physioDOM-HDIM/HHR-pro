@@ -1,3 +1,22 @@
+__v0.0.35__
+
+  - \#196 Bug 259 - [Current Health Status][v0013-2] Saisie questionnaire
+    - refactoring des ecrans du Current Health Status
+    - Bug 321 : [Current Health status][v034] Prise en compte des Ranges & Thresholds
+    - Bug 310 : [Current Health Status][v034] unité non lié à la liste management
+  - Bug 320 : [Result from data recording][v034] bouton edit/delete en mode 'Readonly'
+  - \#217 : Bug 319 : [Create/Update a beneficary ][v034] Champ Height en nombre flottant après sauvegarde
+  - Bug 318 : [Prescription of data monitoring][v034] bouton 'duplicate' et 'edit' collé chevauché
+  - \#218 : Bug 316 Le mot 'Direction' dans la partie filter/sort n'est pas présent dans le fichier de langue et donc non traduit.
+  - \#219 : Bug 322 - [Edit professional/Telecom][v034] reference au lieu du label après sauvegarde
+  - \#220 : Bug 315 -: [directory/Create-Update professional/Account][v034] 'Note : undefined'
+  - \#221 : Bug 313 - [Create/Update a beneficiary|Professionals list][v034] Mauvais champ "type" associé au numéro de telephone
+     - Bug 312 - [Bene overview/professional contacts][v034] afficher le label au lieu de la reference
+  - \#222 : Bug 284 - [Result from data recording][v0024] Retour à la ligne commentaire questionnaire
+  - \#223 : Bug 317 - [data curves][v034] widget graphique non traduit
+  - \#224 : Bug 314 - [All][v034] langue calendrier aide à la saisie des champs date
+  - \#225 : Bug 311 - [Data curves][v034] selection bleu supprime le graphique
+
 __v0.0.34__
 
   - \#212 : Bug 305 - [Langue][Page de login][v031] Chargement langue par défaut du serveur

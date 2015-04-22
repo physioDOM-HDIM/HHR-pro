@@ -207,7 +207,11 @@
 						<label>{{"Type"|i18n}} :</label>
 						<input type="hidden" name="telecom[{{loop.index}}].use" value="work">
 						{% if entry.value %}
-						<label>{{entry.system|i18n}}</label>
+						{% for item in system.items %}
+						{% if item.value == entry.system %}
+						<label>{{item.label}}</label>
+						{% endif %}
+						{% endfor %}
 						<input type="hidden" name="telecom[{{loop.index}}].system" value="{{entry.system}}">
 						{% else %}
 						<select name="telecom[{{loop.index}}].system" style="min-width: 150px;"
@@ -292,8 +296,7 @@
 				       onkeyup="checkPassword(this)"/>
 			</div>
 			<div class="row tip">
-				{{"Info"|i18n}}: {{"The password must contain at least 1 uppercase, 1 lowercase, 1 special character and
-				have at least 8 characters" | i18n }}
+				{{"Info"|i18n}}: {{"The password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters" | i18n }}
 			</div>
 			<div class="hidden" id="has-password">{{ professional.hasPassword }}</div>
 			

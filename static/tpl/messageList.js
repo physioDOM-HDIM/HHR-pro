@@ -81,6 +81,11 @@ window.addEventListener("polymer-ready", init, false);
 window.addEventListener("DOMContentLoaded", function() {
 	infos.lang = Cookies.get("lang");
 	moment.locale( infos.lang==="en"?"en_gb":infos.lang );
+
+	var zdkInputDates = document.querySelectorAll("zdk-input-date");
+	[].slice.call(zdkInputDates).forEach(function (elt) {
+		elt.setAttribute("i18n", Cookies.get("lang")=="en"?"en_gb":Cookies.get("lang"));
+	})
 }, false );
 
 var showDetail = function(elt) {

@@ -429,6 +429,7 @@ function IPage() {
 		].map( promiseList);
 
 		var promisesArray = [
+			"system",
 			"job"
 		].map( promiseListArray);
 
@@ -1468,8 +1469,8 @@ function IPage() {
 					return physioDOM.Directory();
 				})
 				.then( function(directory) {
-					if(data.status.validatedAuthor) {
-						return directory.getEntryByID(data.status.validatedAuthor.toString());
+					if(data.status.validated.author) {
+						return directory.getEntryByID(data.status.validated.author.toString());
 					} else {
 						return null;
 					}
@@ -1481,27 +1482,12 @@ function IPage() {
 					return physioDOM.Lists.getList('parameters');
 				})
 				.then(function(parameters) {
-	
-					var findInObj = function(obj, item, value) {
-					    var i = 0,
-					        len = obj.length,
-					        result = null;
-	
-					    for(i; i<len; i++) {
-					        if(obj[i][item] === value) {
-					            result = obj[i];
-					            break;
-					        }
-					    }
-	
-					    return result;
-					};
-					
-					data.parameters = {
-						stepsNumber: findInObj(parameters.items, 'ref', 'DIST'),
-						weight: findInObj(parameters.items, 'ref', 'WEG'),
-						lean: findInObj(parameters.items, 'ref', 'LFR'),
-						bmi: findInObj(parameters.items, 'ref', 'BMI')
+					if( data.status.questionnaires ) {
+						Object.keys(data.status.questionnaires).forEach(function (questionnaire) {
+							if (data.status.questionnaires[questionnaire].date) {
+								data.status.questionnaires[questionnaire].dateFormat = moment(data.status.questionnaires[questionnaire].date).toISOString();
+							}
+						});
 					}
 	
 					render('/static/tpl/current/' + name + '.htm', data, res, next);

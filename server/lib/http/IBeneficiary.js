@@ -1058,9 +1058,9 @@ var IBeneficiary = {
 				entry.datetime = new Date();
 				return questionnaireAnswer.create(entry);
 			})
-			.then (function(answer) {
-				return new CurrentStatus().saveAnswer(beneficiary._id, questionnaire.name, answer);
-			})
+			//.then (function(answer) {
+			//	return new CurrentStatus().saveAnswer(beneficiary._id, questionnaire.name, answer);
+			//})
 			.then (function(answer) {
 				res.send(answer);
 				next();
@@ -1071,6 +1071,50 @@ var IBeneficiary = {
 			});
 	},
 
+	/**
+	 * remove questionnaire answers.
+	 *
+	 * the selected prescription is given by the url : `/api/beneficiary/dataprog/:dataProgItemID`
+	 *
+	 * on success send a 200 HTTP code, else send a 4xx HTTP Code
+	 *
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	removeQuestionnaireAnswers: function(req, res, next) {
+		logger.trace('removeQuestionnaireAnswers');
+		var beneficiary;
+		var answerID = req.params.entryID;
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+				}
+			})
+			.then(function (selectedBeneficiary) {
+				beneficiary = selectedBeneficiary;
+				return physioDOM.QuestionnaireAnswer();
+			})
+			.then (function(questionnaireAnswer) {
+				return questionnaireAnswer.getById(new ObjectID(answerID));
+			})
+			.then (function(answer) {
+				return answer.remove();
+			})
+			.then (function() {
+				res.send( {code:200, message: "answer deleted" } );
+				next();
+			})
+			.catch(function (err) {
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+	
 	/**
 	 * Adding a new dietary plan to replace the old one
 	 * @param req

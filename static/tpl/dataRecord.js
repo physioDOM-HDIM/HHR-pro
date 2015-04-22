@@ -137,3 +137,9 @@ function init() {
 }
 window.addEventListener("polymer-ready", init, false);
 
+window.addEventListener("DOMContentLoaded", function () {
+	var zdkInputDates = document.querySelectorAll("zdk-input-date");
+	[].slice.call(zdkInputDates).forEach(function (elt) {
+		elt.setAttribute("i18n", Cookies.get("lang")=="en"?"en_gb":Cookies.get("lang"));
+	});
+});
