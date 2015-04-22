@@ -3,7 +3,8 @@
 var Utils = new Utils(),
 	physiologicalData = {},
 	infos = {},
-	graph = {};
+	graph = {},
+	_dataLists = {};
 
 physiologicalData.list = {};
 physiologicalData.dataRecords = {};
@@ -15,7 +16,27 @@ physiologicalData.dataRecords = {};
 
 window.addEventListener("polymer-ready", function() {
     infos.lang = Cookies.get("lang");
-    getParamList();
+	moment().locale(infos.lang=="en"?"en-gb":infos.lang);
+
+	var promises = {
+		units: Utils.promiseXHR("GET", "/api/lists/units/array", 200),
+		params: Utils.promiseXHR("GET", "/api/lists/parameters/array", 200),
+		symptoms: Utils.promiseXHR("GET", "/api/lists/symptom/array", 200),
+		questionnaires: Utils.promiseXHR("GET", "/api/lists/questionnaire/array", 200)
+	};
+	
+	//Used to match the job reference to a friendly user display
+	RSVP.hash(promises).then(function(results) {
+		_dataLists = {};
+		_dataLists.units = JSON.parse(results.units).items;
+		_dataLists.params = JSON.parse(results.params).items;
+		_dataLists.symptom = JSON.parse(results.symptoms).items;
+		_dataLists.questionnaire = JSON.parse(results.questionnaires).items;
+		getParamList();
+	}).catch(function(error) {
+		errorCB(error);
+	});
+    
 }, false);
 
 /**
@@ -286,6 +307,8 @@ var initGraph = function() {
 
 var renderGraph = function(dataRecords) {
 	var user = JSON.parse(document.querySelector('#user').innerHTML),
+		label = "",
+		unit = "",
 		datas = [],
 		yAxisConf = [],
 		tooltip = true,
@@ -309,15 +332,22 @@ var renderGraph = function(dataRecords) {
 				area: '#5C97BF'
 			};
 
+		label = _dataLists[ ["HDIM","General"].indexOf(dataRecords.blue.category)!==-1?"params":dataRecords.blue.category][dataRecords.blue.text];
+		label = label[Cookies.get("lang")] || label["en"];
+		unit = "";
+		if( dataRecords.blue.unitRef ) {
+			unit = _dataLists.units[dataRecords.blue.unitRef];
+			unit = unit[Cookies.get("lang")] || unit["en"];
+		}
 		var yAxisBlue = {
 			title: {
-				text: dataRecords.blue.label,
+				text: label,
 				style: {
 					color: blueColor.line
 				}
 			},
 			labels: {
-				format: '{value} '+ dataRecords.blue.unit,
+				format: '{value} '+ unit,
 				style: {
 					color: blueColor.line
 				}
@@ -325,12 +355,12 @@ var renderGraph = function(dataRecords) {
 		};
 
 		var lineBlue = {
-			name: dataRecords.blue.label,
+			name: label,
 			color: blueColor.line,
 			yAxis: blueIndex,
 			data: dataRecords.blue.data,
 			tooltip: {
-				valueSuffix: ' '+dataRecords.blue.unit
+				valueSuffix: ' '+ unit
 			},
 			zIndex: 1,
             marker: {
@@ -342,7 +372,7 @@ var renderGraph = function(dataRecords) {
 
 		if(thresholdBlue) {
 			var areaBlue = {
-				name: 'Threshold '+dataRecords.blue.label,
+				name: 'Threshold '+ label,
 				type: 'arearange',
 				color: '#5C97BF',
 				yAxis: blueIndex,
@@ -378,15 +408,22 @@ var renderGraph = function(dataRecords) {
 				area: '#EB974E'
 			};
 
+		label = _dataLists[ ["HDIM","General"].indexOf(dataRecords.yellow.category)!==-1?"params":dataRecords.yellow.category][dataRecords.yellow.text];
+		label = label[Cookies.get("lang")] || label["en"];
+		unit = "";
+		if( dataRecords.yellow.unitRef ) {
+			unit = _dataLists.units[dataRecords.yellow.unitRef];
+			unit = unit[Cookies.get("lang")] || unit["en"];
+		}
 		var yAxisYellow = {
 			title: {
-				text: dataRecords.yellow.label,
+				text: label,
 				style: {
 					color: yellowColor.line
 				}
 			},
 			labels: {
-				format: '{value} '+ dataRecords.yellow.unit,
+				format: '{value} '+ unit,
 				style: {
 					color: yellowColor.line
 				}
@@ -395,12 +432,12 @@ var renderGraph = function(dataRecords) {
 		};
 
 		var lineYellow = {
-			name: dataRecords.yellow.label,
+			name: label,
 			color: yellowColor.line,
 			yAxis: yellowIndex,
 			data: dataRecords.yellow.data,
 			tooltip: {
-				valueSuffix: ' '+dataRecords.yellow.unit
+				valueSuffix: ' '+ unit
 			},
 			zIndex: 1,
             marker: {
@@ -412,7 +449,7 @@ var renderGraph = function(dataRecords) {
 
 		if(thresholdYellow) {
 			var areaYellow = {
-				name: 'Threshold '+dataRecords.yellow.label,
+				name: 'Threshold '+ label,
 				type: 'arearange',
 				color: yellowColor.area,
 				yAxis: yellowIndex,
@@ -454,7 +491,7 @@ var renderGraph = function(dataRecords) {
 			data: [
 				[moment().unix(), 0]
 			],
-			zIndex: 1,
+			zIndex: 1
 		};
 
 		datas.push(infos);
@@ -469,7 +506,7 @@ var renderGraph = function(dataRecords) {
 			renderTo: document.querySelector('#container')
 		},
 		title: {
-			text: 'Physiological Data',
+			text: ''
 		},
 		subtitle: {
 			text: user.name.given + ' ' + user.name.family,
@@ -487,7 +524,10 @@ var renderGraph = function(dataRecords) {
 		tooltip: {
 			shared: true,
 			enabled: tooltip,
-			crosshairs: true
+			crosshairs: true,
+			formatter: function () {
+				return moment(this.x).format("LLL") + '<br/>'+ this.points[0].series.name+ ' <b>' + this.y + ' '+this.points[0].series.tooltipOptions.valueSuffix+'</b>';
+			}
 		},
 		credits: {
 			enabled: false
@@ -506,5 +546,13 @@ var renderGraph = function(dataRecords) {
 		series: datas
 	};
 
+	Highcharts.setOptions({
+		lang: {
+			months: moment.localeData()._months,
+			weekdays: moment.localeData()._weekdays,
+			shortMonths: moment.localeData()._monthsShort
+		}
+	});
+	Highcharts.dateFormats = {  W: function (timestamp) { return moment.unix(timestamp).format("LT"); } }
 	new Highcharts.Chart(graph);
 };
