@@ -785,6 +785,6 @@ window.addEventListener("DOMContentLoaded", function () {
     }
 	
 	[].slice.call(zdkInputDates).forEach( function(elt) {
-		elt.setAttribute("i18n",Cookies.get("lang"));
+		elt.setAttribute("i18n",Cookies.get("lang")=="en"?"en_gb":Cookies.get("lang"));
 	});
 }, false);
