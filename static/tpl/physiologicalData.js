@@ -473,8 +473,9 @@ var renderGraph = function(dataRecords) {
 		datas.push(lineYellow);
 		yAxisConf.push(yAxisYellow);
 	}
-
-	if(!dataRecords) {
+	var noYellowData = !dataRecords.yellow || dataRecords.yellow.data.length===0;
+	var noBlueData = !dataRecords.blue || dataRecords.blue.data.length === 0;
+	if(!dataRecords || (noYellowData &&  noBlueData) ) {
 
 		var yAxis = {
 			title: {
