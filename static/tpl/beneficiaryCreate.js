@@ -769,7 +769,8 @@ window.addEventListener("DOMContentLoaded", function () {
 
     var inputTextList = document.querySelectorAll("input[type='text']"),
         inputEmailList = document.querySelectorAll("input[type='email']"),
-        textareaList = document.querySelectorAll("textarea");
+        textareaList = document.querySelectorAll("textarea"),
+		zdkInputDates = document.querySelectorAll("zdk-input-date");
 
     for(var i=0; i<inputTextList.length; i++) {
         Utils.limitText(inputTextList[i], 100);
@@ -782,5 +783,8 @@ window.addEventListener("DOMContentLoaded", function () {
     for(var i=0; i<textareaList.length; i++) {
         Utils.limitText(textareaList[i], 500);
     }
-
+	
+	[].slice.call(zdkInputDates).forEach( function(elt) {
+		elt.setAttribute("i18n",Cookies.get("lang"));
+	});
 }, false);

@@ -14,6 +14,13 @@ physiologicalData.dataRecords = {};
  * INIT
  */
 
+window.addEventListener("DOMContentLoaded", function () {
+	var zdkInputDates = document.querySelectorAll("zdk-input-date");
+	[].slice.call(zdkInputDates).forEach(function (elt) {
+		elt.setAttribute("i18n", Cookies.get("lang"));
+	});
+});
+
 window.addEventListener("polymer-ready", function() {
     infos.lang = Cookies.get("lang");
 	moment().locale(infos.lang=="en"?"en-gb":infos.lang);
