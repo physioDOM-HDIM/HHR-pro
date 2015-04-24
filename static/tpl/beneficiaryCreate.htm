@@ -52,8 +52,7 @@
 				<label class="mandatory">{{ "Use"|i18n }}</label>
 				<select name="telecom[{{loop.index}} {%raw%}{{idx}}{%endraw%}].use" required>
 					{% for item in use.items %}
-					<option value="{{item.value}}" {% if (!telecom.use && item.value=='home')||telecom.use===item.value
-					        %}selected{% endif %}>{{item.label}}
+					<option value="{{item.value}}" {% if (!telecom.use && item.value=='home')||telecom.use===item.value%}selected{% endif %}>{{item.label}}
 					</option>
 					{% endfor %}
 				</select>

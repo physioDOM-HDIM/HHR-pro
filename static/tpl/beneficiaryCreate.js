@@ -137,7 +137,7 @@ function _addProfessional(professionalItem) {
                 var res = "";
                 if (this.system !== "email") {
 					var syst = _dataLists.system.items[this.system][_langCookie] || _dataLists.system.items[this.system]["en"];
-                    return syst+' '+this.system+' '+this.value;
+                    return syst+' '+this.value;
                 }
                 return "";
             },
