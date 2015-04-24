@@ -2700,7 +2700,7 @@ function Beneficiary( ) {
 			var msg = [];
 			if( newFlag ) {
 				msg.push({
-					name : name + ".new",
+					name : name + ".recommendations.new",
 					value: 1,
 					type : "Integer"
 				});
@@ -2752,6 +2752,7 @@ function Beneficiary( ) {
 		var queue = new Queue(this._id);
 		var name = "hhr[" + this._id + "].firstName";
 		return new promise(function (resolve, reject) {
+			logger.trace("pushFirstName ", that.name.given || that.name.family );
 			var msg = [];
 			msg.push({
 				name : name,
