@@ -56,10 +56,9 @@ function Beneficiary( ) {
 		return new promise( function(resolve, reject) {
 			logger.trace("getById", beneficiaryID);
 			var search = { _id: beneficiaryID };
-			if( ["administrator","coordinator"].indexOf(professional.role) === -1) {
+			if( ["administrator","coordinator"].indexOf(professional.role) === -1 && beneficiaryID.toString() !== professional._id.toString() ) {
 				search.professionals = { '$elemMatch' : { professionalID: professional._id.toString() }};
 			}
-			
 			physioDOM.db.collection("beneficiaries").findOne(search, function (err, doc) {
 				if (err) {
 					logger.alert("Error");

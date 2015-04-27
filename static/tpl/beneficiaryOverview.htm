@@ -124,7 +124,7 @@
 		</div>
 		{% if rights.write %}
 		<div class="row control">
-			{% if beneficiary.biomaster && queue && beneficiary.active %}
+			{% if admin && beneficiary.biomaster && queue && beneficiary.active %}
 			<button class="red small" onclick="initQueueDlg();">{{ "Init"|i18n }}</button>&nbsp;
 			<span id="queueStatusOK" {% if beneficiary.biomasterStatus !== true %}class="hidden"{% endif %}>( {{"initialized"|i18n}} )</span>
 			<span id="queueStatusUnknown" {% if beneficiary.biomasterStatus !== false %}class="hidden"{% endif %}>( {{"unknown box"|i18n}} )</span>

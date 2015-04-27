@@ -409,7 +409,7 @@ function IPage() {
 
 		var data = {
 			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1 ? true : false,
-			rights: { read:false, write:false, url: '/beneficiaries' },
+			rights: { read:false, write:false, url: '/beneficiary/overview' },
 			country : physioDOM.config.country
 		};
 
@@ -456,13 +456,12 @@ function IPage() {
 					// indicate that we are editing the selected beneficiary
 					data.sessionBene = true;
 				} else {
-					data.sessionBene = false
+					data.sessionBene = false;
 				}
 				return beneficiaries.getBeneficiaryAdminByID( req.session, beneficiaryID );
 			})
 			.then( function(beneficiary) {
 				// logger.debug("data", data);
-				// logger.debug("bene ", beneficiary );
 				if(beneficiary){
 					data.beneficiary = beneficiary;
 					if(data.beneficiary.address){
@@ -486,12 +485,13 @@ function IPage() {
 				return beneficiary._id ? beneficiary.getProfessionals() : null;
 			})
 			.then(function(professionals){
+				console.log( "-> test" );
 				if( professionals ){
 					data.beneficiary.professionals = professionals;
 				}
-
+				console.log( "rights", data.rights );
 				if( data.rights.read === false ) {
-					noacess( res, next);
+					noaccess( res, next);
 				} else {
 					render('/static/tpl/beneficiaryCreate.htm', data, res, next);
 				}
