@@ -431,6 +431,13 @@ function Beneficiary( ) {
 										address.city = address.city.toUpperCase();
 									});
 									break;
+								case "biomaster":
+									if( that.biomaster !== updatedEntry.biomaster ) {
+										// biomaster box have changed, remove the status
+										that.biomasterStatus = null;
+									}
+									that.biomaster = updatedEntry.biomaster;
+									break;
 								default:
 									that[key] = updatedEntry[key];
 							}
