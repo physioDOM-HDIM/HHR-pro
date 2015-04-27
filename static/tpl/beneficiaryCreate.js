@@ -375,6 +375,7 @@ function checkDiagnosisForm() {
 
 function updateAll(obj) {
     if (obj._id) {
+		if( obj.size === null || obj.size === 0 ) { delete obj.size; }
         Utils.promiseXHR("PUT", "/api/beneficiaries/" + obj._id, 200, JSON.stringify(obj)).then(function() {
 			modified = false;
             new Modal('updateSuccess', function() {
@@ -538,7 +539,7 @@ function addAddress() {
 
 function updateBeneficiary(obj) {
     if (obj._id) {
-
+		if( obj.size === null || obj.size === 0 ) { delete obj.size; }
         Utils.promiseXHR("PUT", "/api/beneficiaries/" + obj._id, 200, JSON.stringify(obj)).then(function() {
             new Modal('updateSuccess', function() {
                 window.location.href = "/beneficiary/overview";
@@ -551,29 +552,28 @@ function updateBeneficiary(obj) {
 				console.log("updateBeneficiary - update error: ", error);
 			}
         });
-
     } else {
-
-        Utils.promiseXHR("POST", "/api/beneficiaries", 200, JSON.stringify(obj)).then(function(response) {
-
-            _dataObj = JSON.parse(response);
-            document.querySelector("form[name='beneficiary'] input[name='_id']").value = _dataObj._id;
-            //Enable others panel
-            var items = document.querySelectorAll(".waitForId");
-            [].map.call(items, function(node) {
-                node.removeAttribute("disabled");
-            });
-            //Display the delete button
-            document.querySelector("#deleteBeneficiary").classList.remove("hidden");
-			document.querySelector("#hasPersonal").classList.remove("hidden");
-			// the created beneficiary is active by default
-			document.querySelector("input[name=active]").checked = true;
-            new Modal('createSuccess');
-
-        }, function(error) {
-            new Modal('errorOccured');
-            console.log("updateBeneficiary - create error: ", error);
-        });
+        Utils.promiseXHR("POST", "/api/beneficiaries", 200, JSON.stringify(obj))
+			.then(function(response) {
+				_dataObj = JSON.parse(response);
+				document.querySelector("form[name='beneficiary'] input[name='_id']").value = _dataObj._id;
+				//Enable others panel
+				var items = document.querySelectorAll(".waitForId");
+				[].map.call(items, function(node) {
+					node.removeAttribute("disabled");
+				});
+				//Display the delete button
+				document.querySelector("#deleteBeneficiary").classList.remove("hidden");
+				document.querySelector("#hasPersonal").classList.remove("hidden");
+				// the created beneficiary is active by default
+				document.querySelector("input[name=active]").checked = true;
+				activeChange(document.querySelector("input[name=active]"));
+				new Modal('createSuccess');
+			})
+			.catch(function(error) {
+				new Modal('errorOccured');
+				console.log("updateBeneficiary - create error: ", error);
+			});
     }
 }
 
@@ -603,21 +603,27 @@ function checkBeneficiaryForm(backgroundTask) {
         return false;
     }
 
+	/*
     if (isNaN(parseFloat(obj.size))) {
         new Modal('errorSizeNumber');
         return false;
     }
-
+	*/
+	
+	/*
     if (!obj.address) {
         new Modal('errorNoAddress');
         return false;
     }
+    */
 
+	/*
     if (!obj.telecom) {
         new Modal('errorNoTelecom');
         return false;
     }
-
+	*/
+	
     if(obj.telecom) {
         var telecomSystemError = false;
 
@@ -635,12 +641,16 @@ function checkBeneficiaryForm(backgroundTask) {
 
     //Adjust data before sending
     obj.birthdate = _convertDate(obj.birthdate);
-    obj.address.map(function(addr) {
-        if (addr.line) {
-            addr.line = addr.line.split("\n");
-        }
-    });
-    obj.size = parseFloat(obj.size) / 100;
+	if( obj.address ) {
+		obj.address.map(function (addr) {
+			if (addr.line) {
+				addr.line = addr.line.split("\n");
+			}
+		});
+	}
+	if( obj.size ) {
+		obj.size = parseFloat(obj.size) / 100;
+	}
     obj.validate = obj.validate === "true" ? true : false;
 
     if (!backgroundTask) {
@@ -666,6 +676,49 @@ function onHaveDateSelection(data) {
         _currentNodeCalendar.value = data.detail.day;
     }
     document.querySelector("#calendarModal").hide();
+}
+
+function activeChange(obj) {
+	moment.locale(_langCookie==="en"?"en_gb":_langCookie);
+	if( obj.checked === false ) {
+		document.querySelector("#diag").removeAttribute("required");
+		document.querySelector("#diagLabel").classList.remove("mandatory");
+		document.querySelector("input[name=size]").removeAttribute("required");
+		document.querySelector("#sizeLabel").classList.remove("mandatory");
+		document.querySelector("input[name=biomaster").removeAttribute("required");
+		document.querySelector("#biomasterLabel").classList.remove("mandatory");
+		var endDate = document.querySelector("#endDate");
+		if( !endDate.value ) {
+			endDate.value = moment().format("YYYY-MM-DD");
+		}
+		if( document.querySelector("input[name=size]").value === "0" ) {
+			document.querySelector("input[name=size]").value = null;
+		}
+	} else {
+		document.querySelector("input[name=biomaster").setAttribute("required", true);
+		if(!document.querySelector("#biomasterLabel").classList.contains("mandatory")) {
+			document.querySelector("#biomasterLabel").classList.add("mandatory");
+		}
+		document.querySelector("#diag").setAttribute("required", true);
+		if(!document.querySelector("#diagLabel").classList.contains("mandatory")) {
+			document.querySelector("#diagLabel").classList.add("mandatory");
+		}
+		document.querySelector("input[name=size]").setAttribute("required",true);
+		if(!document.querySelector("#sizeLabel").classList.contains("mandatory")) {
+			document.querySelector("#sizeLabel").classList.add("mandatory");
+		}
+		var startDate = document.querySelector("#startDate");
+		if( !startDate.value ) {
+			startDate.value = moment().format("YYYY-MM-DD");
+		}
+	}
+}
+
+function startChange(evt) {
+	var active = document.querySelector("input[name=active]");
+	if( evt.target.value && active.checked === false ) {
+		active.checked = true;
+	}
 }
 
 function init() {
@@ -708,8 +761,8 @@ function init() {
         });
         //hide the delete button
         document.querySelector("#deleteBeneficiary").classList.add("hidden");
-		addTelecom();
-		addAddress();
+		// addTelecom();
+		// addAddress();
     }
 
     promises = {
@@ -743,6 +796,7 @@ function init() {
     //Set placeholder for date input according to the local from lang cookie
     //TODO get lang cookie
     _langCookie = Cookies.get("lang");
+	moment.locale(_langCookie==="en"?"en_gb":_langCookie);
     _momentFormat = moment.localeData(_langCookie==="en"?"en_gb":_langCookie).longDateFormat("L");
     [].map.call(document.querySelectorAll(".date"), function(item) {
         item.setAttribute("placeholder", _momentFormat);
@@ -752,6 +806,7 @@ function init() {
     var elt = document.querySelector("#calendarModal zdk-calendar");
     elt.setAttribute("i18n", _langCookie);
     elt.addEventListener("select", onHaveDateSelection);
+	document.querySelector("#startDate").addEventListener("change",startChange);
 }
 
 window.addEventListener("polymer-ready", init, false);
@@ -772,19 +827,21 @@ window.addEventListener("DOMContentLoaded", function () {
         textareaList = document.querySelectorAll("textarea"),
 		zdkInputDates = document.querySelectorAll("zdk-input-date");
 
-    for(var i=0; i<inputTextList.length; i++) {
+	var i;
+	
+    for( i=0; i<inputTextList.length; i++) {
         Utils.limitText(inputTextList[i], 100);
     }
 
-    for(var i=0; i<inputEmailList.length; i++) {
+    for( i=0; i<inputEmailList.length; i++) {
         Utils.limitText(inputEmailList[i], 100);
     }
 
-    for(var i=0; i<textareaList.length; i++) {
+    for(  i=0; i<textareaList.length; i++) {
         Utils.limitText(textareaList[i], 500);
     }
 	
 	[].slice.call(zdkInputDates).forEach( function(elt) {
-		elt.setAttribute("i18n",Cookies.get("lang")=="en"?"en_gb":Cookies.get("lang"));
+		elt.setAttribute("i18n",Cookies.get("lang")==="en"?"en_gb":Cookies.get("lang"));
 	});
 }, false);

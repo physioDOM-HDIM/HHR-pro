@@ -382,5 +382,6 @@
   "Previous":"Previo",
   "Next":"Siguiente",
   "Validate":"Validación",
-  "This login is already used, please choose another one":"Este identificador ya está en uso, por favor elija otro"
+  "This login is already used, please choose another one":"Este identificador ya está en uso, por favor elija otro",
+  "Reason of the exit":"Motivo de la salida"
 }

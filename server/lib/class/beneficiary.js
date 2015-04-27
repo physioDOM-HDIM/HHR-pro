@@ -442,6 +442,8 @@ function Beneficiary( ) {
 							}
 						}
 					}
+					if( !updatedEntry.size ) { delete that.size; }
+					console.log("-->", updatedEntry.active, that.active );
 					return that.save();
 				})
 				.then( function() {
