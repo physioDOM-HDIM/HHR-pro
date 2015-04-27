@@ -425,7 +425,8 @@ function IPage() {
 			"profession",
 			"perimeter",
 			"nutritionalStatus",
-			"generalStatus"
+			"generalStatus",
+			"exitStatus"
 		].map( promiseList);
 
 		var promisesArray = [
@@ -464,15 +465,23 @@ function IPage() {
 				// logger.debug("data", data);
 				if(beneficiary){
 					data.beneficiary = beneficiary;
-					if(data.beneficiary.address){
-						data.beneficiary.address.forEach( function(address){
+					if(data.beneficiary.address) {
+						data.beneficiary.address.forEach( function(address, indx){
 							if(address.line && address.line.length > 0){
 								//To display with line break in the textarea
 								address.line = address.line.join("\n");
+							} else {
+								data.beneficiary.address.splice(indx,1);
 							}
 						});
 					}
-
+					if(data.beneficiary.telecom) {
+						data.beneficiary.telecom.forEach( function(telecom, indx) {
+							if(! telecom.value ) {
+								data.beneficiary.telecom.splice(indx,1);
+							}
+						});
+					}
 					//Format date to follow the locale
 					data.beneficiary.birthdate = convertDate(data.beneficiary.birthdate);
 					if(data.beneficiary.entry){
@@ -481,15 +490,15 @@ function IPage() {
 						data.beneficiary.entry.endDate    = data.beneficiary.entry.endDate;
 					}
 				}
-
+				
 				return beneficiary._id ? beneficiary.getProfessionals() : null;
 			})
 			.then(function(professionals){
-				console.log( "-> test" );
+				// console.log( "-> test" );
 				if( professionals ){
 					data.beneficiary.professionals = professionals;
 				}
-				console.log( "rights", data.rights );
+				// console.log( "rights", data.rights );
 				if( data.rights.read === false ) {
 					noaccess( res, next);
 				} else {
