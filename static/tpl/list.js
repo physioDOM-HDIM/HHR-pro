@@ -17,22 +17,34 @@ window.addEventListener('DOMContentLoaded', function () {
 	Utils.promiseXHR("GET", "/api/lists/units")
 		.then(function (response) {
 			units = JSON.parse(response);
-		})
-		.then(function () {
+			units.items.forEach( function( item, indx ) {
+				if (!item.active) {
+					units.items.splice(indx, 1);
+				}
+			});
 			return Utils.promiseXHR("GET", "/api/lists/job");
 		})
 		.then(function (response) {
 			jobs = JSON.parse(response);
+			jobs.items.forEach( function( item, indx ) {
+				if (!item.active) {
+					jobs.items.splice(indx, 1);
+				}
+			});
 			return Utils.promiseXHR("GET", "/api/lists/roleClass");
 		})
 		.then(function (response) {
 			roleClass = JSON.parse(response);
+			roleClass.items.forEach( function( item, indx ) {
+				if (!item.active) {
+					roleClass.items.splice(indx, 1);
+				}
+			});
 			var listName = document.querySelector('#list-name').value;
 			return Utils.promiseXHR("GET", "/api/lists/" + listName);
 		})
 		.then(function (response) {
 			list = JSON.parse(response);
-			// console.log(list);
 			showLang();
 		});
 

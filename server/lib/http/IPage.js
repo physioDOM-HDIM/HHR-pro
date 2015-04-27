@@ -1698,17 +1698,21 @@ function IPage() {
 		
 		physioDOM.Lists.getList('role')
 			.then(function(list) {
-				data.roles = list.items;
+				data.roles = [];
+				list.items.forEach( function(item) {
+					if( item.active ) {
+						data.roles.push( item );
+					}
+				});
 				return new Menu().getAll();
 			})
 			.then( function(menu) {
 				data.items = menu;
-				console.log( "menu", menu );
+				// console.log( "menu", menu );
 				return new SpecialRights().getAll();
 			})
 			.then( function( rights ) {
 				data.spItems = rights;
-				console.log( "spRights", rights );
 				render('/static/tpl/rights.htm', data, res, next);
 			})
 			.catch(function(err) {
