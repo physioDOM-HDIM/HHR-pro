@@ -181,7 +181,7 @@ var IBeneficiary = {
 					return beneficiary.hasProfessional(req.session.person.id)
 						.then(function(hasProfessional) {
 							if(hasProfessional || ["administrator","coordinator"].indexOf(req.session.role) !== -1) {
-								return beneficiary.update(updateItem, req.session.person.id);
+								return beneficiary.update(updateItem, req.session.person.id, req.headers["ids-user"]?true:false);
 							} else {
 								throw { code:403, message:"not authorized"};
 							}

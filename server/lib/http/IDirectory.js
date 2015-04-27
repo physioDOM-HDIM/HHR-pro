@@ -177,6 +177,9 @@ var IDirectory = {
 				})
 				.then(function (_professional) {
 					professional = _professional;
+					if( req.headers["ids-user"] && !account.login ) {
+						account.login = professional.getEmail();
+					}
 					return professional.accountUpdate(account);
 				})
 				.then( function(professional, OTP) {

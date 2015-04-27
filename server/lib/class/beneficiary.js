@@ -396,7 +396,7 @@ function Beneficiary( ) {
 	 * @param updatedEntry
 	 * @returns {promise}
 	 */
-	this.update = function( updatedEntry, professionalID) {
+	this.update = function( updatedEntry, professionalID, IDS) {
 		var that = this;
 		var accountData = null;
 		return new promise( function(resolve, reject) {
@@ -443,7 +443,7 @@ function Beneficiary( ) {
 						}
 					}
 					if( !updatedEntry.size ) { delete that.size; }
-					console.log("-->", updatedEntry.active, that.active );
+					// console.log("-->", updatedEntry.active, that.active );
 					return that.save();
 				})
 				.then( function() {
@@ -452,6 +452,10 @@ function Beneficiary( ) {
 				.then( function() {
 					return new promise( function(resolve, reject) {
 						if (accountData) {
+							if( IDS && !accountData.login ) {
+								accountData.login = that.getEmail();
+								accountData.IDS = true;
+							}
 							that.accountUpdate(accountData)
 								.then( resolve )
 								.catch( function(err) {
