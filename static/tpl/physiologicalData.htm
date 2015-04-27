@@ -54,8 +54,8 @@
 <zdk-panel heading="{{'HDIM'|i18n}}" id="param-HDIM-container" collapsable="true" collapsed="false">
 	<div class="row">
 		<div class="col" style="-webkit-flex:1.5; -ms-flex:1.5; flex:1.5;"></div>
-		<div style="width:120px">{{"Threshold min"|i18n}}</div>
-		<div style="width:120px">{{"Threshold max"|i18n}}</div>
+		<div style="width:120px" class="thresholdMin">{{"Threshold min"|i18n}}</div>
+		<div style="width:120px" class="thresholdMax">{{"Threshold max"|i18n}}</div>
 		<div class="col">{{"Last Report on" | i18n}}</div>
 		<div class="spacing-nobutton"></div>
 	</div>
@@ -78,7 +78,7 @@
 		<div class="spacing-nobutton"></div>
 	</div>
 </zdk-panel>
-
+<div class="hidden threshold">{{"Thresholds" | i18n }}</div>
 
 <script type="template" id="param-line-tpl">
 	{% raw %}{{#param}}{% endraw %}
