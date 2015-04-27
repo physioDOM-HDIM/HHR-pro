@@ -188,7 +188,6 @@ var IBeneficiary = {
 						});
 				})
 				.then( function (beneficiary ) {
-					console.log("test1");
 					res.send( beneficiary );
 					next();
 				})
