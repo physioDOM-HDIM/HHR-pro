@@ -73,6 +73,47 @@ var IQueue = {
 		}
 	},
 	
+	firstname: function( req, res, next) {
+		var hhr = req.params.hhr?new ObjectID(req.params.hhr):null || req.session.beneficiary;
+		logger.trace("firstname", hhr);
+
+		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
+			res.send(403, { code:403, message:"you have no write to access this request"});
+			return next(false);
+		}
+
+		if(!hhr) {
+			res.send(404, { code:404, message:"empty hhr"});
+			return next();
+		} else {
+			physioDOM.Beneficiaries()
+				.then(function (beneficiaries) {
+					return beneficiaries.getHHR(hhr);
+				})
+				.then(function (beneficiary) {
+					if (beneficiary.biomasterStatus) {
+						return beneficiary.pushFirstName();
+					} else {
+						return false;
+					}
+				})
+				.then(function (result) {
+					logger.debug("end sending messages");
+					if (result) {
+						res.send(result);
+					} else {
+						res.send({code: 200, message: "biomaster not initialized"});
+					}
+					next();
+				})
+				.catch( function(err) {
+					console.log("firstname error", err);
+					console.log(err.stack);
+					throw err;
+				});
+		}
+	},
+
 	messages: function( req, res, next) {
 		var hhr = req.params.hhr?new ObjectID(req.params.hhr):null || req.session.beneficiary;
 		logger.trace("messages", hhr);
@@ -105,7 +146,12 @@ var IQueue = {
 						res.send({code: 200, message: "biomaster not initialized"});
 					}
 					next();
-				});
+				})
+				.catch( function(err) {
+					console.log("messages error", err);
+					console.log(err.stack);
+					throw err;
+				});;
 		}
 	},
 	
@@ -141,7 +187,12 @@ var IQueue = {
 						res.send({code: 200, message: "biomaster not initialized"});
 					}
 					next();
-				});
+				})
+				.catch( function(err) {
+					console.log("history error", err);
+					console.log(err.stack);
+					throw err;
+				});;
 		}
 	},
 	
@@ -177,7 +228,12 @@ var IQueue = {
 						res.send({code: 200, message: "biomaster not initialized"});
 					}
 					next();
-				});
+				})
+				.catch( function(err) {
+					console.log("dhdffq error", err);
+					console.log(err.stack);
+					throw err;
+				});;
 		}
 	},
 	
@@ -187,11 +243,13 @@ var IQueue = {
 		logger.trace("measurePlan", hhr);
 
 		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
+			logger.warning("you have no write to access this request");
 			res.send(403, { code:403, message:"you have no write to access this request"});
 			return next(false);
 		}
 		
 		if(!hhr) {
+			logger.warning("no hhr given");
 			res.send(404, { code:404, message:"empty hhr"});
 			return next();
 		} else {
@@ -200,7 +258,7 @@ var IQueue = {
 					return beneficiaries.getHHR(hhr);
 				})
 				.then(function (beneficiary) {
-					if (beneficiary.biomasterStatus) {
+					if (beneficiary.biomasterStatus === true) {
 						return beneficiary.getMeasurePlan( force );
 					} else {
 						return false;
@@ -214,6 +272,11 @@ var IQueue = {
 						res.send({code: 200, message: "biomaster not initialized"});
 					}
 					next();
+				})
+				.catch( function(err) {
+					console.log("measurePlan error", err);
+					console.log(err.stack);
+					throw err;
 				});
 		}
 	},
@@ -250,6 +313,11 @@ var IQueue = {
 						res.send({code: 200, message: "biomaster not initialized"});
 					}
 					next();
+				})
+				.catch( function(err) {
+					console.log("symptomsSelf error", err);
+					console.log(err.stack);
+					throw err;
 				});
 		}
 	},
@@ -287,6 +355,11 @@ var IQueue = {
 						res.send({code: 200, message: "biomaster not initialized"});
 					}
 					next();
+				})
+				.catch( function(err) {
+					console.log("symptomPlan error", err);
+					console.log(err.stack);
+					throw err;
 				});
 		}
 	},
@@ -323,6 +396,11 @@ var IQueue = {
 						res.send({code: 200, message: "biomaster not initialized"});
 					}
 					next();
+				})
+				.catch( function(err) {
+					console.log("physicalPlan error", err);
+					console.log(err.stack);
+					throw err;
 				});
 		}
 	},
@@ -359,6 +437,11 @@ var IQueue = {
 						res.send({code: 200, message: "biomaster not initialized"});
 					}
 					next();
+				})
+				.catch( function(err) {
+					console.log("dietaryPlan error", err);
+					console.log(err.stack);
+					throw err;
 				});
 		}
 	},

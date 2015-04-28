@@ -1776,12 +1776,14 @@ function Beneficiary( ) {
 		
 		var today = moment().hour(12).minute(0).second(0);
 		var endDate = moment().add(physioDOM.config.duration,'d').hour(12).minute(0).second(0);
-		logger.debug( "MeasurePlan from "+today.toISOString()+" to "+endDate.toIsoString());
+		logger.debug( "MeasurePlan from "+today.toISOString()+" to "+endDate.toISOString());
 		var dataProg = new DataProg( this._id );
 		var msgs = [];
 		var that = this;
 		
 		return new promise( function(resolve, reject) {
+			logger.trace("getMeasurePlan", that._id );
+			
 			var promises = ["General","HDIM"].map(function (category) {
 				return dataProg.getCategory( category );
 			});
@@ -1842,7 +1844,7 @@ function Beneficiary( ) {
 								while (nextDate.unix() < startDate.unix()) {
 									nextDate.add(prog.repeat, 'M');
 								}
-								logger.debug("nextDate", nextDate.format("L"));
+								// logger.debug("nextDate", nextDate.format("L"));
 								if (nextDate.unix() <= closeDate.unix()) {
 									prog.when.days.forEach(function (day) {
 										if (day > 0) {
@@ -1912,6 +1914,11 @@ function Beneficiary( ) {
 										});
 								});
 						});
+				})
+				.catch( function(err) {
+					console.log("erreur detectée");
+					console.log(err.stack);
+					reject(err);
 				});
 		});
 	};
@@ -2124,7 +2131,7 @@ function Beneficiary( ) {
 
 		var today = moment().hour(12).minute(0).second(0);
 		var endDate = moment().add(physioDOM.config.duration,'d').hour(12).minute(0).second(0);
-		logger.debug( "SymptomPlan from "+today.toISOString()+" to "+endDate.toIsoString());
+		logger.debug( "SymptomPlan from "+today.toISOString()+" to "+endDate.toISOString());
 		var dataProg = new DataProg( this._id );
 		var msgs = [];
 		var that = this;
