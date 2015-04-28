@@ -46,7 +46,8 @@ var beneficiarySchema = {
 				"plannedEnd" : {format: "date"},
 				"endDate"    : {format: "date"},
 				"comeFrom"   : {type: "string"},
-				"destination": {type: "string"}
+				"destination": {type: "string"},
+				"exitReason" : {type:"string"}
 			},
 			"additionalProperties": false
 		},

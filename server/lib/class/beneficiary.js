@@ -56,10 +56,9 @@ function Beneficiary( ) {
 		return new promise( function(resolve, reject) {
 			logger.trace("getById", beneficiaryID);
 			var search = { _id: beneficiaryID };
-			if( ["administrator","coordinator"].indexOf(professional.role) === -1) {
+			if( ["administrator","coordinator"].indexOf(professional.role) === -1 && beneficiaryID.toString() !== professional._id.toString() ) {
 				search.professionals = { '$elemMatch' : { professionalID: professional._id.toString() }};
 			}
-			
 			physioDOM.db.collection("beneficiaries").findOne(search, function (err, doc) {
 				if (err) {
 					logger.alert("Error");
@@ -397,7 +396,7 @@ function Beneficiary( ) {
 	 * @param updatedEntry
 	 * @returns {promise}
 	 */
-	this.update = function( updatedEntry, professionalID) {
+	this.update = function( updatedEntry, professionalID, IDS) {
 		var that = this;
 		var accountData = null;
 		return new promise( function(resolve, reject) {
@@ -431,11 +430,20 @@ function Beneficiary( ) {
 										address.city = address.city.toUpperCase();
 									});
 									break;
+								case "biomaster":
+									if( that.biomaster !== updatedEntry.biomaster ) {
+										// biomaster box have changed, remove the status
+										that.biomasterStatus = null;
+									}
+									that.biomaster = updatedEntry.biomaster;
+									break;
 								default:
 									that[key] = updatedEntry[key];
 							}
 						}
 					}
+					if( !updatedEntry.size ) { delete that.size; }
+					// console.log("-->", updatedEntry.active, that.active );
 					return that.save();
 				})
 				.then( function() {
@@ -444,6 +452,10 @@ function Beneficiary( ) {
 				.then( function() {
 					return new promise( function(resolve, reject) {
 						if (accountData) {
+							if( IDS && !accountData.login ) {
+								accountData.login = that.getEmail();
+								accountData.IDS = true;
+							}
 							that.accountUpdate(accountData)
 								.then( resolve )
 								.catch( function(err) {
@@ -1764,12 +1776,14 @@ function Beneficiary( ) {
 		
 		var today = moment().hour(12).minute(0).second(0);
 		var endDate = moment().add(physioDOM.config.duration,'d').hour(12).minute(0).second(0);
-		logger.debug( "MeasurePlan from "+today.toISOString()+" to "+endDate.toIsoString());
+		logger.debug( "MeasurePlan from "+today.toISOString()+" to "+endDate.toISOString());
 		var dataProg = new DataProg( this._id );
 		var msgs = [];
 		var that = this;
 		
 		return new promise( function(resolve, reject) {
+			logger.trace("getMeasurePlan", that._id );
+			
 			var promises = ["General","HDIM"].map(function (category) {
 				return dataProg.getCategory( category );
 			});
@@ -1830,7 +1844,7 @@ function Beneficiary( ) {
 								while (nextDate.unix() < startDate.unix()) {
 									nextDate.add(prog.repeat, 'M');
 								}
-								logger.debug("nextDate", nextDate.format("L"));
+								// logger.debug("nextDate", nextDate.format("L"));
 								if (nextDate.unix() <= closeDate.unix()) {
 									prog.when.days.forEach(function (day) {
 										if (day > 0) {
@@ -1900,6 +1914,11 @@ function Beneficiary( ) {
 										});
 								});
 						});
+				})
+				.catch( function(err) {
+					console.log("erreur detectée");
+					console.log(err.stack);
+					reject(err);
 				});
 		});
 	};
@@ -2112,7 +2131,7 @@ function Beneficiary( ) {
 
 		var today = moment().hour(12).minute(0).second(0);
 		var endDate = moment().add(physioDOM.config.duration,'d').hour(12).minute(0).second(0);
-		logger.debug( "SymptomPlan from "+today.toISOString()+" to "+endDate.toIsoString());
+		logger.debug( "SymptomPlan from "+today.toISOString()+" to "+endDate.toISOString());
 		var dataProg = new DataProg( this._id );
 		var msgs = [];
 		var that = this;
@@ -2700,7 +2719,7 @@ function Beneficiary( ) {
 			var msg = [];
 			if( newFlag ) {
 				msg.push({
-					name : name + ".new",
+					name : name + ".recommendations.new",
 					value: 1,
 					type : "Integer"
 				});
@@ -2752,6 +2771,7 @@ function Beneficiary( ) {
 		var queue = new Queue(this._id);
 		var name = "hhr[" + this._id + "].firstName";
 		return new promise(function (resolve, reject) {
+			logger.trace("pushFirstName ", that.name.given || that.name.family );
 			var msg = [];
 			msg.push({
 				name : name,

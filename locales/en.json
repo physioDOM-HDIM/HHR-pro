@@ -382,5 +382,7 @@
   "Previous":"Previous",
   "Next":"Next",
   "Validate":"Validation",
-  "This login is already used, please choose another one":"This login is already used, please choose another one"
+  "This login is already used, please choose another one":"This login is already used, please choose another one",
+  "Reason of the exit":"Reason of the exit",
+  "Thresholds":"Thresholds"
 }

@@ -1,3 +1,25 @@
+__v0.0.36__
+
+  - \#226 : Bug 307 - Notification d'un "Dietary Plan"
+    - Fix also send family name if no given name exists
+  - \#227 : Bug 328 : [Create/Update a beneficiary|Professionals list][v035] Affiche la Label suivi de la reference (table system)
+  - \#228 : Bug 293 - [Beneficiary overview][v027] Bouton init
+   > Changing the physioDOM box reset the status of the box in HHR-Pro
+  - \#229 - Bug 320 - [Result from data recording][v034] bouton edit/delete en mode 'Readonly'
+   > __Nota :__ To have rights to edit an existing data record depends ont he rights "Results from data recording"
+  - \#230 : Bug 325 - [Edition d'un beneficiaire][v034] Erreur buffer chunk
+   > __Nota :__ Giving Read/write access to the beneficiary on his file is not a good idea, but now it works.  
+   > The access to the "init" button is reserved to coordinator or administrator.
+  - \#231 : Bug 326 - [Lists management][v034] liste déroulante avec element desactivé
+  - \#232 : Bug 189 - [Select Beneficiary/Edit][physioDOM-v0.0.8][ HHR-Pro CasesTests Results & Decisions v10 150114.docx
+  - \#233 : Bug 333 - [ERG][v035] Saisie des questionnaires sur tablette
+  - \#234 : Bug 330 - Création professionnel via IDS ( fix also for beneficiaries )
+  - \#235 : Bug 331 - [Prescription of data monitoring][v035] Format date DD/MM/YYYY en Hollandais pour les écrans de création des prescriptions
+  - \#236 : Bug 317 : [data curves][v034] widget graphique non traduit
+  - \#237 : Bug 334 - [Prescription of Data Monitoring][v0035] Pas d'envoi de prescriptions
+  
+> __Nota :__ to apply bug fix \#232, it's necessary to apply the new `list.json`, due to creation of a new list `exitStatus`.
+
 __v0.0.35__
 
   - \#196 Bug 259 - [Current Health Status][v0013-2] Saisie questionnaire

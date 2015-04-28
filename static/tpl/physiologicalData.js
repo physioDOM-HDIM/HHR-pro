@@ -323,6 +323,8 @@ var renderGraph = function(dataRecords) {
 		dateFrom = moment(document.querySelector('.date-from').value).valueOf(),
 		dateTo = moment(document.querySelector('.date-to').value).valueOf();
 	
+	var threshold = document.querySelector(".threshold").innerHTML;
+	
 	Utils.hideElt(noDataTip);
 
 	//fix to have dateTo full day
@@ -366,6 +368,8 @@ var renderGraph = function(dataRecords) {
 			color: blueColor.line,
 			yAxis: blueIndex,
 			data: dataRecords.blue.data,
+			cropThreshold: 300,
+			connectNulls: true,
 			tooltip: {
 				valueSuffix: ' '+ unit
 			},
@@ -379,7 +383,7 @@ var renderGraph = function(dataRecords) {
 
 		if(thresholdBlue) {
 			var areaBlue = {
-				name: 'Threshold '+ label,
+				name: threshold + ' : '+ label,
 				type: 'arearange',
 				color: '#5C97BF',
 				yAxis: blueIndex,
@@ -443,6 +447,8 @@ var renderGraph = function(dataRecords) {
 			color: yellowColor.line,
 			yAxis: yellowIndex,
 			data: dataRecords.yellow.data,
+			cropThreshold: 300,
+			connectNulls: true,
 			tooltip: {
 				valueSuffix: ' '+ unit
 			},
@@ -456,7 +462,7 @@ var renderGraph = function(dataRecords) {
 
 		if(thresholdYellow) {
 			var areaYellow = {
-				name: 'Threshold '+ label,
+				name: threshold + ' : ' + label,
 				type: 'arearange',
 				color: yellowColor.area,
 				yAxis: yellowIndex,
@@ -473,8 +479,8 @@ var renderGraph = function(dataRecords) {
 		datas.push(lineYellow);
 		yAxisConf.push(yAxisYellow);
 	}
-	var noYellowData = !dataRecords.yellow || dataRecords.yellow.data.length===0;
-	var noBlueData = !dataRecords.blue || dataRecords.blue.data.length === 0;
+	var noYellowData = !dataRecords || !dataRecords.yellow || dataRecords.yellow.data.length===0;
+	var noBlueData = !dataRecords || !dataRecords.blue || dataRecords.blue.data.length === 0;
 	if(!dataRecords || (noYellowData &&  noBlueData) ) {
 
 		var yAxis = {
@@ -534,7 +540,16 @@ var renderGraph = function(dataRecords) {
 			enabled: tooltip,
 			crosshairs: true,
 			formatter: function () {
-				return moment(this.x).format("LLL") + '<br/>'+ this.points[0].series.name+ ' <b>' + this.y + ' '+this.points[0].series.tooltipOptions.valueSuffix+'</b>';
+				if( this.points[0].series.tooltipOptions.valueSuffix ) {
+					return moment(this.x).format("LLL") + '<br/>' + this.points[0].series.name + ' <b>' + this.y + ' ' + this.points[0].series.tooltipOptions.valueSuffix + '</b>';
+				} else {
+					var str = '<span style="color:'+this.points[0].series.color+'">'+this.points[0].series.name + '</span><br/><b> min : '+this.points[0].series.dataMin+ ' - max : '+this.points[0].series.dataMax+'</b>';
+					if( this.points[1] ) {
+						str += "<br/>";
+						str += '<span style="color:'+this.points[1].series.color+'">'+this.points[1].series.name + '</span><br/><b> min : '+this.points[1].series.dataMin+ ' - max : '+this.points[1].series.dataMax+'</b>';
+					}
+					return str;
+				}
 			}
 		},
 		credits: {

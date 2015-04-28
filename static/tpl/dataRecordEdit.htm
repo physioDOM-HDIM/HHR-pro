@@ -41,6 +41,10 @@
 		margin: 0;
 		background: white;
 	}
+	
+	input.questionnaire-score {
+		width: 100px;
+	}
 </style>
 {% endblock %}
 
@@ -124,7 +128,7 @@
 				</div>
 
 				<div>
-					{% if admin && beneficiary.active && !dataRecordItems.healthStatus %}
+					{% if rights.write && beneficiary.active && !dataRecordItems.healthStatus %}
 					<div style="width:100px; text-align:right">
 						<div>
 							<button type="button" class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">{{"Edit"|i18n}}</button>
@@ -187,7 +191,7 @@
 				<input name="items[{{item._id.toString()}}].dataRecordID" type="hidden" value="{{item.dataRecordID.toString()}}">
 				
 				<div style="width:100px; text-align:right">
-					{% if admin && !dataRecordItems.healthStatus %}
+					{% if rights.write && !dataRecordItems.healthStatus %}
 					<div>
 						<button type="button" class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">{{"Back"|i18n}}</button>
 					</div>

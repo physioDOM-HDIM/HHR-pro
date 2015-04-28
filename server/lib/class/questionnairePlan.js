@@ -34,7 +34,6 @@ function QuestionnairePlan( beneficiaryID ) {
 					var promises = questionnaires.items.map(function (questionnaire) {
 						if(questionnaire.active) {
 							return new promise(function (resolve, reject) {
-								// logger.debug("test1", questionnaire);
 								var search = {subject: that.subject, ref: questionnaire.ref};
 								physioDOM.db.collection("questionnairePlan").findOne(search, function (err, result) {
 									// logger.debug("test2", result);

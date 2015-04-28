@@ -52,8 +52,7 @@
 				<label class="mandatory">{{ "Use"|i18n }}</label>
 				<select name="telecom[{{loop.index}} {%raw%}{{idx}}{%endraw%}].use" required>
 					{% for item in use.items %}
-					<option value="{{item.value}}" {% if (!telecom.use && item.value=='home')||telecom.use===item.value
-					        %}selected{% endif %}>{{item.label}}
+					<option value="{{item.value}}" {% if (!telecom.use && item.value=='home')||telecom.use===item.value%}selected{% endif %}>{{item.label}}
 					</option>
 					{% endfor %}
 				</select>
@@ -154,8 +153,8 @@
 		</div>
 		<div class="row">
 			<div class="col">
-				<label class="mandatory">{{ "Height"|i18n}} ({{"centimeters"|i18n }})</label>
-				<input type="number" min="100" max="250" step="1" name="size" value="{{ Math.round(beneficiary.size * 100) }}" required/>
+				<label id="sizeLabel" {% if beneficiary.active %}class="mandatory"{% endif %}>{{ "Height"|i18n}} ({{"centimeters"|i18n }})</label>
+				<input type="number" min="100" max="250" step="1" name="size" value="{{ Math.round(beneficiary.size * 100) }}" {% if beneficiary.active %}required{% endif %}/>
 			</div>
 			<div class="col">
 				<label>{{ "Social ID"|i18n }}</label>
@@ -270,7 +269,7 @@
 		<form name="entry" autocomplete="off" onsubmit="return false;">
 			<div class="row">
 				<label>{{ "Active"|i18n }}</label>
-				<input type="checkbox" name="active" value="true" {% if beneficiary.active %}checked{% endif %}/>
+				<input type="checkbox" name="active" value="true" {% if beneficiary.active===true %}checked{% endif %} onchange="activeChange(this)" />
 			</div>
 			<div class="row">
 				<label>{{ "Demand"|i18n }}</label>
@@ -279,7 +278,7 @@
 			<div class="row">
 				<div class="col">
 					<label class="mandatory">{{ "Start date"|i18n }}</label>
-					<zdk-input-date name="entry.startDate" value="{{beneficiary.entry.startDate}}" style="z-index:100" staticpos="true"
+					<zdk-input-date id="startDate" name="entry.startDate" value="{{beneficiary.entry.startDate}}" style="z-index:100" staticpos="true"
 					                required></zdk-input-date>
 				</div>
 				<div class="col">
@@ -299,7 +298,7 @@
 			<div class="row">
 				<div class="col">
 					<label>{{ "End date"|i18n }}</label>
-					<zdk-input-date name="entry.endDate" value="{{beneficiary.entry.endDate}}" staticpos="true"
+					<zdk-input-date id="endDate" name="entry.endDate" value="{{beneficiary.entry.endDate}}" staticpos="true"
 					                style="z-index:100"></zdk-input-date>
 				</div>
 				<div class="col">
@@ -312,11 +311,22 @@
 				</div>
 			</div>
 			<div class="row">
-			
+			<div class="row">
+				<label>{{ "Reason of the exit"|i18n }}</label>
+				<select name="entry.exitReason">
+					{% for item in exitStatus.items %}
+					{% if item.value === "NONE" %}
+					<option value="NONE"></option>
+					{% else %}
+					<option value="{{item.value}}" {% if item.value===beneficiary.entry.exitReason %}selected{% endif %}>{{item.label}}</option>
+					{% endif %}
+					{% endfor %}
+				</select>
+			</div>
 			</div>
 			<div class="row">
-				<label>{{ "PhysioDom-Box"|i18n }}</label>
-				<input type="text" name="biomaster" value="{{beneficiary.biomaster}}"/>
+				<label id="biomasterLabel" {% if beneficiary.active %}class="mandatory"{% endif %}>{{ "PhysioDom-Box"|i18n }}</label>
+				<input type="text" name="biomaster" value="{{beneficiary.biomaster}}" {% if beneficiary.active %}required{% endif %}/>
 			</div>
 			<button id="entrySubmitBtn" class="hidden"></button>
 		</form>
@@ -324,10 +334,12 @@
 	
 	<zdk-panel heading="{{'Life condition'|i18n}}" collapsable="true" collapsed="false">
 		<form name="life_condition" autocomplete="off" onsubmit="return false;">
+			<!--
 			<div class="row">
 				<label>{{ "Deceased"|i18n }}</label>
 				<input type="checkbox" name="deceased" value="true" {% if beneficiary.deceased %}checked{% endif %}/>
 			</div>
+			-->
 			<div class="row">
 				<label>{{ "Marital status"|i18n }}</label>
 				<select name="maritalStatus">
@@ -416,12 +428,12 @@
 			{% if IDS %}
 			<div class="row">
 				<label>{{ "Withdrawal code"|i18n }} : </label>
-				<span style="font-weight:bold" id="OTP">{% if professional.account.OTP %}{{professional.account.OTP }}{% endif %}</span>
+				<span style="font-weight:bold" id="OTP">{% if beneficiary.account.OTP %}{{beneficiary.account.OTP }}{% endif %}</span>
 			</div>
 			<div class="row">
 				<span class="spacer"></span>
-				<button type="button" class="red {% if !professional.account.OTP %}hidden{% endif %}" id="revokeCert">Revoke certificate</button>
-				<button type="button" class="blue {% if professional.account.OTP %}hidden{% endif %}" id="createCert">Generate certificate</button>
+				<button type="button" class="red {% if !beneficiary.account.OTP %}hidden{% endif %}" id="revokeCert">Revoke certificate</button>
+				<button type="button" class="blue {% if beneficiary.account.OTP %}hidden{% endif %}" id="createCert">Generate certificate</button>
 			</div>
 			{% endif %}
 			<button id="accountSubmitBtn" class="hidden"></button>
@@ -495,12 +507,14 @@
 			
 			<div class="row diagnosis" style="align-items: inherit;">
 				<div class="col diagnosis" style="flex: none; width: 250px;">
-					<div class="mandatory">{{ "Main diagnosis"|i18n }}</div>
-					<select name="diagnosis.chronic.main" required>
+					<div id="diagLabel" {% if beneficiary.active %}class="mandatory"{% endif %}>{{ "Main diagnosis"|i18n }}</div>
+					<select id="diag" name="diagnosis.chronic.main" {% if beneficiary.active %}required{% endif %}>
 						{% for item in diagnosis.items %}
-						<option value="{{item.value}}" {% if beneficiary.diagnosis.chronic.main==item.value %}selected{%
-						        endif %}>{{item.label}}
-						</option>
+						{% if item.value === "NONE" && item.label === "" %}
+						<option value=""></option>
+						{% else %}
+						<option value="{{item.value}}" {% if beneficiary.diagnosis.chronic.main==item.value %}selected{% endif %}>{{item.label}}</option>
+						{% endif %}
 						{% endfor %}
 					</select>
 				</div>
@@ -508,12 +522,14 @@
 					<div>{{ "Associated diagnosis"|i18n }}</div>
 					<div class="dblcol">
 						{% for item in diagnosis.items %}
+						{% if item.label !== "" %}
 						<div class="row" style="display:block">
 							<input type="checkbox" name="diagnosis.chronic.associated[{{item.value}}]"
 							       value="{{item.value}}" {% if beneficiary.diagnosis.chronic.associated &&
 							       beneficiary.diagnosis.chronic.associated.indexOf(item.value)!==-1 %}checked{% endif
 							       %}> {{item.label}}
 						</div>
+						{% endif %}
 						{%endfor%}
 					</div>
 				</div>

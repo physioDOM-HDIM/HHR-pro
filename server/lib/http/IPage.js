@@ -409,7 +409,7 @@ function IPage() {
 
 		var data = {
 			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1 ? true : false,
-			rights: { read:false, write:false, url: '/beneficiaries' },
+			rights: { read:false, write:false, url: '/beneficiary/overview' },
 			country : physioDOM.config.country
 		};
 
@@ -425,7 +425,8 @@ function IPage() {
 			"profession",
 			"perimeter",
 			"nutritionalStatus",
-			"generalStatus"
+			"generalStatus",
+			"exitStatus"
 		].map( promiseList);
 
 		var promisesArray = [
@@ -456,24 +457,31 @@ function IPage() {
 					// indicate that we are editing the selected beneficiary
 					data.sessionBene = true;
 				} else {
-					data.sessionBene = false
+					data.sessionBene = false;
 				}
 				return beneficiaries.getBeneficiaryAdminByID( req.session, beneficiaryID );
 			})
 			.then( function(beneficiary) {
 				// logger.debug("data", data);
-				// logger.debug("bene ", beneficiary );
 				if(beneficiary){
 					data.beneficiary = beneficiary;
-					if(data.beneficiary.address){
-						data.beneficiary.address.forEach( function(address){
+					if(data.beneficiary.address) {
+						data.beneficiary.address.forEach( function(address, indx){
 							if(address.line && address.line.length > 0){
 								//To display with line break in the textarea
 								address.line = address.line.join("\n");
+							} else {
+								data.beneficiary.address.splice(indx,1);
 							}
 						});
 					}
-
+					if(data.beneficiary.telecom) {
+						data.beneficiary.telecom.forEach( function(telecom, indx) {
+							if(! telecom.value ) {
+								data.beneficiary.telecom.splice(indx,1);
+							}
+						});
+					}
 					//Format date to follow the locale
 					data.beneficiary.birthdate = convertDate(data.beneficiary.birthdate);
 					if(data.beneficiary.entry){
@@ -482,16 +490,17 @@ function IPage() {
 						data.beneficiary.entry.endDate    = data.beneficiary.entry.endDate;
 					}
 				}
-
+				
 				return beneficiary._id ? beneficiary.getProfessionals() : null;
 			})
 			.then(function(professionals){
+				// console.log( "-> test" );
 				if( professionals ){
 					data.beneficiary.professionals = professionals;
 				}
-
+				// console.log( "rights", data.rights );
 				if( data.rights.read === false ) {
-					noacess( res, next);
+					noaccess( res, next);
 				} else {
 					render('/static/tpl/beneficiaryCreate.htm', data, res, next);
 				}
@@ -1698,17 +1707,21 @@ function IPage() {
 		
 		physioDOM.Lists.getList('role')
 			.then(function(list) {
-				data.roles = list.items;
+				data.roles = [];
+				list.items.forEach( function(item) {
+					if( item.active ) {
+						data.roles.push( item );
+					}
+				});
 				return new Menu().getAll();
 			})
 			.then( function(menu) {
 				data.items = menu;
-				console.log( "menu", menu );
+				// console.log( "menu", menu );
 				return new SpecialRights().getAll();
 			})
 			.then( function( rights ) {
 				data.spItems = rights;
-				console.log( "spRights", rights );
 				render('/static/tpl/rights.htm', data, res, next);
 			})
 			.catch(function(err) {

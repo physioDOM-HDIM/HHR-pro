@@ -772,6 +772,7 @@ server.get( '/api/logout', logout);
 //              Queue messages
 server.get( '/api/hhr',                          IBeneficiary.getHHRs );
 server.get( '/api/queue/init',                   IQueue.init );
+server.get( '/api/queue/firstname',              IQueue.firstname );
 server.post('/api/queue/status',                 IQueue.status );
 server.get( '/api/queue/messages',               IQueue.messages);
 server.get( '/api/queue/history',                IQueue.history);
