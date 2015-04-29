@@ -1,3 +1,8 @@
+__v0.0.36-1__
+
+  - Fix creating an account ( professional and beneficiary ) on IDS infrastructure
+  - Fix push Symptoms Self to queue
+
 __v0.0.36__
 
   - \#226 : Bug 307 - Notification d'un "Dietary Plan"
