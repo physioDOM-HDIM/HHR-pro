@@ -1948,7 +1948,7 @@ function Beneficiary( ) {
 				msg.push({
 					name: leaf + ".lastValue",
 					value: symptomSelf.history[0].value,
-					type: "Integer"
+					type: "Double"
 				});
 			}
 			queue.postMsg(msg)
