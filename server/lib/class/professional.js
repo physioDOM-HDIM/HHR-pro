@@ -424,7 +424,7 @@ function Professional() {
 				})
 				.then( function(account) {
 					logger.trace("account", accountData );
-					if ( accountData.IDS==="true" ) {
+					if ( accountData.IDS==="true" && account.login ) {
 						// keep the old login if exists
 						accountData.login = account.login;
 					}
