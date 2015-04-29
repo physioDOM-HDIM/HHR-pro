@@ -345,10 +345,14 @@ function Beneficiary( ) {
 					}
 				})
 				.then( function(account) {
-					logger.trace("account", accountData );
-					if ( accountData.IDS==="true" ) {
-						// keep the old login if exists
-						accountData.login = account.login;
+					logger.trace("account", accountData);
+					if (accountData.IDS === "true") {
+						if (account.login) {
+							// keep the old login if exists
+							accountData.login = account.login;
+						} else {
+							accountData.login = that.getEmail();
+						}
 					}
 					if (!(accountData.login || accountData.IDS==="true" ) || !accountData.password) {
 						return reject({error: "account data incomplete"});
