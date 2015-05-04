@@ -129,7 +129,6 @@ function IPage() {
 	
 	this.login = function( req, res, next ) {
 		logger.trace("login page");
-		var html;
 		
 		init(req);
 		
@@ -140,6 +139,20 @@ function IPage() {
 			queue: physioDOM.config.queue
 		};
 		render('/static/index.htm', data, res, next);
+	};
+
+	this.password = function( req, res, next ) {
+		logger.trace("change password page");
+
+		init(req);
+
+		var pkg = require("../../../package.json");
+		var data = {
+			version: pkg.version,
+			lang: physioDOM.config.Lang,
+			idsUser: req.headers["ids-user"] || ""
+		};
+		render('/static/password.htm', data, res, next);
 	};
 	
 	/**
@@ -1860,7 +1873,7 @@ function IPage() {
 	 * @param  {Function} next
 	 */
 	function render(tpl, data, res, next) {
-		if( tpl !== "/static/index.htm" && (!data.rights || data.rights.read === false) ) {
+		if( ["/static/index.htm","/static/password.htm"].indexOf(tpl) === -1 && (!data.rights || data.rights.read === false) ) {
 			noaccess( res, next );
 		} else {
 			swig.renderFile(DOCUMENTROOT + tpl, data, function (err, output) {

@@ -467,6 +467,24 @@ function Professional() {
 		});
 	};
 	
+	this.accountUpdatePasswd = function( newPasswd ) {
+		logger.trace( "accountUpdatePasswd" );
+		var that = this;
+		return new promise( function(resolve, reject) {
+			that.getAccount()
+				.then(function (account) {
+					console.log(account, newPasswd);
+					account.password = md5(newPasswd);
+					account.firstlogin = false;
+					physioDOM.db.collection("account").save(account, function (err, result) {
+						if(err) { throw err; }
+						resolve( account );
+					});
+				})
+				.catch(reject);
+		});
+	};
+	
 	this.createCert = function(req, res) {
 		var that = this;
 		

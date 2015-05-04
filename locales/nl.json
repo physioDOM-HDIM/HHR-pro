@@ -384,5 +384,7 @@
   "Validate":"Bevestiging",
   "This login is already used, please choose another one":"Deze aanduiding is al in gebruik, dan kunt u kiezen voor een ander",
   "Reason of the exit":"Reden van de afrit",
-  "Thresholds":"Drempels"
+  "Thresholds":"Drempels",
+  "Password change":"Wachtwoord wijzigen",
+  "Your password has been successfully changed":"Uw wachtwoord is succesvol gewijzigd"
 }

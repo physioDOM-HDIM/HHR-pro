@@ -384,5 +384,7 @@
   "Validate":"Validation",
   "This login is already used, please choose another one":"Cet identifiant est déjà utilisé, choisissez en un autre",
   "Reason of the exit":"Motif de la sortie",
-  "Thresholds":"Seuils"
+  "Thresholds":"Seuils",
+  "Password change":"Changement de mot de passe",
+  "Your password has been successfully changed":"Votre mot de passe a été modifié avec succès"
 }

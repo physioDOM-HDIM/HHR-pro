@@ -384,5 +384,7 @@
   "Validate":"Validación",
   "This login is already used, please choose another one":"Este identificador ya está en uso, por favor elija otro",
   "Reason of the exit":"Motivo de la salida",
-  "Thresholds":"Umbrales"
+  "Thresholds":"Umbrales",
+  "Password change":"Cambio de contraseña",
+  "Your password has been successfully changed":"Su contraseña ha sido cambiada con éxito"
 }

@@ -9,7 +9,6 @@ var soap = require('soap'),
 var logger = new Logger("ILogIDS");
 
 var ILogIDS = {
-	
 	LogAccess: function (req, res, patientID, msg, cb) {
 		logger.trace("logAccess", patientID, msg);
 		
@@ -147,6 +146,292 @@ var ILogIDS = {
 			});
 			
 		});
+	},
+	
+	logging: function( req, res ) {
+		var patientID, msg;
+		switch (req.route.path) {
+			case '/api/beneficiaries' :
+				switch (req.method) {
+					case "POST":
+						patientID = "";
+						msg = "create a new beneficiary";
+						break;
+				}
+				break;
+			case '/api/beneficiary' :
+			case '/api/beneficiaries/:entryID':
+				switch (req.method) {
+					case "GET":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "consult the beneficiary overview";
+						break;
+					case "PUT":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "modify the beneficiary overview";
+						break;
+					case "DELETE":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "delete the beneficiary";
+						break;
+				}
+				break;
+			case '/api/beneficiary/professionals':
+			case '/api/beneficiaries/:entryID/professionals' :
+				switch (req.method) {
+					case "GET":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "get list of professionals attached to the beneficiary";
+						break;
+					case "POST":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "update list of professionals attached to the beneficiary";
+						break;
+				}
+				break;
+			case '/api/beneficiaries/:entryID/professionals/:profID' :
+				switch (req.method) {
+					case "DELETE":
+						patientID = req.params.entryID;
+						msg = "remove a professional attached to the beneficiary";
+						break;
+				}
+				break;
+			case '/api/beneficiary/graph':
+			case '/api/beneficiaries/:entryID/graph':
+				switch (req.method) {
+					case "GET":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "get list of parameters for graph";
+						break;
+				}
+				break;
+			case '/api/beneficiary/graph/:category/:paramName' :
+			case '/api/beneficiaries/:entryID/graph/:category/:paramName' :
+				switch (req.method) {
+					case "GET":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "get measures for the parameters " + req.params.paramName + " for graph";
+						break;
+				}
+				break;
+			case '/api/beneficiary/history':
+				switch (req.method) {
+					case "GET":
+						patientID = req.session.beneficiary;
+						msg = "get the synthesys table for all measured parameters";
+						break;
+				}
+				break;
+			case '/api/beneficiary/datarecords':
+				switch (req.method) {
+					case "GET":
+						patientID = req.session.beneficiary;
+						msg = "get list of data records";
+						break;
+				}
+				break;
+			case '/api/beneficiary/datarecords/:dataRecordID' :
+				switch (req.method) {
+					case "GET":
+						patientID = req.session.beneficiary;
+						msg = "get a the datarecord " + req.params.dataRecordID;
+						break;
+					case "PUT":
+						patientID = req.session.beneficiary;
+						msg = "modify the datarecord " + req.params.dataRecordID;
+				}
+				break;
+			case '/api/beneficiary/datarecord' :
+				switch (req.method) {
+					case "POST":
+						patientID = req.session.beneficiary;
+						msg = "create a new the datarecord ";
+						break;
+				}
+				break;
+			case '/api/beneficiary/thresholds' :
+				switch (req.method) {
+					case "GET":
+						patientID = req.session.beneficiary;
+						msg = "get the thresholds list ";
+						break;
+					case "POST":
+						patientID = req.session.beneficiary;
+						msg = "update the thresholds list ";
+						break;
+				}
+				break;
+			case '/api/beneficiary/messages' :
+			case '/api/beneficiaries/:entryID/messages' :
+				switch (req.method) {
+					case "GET":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "Get list of messages";
+						break;
+					case "POST":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "Create a new message";
+						break;
+				}
+				break;
+			case '/api/beneficiary/dataprog':
+			case '/api/beneficiaries/:entryID/dataprog' :
+				switch (req.method) {
+					case "POST":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "create a data monitoring prescription";
+						break;
+				}
+				break;
+			case '/api/beneficiary/dataprog/:category' :
+			case '/api/beneficiaries/:entryID/dataprog/:category' :
+				switch (req.method) {
+					case "GET":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "Get list of data monitoring prescription ( category :" + req.params.category + " )";
+						break;
+				}
+				break;
+			case '/api/beneficiary/dataprog/:dataProgItemID' :
+			case '/api/beneficiaries/:entryID/dataprog/:dataProgItemID' :
+				switch (req.method) {
+					case "DELETE":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "remove a data monitoring prescription";
+						break;
+				}
+				break;
+			case '/api/beneficiary/current/:name' :
+				switch (req.method) {
+					case "GET":
+						patientID = req.session.beneficiary;
+						msg = "get the initial health status (" + req.params.name + ")";
+						break;
+					case "PUT":
+						patientID = req.session.beneficiary;
+						msg = "create the initial health status (" + req.params.name + ")";
+						break;
+				}
+				break;
+			case '/api/beneficiary/questionnaires/:entryID/answers' :
+				switch (req.method) {
+					case "POST":
+						patientID = req.session.beneficiary;
+						msg = "answer of the questionnaire (" + req.params.entryID + ")";
+						break;
+				}
+				break;
+			case '/api/beneficiary/events' :
+				switch (req.method) {
+					case "GET":
+						patientID = req.session.beneficiary;
+						msg = "Get list of events";
+						break;
+				}
+				break;
+			case '/api/beneficiary/dietary-plan' :
+				switch (req.method) {
+					case "GET":
+						patientID = req.session.beneficiary;
+						msg = "view the current dietary plan advice";
+						break;
+					case "POST":
+						patientID = req.session.beneficiary;
+						msg = "update the dietary plan advice";
+						break;
+				}
+				break;
+			case '/api/beneficiary/dietary-plans' :
+				switch (req.method) {
+					case "GET":
+						patientID = req.session.beneficiary;
+						msg = "view the history of dietary plan advices";
+						break;
+				}
+				break;
+			case '/api/beneficiary/physical-plan':
+				switch (req.method) {
+					case "GET":
+						patientID = req.session.beneficiary;
+						msg = "view the current physical plan advice";
+						break;
+					case "POST":
+						patientID = req.session.beneficiary;
+						msg = "update the physical plan advice";
+						break;
+				}
+				break;
+			case '/api/beneficiary/physical-plans':
+				switch (req.method) {
+					case "GET":
+						patientID = req.session.beneficiary;
+						msg = "view the history of physical plan advices";
+						break;
+				}
+				break;
+			case '/api/beneficiary/questprog' :
+			case '/api/beneficiaries/:entryID/questprog' :
+				switch (req.method) {
+					case "GET":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "view the questionnaires prescriptions";
+						break;
+					case "PUT":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "update questionnaires prescriptions";
+						break;
+				}
+				break;
+			case '/api/beneficiary/questprog/:ref' :
+			case '/api/beneficiaries/:entryID/questprog/:ref':
+				switch (req.method) {
+					case "POST":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "create a questionnaire prescription";
+						break;
+					case "DELETE":
+						patientID = req.params.entryID || req.session.beneficiary;
+						msg = "remove a questionnaire prescription";
+						break;
+				}
+				break;
+			case '/beneficiary/:beneficiaryID':
+				switch (req.method) {
+					case "GET":
+						patientID = req.params.beneficiaryID;
+						msg = "consult the beneficiary overview";
+						break;
+				}
+				break;
+			case '/beneficiary/edit/:beneficiaryID' :
+				switch (req.method) {
+					case "GET":
+						patientID = req.params.beneficiaryID;
+						msg = "open the beneficiary overview for editing";
+						break;
+				}
+				break;
+			case '/answers/:entryID':
+				switch (req.method) {
+					case "GET":
+						patientID = req.session.beneficiary;
+						msg = "consult answer of questionnaire";
+						break;
+				}
+				break;
+			case '/datarecord/:dataRecordID':
+				switch (req.method) {
+					case "GET":
+						patientID = req.session.beneficiary;
+						msg = "consult detail of a datarecord";
+						break;
+				}
+				break;
+		}
+		if( patientID && msg ) {
+			this.LogAccess(req, res, patientID.toString(), msg);
+		}
 	}
 }
 
