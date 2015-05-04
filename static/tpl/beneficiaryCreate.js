@@ -566,8 +566,9 @@ function updateBeneficiary(obj) {
 				document.querySelector("#deleteBeneficiary").classList.remove("hidden");
 				document.querySelector("#hasPersonal").classList.remove("hidden");
 				// the created beneficiary is active by default
-				document.querySelector("input[name=active]").checked = true;
+				document.querySelector("input[name=active]").checked = false;
 				activeChange(document.querySelector("input[name=active]"));
+				document.querySelector("#endDate").value = "";
 				new Modal('createSuccess');
 			})
 			.catch(function(error) {

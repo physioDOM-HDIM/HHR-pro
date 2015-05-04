@@ -12,6 +12,7 @@ __v0.0.37-pre__
   - Bug 343 : [create-edit beneficiary][v036] Champ HEIGHT pré-rempli lors de la création
   - Bug 341 : [create-edit beneficiary][v036] start date optionnelle lors de la désactivation
   - Bug 345 : [Beneficiary overview][v036] valeurs undefined
+  - Bug 344 : [edit-create beneficiary][v036] Case 'Active' cochée par défaut
   
 > __Nota :__ for Bug 346, the queue service must be updated
   
