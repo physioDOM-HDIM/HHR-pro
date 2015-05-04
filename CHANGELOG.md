@@ -8,6 +8,9 @@ __v0.0.37-pre__
   - Bug 349 : [Menu][v036] enable 'data recording' dans le menu
   - Bug 348 : [RIGHTS][v036] Liste role non traduite
   - Bug 347 : [Beneficiary overview/Details][036] Texte coupé
+  - Bug 346 : [Measurements][v.1.0.1] Pas de transmission des "measurements" à HHR-Pro
+  
+> __Nota :__ for Bug 346, the queue service must be updated
   
 __v0.0.36-1__
 
