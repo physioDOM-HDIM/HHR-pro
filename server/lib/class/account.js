@@ -22,13 +22,14 @@ var logger = new Logger("Account");
 function Account( obj ) {
 	logger.trace("Account constructor");
 
-	this._id       = null;
-	this.login     = null;
-	this.password  = null;
-	this.tmpPasswd = null;
-	this.role      = null;
-	this.person    = {id: null, collection: null};
-	this.active    = false;
+	this._id        = null;
+	this.login      = null;
+	this.password   = null;
+	this.tmpPasswd  = null;
+	this.role       = null;
+	this.person     = {id: null, collection: null};
+	this.active     = false;
+	this.firstlogin = true;
 	
 	for (var prop in this) {
 		if (obj.hasOwnProperty(prop)) {
@@ -70,9 +71,10 @@ function Account( obj ) {
 						expire    : (new Date()).getTime() + 5 * 60 * 1000,
 						role      : that.role,
 						roleClass : roleClass,
+						firstlogin: that.firstlogin,
 						person    : that.person
 					};
-					console.log(obj);
+					
 					var session = new Session(obj);
 					session.getPerson()
 						.then(function (session) {

@@ -338,6 +338,19 @@ function Modal (type, callback, log) {
         }]
     };
 
+	content.passwdSuccess = {
+		title: "trad_password_update",
+		content: "trad_password_success",
+		buttons: [{
+			id: "trad_ok",
+			action: function() {
+				if(callback) {
+					callback();
+				}
+				self.closeModal();
+			}
+		}]
+	}
 	content.conflictLogin = {
 		title: "trad_errorFormConflict",
 		content: "trad_conflict_login",
