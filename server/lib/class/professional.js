@@ -474,7 +474,6 @@ function Professional() {
 		return new promise( function(resolve, reject) {
 			that.getAccount()
 				.then(function (account) {
-					console.log(account, newPasswd);
 					account.password = md5(newPasswd);
 					account.firstlogin = false;
 					physioDOM.db.collection("account").save(account, function (err, result) {

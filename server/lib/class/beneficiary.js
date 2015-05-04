@@ -363,6 +363,7 @@ function Beneficiary( ) {
 						active  : that.active,
 						role    : "beneficiary",
 						email   : that.getEmail(),
+						firstlogin: true,
 						person  : {
 							id        : that._id,
 							collection: "beneficiaries"
@@ -476,6 +477,23 @@ function Beneficiary( ) {
 					logger.warning("catch", err );
 					reject(err);
 				});
+		});
+	};
+
+	this.accountUpdatePasswd = function(newPasswd) {
+		logger.trace( "accountUpdatePasswd" );
+		var that = this;
+		return new promise( function(resolve, reject) {
+			that.getAccount()
+				.then(function (account) {
+					account.password = md5(newPasswd);
+					account.firstlogin = false;
+					physioDOM.db.collection("account").save(account, function (err, result) {
+						if(err) { throw err; }
+						resolve( account );
+					});
+				})
+				.catch(reject);
 		});
 	};
 
