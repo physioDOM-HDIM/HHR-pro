@@ -277,7 +277,7 @@
 			</div>
 			<div class="row">
 				<div class="col">
-					<label class="mandatory">{{ "Start date"|i18n }}</label>
+					<label id="startDateLabel" {% if beneficiary.active===true %}class="mandatory"{% endif %}>{{ "Start date"|i18n }}</label>
 					<zdk-input-date id="startDate" name="entry.startDate" value="{{beneficiary.entry.startDate}}" style="z-index:100" staticpos="true"
 					                required></zdk-input-date>
 				</div>

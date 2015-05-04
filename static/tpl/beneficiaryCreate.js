@@ -689,6 +689,8 @@ function activeChange(obj) {
 		document.querySelector("#sizeLabel").classList.remove("mandatory");
 		document.querySelector("input[name=biomaster").removeAttribute("required");
 		document.querySelector("#biomasterLabel").classList.remove("mandatory");
+		document.querySelector("#startDateLabel").classList.remove("mandatory");
+		document.querySelector("#startDate").removeAttribute("required");
 		var endDate = document.querySelector("#endDate");
 		if( !endDate.value ) {
 			endDate.value = moment().format("YYYY-MM-DD");
@@ -709,6 +711,10 @@ function activeChange(obj) {
 		if(!document.querySelector("#sizeLabel").classList.contains("mandatory")) {
 			document.querySelector("#sizeLabel").classList.add("mandatory");
 		}
+		if( !document.querySelector("#startDateLabel").classList.contains("mandatory")) {
+			document.querySelector("#startDateLabel").classList.add("mandatory");
+		}
+		document.querySelector("#startDate").setAttribute("required", true);
 		var startDate = document.querySelector("#startDate");
 		if( !startDate.value ) {
 			startDate.value = moment().format("YYYY-MM-DD");

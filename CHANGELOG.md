@@ -10,6 +10,7 @@ __v0.0.37-pre__
   - Bug 347 : [Beneficiary overview/Details][036] Texte coupé
   - Bug 346 : [Measurements][v.1.0.1] Pas de transmission des "measurements" à HHR-Pro
   - Bug 343 : [create-edit beneficiary][v036] Champ HEIGHT pré-rempli lors de la création
+  - Bug 341 : [create-edit beneficiary][v036] start date optionnelle lors de la désactivation
   
 > __Nota :__ for Bug 346, the queue service must be updated
   
