@@ -6,6 +6,7 @@ __v0.0.37-pre__
   - Bug 340 : [Init Bene][v.0.0.36-1] Pas d'initialisation d'un bénéficiaire si pas de prénom
   - Bug 342 : [create-edit beneficiary][v036] Remise à blanc des champs non sauvegardée
   - Bug 349 : [Menu][v036] enable 'data recording' dans le menu
+  - Bug 348 : [RIGHTS][v036] Liste role non traduite
   
 __v0.0.36-1__
 

@@ -48,12 +48,12 @@ div.row.items {
 </style>
 
 <form id="form" onsubmit="checkForm(); return false;">
-
+	
 	<div class="row">
 		<label for="roleSelect">{{"Select role"|i18n }} :</label>
 		<select id="roleSelect" name="role">
 		{% for role in roles %}
-			<option value="{{role.ref}}">{{role.label.en || role.ref}}</option>
+			<option value="{{role.ref}}">{{role.label[lang] || role.label.en || role.ref}}</option>
 		{% endfor %}
 		</select>
 		<input id="roleInput" type="hidden" name="role" value="NONE" />

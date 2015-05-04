@@ -1715,7 +1715,8 @@ function IPage() {
 		var data = {
 			admin: admin,
 			roleClass : req.session.roleClass,
-			rights: { read:admin, write:admin }
+			rights: { read:admin, write:admin },
+			lang: req.cookies.lang || req.session.lang || physioDOM.lang
 		};
 		
 		physioDOM.Lists.getList('role')
@@ -1726,6 +1727,7 @@ function IPage() {
 						data.roles.push( item );
 					}
 				});
+				console.log( data.roles );
 				return new Menu().getAll();
 			})
 			.then( function(menu) {
