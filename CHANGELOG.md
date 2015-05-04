@@ -13,6 +13,7 @@ __v0.0.37-pre__
   - Bug 341 : [create-edit beneficiary][v036] start date optionnelle lors de la désactivation
   - Bug 345 : [Beneficiary overview][v036] valeurs undefined
   - Bug 344 : [edit-create beneficiary][v036] Case 'Active' cochée par défaut
+  - Push First name to queue if change detected
   
 > __Nota :__ for Bug 346, the queue service must be updated
   

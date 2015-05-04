@@ -404,6 +404,7 @@ function Beneficiary( ) {
 	this.update = function( updatedEntry, professionalID, IDS) {
 		var that = this;
 		var accountData = null;
+		var pushFirstName = false;
 		return new promise( function(resolve, reject) {
 			logger.trace("update");
 			if( that._id.toString() !== updatedEntry._id ) {
@@ -419,11 +420,13 @@ function Beneficiary( ) {
 							switch(key) {
 								case "name":
 									that.name = updatedEntry.name;
-									if(that.name.family) {
+									if(updatedEntry.name.family) {
 										that.name.family = capitalize(that.name.family);
+										pushFirstName = true;
 									}
-									if(that.name.given) {
+									if(updatedEntry.name.given) {
 										that.name.given = capitalize(that.name.given);
+										pushFirstName = true;
 									}
 									break;
 								case "account":
@@ -472,7 +475,14 @@ function Beneficiary( ) {
 						}
 					});
 				})
-				.then( resolve )
+				.then( function() {
+					if( pushFirstName ) {
+						return that.pushFirstName();
+					}
+				})
+				.then( function() {
+					resolve( that );
+				})
 				.catch( function(err) {
 					logger.warning("catch", err );
 					reject(err);
