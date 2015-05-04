@@ -302,7 +302,7 @@
 					<label>{{ "Start date"|i18n }} : </label><div>{{beneficiary.entry.startDate | date }}</div>
 				</div>
 				<div class="row">
-					<label>{{ "Come from"|i18n }} : </label><div>{{destinationArray.items[beneficiary.entry.comeFrom]}}</div>
+					<label>{{ "Come from"|i18n }} : </label><div>{{destinationArray.items[beneficiary.entry.comeFrom] || "" }}</div>
 				</div>
 				<div class="row">
 					<label>{{ "Planned end"|i18n }} : </label><div>{% if beneficiary.entry.plannedEnd %}{{beneficiary.entry.plannedEnd | date }}{% endif %}</div>
@@ -311,7 +311,7 @@
 					<label>{{ "End date"|i18n }} : </label><div>{% if beneficiary.entry.endDate %}{{beneficiary.entry.endDate | date }}{% endif %}</div>
 				</div>
 				<div class="row">
-					<label>{{ "Destination"|i18n }} : </label><div>{{destinationArray.items[beneficiary.entry.destination]}}</div>
+					<label>{{ "Destination"|i18n }} : </label><div>{{destinationArray.items[beneficiary.entry.destination] || "" }}</div>
 				</div>
 			{% endif %}
 			<div class="row">
@@ -321,36 +321,36 @@
 				<label>{{ "Active"|i18n }} : </label><div>{% if beneficiary.active %}{{ "Yes"|i18n }}{% else %}{{ "No"|i18n }}{% endif %}</div>
 			</div>
 			<div class="row">
-				<label>{{ "Marital status"|i18n }} : </label><div>{{maritalStatusArray.items[beneficiary.maritalStatus]}}</div>
+				<label>{{ "Marital status"|i18n }} : </label><div>{{maritalStatusArray.items[beneficiary.maritalStatus] || ""}}</div>
 			</div>
 		</div>
 		<div style="-webkit-flex:1; -ms-flex:1; flex:1; border-left: 1px solid black; padding-left: 5px;" >
 		{% if beneficiary.lifeCond %}
 			<div class="row">
-				<label>{{ "Way of life"|i18n }} : </label><div>{{wayOfLifeArray.items[beneficiary.lifeCond.wayOfLife]}}</div>
+				<label>{{ "Way of life"|i18n }} : </label><div>{{wayOfLifeArray.items[beneficiary.lifeCond.wayOfLife] || "" }}</div>
 			</div>
 			<div class="row">
 				<label>{{ "Profession"|i18n }} : </label><div>{% if beneficiary.lifeCond.profession %}{{ beneficiary.lifeCond.profession }}{% endif %}</div>
 			</div>
 			{% if beneficiary.lifeCond.disability %}
 				<div class="row">
-					<label>{{ "Type of disability"|i18n }} : </label><div>{{disabilityArray.items[beneficiary.lifeCond.disability.type]}}</div>
+					<label>{{ "Type of disability"|i18n }} : </label><div>{{disabilityArray.items[beneficiary.lifeCond.disability.type] || "" }}</div>
 				</div>
 				<div class="row">
-					<label>{{ "Disability level"|i18n }} : </label><div>{{beneficiary.lifeCond.disability.percent}} %</div>
+					<label>{{ "Disability level"|i18n }} : </label><div>{{beneficiary.lifeCond.disability.percent}} {% if beneficiary.lifeCond.disability.percent %}%{% endif %}</div>
 				</div>
 			{% endif %}
 		{% endif %}
 		{% if beneficiary.diagnosis %}
 			<div class="row">
-				<label>{{ "General status"|i18n }} : </label><div>{{generalStatusArray.items[beneficiary.diagnosis.general]}}</div>
+				<label>{{ "General status"|i18n }} : </label><div>{{generalStatusArray.items[beneficiary.diagnosis.general] || ""}}</div>
 			</div>
 			<div class="row">
-				<label>{{ "Nutritional status"|i18n }} : </label><div>{{nutritionalStatusArray.items[beneficiary.diagnosis.nutritional]}}</div>
+				<label>{{ "Nutritional status"|i18n }} : </label><div>{{nutritionalStatusArray.items[beneficiary.diagnosis.nutritional] || ""}}</div>
 			</div>
 			<p>{{ "Chronic pathologies"|i18n }}</p>
 			<div class="row">
-				<label>{{ "Main diagnosis"|i18n }} : </label><div>{{diagnosisArray.items[beneficiary.diagnosis.chronic.main]}}</div>
+				<label>{{ "Main diagnosis"|i18n }} : </label><div>{{diagnosisArray.items[beneficiary.diagnosis.chronic.main] || ""}}</div>
 			</div>
 			{% for assoDiag in beneficiary.diagnosis.chronic.associated %}
 				{% if loop.first %}
