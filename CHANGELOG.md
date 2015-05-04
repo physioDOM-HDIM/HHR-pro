@@ -1,3 +1,8 @@
+__v0.0.37-pre__
+
+  - Bug 332 : Fonctionnalité d'envoie de mail pour retrait de certificat
+  - Bug 308 : [Login][v034] Change password
+  
 __v0.0.36-1__
 
   - Fix creating an account ( professional and beneficiary ) on IDS infrastructure
