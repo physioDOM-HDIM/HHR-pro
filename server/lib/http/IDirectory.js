@@ -72,7 +72,7 @@ var IDirectory = {
 					throw( {"message":"entry is empty"});
 				}try {
 					var user = JSON.parse(req.body.toString());
-					return directory.createEntry(user);
+					return directory.createEntry(user, req.session.person.id );
 				} catch(err) {
 					throw { code:405, message:"bad json format"};
 				}
@@ -119,7 +119,7 @@ var IDirectory = {
 					return directory.getEntryByID(req.params.entryID);
 				})
 				.then(function (professional) {
-					return professional.update( item );
+					return professional.update( item, req.session.person.id );
 				})
 				.then(function (professional) {
 					if ( req.session.person.id.toString() == professional._id.toString() ) {

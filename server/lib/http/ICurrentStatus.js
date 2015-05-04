@@ -55,7 +55,7 @@ var ICurrentStatus = {
 			return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary );
 		})
 		.then(function(beneficiary) {
-
+			
 			try {
 				var updateItem = JSON.parse(req.body);
 				updateItem.subject = beneficiary._id;
@@ -76,14 +76,14 @@ var ICurrentStatus = {
 				var createDataRecord = function(currentStatus) {
 					return new RSVP.Promise(function(resolve, reject) {
 						logger.trace( "createDataRecord");
-						console.log( 'Health status : '+ currentStatus.name, 'validate', currentStatus._id, req.session.person.id );
+						// console.log( 'Health status : '+ currentStatus.name, 'validate', currentStatus._id, req.session.person.id );
 						if (updateItem.validated && updateItem.validated.status) {
 							
 							var dataRecord = {
 								items: [],
 								healthStatus: true
 							};
-							console.log( currentStatus.parameters );
+							
 							if( currentStatus.parameters && Object.keys(currentStatus.parameters).length ) {
 								Object.keys(currentStatus.parameters).forEach(function (key) {
 									var parameter = currentStatus.parameters[key];
@@ -143,7 +143,7 @@ var ICurrentStatus = {
 				new CurrentStatus().get(beneficiary._id, req.params.name)
 					.then(function (current) {
 						updateItem._id = current._id;
-						current.update(updateItem)
+						current.update(updateItem, req.session.person.id)
 							.then(function (current) {
 								console.log( current );
 								return beneficiary.createEvent('Health status : '+ current.name, 'update', current._id, req.session.person.id)
@@ -158,7 +158,7 @@ var ICurrentStatus = {
 							.catch (function (err) {
 								console.log( JSON.stringify(err.stack,"",4) );
 								updateItem.validated = { status:false };
-								current.update(updateItem)
+								current.update(updateItem, req.session.person.id)
 									.then(function() {
 										res.send(err.code || 400, err);
 										next(false);
@@ -171,8 +171,7 @@ var ICurrentStatus = {
 				})
 				.catch (function (err) {
 					// Current status not found: create a new one
-					var newCurrentStatus;
-					new CurrentStatus().update(updateItem)
+					new CurrentStatus().update(updateItem, req.session.person.id)
 						.then(function (current) {
 							console.log( "validated ? ", current.validated );
 							return beneficiary.createEvent('Health status : '+ current.name, 'create', current._id, req.session.person.id)
@@ -192,15 +191,14 @@ var ICurrentStatus = {
 									updateItem._id = current._id;
 									updateItem.validated = false;
 
-									current.update(updateItem)
+									current.update(updateItem, req.session.person.id)
 										.then(function() {
 											res.send(err.code || 500, err);
 											next(false);
 										})
 										.catch(function(err) {
 											logger.trace(err);
-										})
-									
+										});
 								})
 
 						});

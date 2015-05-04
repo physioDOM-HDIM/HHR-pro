@@ -451,6 +451,8 @@ function Beneficiary( ) {
 						}
 					}
 					if( !updatedEntry.size ) { delete that.size; }
+					that.source = professionalID;
+					that.datetime = moment().toISOString();
 					// console.log("-->", updatedEntry.active, that.active );
 					return that.save();
 				})
@@ -1530,12 +1532,12 @@ function Beneficiary( ) {
 	 * @param prescription 
 	 * @returns {promise}
 	 */
-	this.setDataProg = function( prescription ) {
+	this.setDataProg = function( prescription, source ) {
 		var that = this;
 		logger.trace("setDataProg", that._id, prescription.ref );
 
 		var dataProgItem = new DataProgItem( that._id );
-		return dataProgItem.setup( prescription );
+		return dataProgItem.setup( prescription, source );
 	};
 	
 	this.delDataProg = function( dataProgItemID ) {

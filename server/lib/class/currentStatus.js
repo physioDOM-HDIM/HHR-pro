@@ -272,7 +272,7 @@ function CurrentStatus() {
 	 * @param updatedEntry
 	 * @returns {Promise}
 	 */
-	this.update = function(updatedEntry) {
+	this.update = function(updatedEntry, professionalID) {
 
 		var that = this;
 		return new Promise( function(resolve, reject) {
@@ -291,13 +291,29 @@ function CurrentStatus() {
 					case 'questionnaires':
 						var questionnaires = updatedEntry[key];
 						questionnaires.forEach( function(questionnaire ) {
-							that.questionnaires[questionnaire.name] = questionnaire;
+							if( that.questionnaires[questionnaire.name] ) {
+								if (that.questionnaires[questionnaire.name].score !== questionnaire.score ) {
+									that.questionnaires[questionnaire.name] = questionnaire;
+									that.questionnaires[questionnaire.name].source = professionalID;
+								}
+							} else {
+								that.questionnaires[questionnaire.name] = questionnaire;
+								that.questionnaires[questionnaire.name].source = professionalID;
+							}
 						});
 						break;
 					case 'parameters':
 						var parameters = updatedEntry[key];
 						parameters.forEach( function(parameter ) {
-							that.parameters[parameter.name] = parameter;
+							if( that.parameters[parameter.name] ) {
+								if (that.parameters[parameter.name].value !== parameter.value ) {
+									that.parameters[parameter.name] = parameter;
+									that.parameters[parameter.name].source = professionalID;
+								}
+							} else {
+								that.parameters[parameter.name] = parameter;
+								that.parameters[parameter.name].source = professionalID;
+							}
 						});
 						break;
 					default:

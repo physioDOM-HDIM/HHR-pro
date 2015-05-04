@@ -13,6 +13,7 @@ var promise = require("rsvp").Promise,
 	directorySchema = require("./../schema/directorySchema"),
 	soap = require("soap"),
 	Cookies = require("cookies"),
+	moment = require("moment"),
 	md5 = require('MD5');
 
 var logger = new Logger("Professional");
@@ -197,7 +198,7 @@ function Professional() {
 	 * @param newEntry
 	 * @returns {promise}
 	 */
-	this.init = function( newEntry ) {
+	this.init = function( newEntry, professionalID ) {
 		var that = this;
 		return new promise( function(resolve, reject) {
 			logger.trace("init");
@@ -230,6 +231,9 @@ function Professional() {
 								'$ne': that._id
 							}
 						};
+						that.source = professionalID;
+						that.datetime = moment().toISOString();
+						
 						physioDOM.db.collection("professionals").count(search, function (err, nb) {
 							if (nb === 0) {
 								that.save()
@@ -272,7 +276,7 @@ function Professional() {
 	 * @param {object} updatedItem
 	 * @returns {promise}
 	 */
-	this.update = function( updatedItem ) {
+	this.update = function( updatedItem, professionalID) {
 		var that = this;
 		return new promise( function( resolve, reject ) {
 			logger.trace("update");
@@ -322,6 +326,8 @@ function Professional() {
 								'$ne': that._id
 							}
 						};
+						that.source = professionalID;
+						that.datetime = moment().toISOString();
 						physioDOM.db.collection("professionals").count(search, function (err, nb) {
 							if (nb === 0) {
 								that.save()

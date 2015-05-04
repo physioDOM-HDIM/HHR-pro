@@ -29,12 +29,12 @@ function Directory( ) {
 	 * @param newEntry
 	 * @returns {Promise}
 	 */
-	this.createEntry = function( newEntry ) {
+	this.createEntry = function( newEntry, professionalID ) {
 		return new promise( function(resolve, reject) {
 			logger.trace("createEntry", newEntry);
 			if( newEntry ) {
 				var entry = new Professional( );
-				return entry.init( newEntry)
+				return entry.init( newEntry, professionalID )
 					.then( resolve )
 					.catch( function(err) {
 						logger.alert("error ", err);

@@ -867,7 +867,7 @@ var IBeneficiary = {
 			})
 			.then(function (selectedBeneficiary) {
 				beneficiary = selectedBeneficiary;
-				return beneficiary.setDataProg( JSON.parse(req.body) );
+				return beneficiary.setDataProg( JSON.parse(req.body), req.session.person.id );
 			})
 			.then( function( prescription ) {
 				res.send(prescription);
