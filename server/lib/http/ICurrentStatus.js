@@ -83,8 +83,8 @@ var ICurrentStatus = {
 								items: [],
 								healthStatus: true
 							};
-							
-							if( Object.keys(currentStatus.parameters).length ) {
+							console.log( currentStatus.parameters );
+							if( currentStatus.parameters && Object.keys(currentStatus.parameters).length ) {
 								Object.keys(currentStatus.parameters).forEach(function (key) {
 									var parameter = currentStatus.parameters[key];
 									if( parameter.value ) {

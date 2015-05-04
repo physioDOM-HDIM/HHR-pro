@@ -22,7 +22,20 @@ window.addEventListener('DOMContentLoaded', function() {
     if(datas.validateStatus) {
     	Utils.lockdown();
     }
-
+	
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET","/api/beneficiary/current/validation", true );
+	xhr.onload = function() {
+		if( xhr.status === 200 ) {
+			try {
+				var isValid = JSON.parse(xhr.responseText);
+				if( isValid.isValid) {
+					parent.enableDataRecord( isValid.isValid );
+				}
+			} catch(err) {}
+		}
+	};
+	xhr.send();
 });
 
 window.addEventListener("beforeunload", function( e) {

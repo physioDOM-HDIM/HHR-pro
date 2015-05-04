@@ -5,6 +5,7 @@ __v0.0.37-pre__
   - Bug 333 : [ERG][v035] Saisie des questionnaires sur tablette ( Taille des boutons radio doublée )
   - Bug 340 : [Init Bene][v.0.0.36-1] Pas d'initialisation d'un bénéficiaire si pas de prénom
   - Bug 342 : [create-edit beneficiary][v036] Remise à blanc des champs non sauvegardée
+  - Bug 349 : [Menu][v036] enable 'data recording' dans le menu
   
 __v0.0.36-1__
 
