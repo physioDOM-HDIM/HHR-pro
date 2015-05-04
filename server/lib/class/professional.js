@@ -401,7 +401,7 @@ function Professional() {
 	 * @param accountData
 	 * @returns {promise}
 	 */
-	this.accountUpdate = function( accountData ) {
+	this.accountUpdate = function( accountData, firstlogin ) {
 		var that = this;
 		
 		function checkUniqLogin() {
@@ -437,6 +437,7 @@ function Professional() {
 						active  : that.active,
 						role    : that.role,
 						email   : that.getEmail(),
+						firstlogin: firstlogin,
 						person  : {
 							id        : that._id,
 							collection: "professionals"

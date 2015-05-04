@@ -386,5 +386,11 @@
   "Reason of the exit":"Reason of the exit",
   "Thresholds":"Thresholds",
   "Password change":"Password change",
-  "Your password has been successfully changed":"Your password has been successfully changed"
+  "Your password has been successfully changed":"Your password has been successfully changed",
+  "Your account has been created at":"Your account has been created at",
+  "Retrieval of the certificate for your browser (you can retrieve it 3 times)":"Retrieval of the certificate for your browser (you can retrieve it 3 times)",
+  "URL of retrieval":"URL of retrieval",
+  "Once your certificate installed in your browser, you can connect to":"Once your certificate installed in your browser, you can connect to",
+  "Your login":"Your login",
+  "Your password":"Your password"
 }

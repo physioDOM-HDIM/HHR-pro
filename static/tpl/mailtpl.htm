@@ -1,0 +1,23 @@
+<div>
+	<img src="cid:logo@physiodom.eu" style="width:200px;margin:auto">
+	
+	<p>{{"Your account has been created at"|i18n}} {{server.protocol}}{{server.name}}</p>
+	
+	{% if idsUser %}
+	<p>{{"Retrieval of the certificate for your browser (you can retrieve it 3 times)"|i18n}} :</p>
+	
+	<ul>
+		<li>{{"URL of retrieval"|i18n}} : https://cert.idshost.fr</li>
+		<li>{{"Login"|i18n}} : {{account.email}}</li>
+		<li>{{"Withdrawal code"|i18n}} : {{account.OTP}}</li>
+	</ul>
+	
+	<p>{{"Once your certificate installed in your browser, you can connect to"|i18n}} {{server.protocol}}{{server.name}}</p>
+	{% endif %}
+	<ul>
+		{% if !idsUser %}
+		<li>{{"Your login"|i18n}} : {{account.login}}</li>
+		{% endif %}
+		<li>{{"Your password"|i18n}} : {{password}}</li>
+	</ul>
+</div>

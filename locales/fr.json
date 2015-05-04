@@ -386,5 +386,11 @@
   "Reason of the exit":"Motif de la sortie",
   "Thresholds":"Seuils",
   "Password change":"Changement de mot de passe",
-  "Your password has been successfully changed":"Votre mot de passe a été modifié avec succès"
+  "Your password has been successfully changed":"Votre mot de passe a été modifié avec succès",
+  "Your account has been created at":"Votre compte a été créé sur",
+  "Retrieval of the certificate for your browser (you can retrieve it 3 times)":"Récupération du certificat pour votre navigateur (vous pouvez le récupérer 3 fois)",
+  "URL of retrieval":"URL de retrait",
+  "Once your certificate installed in your browser, you can connect to":"Une fois votre certificat installé dans votre navigateur, vous pouvez vous connecter",
+  "Your login":"Votre identifiant",
+  "Your password":"Votre mot de passe"
 }

@@ -166,6 +166,8 @@ var IBeneficiary = {
 			return next(false);
 		}
 
+		var beneficiary;
+		
 		try {
 			var updateItem = JSON.parse(req.body);
 
@@ -177,27 +179,43 @@ var IBeneficiary = {
 						return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID );
 					}
 				})
-				.then(function (beneficiary) {
-					return beneficiary.hasProfessional(req.session.person.id)
+				.then(function (_beneficiary) {
+					return _beneficiary.hasProfessional(req.session.person.id)
 						.then(function(hasProfessional) {
 							if(hasProfessional || ["administrator","coordinator"].indexOf(req.session.role) !== -1) {
-								return beneficiary.update(updateItem, req.session.person.id, req.headers["ids-user"]?true:false);
+								return _beneficiary.update(updateItem, req.session.person.id, req.headers["ids-user"]?true:false);
 							} else {
 								throw { code:403, message:"not authorized"};
 							}
 						});
 				})
-				.then( function (beneficiary ) {
+				.then( function (_beneficiary ) {
+					beneficiary = _beneficiary;
+					if( updateItem.account ) {
+						beneficiary.getAccount()
+							.then( function(_account) {
+								var data = {
+									account : _account,
+									password: updateItem.account.password,
+									server  : physioDOM.config.server,
+									lang    : physioDOM.Lang
+								};
+								if (req.headers["ids-user"]) {
+									data.idsUser = true;
+								}
+								return require("./ISendmail").passwordMail(data);
+							});
+					}
+				})
+				.then( function() {
 					res.send( beneficiary );
 					next();
 				})
 				.catch(function (err) {
-					console.log("test2");
 					res.send(err.code || 400, err);
 					next(false);
 				});
 		} catch( err ) {
-			console.log("test3");
 			res.send(err.code || 400, err);
 			next(false);
 		}
