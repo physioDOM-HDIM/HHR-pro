@@ -603,6 +603,8 @@ function checkBeneficiaryForm(backgroundTask) {
         return false;
     }
 
+	if( !obj.biomaster ) { obj.biomaster = ""; }
+	if( !obj.socialID ) { obj.socialID = ""; }
 	/*
     if (isNaN(parseFloat(obj.size))) {
         new Modal('errorSizeNumber');

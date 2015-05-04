@@ -3,6 +3,8 @@ __v0.0.37-pre__
   - Bug 332 : Fonctionnalité d'envoie de mail pour retrait de certificat
   - Bug 308 : [Login][v034] Change password
   - Bug 333 : [ERG][v035] Saisie des questionnaires sur tablette ( Taille des boutons radio doublée )
+  - Bug 340 : [Init Bene][v.0.0.36-1] Pas d'initialisation d'un bénéficiaire si pas de prénom
+  - Bug 342 : [create-edit beneficiary][v036] Remise à blanc des champs non sauvegardée
   
 __v0.0.36-1__
 
