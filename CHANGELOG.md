@@ -7,6 +7,7 @@ __v0.0.37-pre__
   - Bug 342 : [create-edit beneficiary][v036] Remise à blanc des champs non sauvegardée
   - Bug 349 : [Menu][v036] enable 'data recording' dans le menu
   - Bug 348 : [RIGHTS][v036] Liste role non traduite
+  - Bug 347 : [Beneficiary overview/Details][036] Texte coupé
   
 __v0.0.36-1__
 
