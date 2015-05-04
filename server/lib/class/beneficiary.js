@@ -2797,7 +2797,7 @@ function Beneficiary( ) {
 			var msg = [];
 			msg.push({
 				name : name,
-				value: that.name.given || that.name.familly,
+				value: that.name.given || that.name.family,
 				type : "String"
 			});
 			queue.postMsg(msg)
