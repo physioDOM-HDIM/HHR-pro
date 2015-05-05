@@ -15,6 +15,7 @@ __v0.0.37-pre__
   - Bug 344 : [edit-create beneficiary][v036] Case 'Active' cochée par défaut
   - Push First name to queue if change detected
   - Bug 309 : [General][v034] Traçabilité identité du professionel et date impactant un beneficiaire
+  - Use SMTP config from config file
   
 > __Nota :__ for Bug 346, the queue service must be updated
   

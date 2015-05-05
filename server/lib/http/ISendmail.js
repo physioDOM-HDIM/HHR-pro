@@ -24,19 +24,14 @@ var lang;
 var DOCUMENTROOT=require("path").join(__dirname,"../../../");
 var logger = new Logger("ISendmail");
 var i18n;
+var transporter = null;
 
 var htmlTpl = DOCUMENTROOT + "/static/tpl/mailtpl.htm";
 var textTpl = DOCUMENTROOT + "/static/tpl/mailtpl.txt";
 
-var transporter = nodemailer.createTransport(
-	{
-		service:"gmail",
-		auth: {
-			user: 'fabrice.lecoz@gmail.com',
-			pass: 'n3ur0M@nc13n'
-		}
-	}
-);
+if( physioDOM.config.smtp ) {
+	transporter = nodemailer.createTransport(physioDOM.config.smtp);
+}
 
 function init(lang) {
 	i18n = new(require('i18n-2'))({
@@ -76,47 +71,51 @@ var ISendmail  = {
 		return new promise( function( resolve, reject ) {
 			logger.trace("password mail");
 
-			init(data.lang);
-			
-			var promises = {
-				html: renderTpl(htmlTpl, data),
-				text: renderTpl(textTpl, data)
-			};
+			if( !transporter ) {
+				logger.warning("no smtp transport defined");
+				resolve();
+			} else {
+				init(data.lang);
 
-			RSVP.hash(promises)
-				.then(function (tpl) {
+				var promises = {
+					html: renderTpl(htmlTpl, data),
+					text: renderTpl(textTpl, data)
+				};
 
-					console.log("logo",DOCUMENTROOT+ "/logo/physiodom_logo.png");
-					var mailOptions = {
-						from       : 'no-reply@telecomsante.com <no-reply@telecomsante.com>',
-						to         : data.account.email,
-						subject    : 'Physiodom account',
-						text       : tpl.text,
-						html       : tpl.html,
-						attachments: [{
-							filename: "physiodom_logo.png",
-							path    : DOCUMENTROOT+ "/logo/physiodom_logo.png",
-							cid     : "logo@physiodom.eu" //same cid value as in the html img src
-						}]
-					};
+				RSVP.hash(promises)
+					.then(function (tpl) {
+						
+						var mailOptions = {
+							from       : 'no-reply@telecomsante.com <no-reply@telecomsante.com>',
+							to         : data.account.email,
+							subject    : 'Physiodom account',
+							text       : tpl.text,
+							html       : tpl.html,
+							attachments: [{
+								filename: "physiodom_logo.png",
+								path    : DOCUMENTROOT + "/logo/physiodom_logo.png",
+								cid     : "logo@physiodom.eu" //same cid value as in the html img src
+							}]
+						};
 
-					transporter.sendMail(mailOptions, function (error, info) {
-						if (error) {
-							logger.warning("email to "+data.account.email+" not delivered");
-							console.log(error);
-						} else {
-							logger.info("email to "+data.account.email+" delivered");
+						transporter.sendMail(mailOptions, function (error, info) {
+							if (error) {
+								logger.warning("email to " + data.account.email + " not delivered");
+								console.log(error);
+							} else {
+								logger.info("email to " + data.account.email + " delivered");
+							}
+							resolve();
+						});
+					})
+					.catch(function (err) {
+						logger.warning(err);
+						if (err.stack) {
+							console.log(err.stack);
 						}
 						resolve();
 					});
-				})
-				.catch(function (err) {
-					logger.warning(err);
-					if(err.stack) {
-						console.log( err.stack );
-					}
-					resolve();
-				});
+			}
 		});
 	}
 }

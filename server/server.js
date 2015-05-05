@@ -75,6 +75,9 @@ if( program.config ) {
 			config.IDS = tmp.IDS;
 		}
 		
+		if( tmp.smtp) {
+			config.smtp = tmp.smtp;
+		}
 	}
 } else {
 	logger.error("you must provide a config file");
