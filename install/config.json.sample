@@ -31,5 +31,9 @@
     "appName": "secureapp21.idshost.fr",
     "unit":"test"
     "OrganizationUnit":"physioDOM"
+  },
+  "smtp" : {
+    "host": "smtp.idshost.priv ",
+    "port": 25
   }
 }

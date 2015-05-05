@@ -335,7 +335,7 @@ function Queue ( beneficiaryID ) {
 											"text": item.id,
 											"value": item.value,
 											"category": listItems[item.id].category,
-											"automatic": item.automatic
+											"automatic": item.automatic === 1 ? true:false
 										});
 									});
 									beneficiary.createDataRecord(newDataRecord)

@@ -72,7 +72,7 @@ var IDirectory = {
 					throw( {"message":"entry is empty"});
 				}try {
 					var user = JSON.parse(req.body.toString());
-					return directory.createEntry(user);
+					return directory.createEntry(user, req.session.person.id );
 				} catch(err) {
 					throw { code:405, message:"bad json format"};
 				}
@@ -119,7 +119,7 @@ var IDirectory = {
 					return directory.getEntryByID(req.params.entryID);
 				})
 				.then(function (professional) {
-					return professional.update( item );
+					return professional.update( item, req.session.person.id );
 				})
 				.then(function (professional) {
 					if ( req.session.person.id.toString() == professional._id.toString() ) {
@@ -180,7 +180,7 @@ var IDirectory = {
 					if( req.headers["ids-user"] && !account.login ) {
 						account.login = professional.getEmail();
 					}
-					return professional.accountUpdate(account);
+					return professional.accountUpdate(account, req.session.person.id.toString() !== professional._id.toString() );
 				})
 				.then( function(professional, OTP) {
 					return new promise( function( resolve, reject) {
@@ -191,9 +191,24 @@ var IDirectory = {
 								.then( resolve )
 								.catch( reject );
 						} else {
-							resolve();
+							professional.getAccount()
+								.then( resolve );
 						}
 					});
+				})
+				.then( function(_account) {
+					if( req.session.person.id.toString() !== professional._id.toString() && account.password !== _account.password ) {
+						var data = {
+							account : _account,
+							password: account.password,
+							server  : physioDOM.config.server,
+							lang: professional.communication
+						};
+						if (req.headers["ids-user"]) {
+							data.idsUser = true;
+						}
+						return require("./ISendmail").passwordMail( data );
+					}
 				})
 				.then( function() {
 					res.send(professional);  // updated professional

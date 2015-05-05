@@ -384,5 +384,13 @@
   "Validate":"Bevestiging",
   "This login is already used, please choose another one":"Deze aanduiding is al in gebruik, dan kunt u kiezen voor een ander",
   "Reason of the exit":"Reden van de afrit",
-  "Thresholds":"Drempels"
+  "Thresholds":"Drempels",
+  "Password change":"Wachtwoord wijzigen",
+  "Your password has been successfully changed":"Uw wachtwoord is succesvol gewijzigd",
+  "Your account has been created at":"Uw account is aangemaakt op",
+  "Retrieval of the certificate for your browser (you can retrieve it 3 times)":"Ophalen van het certificaat voor uw browser (u kunt het opvragen 3 keer)",
+  "URL of retrieval":"URL van retrieval",
+  "Once your certificate installed in your browser, you can connect to":"Zodra uw certificaat geïnstalleerd in uw browser, kunt u verbinding maken",
+  "Your login":"Uw login",
+  "Your password":"Uw wachtwoord"
 }

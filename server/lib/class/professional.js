@@ -13,6 +13,7 @@ var promise = require("rsvp").Promise,
 	directorySchema = require("./../schema/directorySchema"),
 	soap = require("soap"),
 	Cookies = require("cookies"),
+	moment = require("moment"),
 	md5 = require('MD5');
 
 var logger = new Logger("Professional");
@@ -197,7 +198,7 @@ function Professional() {
 	 * @param newEntry
 	 * @returns {promise}
 	 */
-	this.init = function( newEntry ) {
+	this.init = function( newEntry, professionalID ) {
 		var that = this;
 		return new promise( function(resolve, reject) {
 			logger.trace("init");
@@ -230,6 +231,9 @@ function Professional() {
 								'$ne': that._id
 							}
 						};
+						that.source = professionalID;
+						that.datetime = moment().toISOString();
+						
 						physioDOM.db.collection("professionals").count(search, function (err, nb) {
 							if (nb === 0) {
 								that.save()
@@ -272,7 +276,7 @@ function Professional() {
 	 * @param {object} updatedItem
 	 * @returns {promise}
 	 */
-	this.update = function( updatedItem ) {
+	this.update = function( updatedItem, professionalID) {
 		var that = this;
 		return new promise( function( resolve, reject ) {
 			logger.trace("update");
@@ -322,6 +326,8 @@ function Professional() {
 								'$ne': that._id
 							}
 						};
+						that.source = professionalID;
+						that.datetime = moment().toISOString();
 						physioDOM.db.collection("professionals").count(search, function (err, nb) {
 							if (nb === 0) {
 								that.save()
@@ -401,7 +407,7 @@ function Professional() {
 	 * @param accountData
 	 * @returns {promise}
 	 */
-	this.accountUpdate = function( accountData ) {
+	this.accountUpdate = function( accountData, firstlogin ) {
 		var that = this;
 		
 		function checkUniqLogin() {
@@ -437,6 +443,7 @@ function Professional() {
 						active  : that.active,
 						role    : that.role,
 						email   : that.getEmail(),
+						firstlogin: firstlogin,
 						person  : {
 							id        : that._id,
 							collection: "professionals"
@@ -464,6 +471,23 @@ function Professional() {
 					});
 				})
 				.catch( reject );
+		});
+	};
+	
+	this.accountUpdatePasswd = function( newPasswd ) {
+		logger.trace( "accountUpdatePasswd" );
+		var that = this;
+		return new promise( function(resolve, reject) {
+			that.getAccount()
+				.then(function (account) {
+					account.password = md5(newPasswd);
+					account.firstlogin = false;
+					physioDOM.db.collection("account").save(account, function (err, result) {
+						if(err) { throw err; }
+						resolve( account );
+					});
+				})
+				.catch(reject);
 		});
 	};
 	

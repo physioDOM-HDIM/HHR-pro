@@ -384,5 +384,13 @@
   "Validate":"Validación",
   "This login is already used, please choose another one":"Este identificador ya está en uso, por favor elija otro",
   "Reason of the exit":"Motivo de la salida",
-  "Thresholds":"Umbrales"
+  "Thresholds":"Umbrales",
+  "Password change":"Cambio de contraseña",
+  "Your password has been successfully changed":"Su contraseña ha sido cambiada con éxito",
+  "Your account has been created at":"Su cuenta ha sido creada en",
+  "Retrieval of the certificate for your browser (you can retrieve it 3 times)":"Recuperación del certificado para su navegador (puede recuperarla 3 veces)",
+  "URL of retrieval":"URL de la recuperación",
+  "Once your certificate installed in your browser, you can connect to":"Una vez que su certificado instalado en su navegador, puede conectarse a",
+  "Your login":"Su nombre de usuario",
+  "Your password":"tu contraseña"
 }

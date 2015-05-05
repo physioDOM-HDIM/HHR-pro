@@ -12,7 +12,7 @@
     </form>
 </zdk-modal>
 
-<zdk-modal width="450" id="editRoleModal" closebutton="false">
+<zdk-modal width="450" id="editRoleModal" closebutton="false" class="hidden">
     <div class="modalContainer">
         <div class="modalTitleContainer">{{ "providers role"|i18n }}</div>
         <div class="modalContentContainer">
@@ -31,6 +31,7 @@
     <div id="trad_delete">{{ "Delete"|i18n }}</div>
     <div id="trad_error">{{ "Error"|i18n }}</div>
     <div id="trad_update">{{ "Update"|i18n }}</div>
+	<div id="trad_password_update">{{ "Password change"|i18n }}</div>
     <div id="trad_confirm_save">{{ "Are you sure you want to save those changes ?"|i18n }}</div>
     <div id="trad_confirm_update">{{ "Are you sure you want to update this item ?"|i18n }}</div>
     <div id="trad_confirm_create">{{ "Are you sure you want to create this item ?"|i18n }}</div>
@@ -45,6 +46,7 @@
     <div id="trad_success_update">{{ "Item successfully updated"|i18n }}</div>
     <div id="trad_success_delete">{{ "Item successfully deleted"|i18n }}</div>
     <div id="trad_success_saved">{{ "Successfully saved"|i18n }}</div>
+	<div id="trad_password_success">{{ "Your password has been successfully changed"|i18n }}</div>
     <div id="trad_error_password">{{ "Passwords are not equal"|i18n }}</div>
     <div id="trad_error_match_regex_password">{{ "The password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters"|i18n }}</div>
     <div id="trad_error_match_regex_ref">{{ "The reference must have at least 1 uppercase or 1 lowercase"|i18n }}</div>

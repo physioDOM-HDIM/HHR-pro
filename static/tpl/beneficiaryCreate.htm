@@ -154,7 +154,7 @@
 		<div class="row">
 			<div class="col">
 				<label id="sizeLabel" {% if beneficiary.active %}class="mandatory"{% endif %}>{{ "Height"|i18n}} ({{"centimeters"|i18n }})</label>
-				<input type="number" min="100" max="250" step="1" name="size" value="{{ Math.round(beneficiary.size * 100) }}" {% if beneficiary.active %}required{% endif %}/>
+				<input type="number" min="100" max="250" step="1" name="size" value="{% if beneficiary.size %}{{ Math.round(beneficiary.size * 100) }}{% endif %}" {% if beneficiary.active %}required{% endif %}/>
 			</div>
 			<div class="col">
 				<label>{{ "Social ID"|i18n }}</label>
@@ -277,7 +277,7 @@
 			</div>
 			<div class="row">
 				<div class="col">
-					<label class="mandatory">{{ "Start date"|i18n }}</label>
+					<label id="startDateLabel" {% if beneficiary.active===true %}class="mandatory"{% endif %}>{{ "Start date"|i18n }}</label>
 					<zdk-input-date id="startDate" name="entry.startDate" value="{{beneficiary.entry.startDate}}" style="z-index:100" staticpos="true"
 					                required></zdk-input-date>
 				</div>

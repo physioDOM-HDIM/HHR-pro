@@ -1,3 +1,24 @@
+__v0.0.37__
+
+  - Bug 332 : Fonctionnalité d'envoie de mail pour retrait de certificat
+  - Bug 308 : [Login][v034] Change password
+  - Bug 333 : [ERG][v035] Saisie des questionnaires sur tablette ( Taille des boutons radio doublée )
+  - Bug 340 : [Init Bene][v.0.0.36-1] Pas d'initialisation d'un bénéficiaire si pas de prénom
+  - Bug 342 : [create-edit beneficiary][v036] Remise à blanc des champs non sauvegardée
+  - Bug 349 : [Menu][v036] enable 'data recording' dans le menu
+  - Bug 348 : [RIGHTS][v036] Liste role non traduite
+  - Bug 347 : [Beneficiary overview/Details][036] Texte coupé
+  - Bug 346 : [Measurements][v.1.0.1] Pas de transmission des "measurements" à HHR-Pro
+  - Bug 343 : [create-edit beneficiary][v036] Champ HEIGHT pré-rempli lors de la création
+  - Bug 341 : [create-edit beneficiary][v036] start date optionnelle lors de la désactivation
+  - Bug 345 : [Beneficiary overview][v036] valeurs undefined
+  - Bug 344 : [edit-create beneficiary][v036] Case 'Active' cochée par défaut
+  - Push First name to queue if change detected
+  - Bug 309 : [General][v034] Traçabilité identité du professionel et date impactant un beneficiaire
+  - Use SMTP config from config file
+  
+> __Nota :__ for Bug 346, the queue service must be updated
+  
 __v0.0.36-1__
 
   - Fix creating an account ( professional and beneficiary ) on IDS infrastructure

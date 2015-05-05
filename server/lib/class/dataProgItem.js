@@ -9,6 +9,7 @@
 var promise = require("rsvp").Promise,
 	ObjectID = require("mongodb").ObjectID,
 	dataProgSchema = require("./../schema/dataProgSchema"),
+	moment = require("moment"),
 	Logger = require("logger");
 
 var logger = new Logger("DataProgItem");
@@ -34,7 +35,7 @@ function DataProgItem( beneficiaryID ) {
 	 * @param prescription
 	 * @returns {promise}
 	 */
-	this.setup = function( prescription ) {
+	this.setup = function( prescription, source ) {
 		var that = this;
 
 		return new promise( function(resolve, reject) {
@@ -52,6 +53,8 @@ function DataProgItem( beneficiaryID ) {
 							that[prop] = _prescription[prop];
 						}
 					}
+					that.source = source;
+					that.datetime = moment().toISOString();
 					return that.save();
 				})
 				.then( resolve )

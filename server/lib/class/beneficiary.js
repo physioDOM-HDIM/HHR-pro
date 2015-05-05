@@ -363,6 +363,7 @@ function Beneficiary( ) {
 						active  : that.active,
 						role    : "beneficiary",
 						email   : that.getEmail(),
+						firstlogin: true,
 						person  : {
 							id        : that._id,
 							collection: "beneficiaries"
@@ -403,6 +404,7 @@ function Beneficiary( ) {
 	this.update = function( updatedEntry, professionalID, IDS) {
 		var that = this;
 		var accountData = null;
+		var pushFirstName = false;
 		return new promise( function(resolve, reject) {
 			logger.trace("update");
 			if( that._id.toString() !== updatedEntry._id ) {
@@ -418,11 +420,13 @@ function Beneficiary( ) {
 							switch(key) {
 								case "name":
 									that.name = updatedEntry.name;
-									if(that.name.family) {
+									if(updatedEntry.name.family) {
 										that.name.family = capitalize(that.name.family);
+										pushFirstName = true;
 									}
-									if(that.name.given) {
+									if(updatedEntry.name.given) {
 										that.name.given = capitalize(that.name.given);
+										pushFirstName = true;
 									}
 									break;
 								case "account":
@@ -447,6 +451,8 @@ function Beneficiary( ) {
 						}
 					}
 					if( !updatedEntry.size ) { delete that.size; }
+					that.source = professionalID;
+					that.datetime = moment().toISOString();
 					// console.log("-->", updatedEntry.active, that.active );
 					return that.save();
 				})
@@ -471,11 +477,35 @@ function Beneficiary( ) {
 						}
 					});
 				})
-				.then( resolve )
+				.then( function() {
+					if( pushFirstName ) {
+						return that.pushFirstName();
+					}
+				})
+				.then( function() {
+					resolve( that );
+				})
 				.catch( function(err) {
 					logger.warning("catch", err );
 					reject(err);
 				});
+		});
+	};
+
+	this.accountUpdatePasswd = function(newPasswd) {
+		logger.trace( "accountUpdatePasswd" );
+		var that = this;
+		return new promise( function(resolve, reject) {
+			that.getAccount()
+				.then(function (account) {
+					account.password = md5(newPasswd);
+					account.firstlogin = false;
+					physioDOM.db.collection("account").save(account, function (err, result) {
+						if(err) { throw err; }
+						resolve( account );
+					});
+				})
+				.catch(reject);
 		});
 	};
 
@@ -1502,12 +1532,12 @@ function Beneficiary( ) {
 	 * @param prescription 
 	 * @returns {promise}
 	 */
-	this.setDataProg = function( prescription ) {
+	this.setDataProg = function( prescription, source ) {
 		var that = this;
 		logger.trace("setDataProg", that._id, prescription.ref );
 
 		var dataProgItem = new DataProgItem( that._id );
-		return dataProgItem.setup( prescription );
+		return dataProgItem.setup( prescription, source );
 	};
 	
 	this.delDataProg = function( dataProgItemID ) {
@@ -2779,7 +2809,7 @@ function Beneficiary( ) {
 			var msg = [];
 			msg.push({
 				name : name,
-				value: that.name.given || that.name.familly,
+				value: that.name.given || that.name.family,
 				type : "String"
 			});
 			queue.postMsg(msg)
