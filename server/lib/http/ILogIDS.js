@@ -80,11 +80,12 @@ var ILogIDS = {
 				if(err) {
 					logger.warning(err.root.Envelope.Body.Fault);
 					res.send(400, { code:400, message:[ CreateUnit, err.root.Envelope.Body.Fault ] });
-					return next(false);
+					next(false);
 				} else {
 					logger.debug(result);
 					logger.info("Unit created", physioDOM.config.IDS.unit );
-					if( next ) { next(); }
+					res.send(200, { code:200, message:"Unit created" + physioDOM.config.IDS.unit });
+					if( next ) { next( false); }
 				}
 			});
 		});

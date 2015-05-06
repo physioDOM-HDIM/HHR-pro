@@ -198,7 +198,7 @@ server.use( function(req, res, next) {
 						cookies = new Cookies(req, res);
 						cookies.set('sessionID');
 						logger.debug("url", req.url);
-						if (req.url.match(/^(\/|\/api\/login|\/api\/logout|\/api\/checkpasswd|\/logout|\/api\/queue\/(status|received))$/)) {
+						if (req.url.match(/^(\/|\/version|\/api\/login|\/api\/logout|\/api\/checkpasswd|\/logout|\/api\/queue\/(status|received))$/)) {
 							return next();
 						} else {
 							if (req.url.match(/^\/api/)) {
@@ -223,7 +223,7 @@ server.pre(restify.pre.userAgentConnection());
 server.use(function checkAcl(req, res, next) {
 	logger.trace("checkAcl",req.url);
 
-	if( req.url === "/" || req.url.match(/^(\/api|\/logout|\/api\/checkpasswd|\/api\/password|\/directory|\/settings|\/questionnaires|\/admin|\/beneficiaries|\/queue)/) ) {
+	if( req.url === "/" || req.url.match(/^(\/api|\/logout|\/api\/checkpasswd|\/api\/password|\/directory|\/settings|\/questionnaires|\/admin|\/beneficiaries|\/queue|\/version|\/createunit)/) ) {
 		return next();
 	} else {
 		if (!req.session.beneficiary && req.url !== "/beneficiaries" &&
@@ -547,6 +547,22 @@ server.get( '/api/queue/:hhr/symptomsSelf',      IQueue.symptomsSelf);
 
 // ===================================================
 //               Pages requests
+
+function version(req, res, next) {
+	logger.trace("get version");
+	res.write( "version : " + pkg.version+"\n" );
+	res.write( "node version : " + process.version + "\n" );
+	res.write( "modules : \n");
+	for( var pack in pkg.dependencies) {
+		res.write( "    "+pack+" version "+pkg.dependencies[pack]+"\n");
+	}
+	res.end();
+	next(false);
+}
+server.get( '/version', version);
+
+server.get( '/createunit', ILogIDS.createUnit);
+
 server.get( '/logout', logout);
 
 server.get( '/beneficiaries', IPage.beneficiaries);
@@ -644,7 +660,7 @@ physioDOM.connect()
 	.then( function() {
 		server.listen(config.port, "127.0.0.1", function () {
 			logger.info('------------------------------------------------------------------');
-			logger.info(server.name + ' listening at ' + server.url);
+			logger.info(server.name +'v'+ server.version + ' listening at ' + server.url);
 			logger.info("config\n", JSON.stringify(config,"",4) );
 			logger.info('------------------------------------------------------------------');
 		});
