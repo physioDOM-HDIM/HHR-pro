@@ -458,6 +458,7 @@ var IQueue = {
 		
 		try {
 			var msg = JSON.parse(req.body.toString());
+			logger.info("receivedMsg",msg.type,msg.message.hhr);
 			var queue = new Queue( new ObjectID(msg.message.hhr) );
 			queue.receivedMessages( msg )
 				.then( function() {
@@ -465,6 +466,7 @@ var IQueue = {
 					next();
 				})
 				.catch( function(err) {
+					if(err.stack) { console.log( err.stack ); }
 					logger.warning( err );
 					res.send( 500 );
 					next();

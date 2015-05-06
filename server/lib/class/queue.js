@@ -282,6 +282,7 @@ function Queue ( beneficiaryID ) {
 		console.log(msg);
 		var that = this;
 		var leaf = "hhr["+ that.subject +"]";
+		
 		return new promise(function (resolve, reject) {
 			physioDOM.Beneficiaries()
 				.then(function (beneficiaries) {
@@ -325,7 +326,7 @@ function Queue ( beneficiaryID ) {
 								.catch( function(err) {
 									logger.warning(err);
 									reject(err);
-								});;
+								});
 							break;
 						case "measures":
 							physioDOM.Lists.getListItemsObj("parameters")
@@ -335,7 +336,7 @@ function Queue ( beneficiaryID ) {
 											"text": item.id,
 											"value": item.value,
 											"category": listItems[item.id].category,
-											"automatic": item.automatic === 1 ? true:false
+											"automatic": item.automatic && item.automatic === 1 ? true:false
 										});
 									});
 									beneficiary.createDataRecord(newDataRecord)
@@ -354,12 +355,22 @@ function Queue ( beneficiaryID ) {
 											logger.warning(err);
 											reject(err);
 										});
+								})
+								.catch( function(err) {
+									if(err.stack) { console.log(err.stack); }
+									logger.warning(err);
+									reject(err);
 								});
 							break;
 						default:
 							console.log( "unknown type");
 							reject("unknown type");
 					}
+				})
+				.catch( function(err) {
+					if(err.stack) { console.log(err.stack); }
+					logger.warning(err);
+					reject(err);
 				});
 		});
 	};
