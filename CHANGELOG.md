@@ -1,3 +1,10 @@
+__v0.0.37-1__
+
+  - Queue add logs on error
+  - Show version at start
+  - Add a /version url
+  - Add a /createunit url ( for IDS )
+
 __v0.0.37__
 
   - Bug 332 : Fonctionnalité d'envoie de mail pour retrait de certificat
