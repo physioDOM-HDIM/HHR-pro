@@ -744,6 +744,7 @@ function startChange(evt) {
 	var active = document.querySelector("input[name=active]");
 	if( evt.target.value && active.checked === false ) {
 		active.checked = true;
+		activeChange(active);
 	}
 }
 
