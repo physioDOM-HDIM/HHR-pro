@@ -42,7 +42,7 @@ var beneficiarySchema = {
 			type                  : "object",
 			properties            : {
 				"demand"     : {type: "string"},
-				"startDate"  : {format: "date", required: true},
+				"startDate"  : {format: "date"},
 				"plannedEnd" : {format: "date"},
 				"endDate"    : {format: "date"},
 				"comeFrom"   : {type: "string"},
@@ -84,6 +84,8 @@ var beneficiarySchema = {
 	},
 	"additionalProperties": false
 };
+
+
 
 var contactPartnerSchema = {
 	"id"        : "/ContactPartner",
