@@ -5,6 +5,7 @@ __v0.0.38-pre__
   - \#238 : Bug 360 - [CHS][v.0.0.37] Données modifiables après validation
   - \#240 : Bug 357 - [Nutritional status/ validation][v.0.0.37] Resultat égal à zéro
   - \#245 : Send DHDFFQ answers as `Double`
+  - \#239 : Bug 358 - [Data section/ Prescription][v.0.0.37] Threshold min et max
   
 __v0.0.37-1__
 
