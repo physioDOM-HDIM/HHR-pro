@@ -6,6 +6,7 @@ __v0.0.38-pre__
   - \#240 : Bug 357 - [Nutritional status/ validation][v.0.0.37] Resultat égal à zéro
   - \#245 : Send DHDFFQ answers as `Double`
   - \#239 : Bug 358 - [Data section/ Prescription][v.0.0.37] Threshold min et max
+  - \#242 : Bug 356 - [List Management][v.0.0.37] Modification de paramètre
   
 __v0.0.37-1__
 
