@@ -1,3 +1,7 @@
+__v0.0.38-pre__
+
+  - \#244 : Bug 341 - [create-edit beneficiary][v036] start date optionnelle lors de la désactivation
+  
 __v0.0.37-1__
 
   - Queue add logs on error

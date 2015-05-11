@@ -269,7 +269,7 @@
 		<form name="entry" autocomplete="off" onsubmit="return false;">
 			<div class="row">
 				<label>{{ "Active"|i18n }}</label>
-				<input type="checkbox" name="active" value="true" {% if beneficiary.active===true %}checked{% endif %} onchange="activeChange(this)" />
+				<input type="checkbox" name="active" id="active" value="true" {% if beneficiary.active===true %}checked{% endif %} onchange="activeChange(this)" />
 			</div>
 			<div class="row">
 				<label>{{ "Demand"|i18n }}</label>
