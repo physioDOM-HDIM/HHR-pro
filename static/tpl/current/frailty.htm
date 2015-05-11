@@ -87,7 +87,7 @@
 						<a
 							class="button small blue"  style="margin-right: 10px;"
 							href={% if questionnaire.answerID %}"/answers/{{questionnaire.answerID}}"{% else %}"/questionnaire/{{questionnaire.name}}"{% endif %}
-						{% if status.validated.status && !questionnaire.score %}disabled{% endif %}{% if (!rights.write || !beneficiary.active) && !questionnaire.score %}disabled{% endif %}>
+						{% if status.validated.status && questionnaire.score === null %}disabled{% endif %}{% if (!rights.write || !beneficiary.active) && !questionnaire.score %}disabled{% endif %}>
 						{{"Questionnaire"|i18n}}
 						</a>
 						<button type="button" class="remove button small red {% if !questionnaire.answerID || status.validated.status %}hidden{% endif %}" data-answer="{{questionnaire.answerID}}" onclick="removeAnswer(this)">{{"Delete"|i18n}}</button>
