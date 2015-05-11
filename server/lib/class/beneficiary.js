@@ -2643,7 +2643,7 @@ function Beneficiary( ) {
 										msg.push({
 											name : leaf + ".subscores["+i+"].value",
 											value: answer.questions[i].choice,
-											type : "Integer"
+											type : "Double"
 										});
 									}
 									queue.postMsg(msg)
