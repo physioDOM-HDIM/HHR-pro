@@ -2365,7 +2365,7 @@ function Beneficiary( ) {
 				});
 				msg.push({
 					name : leaf + ".type",
-					value: param.precision?"Double":"Integer",
+					value: param.rank,
 					type : "Integer"
 				});
 				msg.push({
