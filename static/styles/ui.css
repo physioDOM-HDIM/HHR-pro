@@ -84,7 +84,7 @@ a[disabled] {
 
 @media (max-width: 768px) {
 	zdk-panel div.col {
-		display:block;
+		/*display:block;*/
 	}
 }
 /* div table */

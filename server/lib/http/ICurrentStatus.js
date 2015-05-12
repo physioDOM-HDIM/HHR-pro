@@ -103,7 +103,7 @@ var ICurrentStatus = {
 							if( Object.keys(currentStatus.questionnaires).length ) {
 								Object.keys(currentStatus.questionnaires).forEach( function( key ) {
 									var questionnaire = currentStatus.questionnaires[key];
-									if( questionnaire.score ) {
+									if( questionnaire.score !== null ) {
 										var item = {
 											category: 'questionnaire',
 											text    : questionnaire.name,

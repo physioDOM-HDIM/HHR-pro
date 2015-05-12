@@ -46,6 +46,10 @@
 	input.questionnaire-score {
 		width: 100px;
 	}
+	
+	input[type=number] {
+		width:80px;
+	}
 </style>
 {% endblock %}
 
@@ -239,7 +243,7 @@
 
 	<script type="template" id="newItem">
 	<div class="row questionnaire-row">
-		<div class="col item-text" style="-webkit-flex:2; -ms-flex:2; flex:2;"></div>
+		<div class="col item-text" style="min-width:200px;max-width:200px"></div>
 		<input type="hidden" class="questionnaire-text" name="items[{% raw %}{{idx}}{% endraw %}].text" value="" />
 		{% raw %}{{#questionnaire}}{% endraw %}
 			<div class="col" style="max-width:150px">
@@ -278,8 +282,8 @@
 	{% raw %}{{/questionnaire}}{% endraw %}
 	{% raw %}{{^questionnaire}}{% endraw %}
 		<div class="row">
-			<div class="col" style="max-width:200px"><span class="spacer"></span><span>{{"Comment"|i18n}} : </span></div>
-			<div class="col">
+			<div class="col" style="max-width:200px;min-width:200px"><span class="spacer"></span><span>{{"Comment"|i18n}} :&nbsp;</span></div>
+			<div class="col" style="margin-left:0px;">
 				<input type="text" name="items[{% raw %}{{idx}}{% endraw %}].comment">
 			</div>
 			<div style="width:100px"></div>
@@ -330,7 +334,7 @@
 	<form name="dataRecord" id="dataRecord" onsubmit="create(); return false;">
 		<zdk-panel heading="{{'Physiological parameters' |i18n}}" collapsable="false" collapsed="false">
 			<div class="row row-legend">
-				<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{{ "Parameter"|i18n }}</div>
+				<div class="col bold" style="min-width:200px;max-width:200px">{{ "Parameter"|i18n }}</div>
 				<div class="col bold" style="max-width:150px">{{ "Value"|i18n }}</div>
 				<div class="col bold" style="max-width:150px">{{ "Unit"|i18n }}</div>
 				<div class="col bold" style="max-width:150px">{{ "Threshold min" | i18n }}</div>

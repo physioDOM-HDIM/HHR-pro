@@ -292,6 +292,18 @@ function showForm(ref, duplication) {
 	if( !ref || duplication) {
 		formDiv.querySelector("#delBtn").classList.add("hidden");
 	}
+	if(infos.category) {
+		if( dataModel.data.threshold.max ) {
+			formDiv.querySelector("[name='threshold.min']").setAttribute("max",dataModel.data.threshold.max);
+		} else {
+			formDiv.querySelector("[name='threshold.min']").removeAttribute("max");
+		}
+		if( dataModel.data.threshold.min ) {
+			formDiv.querySelector("[name='threshold.max']").setAttribute("min",dataModel.data.threshold.min);
+		} else {
+			formDiv.querySelector("[name='threshold.max']").removeAttribute("min");
+		}
+	}
 	formContainer.appendChild(formDiv);
 	
 	setTimeout( function() {
@@ -336,6 +348,23 @@ function closeForm() {
 	infos.modal.closeModal('dataProgModal');
 }
 
+function changeThreshold() {
+	var formContainer = document.querySelector("#dataprog-form")
+	var min = formContainer.querySelector("[name='threshold.min']");
+	var max = formContainer.querySelector("[name='threshold.max']");
+	
+	if( min.value) {
+		max.setAttribute("min",min.value);
+	} else {
+		max.removeAttribute("min");
+	}
+	if( max.value ) {
+		min.setAttribute("max",max.value);
+	} else {
+		min.removeAttribute("max");
+	}
+}
+
 /**
  * Action on form
  */
@@ -346,7 +375,12 @@ var saveData = function () {
 		param = utils.findInObject(lists.parameters.items, 'ref', data.ref),
 		dataprog = {},
 		thresholds = {};
-
+	
+	if( !document.querySelector("form[name=dataprog]").checkValidity() ) {
+		document.querySelector("#Save").click();
+		return false;
+	}
+	
 	//preparing threshold data to save
 	if( data.threshold ) {
 		thresholds[data.ref] = {};
@@ -431,7 +465,7 @@ var saveData = function () {
 
     });
 
-	
+	return true;
 };
 
 function updateCal() {

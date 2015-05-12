@@ -268,8 +268,9 @@ function updateProfessionals(obj) {
 
 function checkEntryForm() {
     var formObj = form2js(document.querySelector("form[name='entry']"));
-
-    if (!formObj.entry || !Utils.parseDate(formObj.entry.startDate)) {
+	var active = document.querySelector("#active").checked;
+	
+    if (!formObj.entry || ( active && !Utils.parseDate(formObj.entry.startDate)) ) {
         new Modal('errorDateRequired', null, document.querySelector("#startDateError").innerHTML );
         return false;
     }
@@ -409,6 +410,21 @@ function checkAllForms(isValidate) {
         btn;
     //To force the HTML5 form validation on each form if needed, set click on hidden submit button
     //form.submit() doesn't call the HTML5 form validation on elements
+	for( var i= 0, l=forms.length; i<l; i++) {
+		var form = forms[i];
+		if( form.name === "account" && !form.login.value ) {
+			continue;
+		}
+		if (!form.checkValidity()) {
+			invalid = true;
+			btn = document.querySelector("#" + form.name + "SubmitBtn");
+			if (btn) {
+				btn.click();
+				break;
+			}
+		}
+	}
+	/*
     [].map.call(forms, function(form) {
 		if( form.name === "account" && !form.login.value ) {
 			return;
@@ -421,6 +437,7 @@ function checkAllForms(isValidate) {
             }
         }
     });
+    */
 
     if (invalid) {
         return false;
@@ -727,6 +744,7 @@ function startChange(evt) {
 	var active = document.querySelector("input[name=active]");
 	if( evt.target.value && active.checked === false ) {
 		active.checked = true;
+		activeChange(active);
 	}
 }
 

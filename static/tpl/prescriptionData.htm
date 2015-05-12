@@ -46,6 +46,12 @@
 	{% endif %}
 </div>
 
+<zdk-modal id="dataProgModal" closebutton="false">
+	<form name="dataprog" id="dataprog-form" onsubmit="return false;" >
+	
+	</form>
+</zdk-modal>
+
 <script type="template" id="tpl-dataprog">
 	{% raw %}
 	{{#param}}
@@ -164,12 +170,12 @@
 	{% endraw %}
 	<div class="row h1">
 		<label>{{"Threshold min"|i18n}}</label>
-		<input type="number" value="" name="threshold.min" class="min-threshold">
+		<input type="number" value="" name="threshold.min" class="min-threshold" onchange="changeThreshold()">
 	</div>
 
 	<div class="row h1">
 		<label>{{"Threshold max"|i18n}}</label>
-		<input type="number" value="" name="threshold.max" class="max-threshold">
+		<input type="number" value="" name="threshold.max" class="max-threshold" onchange="changeThreshold()">
 	</div>
 	{% raw %}
 	{{/hasThresholds}}
@@ -213,7 +219,7 @@
 		<span class="spacer"></span>
 		<button type="button" onclick="closeForm()" class="red">{{"Cancel"|i18n}}</button>
 		<button id="delBtn" type="button" onclick="removeData('{% raw %}{{data._id}}{% endraw %}')" class="red">{{"Delete"|i18n}}</button>
-		<button type="button" onclick="saveData()" class="green">{{"Save"|i18n}}</button>
+		<button id="Save" onclick="saveData()" class="green">{{"Save"|i18n}}</button>
 	</div>
 	
 </script>
