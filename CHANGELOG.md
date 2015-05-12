@@ -1,4 +1,4 @@
-__v0.0.38-pre__
+__v0.0.38__
 
   - \#244 : Bug 341 - [create-edit beneficiary][v036] start date optionnelle lors de la désactivation
   - \#242 : Bug 354 - [Create/update a beneficiary][v.0.0.37] Activation par la date de début
