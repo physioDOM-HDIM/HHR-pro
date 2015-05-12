@@ -1660,12 +1660,12 @@ function Beneficiary( ) {
 				msg.push({
 					name : leaf + ".datetime",
 					value: measures.datetime,
-					type : "Integer"
+					type : "integer"
 				});
 				msg.push({
 					name : leaf + ".new",
 					value: 1,
-					type : "Integer"
+					type : "integer"
 				});
 				var hasMeasure = false;
 				measures.measure.forEach(function (measure) {
@@ -1675,33 +1675,33 @@ function Beneficiary( ) {
 						msg.push({
 							name : name + ".type",
 							value: parseInt(parameters[measure].rank, 10),
-							type : "Integer"
+							type : "integer"
 						});
 						msg.push({
 							name : name + ".label",
 							value: parameters[measure].label[physioDOM.lang],
-							type : "String"
+							type : "string"
 						});
 						msg.push({
 							name : name + ".min",
 							value: parameters[measure].range.min,
-							type : "Double"
+							type : "double"
 						});
 						msg.push({
 							name : name + ".max",
 							value: parameters[measure].range.max,
-							type : "Double"
+							type : "double"
 						});
 						msg.push({
 							name : name + ".precision",
 							value: parameters[measure].precision ? 1 : 0,
-							type : "Integer"
+							type : "integer"
 						});
 						if (parameters[measure].unity && parameters[measure].unity !== 'NONE') {
 							msg.push({
 								name : name + ".unit",
 								value: units[parameters[measure].unity].label[physioDOM.lang] || units[parameters[measure].unity].label.en,
-								type : "String"
+								type : "string"
 							});
 						}
 					}
@@ -1976,13 +1976,13 @@ function Beneficiary( ) {
 			msg.push({
 				name : leaf + ".label",
 				value: symptomSelf.label[physioDOM.lang] || symptomSelf.ref,
-				type : "String"
+				type : "string"
 			});
 			if( symptomSelf.history ) {
 				msg.push({
 					name: leaf + ".lastValue",
 					value: symptomSelf.history[0].value,
-					type: "Double"
+					type: "double"
 				});
 			}
 			queue.postMsg(msg)
@@ -2038,12 +2038,12 @@ function Beneficiary( ) {
 				msg.push({
 					name : leaf + ".datetime",
 					value: measures.datetime,
-					type : "Integer"
+					type : "integer"
 				});
 				msg.push({
 					name : leaf + ".new",
 					value: 1,
-					type : "Integer"
+					type : "integer"
 				});
 				var hasMeasure = false;
 				measures.measure.forEach(function (measure) {
@@ -2053,12 +2053,12 @@ function Beneficiary( ) {
 						msg.push({
 							name : name + ".label",
 							value: symptoms[measure].label[physioDOM.lang],
-							type : "String"
+							type : "string"
 						});
 						msg.push({
 							name : name + ".lastValue",
 							value: 0,
-							type : "Double"
+							type : "double"
 						});
 					}
 				});
@@ -2312,23 +2312,23 @@ function Beneficiary( ) {
 						msg.push({
 							name: leaf + ".label",
 							value: quest.TVLabel,
-							type: "String"
+							type: "string"
 						});
 						msg.push({
 							name: leaf + ".new",
 							value: newFlag ? 1 : 0,
-							type: "Integer"
+							type: "integer"
 						});
 						for (var i = 0, l = quest.history.length; i < l; i++) {
 							msg.push({
 								name: leaf + ".scores[" + i + "].datetime",
 								value: moment(quest.history[i].datetime).unix(),
-								type: "Integer"
+								type: "integer"
 							});
 							msg.push({
 								name: leaf + ".scores[" + i + "].value",
 								value: quest.history[i].value,
-								type: "Double"
+								type: "double"
 							});
 						}
 						queue.postMsg(msg)
@@ -2361,35 +2361,35 @@ function Beneficiary( ) {
 				msg.push({
 					name : leaf + ".label",
 					value: param.name,
-					type : "String"
+					type : "string"
 				});
 				msg.push({
 					name : leaf + ".type",
 					value: param.rank,
-					type : "Integer"
+					type : "integer"
 				});
 				msg.push({
 					name : leaf + ".precision",
 					value: param.precision,
-					type : "Integer"
+					type : "integer"
 				});
 				if( param.unit.length ) {
 					msg.push({
 						name : leaf + ".unit",
 						value: param.unit,
-						type : "String"
+						type : "string"
 					});
 				}
 				for (var i = 0, l = param.history.length; i < l; i++) {
 					msg.push({
 						name : leaf + ".values[" + i + "].datetime",
 						value: moment(param.history[i].datetime).unix(),
-						type : "Integer"
+						type : "integer"
 					});
 					msg.push({
 						name : leaf + ".values[" + i + "].value",
 						value: param.history[i].value,
-						type : "Double"
+						type : "double"
 					});
 				}
 				queue.postMsg(msg)
@@ -2416,18 +2416,18 @@ function Beneficiary( ) {
 				msg.push({
 					name : leaf + ".label",
 					value: symptom.name,
-					type : "String"
+					type : "string"
 				});
 				for (var i = 0, l = symptom.history.length; i < l; i++) {
 					msg.push({
 						name : leaf + ".values[" + i + "].datetime",
 						value: moment(symptom.history[i].datetime).unix(),
-						type : "Integer"
+						type : "integer"
 					});
 					msg.push({
 						name : leaf + ".values[" + i + "].value",
 						value: symptom.history[i].value,
-						type : "Double"
+						type : "double"
 					});
 				}
 				queue.postMsg(msg)
@@ -2627,23 +2627,23 @@ function Beneficiary( ) {
 									msg.push({
 										name : leaf + ".advice",
 										value: quests[0].comment,
-										type : "String"
+										type : "string"
 									});
 									msg.push({
 										name : leaf + ".new",
 										value: newFlag?1:0,
-										type : "Integer"
+										type : "integer"
 									});
 									for( var i= 0, l=answer.questions.length; i<l;i++) {
 										msg.push({
 											name : leaf + ".subscores["+i+"].label",
 											value: questionnaire.questions[i].label[physioDOM.lang],
-											type : "String"
+											type : "string"
 										});
 										msg.push({
 											name : leaf + ".subscores["+i+"].value",
 											value: answer.questions[i].choice,
-											type : "Double"
+											type : "double"
 										});
 									}
 									queue.postMsg(msg)
@@ -2687,18 +2687,18 @@ function Beneficiary( ) {
 				msg.push({
 					name : name + ".new",
 					value: 1,
-					type : "Integer"
+					type : "integer"
 				});
 			}
 			msg.push({
 				name : name + ".history["+physicalPlan._id+"].datetime",
 				value: moment(physicalPlan.datetime).unix(),
-				type : "Integer"
+				type : "integer"
 			});
 			msg.push({
 				name : name + ".history["+physicalPlan._id+"].description",
 				value: physicalPlan.content,
-				type : "String"
+				type : "string"
 			});
 			queue.postMsg(msg)
 				.then(function () {
@@ -2755,18 +2755,18 @@ function Beneficiary( ) {
 				msg.push({
 					name : name + ".recommendations.new",
 					value: 1,
-					type : "Integer"
+					type : "integer"
 				});
 			}
 			msg.push({
 				name : name + ".recommendations.history["+dietaryPlan._id+"].datetime",
 				value: moment(dietaryPlan.datetime).unix(),
-				type : "Integer"
+				type : "integer"
 			});
 			msg.push({
 				name : name + ".recommendations.history["+dietaryPlan._id+"].description",
 				value: dietaryPlan.content,
-				type : "String"
+				type : "string"
 			});
 			logger.debug("msg to send", msg );
 			queue.postMsg(msg)
@@ -2810,7 +2810,7 @@ function Beneficiary( ) {
 			msg.push({
 				name : name,
 				value: that.name.given || that.name.family,
-				type : "String"
+				type : "string"
 			});
 			queue.postMsg(msg)
 				.then(function () {
