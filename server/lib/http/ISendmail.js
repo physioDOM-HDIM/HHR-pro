@@ -1,36 +1,29 @@
 /**
- * @file IPage.js
- * @module Http
+ * @file ISendmail.js
+ * @module sendmail
  */
 
 /* jslint node:true */
 /* global physioDOM */
 "use strict";
 
-/**
- * IList
- *
- * treat http request about lists
- */
-var nodemailer = require('nodemailer'),
+var email = require("emailjs"),
 	path = require('path'),
     swig = require("swig"),
 	Logger = require("logger"),
 	RSVP = require("rsvp"),
-	promise = RSVP.Promise,
-	moment = require("moment");
+	promise = RSVP.Promise;
 
-var lang;
 var DOCUMENTROOT=require("path").join(__dirname,"../../../");
 var logger = new Logger("ISendmail");
 var i18n;
 var transporter = null;
 
-var htmlTpl = DOCUMENTROOT + "/static/tpl/mailtpl.htm";
-var textTpl = DOCUMENTROOT + "/static/tpl/mailtpl.txt";
+var htmlTpl = path.join( DOCUMENTROOT , "static/tpl/mailtpl.htm");
+var textTpl = path.join( DOCUMENTROOT , "static/tpl/mailtpl.txt");
 
 if( physioDOM.config.smtp ) {
-	transporter = nodemailer.createTransport(physioDOM.config.smtp);
+	transporter = email.server.connect(physioDOM.config.smtp);
 }
 
 function init(lang) {
@@ -66,7 +59,27 @@ function renderTpl ( tpl, data ) {
 	});
 }
 
+/**
+ * IList
+ *
+ * treat http request about lists
+ */
+
+/**
+ * ISendmail
+ * 
+ * @type {{passwordMail: Function}}
+ */
 var ISendmail  = {
+	/**
+	 * passwordMail
+	 * 
+	 * Send a email with the temporary password,
+	 * and if the site is hosted on the IDS infrastructure, the email given data to obtain the certificate
+	 * 
+	 * @param data
+	 * @returns {RSVP.Promise}
+	 */
 	passwordMail : function( data ) {
 		return new promise( function( resolve, reject ) {
 			logger.trace("password mail");
@@ -84,26 +97,30 @@ var ISendmail  = {
 
 				RSVP.hash(promises)
 					.then(function (tpl) {
-						
-						var mailOptions = {
-							from       : 'no-reply@telecomsante.com <no-reply@telecomsante.com>',
-							to         : data.account.email,
-							subject    : 'Physiodom account',
-							text       : tpl.text,
-							html       : tpl.html,
-							attachments: [{
-								filename: "physiodom_logo.png",
-								path    : DOCUMENTROOT + "/logo/physiodom_logo.png",
-								cid     : "logo@physiodom.eu" //same cid value as in the html img src
-							}]
-						};
-
-						transporter.sendMail(mailOptions, function (error, info) {
-							if (error) {
-								logger.warning("email to " + data.account.email + " not delivered");
-								console.log(error);
+						transporter.send({
+							from      : "physiodom <no-reply@physiodom.eu>",
+							to        : data.account.email,
+							subject   : 'Physiodom account',
+							text      : tpl.text,
+							attachment: [
+								{
+									data: tpl.html,
+									alternative: true,
+									related: [
+										{
+											path : path.join(__dirname , "physiodom_logo.png"),
+											type : "image/png",
+											name: "physiodom_logo.png",
+											headers: { "Content-ID":"<logo@physiodom.eu>" }
+										}
+									]
+								}
+							]
+						}, function(err, message) {
+							if(err) {
+								console.log("Error ",err);
 							} else {
-								logger.info("email to " + data.account.email + " delivered");
+								console.log(message);
 							}
 							resolve();
 						});
@@ -118,6 +135,6 @@ var ISendmail  = {
 			}
 		});
 	}
-}
+};
 
 module.exports = ISendmail;

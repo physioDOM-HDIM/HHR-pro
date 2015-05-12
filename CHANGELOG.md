@@ -7,6 +7,7 @@ __v0.0.38-pre__
   - \#245 : Send DHDFFQ answers as `Double`
   - \#239 : Bug 358 - [Data section/ Prescription][v.0.0.37] Threshold min et max
   - \#242 : Bug 356 - [List Management][v.0.0.37] Modification de paramètre
+  - \#246 : Bug 332 - Fonctionnalité d'envoie de mail pour retrait de certificat
   
 __v0.0.37-1__
 
