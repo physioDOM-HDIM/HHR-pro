@@ -1,3 +1,8 @@
+__v0.0.38-1__
+
+  - Fix "measures[id].params[id].type" with the "rank" value of the list "parameters"
+  - Fix the key type for the queue in lowercase
+  
 __v0.0.38__
 
   - \#244 : Bug 341 - [create-edit beneficiary][v036] start date optionnelle lors de la désactivation
