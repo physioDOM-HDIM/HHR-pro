@@ -32,5 +32,8 @@
     "tsante-listpager": "./install/tsante-listpager-v0.3.1.tar.gz",
     "highcharts-release": "~4.0.4",
     "cookies-js": "~1.1.0"
+  },
+  "resolutions": {
+    "webcomponentsjs": "^0.6.0"
   }
 }
