@@ -293,12 +293,12 @@ function showForm(ref, duplication) {
 		formDiv.querySelector("#delBtn").classList.add("hidden");
 	}
 	if(infos.category) {
-		if( dataModel.data.threshold.max ) {
+		if( dataModel.data.threshold && dataModel.data.threshold.max ) {
 			formDiv.querySelector("[name='threshold.min']").setAttribute("max",dataModel.data.threshold.max);
 		} else {
 			formDiv.querySelector("[name='threshold.min']").removeAttribute("max");
 		}
-		if( dataModel.data.threshold.min ) {
+		if(  dataModel.data.threshold && dataModel.data.threshold.min ) {
 			formDiv.querySelector("[name='threshold.max']").setAttribute("min",dataModel.data.threshold.min);
 		} else {
 			formDiv.querySelector("[name='threshold.max']").removeAttribute("min");
