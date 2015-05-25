@@ -182,22 +182,22 @@ var IDirectory = {
 					}
 					return professional.accountUpdate(account, req.session.person.id.toString() !== professional._id.toString() );
 				})
-				.then( function(professional, OTP) {
+				.then( function( update ) {
 					return new promise( function( resolve, reject) {
 						logger.info("account updated");
-						if( !OTP && req.headers["ids-user"]) {
+						if( !update.OTP && req.headers["ids-user"]) {
 							logger.alert( "create cert" );
-							professional.createCert( req, res )
+							update.professional.createCert( req, res )
 								.then( resolve )
 								.catch( reject );
 						} else {
-							professional.getAccount()
+							update.professional.getAccount()
 								.then( resolve );
 						}
 					});
 				})
 				.then( function(_account) {
-					if( req.session.person.id.toString() !== professional._id.toString() && account.password !== _account.password ) {
+					if( account.password !== _account.password ) {
 						var data = {
 							account : _account,
 							password: account.password,
@@ -265,10 +265,28 @@ var IDirectory = {
 			.then( function(account) {
 				if(account.OTP) {
 					logger.info("revoke cert first");
+					return professional.revokeCert(req, res );
+				} else {
+					return account;
 				}
+			})
+			.then( function(account) {
 				return professional.createCert(req, res );
 			})
 			.then(function ( account ) {
+				var data = {
+					account : account,
+					password: false,
+					server  : physioDOM.config.server,
+					lang    : physioDOM.Lang
+				};
+				if (req.headers["ids-user"]) {
+					data.idsUser = true;
+				}
+				require("./ISendmail").passwordMail(data);
+				return account;
+			})
+			.then( function(account) {
 				logger.info("receive account", account );
 				res.send( account );
 				next();

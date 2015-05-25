@@ -461,7 +461,7 @@ function Beneficiary( ) {
 				})
 				.then( function() {
 					return new promise( function(resolve, reject) {
-						if (accountData) {
+						if (accountData && Object.keys(accountData).length ) {
 							if( IDS && !accountData.login ) {
 								accountData.login = that.getEmail();
 								accountData.IDS = true;

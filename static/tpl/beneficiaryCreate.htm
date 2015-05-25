@@ -402,10 +402,19 @@
 				</div>
 			</div>
 			-->
+			{% if !IDS %}
 			<div class="row">
 				<label>{{ "Login" | i18n }}</label>
 				<input type="text" id="login" name="account.login" value="{{beneficiary.account.login}}"/>
 			</div>
+			<input type="hidden" name="account.IDS" value="false">
+			{% else %}
+			<input type="hidden" name="account.IDS" value="true">
+			<div class="row">
+				<label>{{"Login"|i18n}} :</label>
+				<span>{{"On IDS, the identifier is the mail address"|i18n}}</span>
+			</div>
+			{% endif %}
 			<div class="row">
 				<label>{{ "Password" | i18n }}</label>
 				<input type="hidden" name="password"  value="{{beneficiary.account.password}}" />
@@ -426,14 +435,14 @@
 	                    {%- endfor -%}"  />
 			</div>
 			{% if IDS %}
-			<div class="row">
+			<div class="row {% if !beneficiary.account.OTP || !beneficiary.account.password %}hidden{% endif %}" id="withdrawal">
 				<label>{{ "Withdrawal code"|i18n }} : </label>
 				<span style="font-weight:bold" id="OTP">{% if beneficiary.account.OTP %}{{beneficiary.account.OTP }}{% endif %}</span>
 			</div>
 			<div class="row">
 				<span class="spacer"></span>
 				<button type="button" class="red {% if !beneficiary.account.OTP %}hidden{% endif %}" id="revokeCert">Revoke certificate</button>
-				<button type="button" class="blue {% if beneficiary.account.OTP %}hidden{% endif %}" id="createCert">Generate certificate</button>
+				<button type="button" class="blue {% if beneficiary.account.OTP || !beneficiary.account.password %}hidden{% endif %}" style="margin-top:10px" id="createCert">Generate certificate</button>
 			</div>
 			{% endif %}
 			<button id="accountSubmitBtn" class="hidden"></button>

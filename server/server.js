@@ -429,6 +429,9 @@ server.get( '/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiar
 server.post('/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryAddProfessional );
 server.del( '/api/beneficiaries/:entryID/professionals/:profID', IBeneficiary.beneficiaryDelProfessional );
 
+server.get( '/api/beneficiaries/:entryID/cert', IBeneficiary.createCert );
+server.del( '/api/beneficiaries/:entryID/cert', IBeneficiary.revoqCert );
+
 // graph Data
 server.get( '/api/beneficiary/graph', IBeneficiary.getGraphDataList );
 server.get( '/api/beneficiary/graph/:category/:paramName', IBeneficiary.getGraphData );

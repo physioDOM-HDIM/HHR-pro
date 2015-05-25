@@ -3,7 +3,7 @@
 	
 	<p>{{"Your account has been created at"|i18n}} {{server.protocol}}{{server.name}}</p>
 	
-	{% if idsUser %}
+	{% if idsUser && account.OTP %}
 	<p>{{"Retrieval of the certificate for your browser (you can retrieve it 3 times)"|i18n}} :</p>
 	
 	<ul>
@@ -14,10 +14,17 @@
 	
 	<p>{{"Once your certificate installed in your browser, you can connect to"|i18n}} {{server.protocol}}{{server.name}}</p>
 	{% endif %}
+	{% if password %}
 	<ul>
 		{% if !idsUser %}
 		<li>{{"Your login"|i18n}} : {{account.login}}</li>
 		{% endif %}
 		<li>{{"Your password"|i18n}} : {{password}}</li>
 	</ul>
+	{% else %}
+		{% if !idsUser %}
+		<p>{{"Your login"|i18n}} : {{account.login}}</p>
+		{% endif %}
+		<p>{{"Your password is unchanged"|i18n}}</p>
+	{% endif %}
 </div>

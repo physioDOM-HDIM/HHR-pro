@@ -60,12 +60,6 @@ function renderTpl ( tpl, data ) {
 }
 
 /**
- * IList
- *
- * treat http request about lists
- */
-
-/**
  * ISendmail
  * 
  * @type {{passwordMail: Function}}
@@ -108,7 +102,71 @@ var ISendmail  = {
 									alternative: true,
 									related: [
 										{
-											path : path.join(__dirname , "physiodom_logo.png"),
+											path : path.join(__dirname , "../../../static/img/physiodom_logo.png"),
+											type : "image/png",
+											name: "physiodom_logo.png",
+											headers: { "Content-ID":"<logo@physiodom.eu>" }
+										}
+									]
+								}
+							]
+						}, function(err, message) {
+							if(err) {
+								console.log("Error ",err);
+							} else {
+								console.log(message);
+							}
+							resolve();
+						});
+					})
+					.catch(function (err) {
+						logger.warning(err);
+						if (err.stack) {
+							console.log(err.stack);
+						}
+						resolve();
+					});
+			}
+		});
+	},
+
+	/**
+	 * certificateMail
+	 *
+	 * Send a email with the urk to retrieve the certificate
+	 *
+	 * @param data
+	 * @returns {RSVP.Promise}
+	 */
+	certificateMail : function( data ) {
+		return new promise( function( resolve, reject ) {
+			logger.trace("password mail");
+
+			if( !transporter ) {
+				logger.warning("no smtp transport defined");
+				resolve();
+			} else {
+				init(data.lang);
+
+				var promises = {
+					html: renderTpl(htmlTpl, data),
+					text: renderTpl(textTpl, data)
+				};
+
+				RSVP.hash(promises)
+					.then(function (tpl) {
+						transporter.send({
+							from      : "physiodom <no-reply@physiodom.eu>",
+							to        : data.account.email,
+							subject   : 'Physiodom account',
+							text      : tpl.text,
+							attachment: [
+								{
+									data: tpl.html,
+									alternative: true,
+									related: [
+										{
+											path : path.join(__dirname , "../../../static/img/physiodom_logo.png"),
 											type : "image/png",
 											name: "physiodom_logo.png",
 											headers: { "Content-ID":"<logo@physiodom.eu>" }
