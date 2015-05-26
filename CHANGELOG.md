@@ -1,3 +1,10 @@
+__v0.0.39__
+
+  - Bug 369 : [Create/Update a beneficiary][v038] attribution certificat pour les beneficiaires
+  - Bug 332 : Fonctionnalité d'envoie de mail pour retrait de certificat
+  - Bug 366 : [Bouton Add][v.0.0.38-1] Add ne fonctionne plus
+  - Fix Install from scratch
+
 __v0.0.38-1__
 
   - Fix "measures[id].params[id].type" with the "rank" value of the list "parameters"
