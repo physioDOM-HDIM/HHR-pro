@@ -376,6 +376,7 @@ function IPage() {
 		new Menu().rights( req.session.role, data.rights.url )
 			.then( function( _rights ) {
 				data.rights = _rights;
+				data.IDS = physioDOM.config.IDS && req.headers["ids-user"];
 				return RSVP.all(promises);
 			})
 			.then( function(lists) {
@@ -450,6 +451,7 @@ function IPage() {
 		new Menu().rights( req.session.role, data.rights.url )
 			.then( function( _rights ) {
 				data.rights = _rights;
+				data.IDS = physioDOM.config.IDS && req.headers["ids-user"];
 				return RSVP.all(promises);
 			})
 			.then( function(lists) {

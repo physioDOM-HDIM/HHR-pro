@@ -1,6 +1,6 @@
 {{"Your account has been created at"|i18n}}  {{server.protocol}}{{server.name}}
 
-{% if idsUser %}
+{% if idsUser && account.OTP %}
 {{"Retrieval of the certificate for your browser (you can retrieve it 3 times)"|i18n}} :	
 
     - {{"URL of retrieval"|i18n}} : https://cert.idshost.fr
@@ -9,6 +9,11 @@
 
 {{"Once your certificate installed in your browser, you can connect to"|i18n}} {{server.protocol}}{{server.name}}
 {% endif %}
+{% if password %}
     {% if !idsUser %}- {{"Your login"|i18n}} : {{account.login}}{% endif %}
     - {{"Your password"|i18n}} : {{password}}
-
+{% else %}
+    {% if !idsUser %}- {{"Your login"|i18n}} : {{account.login}}{% endif %}
+    
+    {{"Your password is unchanged"|i18n}}
+{% endif %}

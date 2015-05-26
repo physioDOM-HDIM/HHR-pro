@@ -332,8 +332,8 @@ function checkAccountForm() {
         new Modal('errorMatchRegexPassword');
         return false;
     }
-
-    if (formObj.account && !formObj.account.login && formObj.account.password) {
+	formObj.account.IDS = formObj.account.IDS==="true"?true:false;
+    if (!formObj.account.IDS && formObj.account && !formObj.account.login && formObj.account.password) {
         new Modal('errorPasswordNoLogin');
         return false;
     }
@@ -412,7 +412,10 @@ function checkAllForms(isValidate) {
     //form.submit() doesn't call the HTML5 form validation on elements
 	for( var i= 0, l=forms.length; i<l; i++) {
 		var form = forms[i];
-		if( form.name === "account" && !form.login.value ) {
+		if( form.name === "account" && form.login && !form.login.value ) {
+			continue;
+		}
+		if( form.name === "account" && form.login === undefined && !form.password.value && !form.checkAccountPassword.value ) {
 			continue;
 		}
 		if (!form.checkValidity()) {
@@ -484,7 +487,11 @@ function checkAllForms(isValidate) {
     }
     if (obj.account) {
         formsObj.account = formsObj.account || {};
-        mixin(formsObj.account, obj.account);
+		if( obj.account.login || obj.account.password ) {
+			mixin(formsObj.account, obj.account);
+		} else {
+			mixin(formsObj.account, {});
+		}
     }
 
     //Professionals
@@ -748,6 +755,43 @@ function startChange(evt) {
 	}
 }
 
+function createCert() {
+	var id = document.querySelector("form[name='beneficiary'] input[name='_id']").value;
+	Utils.promiseXHR("GET", "/api/beneficiaries/" + id+ "/cert", 200)
+		.then(function(response) {
+			console.log( "certCreate", response );
+			var account = JSON.parse( response );
+			var OTP = document.querySelector("span#OTP");
+			if( OTP ) {
+				OTP.innerHTML = account.OTP;
+			}
+			document.querySelector("button#revokeCert").classList.remove("hidden");
+			document.querySelector("#withdrawal").classList.remove("hidden");
+			document.querySelector("button#createCert").classList.add("hidden");
+		}, function(error) {
+			new Modal('errorOccured');
+			console.log("createCert - error: ", error);
+		});
+}
+
+function revokeCert() {
+	var id = document.querySelector("form[name='beneficiary'] input[name='_id']").value;
+	Utils.promiseXHR("DELETE", "/api/beneficiaries/" + id+ "/cert", 200)
+		.then(function(response) {
+			console.log( "certRevoke", response );
+			var OTP = document.querySelector("span#OTP");
+			if( OTP ) {
+				OTP.innerHTML = "";
+			}
+			document.querySelector("button#revokeCert").classList.add("hidden");
+			document.querySelector("#withdrawal").classList.add("hidden");
+			document.querySelector("button#createCert").classList.remove("hidden");
+		}, function(error) {
+			new Modal('errorOccured');
+			console.log("revokeCert - error: ", error);
+		});
+}
+
 function init() {
     tsanteListProfessionalElt = document.querySelector("#tsanteListProfessional");
     tsanteListProfessionalElt.addEventListener("tsante-response", _onHaveProfessionalsData, false);
@@ -834,6 +878,13 @@ function init() {
     elt.setAttribute("i18n", _langCookie);
     elt.addEventListener("select", onHaveDateSelection);
 	document.querySelector("#startDate").addEventListener("change",startChange);
+
+	if( document.querySelector("button#createCert") ) {
+		document.querySelector("button#createCert").addEventListener("click", createCert, false);
+	}
+	if( document.querySelector("button#revokeCert") ) {
+		document.querySelector("button#revokeCert").addEventListener("click", revokeCert, false);
+	}
 }
 
 window.addEventListener("polymer-ready", init, false);

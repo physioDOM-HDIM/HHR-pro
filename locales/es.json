@@ -392,5 +392,7 @@
   "URL of retrieval":"URL de la recuperación",
   "Once your certificate installed in your browser, you can connect to":"Una vez que su certificado instalado en su navegador, puede conectarse a",
   "Your login":"Su nombre de usuario",
-  "Your password":"tu contraseña"
+  "Your password":"tu contraseña",
+  "Your password is unchanged":"Su contraseña se ha modificado",
+  "On IDS, the identifier is the mail address":"En IDS, el identificador es la dirección de correo"
 }

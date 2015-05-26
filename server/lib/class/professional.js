@@ -465,7 +465,7 @@ function Professional() {
 						that.save()
 							.then( function( professional ) {
 								logger.info("professional saved",newAccount.OTP );
-								resolve(professional, newAccount.OTP );
+								resolve( { professional:professional, OTP:newAccount.OTP } );
 							})
 							.catch( reject );
 					});

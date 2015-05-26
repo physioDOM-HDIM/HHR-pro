@@ -392,5 +392,7 @@
   "URL of retrieval":"URL van retrieval",
   "Once your certificate installed in your browser, you can connect to":"Zodra uw certificaat geïnstalleerd in uw browser, kunt u verbinding maken",
   "Your login":"Uw login",
-  "Your password":"Uw wachtwoord"
+  "Your password":"Uw wachtwoord",
+  "Your password is unchanged":"Je wachtwoord is ongewijzigd",
+  "On IDS, the identifier is the mail address":"Op IDS, de identifier is het e-mailadres"
 }

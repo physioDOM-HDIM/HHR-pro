@@ -392,5 +392,7 @@
   "URL of retrieval":"URL of retrieval",
   "Once your certificate installed in your browser, you can connect to":"Once your certificate installed in your browser, you can connect to",
   "Your login":"Your login",
-  "Your password":"Your password"
+  "Your password":"Your password",
+  "Your password is unchanged":"Your password is unchanged",
+  "On IDS, the identifier is the mail address":"On IDS, the identifier is the mail address"
 }

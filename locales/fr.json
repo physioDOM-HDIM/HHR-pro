@@ -392,5 +392,7 @@
   "URL of retrieval":"URL de retrait",
   "Once your certificate installed in your browser, you can connect to":"Une fois votre certificat installé dans votre navigateur, vous pouvez vous connecter",
   "Your login":"Votre identifiant",
-  "Your password":"Votre mot de passe"
+  "Your password":"Votre mot de passe",
+  "Your password is unchanged":"Votre mot de passe est inchangé",
+  "On IDS, the identifier is the mail address":"Sur IDS, l'identifiant est l'adresse mail"
 }

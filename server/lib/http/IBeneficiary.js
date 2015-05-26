@@ -194,16 +194,27 @@ var IBeneficiary = {
 					if( updateItem.account ) {
 						beneficiary.getAccount()
 							.then( function(_account) {
-								var data = {
-									account : _account,
-									password: updateItem.account.password,
-									server  : physioDOM.config.server,
-									lang    : physioDOM.Lang
-								};
-								if (req.headers["ids-user"]) {
-									data.idsUser = true;
+								if (req.headers["ids-user"] && !_account.OTP) {
+									return beneficiary.createCert(req, res);
+								} else {
+									return _account;
 								}
-								return require("./ISendmail").passwordMail(data);
+							})
+							.then( function(_account) {
+								if( _account.active ) {
+									var data = {
+										account : _account,
+										password: (updateItem.account.password && updateItem.account.password !== _account.password)?updateItem.account.password:false,
+										server  : physioDOM.config.server,
+										lang    : physioDOM.Lang
+									};
+									if (req.headers["ids-user"]) {
+										data.idsUser = true;
+									}
+									return require("./ISendmail").passwordMail(data);
+								} else {
+									return;
+								}
 							});
 					}
 				})
@@ -1323,6 +1334,88 @@ var IBeneficiary = {
 			})
 			.catch( function(err) {
 				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+
+	createCert: function (req, res, next) {
+		logger.trace("createCert");
+
+		var beneficiary;
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
+			})
+			.then(function (_beneficiary) {
+				beneficiary = _beneficiary;
+				return beneficiary.getAccount();
+			})
+			.then( function(account) {
+				if(account.OTP) {
+					logger.info("revoke cert first");
+				}
+				return beneficiary.createCert(req, res );
+			})
+			.then(function ( account ) {
+				var data = {
+					account : account,
+					password: false,
+					server  : physioDOM.config.server,
+					lang    : physioDOM.Lang
+				};
+				if (req.headers["ids-user"]) {
+					data.idsUser = true;
+				}
+				require("./ISendmail").passwordMail(data);
+				return account;
+			})
+			.then( function(account) {
+				logger.info("receive account", account );
+				res.send( account );
+				next();
+			})
+			.catch(function(err) {
+				logger.warning("Error when creating certificate");
+				logger.warning(err.stack);
+				res.send(400, { code:400, message:"Error when creating certificate"});
+				next(false);
+			});
+	},
+
+	revoqCert: function (req, res, next) {
+		logger.trace("revoqCert");
+
+		var beneficiary;
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
+			})
+			.then(function ( _beneficiary ) {
+				beneficiary = _beneficiary;
+				return beneficiary.getAccount();
+			})
+			.then( function(account) {
+				return beneficiary.revokeCert(req, res );
+			})
+			.then(function ( account ) {
+				logger.info("receive account", account );
+				res.send( account );
+				next();
+			})
+			.catch(function(err) {
+				logger.warning("Error certificate revocation");
+				logger.warning(err.stack);
+				res.send(400, { code:400, message:"Error certificate revocation"});
 				next(false);
 			});
 	}
