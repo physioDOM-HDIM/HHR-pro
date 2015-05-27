@@ -1286,6 +1286,8 @@ function Beneficiary( ) {
 
 		return new promise(function (resolve, reject) {
 			logger.trace("getHistoricDataList", that._id);
+			var parameters;
+			
 			var graphList = {
 				"General"      : [],
 				"HDIM"         : [],
@@ -1339,6 +1341,10 @@ function Beneficiary( ) {
 			that.getThreshold()
 				.then( function(_thresholds) {
 					thresholds = _thresholds;
+					return physioDOM.Lists.getListItemsObj("parameters");
+				})
+				.then( function(_parameters) {
+					parameters = _parameters;
 					return physioDOM.Lists.getList("units");
 				})
 				.then(function (units) {
@@ -1382,28 +1388,43 @@ function Beneficiary( ) {
 										return result;
 									})
 								)
-									.then( function(results) {
-										graphList.General = results.filter(function (item) {
-											return item.category === "General";
-										});
-										graphList.HDIM = results.filter(function (item) {
-											return item.category === "HDIM";
-										});
-										graphList.symptom = results.filter(function (item) {
-											return item.category === "symptom";
-										});
-										graphList.questionnaire = results.filter(function (item) {
-											return item.category === "questionnaire";
-										});
+								.then( function(results) {
+									results.forEach( function( item ) {
+										if( parameters[item.text] ) {
+											item.category = parameters[item.text].category;
+										}
+									});
+									console.log("->", results);
+									
+									graphList.General = results.filter(function (item) {
+										return item.category === "General";
+									});
+									graphList.HDIM = results.filter(function (item) {
+										return item.category === "HDIM";
+									});
+									graphList.symptom = results.filter(function (item) {
+										return item.category === "symptom";
+									});
+									graphList.questionnaire = results.filter(function (item) {
+										return item.category === "questionnaire";
+									});
 
-										graphList.General.sort(compareItems);
-										graphList.HDIM.sort(compareItems);
-										graphList.symptom.sort(compareItems);
-										graphList.questionnaire.sort(compareItems);
-
-										resolve(graphList);
-									})
-									.catch( reject );
+									graphList.General.sort(compareItems);
+									graphList.HDIM.sort(compareItems);
+									graphList.symptom.sort(compareItems);
+									graphList.questionnaire.sort(compareItems);
+									
+									console.log(graphList);
+									resolve(graphList);
+								})
+								.catch( function(err) {
+									if(err.stack) {
+										console.log(err.stack);
+									} else {
+										console.log(err);
+									}
+									reject(err);
+								});
 							}
 						});
 					});
