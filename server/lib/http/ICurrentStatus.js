@@ -89,7 +89,7 @@ var ICurrentStatus = {
 									var parameter = currentStatus.parameters[key];
 									if( parameter.value ) {
 										var item = {
-											category: 'HDIM',
+											category: 'measures',
 											text    : parameter.name,
 											value   : parseFloat(parameter.value),
 											comment : parameter.comment

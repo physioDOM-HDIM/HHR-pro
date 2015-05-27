@@ -340,6 +340,10 @@ function update(dataRecordID) {
 			data[i].value = parseFloat(data[i].value);
 			data[i].automatic = (data[i].automatic === "true");
 
+			if(["General","HDIM"].indexOf(data[i].category) !== -1 ) {
+				data[i].category = "measures";
+			}
+			
 			if (origin && origin[i]) {
 				origin[i].value = parseFloat(origin[i].value);
 				origin[i].automatic = (origin[i].automatic === "true");
@@ -396,6 +400,9 @@ function create() {
 				// if(obj.items[i].category !== "questionnaire")
 				obj.items[i].value = parseFloat(obj.items[i].value);
 				obj.items[i].automatic = false;
+				if(["General","HDIM"].indexOf(obj.items[i].category) !== -1 ) {
+					obj.items[i].category = "measures";
+				}
 			}
 
 			console.log("res", obj);
