@@ -1167,6 +1167,8 @@ function Beneficiary( ) {
 				"questionnaire": []
 			};
 
+			var parameters;
+			
 			var reduceFunction = function ( curr, result ) {
 				if(result.lastReport < curr.datetime) {
 					result.lastReport = curr.datetime;
@@ -1203,6 +1205,10 @@ function Beneficiary( ) {
 			that.getThreshold()
 				.then( function(_thresholds) {
 					thresholds = _thresholds;
+					return physioDOM.Lists.getListItemsObj("parameters");
+				})
+				.then( function(_parameters) {
+					parameters = _parameters;
 					return physioDOM.Lists.getList("units");
 				})
 				.then(function (units) {
@@ -1240,6 +1246,11 @@ function Beneficiary( ) {
 										})
 									)
 									.then( function(results) {
+										results.forEach( function( item ) {
+											if( parameters[item.text] ) {
+												item.category = parameters[item.text].category;
+											}
+										});
 										graphList.General = results.filter(function (item) {
 											return item.category === "General";
 										});
@@ -1434,7 +1445,7 @@ function Beneficiary( ) {
 		}
 
 		// to get the label we need to know from which list comes the parameter
-		if (["General", "HDIM"].indexOf(category) !== -1) {
+		if (["General", "HDIM","measures"].indexOf(category) !== -1) {
 			category = "parameters";
 		}
 

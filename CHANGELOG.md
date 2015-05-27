@@ -1,6 +1,9 @@
 __v0.0.40__
 
   - \#247 - Bug 376 - [prescription of data monitoring][v038] monthly prescription
+  - \#250 - Bug 375 - [result from data recording/consultation][v038] décallage entete colonne
+  - \#249 - Bug 359 - [Data Section/ Result of Data Recording][v.0.0.37] Parametres Current Health Status (Weight, ...) classés en dur dans HDIM
+  - \#248 - Bug 353 - [Measure History][v.0.0.37] Mauvais décalage des données
   
 > __Nota :__ the first week of the month is the the week that contains the first monday of the month, 
 > for example for May 2015, the first week starts at 2015-05-04.
@@ -10,6 +13,9 @@ __v0.0.40__
 > 
 > The first day of the week ( here monday ) depends of the server locale defined by the property `Lang` in the configuration file.
  
+ 
+>__Nota__ : for bugs 359 and 353, it's necessary to update the database with the script `upgrade-0.0.40.js`
+
 __v0.0.39__
 
   - Bug 369 : [Create/Update a beneficiary][v038] attribution certificat pour les beneficiaires

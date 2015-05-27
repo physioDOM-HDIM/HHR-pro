@@ -33,7 +33,7 @@ var dataRecordItemSchema = {
 	type:"object",
 	properties: {
 		"_id": { type:"string", description: "the identifier of the item in database"},
-		category: { type:"string", enum:[ "General", "HDIM", "symptom", "questionnaire"], required: true },
+		category: { type:"string", enum:[ "measures", "General", "HDIM", "symptom", "questionnaire"], required: true },
 		text: { type:"string", description:"reference label of the parameter", required: true},
 		value: { type:"number", description:"value of the item ( score for a questionnaire )", required: true },
 		ref: { type: "string", description:"the questionnaire answers identifier"},

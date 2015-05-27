@@ -126,12 +126,33 @@ function DataRecord( beneficiaryID ) {
 	 */
 	this.getComplete = function() {
 		var that = this;
+		var parameters;
+		
 		return new promise( function( resolve, reject) {
-			that.getItems()
+			logger.trace("getComplete", that._id);
+			physioDOM.Lists.getListItemsObj("parameters")
+				.then( function( list ) {
+					parameters = list;
+					return that.getItems();
+				})
 				.then( function(items) {
 					var obj = JSON.parse(JSON.stringify(that));
 					obj.items = items;
+					
+					obj.items.items.forEach( function( item ) {
+						if( parameters[item.text]) {
+							item.category = parameters[item.text].category;
+						}
+					});
 					resolve(obj);
+				})
+				.catch( function(err) {
+					if(err.stack) { 
+						console.log( err.stack );
+					} else {
+						console.log(err);
+					}
+					reject(err);
 				});
 		});
 	};

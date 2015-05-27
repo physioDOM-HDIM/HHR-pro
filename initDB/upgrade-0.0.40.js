@@ -1,0 +1,2 @@
+db.dataRecordItems.update( { category:'General' }, { $set: { category:"measures" } },{ multi: true });
+db.dataRecordItems.update( { category:'HDIM' }, { $set: { category:"measures" } },{ multi: true });
