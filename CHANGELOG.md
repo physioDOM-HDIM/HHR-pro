@@ -1,3 +1,15 @@
+__v0.0.40__
+
+  - \#247 - Bug 376 - [prescription of data monitoring][v038] monthly prescription
+  
+> __Nota :__ the first week of the month is the the week that contains the first monday of the month, 
+> for example for May 2015, the first week starts at 2015-05-04.
+>
+> The last week of the month is the week that contains the last monday of the month, for example for May 2015 the
+> last week starts at 2015-05-25
+> 
+> The first day of the week ( here monday ) depends of the server locale defined by the property `Lang` in the configuration file.
+ 
 __v0.0.39__
 
   - Bug 369 : [Create/Update a beneficiary][v038] attribution certificat pour les beneficiaires
