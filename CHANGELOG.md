@@ -6,6 +6,7 @@ __v0.0.40__
   - \#248 : Bug 353 - [Measure History][v.0.0.37] Mauvais décalage des données
   - \#251 : Bug 373 - [Beneficiary overview][v038] Motif de sortie Manquant
   - \#252 : Bug 372 - [CHS][v038] champ status non sauvegardé sur modification
+  - Fix polymer include ( webcomponents.js )
   
 > __Nota :__ the first week of the month is the the week that contains the first monday of the month, 
 > for example for May 2015, the first week starts at 2015-05-04.
@@ -14,7 +15,7 @@ __v0.0.40__
 > last week starts at 2015-05-25
 > 
 > The first day of the week ( here monday ) depends of the server locale defined by the property `Lang` in the configuration file.
- 
+
  
 >__Nota__ : for bugs 359 and 353, it's necessary to update the database with the script `upgrade-0.0.40.js`
 
