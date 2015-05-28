@@ -292,6 +292,7 @@ function CurrentStatus() {
 						var questionnaires = updatedEntry[key];
 						questionnaires.forEach( function(questionnaire ) {
 							if( that.questionnaires[questionnaire.name] ) {
+								that.questionnaires[questionnaire.name].comment = questionnaire.comment;
 								if (that.questionnaires[questionnaire.name].score !== questionnaire.score ) {
 									that.questionnaires[questionnaire.name] = questionnaire;
 									that.questionnaires[questionnaire.name].source = professionalID;
@@ -306,6 +307,7 @@ function CurrentStatus() {
 						var parameters = updatedEntry[key];
 						parameters.forEach( function(parameter ) {
 							if( that.parameters[parameter.name] ) {
+								that.parameters[parameter.name].comment = parameter.comment;
 								if (that.parameters[parameter.name].value !== parameter.value ) {
 									that.parameters[parameter.name] = parameter;
 									that.parameters[parameter.name].source = professionalID;
