@@ -7,6 +7,7 @@ __v0.0.40__
   - \#251 : Bug 373 - [Beneficiary overview][v038] Motif de sortie Manquant
   - \#252 : Bug 372 - [CHS][v038] champ status non sauvegardé sur modification
   - Fix polymer include ( webcomponents.js )
+  - \#253 : Bug 370 - [Data curves][v038] suppression d'un datarecording
   
 > __Nota :__ the first week of the month is the the week that contains the first monday of the month, 
 > for example for May 2015, the first week starts at 2015-05-04.

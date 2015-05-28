@@ -982,7 +982,12 @@ function Beneficiary( ) {
 				if (err) {
 					reject(err);
 				}
-				resolve(nb);
+				physioDOM.db.collection("dataRecords").remove({ dataRecordID:new ObjectID( dataRecordID ) }, function (err, nbItems) {
+					if (err) {
+						reject(err);
+					}
+					resolve(nb);
+				});
 			});
 		});
 	};
