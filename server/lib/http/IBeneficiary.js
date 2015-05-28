@@ -1031,7 +1031,7 @@ var IBeneficiary = {
 				return beneficiary.questionnairePlan( );
 			})
 			.then( function( questionnairePlan ) {
-				return questionnairePlan.setQuestionnaire( JSON.parse(req.body) );
+				return questionnairePlan.setQuestionnaire( JSON.parse(req.body), req.session.person.id );
 			})
 			.then( function( prescription ) {
 				res.send(prescription);

@@ -71,9 +71,9 @@ function QuestionnairePlan( beneficiaryID ) {
 	
 	this.getQuestionnaire = function( ref ) {
 		var that = this;
-
+		
 		return new promise( function(resolve,reject) {
-			logger.trace("getQuestionnaire");
+			logger.trace("getQuestionnaire",that.subject, ref);
 			var search = { subject: that.subject, ref:ref };
 			physioDOM.db.collection("questionnairePlan").findOne( search , function( err, result ) {
 				if(err || !result) {
@@ -149,7 +149,7 @@ function QuestionnairePlan( beneficiaryID ) {
 		});
 	};
 	
-	this.setQuestionnaire = function( obj ) {
+	this.setQuestionnaire = function( obj, professionalID ) {
 		var that = this;
 
 		return new promise( function(resolve,reject) {
@@ -159,15 +159,59 @@ function QuestionnairePlan( beneficiaryID ) {
 				return reject( { error:"bad format", detail: check.errors } );
 			} else {
 				obj.subject = that.subject;
-				var search = { subject: that.subject, ref: obj.ref };
+				if( !obj.comment ) { obj.comment = ""; }
+				if( !obj.frequency ) { obj.frequency = ""; }
 				if( obj.date) { 
 					obj.date.sort(); 
+				} else {
+					obj.date = [];
 				}
+				that.getQuestionnaire( obj.ref )
+					.then( function(questionnaire) {
+						// todo : check update
+						
+						var modified = false;
+						if( questionnaire.comment !== obj.comment ) { modified = true; }
+						if( questionnaire.frequency !== obj.frequency ) { modified = true; }
+						if( JSON.stringify(questionnaire.date) !== JSON.stringify( obj.date )) { modified = true; }
+						
+						if( !modified) {
+							resolve(questionnaire);
+						} else {
+							questionnaire.date = obj.date;
+							questionnaire.comment = obj.comment;
+							questionnaire.frequency = obj.frequency;
+							questionnaire.datetime = moment().toISOString();
+							questionnaire.source = professionalID;
+							physioDOM.db.collection("questionnairePlan").save(questionnaire, function (err, result) {
+								if (err) { reject(err); }
+								else {
+									var log = { 
+										subject: questionnaire.subject,
+										datetime: questionnaire.datetime,
+										source: questionnaire.source,
+										collection: "questionnairePlan",
+										action: isNaN(result)?"create":"update",
+										what: questionnaire
+									};
+									physioDOM.db.collection("journal").save( log, function() {
+										resolve(questionnaire);
+									});
+								}
+							});
+						}
+					})
+					.catch( function(err) {
+						if(err.stack) { console.log( err.stack ); }
+						reject(err);
+					});
+				/*
 				physioDOM.db.collection("questionnairePlan").remove( search, function( err, result ) {
 					physioDOM.db.collection("questionnairePlan").save(obj, function (err, result) {
 						resolve(result);
 					});
 				});
+				*/
 			}
 		});
 	};
