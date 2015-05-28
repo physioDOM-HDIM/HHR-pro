@@ -1682,7 +1682,7 @@ function Beneficiary( ) {
 		force = force?force:false;
 		
 		return new promise( function(resolve,reject) {
-			logger.trace("pushMeasure", force, measures);
+			// logger.trace("pushMeasure", force, measures);
 			var leaf = "hhr[" + hhr + "].measures[" + measures.datetime + "]";
 			physioDOM.db.collection("agendaMeasure").findOne({
 				subject : hhr,
@@ -1701,7 +1701,7 @@ function Beneficiary( ) {
 				});
 				var hasMeasure = false;
 				measures.measure.forEach(function (measure) {
-					logger.debug("measure : "+measure +" rank : "+parameters[measure].rank );
+					// logger.debug("measure : "+measure +" rank : "+parameters[measure].rank );
 					if (parameters[measure].rank) {
 						hasMeasure = true;
 						var name = leaf + ".params[" + parameters[measure].ref + "]";

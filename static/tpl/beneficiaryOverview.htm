@@ -315,7 +315,7 @@
 				</div>
 			{% endif %}
 			<div class="row">
-				<label>{{ "Deceased"|i18n }} : </label><div>{% if beneficiary.deceased %}{{ "Yes"|i18n }}{% else %}{{ "No"|i18n }}{% endif %}</div>
+				<label>{{ "Reason of the exit"|i18n }} : </label><div>{{exitStatusArray.items[beneficiary.entry.exitReason] || "" }}</div>
 			</div>
 			<div class="row">
 				<label>{{ "Active"|i18n }} : </label><div>{% if beneficiary.active %}{{ "Yes"|i18n }}{% else %}{{ "No"|i18n }}{% endif %}</div>
