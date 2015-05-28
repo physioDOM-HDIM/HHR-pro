@@ -483,7 +483,12 @@ var IBeneficiary = {
 			})
 			.then( function(dataRecord) {
 				var items = JSON.parse(req.body);
-				return dataRecord.updateItems(items);
+				console.log("==> mode", req.params.mode );
+				if( req.params.mode && req.params.mode === "update" ) {
+					return dataRecord.upgradeItems(items, req.session.person.id);
+				} else {
+					return dataRecord.updateItems(items, req.session.person.id);
+				}
 			})
 			.then( function( dataRecord ) {
 				return dataRecord.getComplete();

@@ -119,6 +119,17 @@ function DataRecord( beneficiaryID ) {
 		return dbPromise.getList(cursor, pg, offset);
 	};
 
+	this.getAllItems = function() {
+		var search = { dataRecordID: this._id };
+		var that = this;
+		
+		var cursor = physioDOM.db.collection("dataRecordItems").find(search);
+		return dbPromise.getArray(cursor)
+			.then( function(items) {
+				that.items = items;
+			});
+	};
+	
 	/**
 	 * on resolve return a complete DataRecord for display
 	 * 
@@ -282,7 +293,7 @@ function DataRecord( beneficiaryID ) {
 	 * @param items
 	 * @returns {promise}
 	 */
-	this.updateItems = function( items ) {
+	this.updateItems = function( items, professionalID ) {
 		var that = this;
 		function checkDataItems( entry ) {
 			return new promise( function(resolve, reject) {
@@ -297,9 +308,20 @@ function DataRecord( beneficiaryID ) {
 		}
 		
 		return new promise( function(resolve, reject) {
-			logger.trace("setup");
-			checkDataItems(items)
+			logger.trace("updateItems");
+			
+			that.getAllItems()
+				.then( function() {
+					// console.log( "items", items );
+					// console.log( "that items", that.items );
+					return checkDataItems(items);
+				})
 				.then( function( items ) {
+					/*
+					that.items.forEach( function( dataItem ) {
+						
+					});
+					*/
 					return that.clearItems();
 				})
 				.then( function( obj ) {
@@ -310,6 +332,8 @@ function DataRecord( beneficiaryID ) {
 						delete item._id;
 						item.subject = that.subject;
 						item.datetime = that.datetime;
+						item.source = professionalID;
+						
 						dataRecordItem.setup( item )
 							.then( function (recordItem) {
 								if (--count === 0) {
@@ -317,6 +341,58 @@ function DataRecord( beneficiaryID ) {
 								}
 							});
 					});
+				})
+				.catch(reject);
+		});
+	};
+	
+	this.upgradeItems = function( items, professionalID ) {
+		var that = this;
+		function checkDataItems( entry ) {
+			return new promise( function(resolve, reject) {
+				logger.trace("checkDataItems");
+				var check = dataRecordSchema.validator.validate( entry, { "$ref":"/DataItems"} );
+				if( check.errors.length ) {
+					return reject( { error:"bad format", detail: check.errors } );
+				} else {
+					return resolve(entry);
+				}
+			});
+		}
+
+		return new promise( function(resolve, reject) {
+			logger.trace("upgradeItems");
+
+			that.getAllItems()
+				.then( function() {
+					return checkDataItems(items);
+				})
+				.then( function( items ) {
+					 that.items.forEach( function( dataItem ) {
+						// search in items if the current dataItem is updated or removed
+						 var modified = null;
+						 for( var i=0,l=items.length;i<l;i++) {
+							 if( items[i].text === dataItem.text ) {
+								 modified = i;
+								 break;
+							 }
+						 }
+						 if( modified !== null ) {
+							 // check if value change
+							 if( items[modified].comment === undefined ) { items[modified].comment = ""; }
+							 console.log(items[modified]);
+							 if( dataItem.value !== items[modified].value || dataItem.comment !== items[modified].comment ) {
+								 // value has been updated
+								 console.log( dataItem._id +" is updated");
+							 } else {
+								 console.log( dataItem._id +" no change");
+							 }
+						 } else {
+							 // the item has been deleted
+							 console.log( dataItem._id +" is deleted");
+						 }
+					 });
+					resolve( that );
 				})
 				.catch(reject);
 		});
