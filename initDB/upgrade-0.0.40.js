@@ -7,6 +7,10 @@ db.dataRecordItems.find().forEach( function(item) {
 	if(!dataRecord) { 
 		db.dataRecordItems.remove( { _id: item._id } );
 	} 
-});// remove from database all questionnaire plan that have no date
+});
+db.dataRecordItems.update( { comment: { $exists:0 } }, { $set: { comment:"" } }, { multi:true } );
+
+// remove from database all questionnaire plan that have no date
 db.questionnairePlan.remove( { date: { $exists: 0 }, date: null } );
 db.questionnairePlan.remove( { date: { $exists: 0 }, date: [] } );
+
