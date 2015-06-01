@@ -69,8 +69,7 @@ var ICurrentStatus = {
 						author: req.session.person.id
 					}
 					delete updateItem.validatedDate;
-					// updateItem.validatedAuthor = req.session.person.id;
-					console.log( updateItem );
+					// console.log( updateItem );
 				}
 
 				var createDataRecord = function(currentStatus) {
@@ -89,7 +88,7 @@ var ICurrentStatus = {
 									var parameter = currentStatus.parameters[key];
 									if( parameter.value ) {
 										var item = {
-											category: 'HDIM',
+											category: 'measures',
 											text    : parameter.name,
 											value   : parseFloat(parameter.value),
 											comment : parameter.comment
@@ -145,7 +144,6 @@ var ICurrentStatus = {
 						updateItem._id = current._id;
 						current.update(updateItem, req.session.person.id)
 							.then(function (current) {
-								console.log( current );
 								return beneficiary.createEvent('Health status : '+ current.name, 'update', current._id, req.session.person.id)
 									.then( function() {
 										return createDataRecord(current);

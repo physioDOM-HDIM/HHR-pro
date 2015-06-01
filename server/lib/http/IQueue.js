@@ -243,8 +243,8 @@ var IQueue = {
 		logger.trace("measurePlan", hhr);
 
 		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
-			logger.warning("you have no write to access this request");
-			res.send(403, { code:403, message:"you have no write to access this request"});
+			logger.warning("you have no right to access this request");
+			res.send(403, { code:403, message:"you have no right to access this request"});
 			return next(false);
 		}
 		

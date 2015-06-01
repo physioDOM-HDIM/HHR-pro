@@ -1,49 +1,32 @@
-#!/usr/bin/env node
+#!/bin/bash
 
-/**
- * Restore a database from a tar.gz file given as argument
- */
+if (( $# < 2 ))
+then
+  echo "Usage: restoreDB ARCHIVE MONGOHOST [MONGODB]"
+  echo "  Where :"
+  echo "   - ARCHIVE   is the path of tar.bz2 file ( by example hhrpro-test-20150526154731.tar.bz2 )"
+  echo "   - MONGOHOST is the namn of the mongodb docker ( by example: mongo )"
+  echo "   - MONGODB   is the name of the database to restore ( by example: hhrpro-test )"
+  echo "     by default the name of the database is extracted from the dump file"
+  echo ""
+  exit 0
+fi
 
-"use strict";
+ARCHIVE=$1
+MONGOHOST=$2
+if (( $# == 3 ))
+then
+	MONGODEST=$3
+else
+	MONGODEST=""
+fi
 
-var testCommon = require("../test/backend/testCommon"),
-	fs = require("fs"),
-	path = require("path"),
-	targz = require("tar.gz");
+tar -xvzf ${ARCHIVE} > /dev/null
+for FILE in dump/*; do MONGODB=$( basename ${FILE} ); break; done
 
-if( !process.argv[2] || process.argv[2] === "help") {
-	console.log("Restore the database from a tar.gz file");
-	console.log("usage : ");
-	console.log("    restoreDB [filePath]");
-	console.log("");
-	console.log("example : from the root dir of the project");
-	console.log("    bin/restoreDB test/testDB.tar.gz");
-	process.exit(0);
-}
+if [ -z "${MONGODEST}" ]
+then
+	MONGODEST=${MONGODB}
+fi
 
-var filePath = process.argv[2];
-if( filePath[0] !== "/" ) {
-	// the path is relative
-	filePath = path.join(process.cwd(), filePath);
-}
-
-if( !fs.existsSync(filePath)) {
-	console.log("Can't find the file : ",filePath);
-	process.exit(1);
-}
-
-new targz().extract( filePath, process.cwd(), function(err) {
-	if(err) {
-		console.log("err", err);
-		process.exit(1);
-	} else {
-		testCommon.mongoRestore( filePath )
-			.then( function() {
-				console.log("database restored");
-			})
-			.catch( function(err) {
-				console.log(err);
-				process.exit(1);
-			});
-	}
-});
+/usr/bin/mongorestore --host $(docker-ip ${MONGOHOST}) --drop -d ${MONGODEST} dump/${MONGODB} > /dev/null

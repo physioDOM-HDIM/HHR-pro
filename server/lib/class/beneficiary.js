@@ -982,7 +982,12 @@ function Beneficiary( ) {
 				if (err) {
 					reject(err);
 				}
-				resolve(nb);
+				physioDOM.db.collection("dataRecords").remove({ dataRecordID:new ObjectID( dataRecordID ) }, function (err, nbItems) {
+					if (err) {
+						reject(err);
+					}
+					resolve(nb);
+				});
 			});
 		});
 	};
@@ -1167,6 +1172,8 @@ function Beneficiary( ) {
 				"questionnaire": []
 			};
 
+			var parameters;
+			
 			var reduceFunction = function ( curr, result ) {
 				if(result.lastReport < curr.datetime) {
 					result.lastReport = curr.datetime;
@@ -1203,6 +1210,10 @@ function Beneficiary( ) {
 			that.getThreshold()
 				.then( function(_thresholds) {
 					thresholds = _thresholds;
+					return physioDOM.Lists.getListItemsObj("parameters");
+				})
+				.then( function(_parameters) {
+					parameters = _parameters;
 					return physioDOM.Lists.getList("units");
 				})
 				.then(function (units) {
@@ -1240,6 +1251,11 @@ function Beneficiary( ) {
 										})
 									)
 									.then( function(results) {
+										results.forEach( function( item ) {
+											if( parameters[item.text] ) {
+												item.category = parameters[item.text].category;
+											}
+										});
 										graphList.General = results.filter(function (item) {
 											return item.category === "General";
 										});
@@ -1275,6 +1291,8 @@ function Beneficiary( ) {
 
 		return new promise(function (resolve, reject) {
 			logger.trace("getHistoricDataList", that._id);
+			var parameters;
+			
 			var graphList = {
 				"General"      : [],
 				"HDIM"         : [],
@@ -1328,6 +1346,10 @@ function Beneficiary( ) {
 			that.getThreshold()
 				.then( function(_thresholds) {
 					thresholds = _thresholds;
+					return physioDOM.Lists.getListItemsObj("parameters");
+				})
+				.then( function(_parameters) {
+					parameters = _parameters;
 					return physioDOM.Lists.getList("units");
 				})
 				.then(function (units) {
@@ -1371,28 +1393,43 @@ function Beneficiary( ) {
 										return result;
 									})
 								)
-									.then( function(results) {
-										graphList.General = results.filter(function (item) {
-											return item.category === "General";
-										});
-										graphList.HDIM = results.filter(function (item) {
-											return item.category === "HDIM";
-										});
-										graphList.symptom = results.filter(function (item) {
-											return item.category === "symptom";
-										});
-										graphList.questionnaire = results.filter(function (item) {
-											return item.category === "questionnaire";
-										});
+								.then( function(results) {
+									results.forEach( function( item ) {
+										if( parameters[item.text] ) {
+											item.category = parameters[item.text].category;
+										}
+									});
+									console.log("->", results);
+									
+									graphList.General = results.filter(function (item) {
+										return item.category === "General";
+									});
+									graphList.HDIM = results.filter(function (item) {
+										return item.category === "HDIM";
+									});
+									graphList.symptom = results.filter(function (item) {
+										return item.category === "symptom";
+									});
+									graphList.questionnaire = results.filter(function (item) {
+										return item.category === "questionnaire";
+									});
 
-										graphList.General.sort(compareItems);
-										graphList.HDIM.sort(compareItems);
-										graphList.symptom.sort(compareItems);
-										graphList.questionnaire.sort(compareItems);
-
-										resolve(graphList);
-									})
-									.catch( reject );
+									graphList.General.sort(compareItems);
+									graphList.HDIM.sort(compareItems);
+									graphList.symptom.sort(compareItems);
+									graphList.questionnaire.sort(compareItems);
+									
+									console.log(graphList);
+									resolve(graphList);
+								})
+								.catch( function(err) {
+									if(err.stack) {
+										console.log(err.stack);
+									} else {
+										console.log(err);
+									}
+									reject(err);
+								});
 							}
 						});
 					});
@@ -1434,7 +1471,7 @@ function Beneficiary( ) {
 		}
 
 		// to get the label we need to know from which list comes the parameter
-		if (["General", "HDIM"].indexOf(category) !== -1) {
+		if (["General", "HDIM","measures"].indexOf(category) !== -1) {
 			category = "parameters";
 		}
 
@@ -1648,9 +1685,9 @@ function Beneficiary( ) {
 
 	function pushMeasure( queue, hhr, units, parameters, measures, force ) {
 		force = force?force:false;
-		logger.trace("pushMeasure");
 		
 		return new promise( function(resolve,reject) {
+			// logger.trace("pushMeasure", force, measures);
 			var leaf = "hhr[" + hhr + "].measures[" + measures.datetime + "]";
 			physioDOM.db.collection("agendaMeasure").findOne({
 				subject : hhr,
@@ -1669,6 +1706,7 @@ function Beneficiary( ) {
 				});
 				var hasMeasure = false;
 				measures.measure.forEach(function (measure) {
+					// logger.debug("measure : "+measure +" rank : "+parameters[measure].rank );
 					if (parameters[measure].rank) {
 						hasMeasure = true;
 						var name = leaf + ".params[" + parameters[measure].ref + "]";
@@ -1810,13 +1848,15 @@ function Beneficiary( ) {
 		
 		var today = moment().hour(12).minute(0).second(0);
 		var endDate = moment().add(physioDOM.config.duration,'d').hour(12).minute(0).second(0);
+		logger.trace("getMeasurePlan", this._id );
 		logger.debug( "MeasurePlan from "+today.toISOString()+" to "+endDate.toISOString());
 		var dataProg = new DataProg( this._id );
 		var msgs = [];
 		var that = this;
+
+		moment.locale( physioDOM.lang === "en"?"en-gb":physioDOM.lang );
 		
 		return new promise( function(resolve, reject) {
-			logger.trace("getMeasurePlan", that._id );
 			
 			var promises = ["General","HDIM"].map(function (category) {
 				return dataProg.getCategory( category );
@@ -1842,6 +1882,7 @@ function Beneficiary( ) {
 								if (nextDate.unix() <= closeDate.unix()) {
 									do {
 										if (nextDate.unix() <= closeDate.unix() && nextDate.unix() > today.unix()) {
+											logger.debug("daily prog", {ref: prog.ref, date: nextDate.unix()} );
 											msgs.push({ref: prog.ref, date: nextDate.unix()});
 										}
 										nextDate.add(prog.repeat, 'd');
@@ -1862,6 +1903,7 @@ function Beneficiary( ) {
 										prog.when.days.forEach(function (day) {
 											firstDay.day(day);
 											if (firstDay.unix() <= closeDate.unix() && firstDay.unix() > today.unix()) {
+												logger.debug("weekly prog", {ref: prog.ref, date: nextDate.unix()} );
 												msgs.push({ref: prog.ref, date: firstDay.unix()});
 											}
 										}); // jshint ignore:line
@@ -1878,22 +1920,37 @@ function Beneficiary( ) {
 								while (nextDate.unix() < startDate.unix()) {
 									nextDate.add(prog.repeat, 'M');
 								}
-								// logger.debug("nextDate", nextDate.format("L"));
+								// logger.debug( "locale", moment.locale());
+								// logger.debug( "startDate", startDate.toISOString());
+								// logger.debug( "closeDate", closeDate.toISOString());
+								// logger.debug( "nextDate",  nextDate.toISOString());
 								if (nextDate.unix() <= closeDate.unix()) {
-									prog.when.days.forEach(function (day) {
-										if (day > 0) {
-											dat = moment.unix(nextDate.unix());
-											dat.day(day % 10);
-											dat.add(Math.floor(day / 10) - 1, 'w');
-										} else {
-											dat = moment.unix(nextDate.unix()).add(1, 'M').subtract(1, 'd');
-											dat.day(-day % 10);
-											dat.subtract(Math.floor(-day / 10) - 1, 'w');
-										}
-										if (dat.unix() <= closeDate.unix() && dat.unix() > today.unix()) {
-											msgs.push({ref: prog.ref, date: dat.unix()});
-										}
-									});
+									do {
+										logger.debug( "nextDate",  nextDate.toISOString());
+										prog.when.days.forEach(function (day) {
+											logger.debug("-> day", day);
+											if (day > 0) {
+												dat = moment.unix(nextDate.unix());
+												dat = dat.startOf('month').startOf('week');
+												if (dat.month() < nextDate.month()) {
+													dat.add(1, 'w');
+												}
+												dat.day(day % 10);
+												dat.add(Math.floor(day / 10) - 1, 'w');
+											} else {
+												dat = moment.unix(nextDate.unix());
+												dat = dat.endOf('month').startOf('week');
+												dat.day(-day % 10);
+												dat.subtract(Math.floor(-day / 10) - 1, 'w');
+											}
+											// logger.debug("dates", dat.toISOString(), closeDate.toISOString(), today.toISOString());
+											if (dat.unix() <= closeDate.unix() && dat.unix() > today.unix()) {
+												logger.debug("monthly prog", {ref: prog.ref, date: nextDate.unix()});
+												msgs.push({ref: prog.ref, date: dat.unix()});
+											}
+										});
+										nextDate.add(prog.repeat, 'M');
+									} while (nextDate.unix() <= closeDate.unix());
 								}
 								break;
 						}

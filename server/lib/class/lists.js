@@ -103,7 +103,7 @@ function Lists( ) {
 	 					if(typeof key === "undefined"){
 	 						key = list.items[i].value;
 	 					}
-	 					obj[key] = list.items[i].label;
+	 					obj[key] = list.items[i].label || " ";
 	 				}
 	 				list.items = obj;
 					resolve(list);

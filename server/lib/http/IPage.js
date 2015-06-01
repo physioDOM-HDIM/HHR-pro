@@ -643,11 +643,11 @@ function IPage() {
 			"diagnosis",
 			"destination",
 			"communication",
-			"profession",
 			"perimeter",
 			"nutritionalStatus",
 			"generalStatus",
-			"job"
+			"job",
+			"exitStatus"
 		].map( promiseListArray);
 
 		new Menu().rights( req.session.role, data.rights.url )

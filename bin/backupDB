@@ -1,37 +1,24 @@
-#!/usr/bin/env node
+#!/bin/bash
 
-/**
- * Backup the database to a tar.gz file given as argument
- */
+if (( $# < 2 ))
+then
+  echo "Usage: backupDB MONGOHOST MONGODB"
+  echo "  Where :"
+  echo "   - MONGOHOST is the namn of the mongodb docker ( by example: mongo)"
+  echo "   - MONGODB   is the name of the database to save ( by example: hhrpro-test)"
+  echo ""
+  exit 0
+fi
 
-"use strict";
+MONGOHOST=$1
+MONGODB=$2
+if [ -z "$3" ]
+then
+	DEST="."
+else
+	DEST=$3
+fi
 
-var testCommon = require("../test/backend/testCommon"),
-	fs = require("fs"),
-	path = require("path"),
-	targz = require("tar.gz");
-
-if( !process.argv[2] || process.argv[2] === "help") {
-	console.log("Restore the database from a tar.gz file");
-	console.log("usage : ");
-	console.log("    restoreDB [filePath]");
-	console.log("");
-	console.log("example : from the root dir of the project");
-	console.log("    bin/restoreDB test/testDB.tar.gz");
-	process.exit(0);
-}
-
-var filePath = process.argv[2];
-if( filePath[0] !== "/" ) {
-	// the path is relative
-	filePath = path.join(process.cwd(), filePath);
-}
-
-testCommon.mongoDump( filePath )
-	.then( function() {
-		console.log("backup done");
-	})
-	.catch( function(err) {
-		console.log(err);
-		process.exit(1);
-	});
+/usr/bin/mongodump --host $(docker-ip ${MONGOHOST}) -d ${MONGODB} > /dev/null
+tar -cvzf ${DEST}/${MONGODB}-$(date +%Y%m%d%H%M%S).tar.bz2 dump > /dev/null
+rm -rf dump
