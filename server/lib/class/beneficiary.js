@@ -1399,7 +1399,7 @@ function Beneficiary( ) {
 											item.category = parameters[item.text].category;
 										}
 									});
-									console.log("->", results);
+									// console.log("->", results);
 									
 									graphList.General = results.filter(function (item) {
 										return item.category === "General";
@@ -1418,8 +1418,7 @@ function Beneficiary( ) {
 									graphList.HDIM.sort(compareItems);
 									graphList.symptom.sort(compareItems);
 									graphList.questionnaire.sort(compareItems);
-									
-									console.log(graphList);
+										
 									resolve(graphList);
 								})
 								.catch( function(err) {
