@@ -97,7 +97,9 @@ function saveDatas(validate) {
 	}
 	
 	if(!formObj.dietPresc) {
-		formObj.dietPresc = { prescription : "" };
+		formObj.dietPresc = { prescription : "", comment: "" };
+	} else if (!formObj.dietPresc.prescription ) {
+		formObj.dietPresc.prescription = "";
 	}
 
 	if( formObj.questionnaires ) {
