@@ -95,6 +95,12 @@ function saveDatas(validate) {
 	if(!formObj.assistance) {
 		formObj.assistance = [];
 	}
+	
+	if(!formObj.dietPresc) {
+		formObj.dietPresc = { prescription : "", comment: "" };
+	} else if (!formObj.dietPresc.prescription ) {
+		formObj.dietPresc.prescription = "";
+	}
 
 	if( formObj.questionnaires ) {
 		formObj.questionnaires.forEach(function (questionnaire) {

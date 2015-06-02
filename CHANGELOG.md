@@ -1,3 +1,11 @@
+__v0.0.41-pre__
+
+  - \#255 : Bug 372 - [CHS][v040] suppression "Special Diet Prescription"
+
+__v0.0.40-1__
+
+  - replace locales files (en, nl) by given files
+  
 __v0.0.40__
 
   - \#247 : Bug 376 - [prescription of data monitoring][v038] monthly prescription
