@@ -325,7 +325,7 @@ function removeItem(id) {
 }
 
 /* Form Valid */
-function update(dataRecordID) {
+function update(dataRecordID, mode) {
 	var obj = form2js(document.forms.dataRecord);
 
 	if (JSON.stringify(obj) !== "{}") {
@@ -353,10 +353,9 @@ function update(dataRecordID) {
 					data[i].automatic = false;
 				}
 			}
-
 		}
 
-		utils.promiseXHR("PUT", "/api/beneficiary/datarecords/" + dataRecordID, 200, JSON.stringify(data))
+		utils.promiseXHR("PUT", "/api/beneficiary/datarecords/" + dataRecordID+"?mode="+mode, 200, JSON.stringify(data))
 			.then(function (response) {
 				updateSuccess();
 				modified = false;
@@ -381,10 +380,10 @@ function update(dataRecordID) {
 	}
 }
 
-function create() {
+function create(mode) {
 
 	if (createdDataRecordID) {
-		update(createdDataRecordID);
+		update(createdDataRecordID, mode);
 	} else {
 		var obj = form2js(document.forms.dataRecord),
 			sourceID = document.querySelector('#sourceID');
@@ -404,8 +403,7 @@ function create() {
 					obj.items[i].category = "measures";
 				}
 			}
-
-			console.log("res", obj);
+			
 			utils.promiseXHR("POST", "/api/beneficiary/datarecord", 200, JSON.stringify(obj)).then(function (response) {
 				createSuccess();
 				var record = JSON.parse(response);
@@ -417,10 +415,8 @@ function create() {
 				errorOccured();
 				console.log("saveForm - error: ", error);
 			});
-
 		}
 	}
-
 }
 
 

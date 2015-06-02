@@ -1150,9 +1150,7 @@ function IPage() {
 			})
 			.catch(function(err) {
 				logger.error(err);
-				res.write(err);
-				res.end();
-				next();
+				render('/static/tpl/dataRecordEdit.htm' , data, res, next);
 			});
 	};
 

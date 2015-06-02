@@ -66,7 +66,8 @@ function Queue ( beneficiaryID ) {
 					url    : physioDOM.config.queue + "/msg",
 					method : "POST",
 					headers: {"content-type": "text/plain"},
-					body   : JSON.stringify(msg)
+					body   : JSON.stringify(msg),
+					timeout: 300
 				}, function (err, resp, body) {
 					if (err || resp.statusCode === 500) {
 						logger.warning("error 500 for gateway ", msg.gateway);
