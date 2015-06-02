@@ -148,6 +148,11 @@ var updateParam = function (elt) {
 	 if(param && min && max) {
 	 	min.value = param.min;
 	 	max.value = param.max;
+		min.max = max.value;
+		max.min = min.value;
+	 } else {
+		 min.max = null;
+		 max.min = null;
 	 }
 };
 
