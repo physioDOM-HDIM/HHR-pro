@@ -273,7 +273,7 @@ function DataRecord( beneficiaryID ) {
 		var that = this;
 	
 		return new promise( function(resolve, reject) {
-			logger.trace("setup");
+			logger.trace("clearItems");
 			that.items = [];
 			physioDOM.db.collection("dataRecordItems").remove( { dataRecordID: that._id }, function( err, nb) {
 				if(err) {
@@ -317,11 +317,6 @@ function DataRecord( beneficiaryID ) {
 					return checkDataItems(items);
 				})
 				.then( function( items ) {
-					/*
-					that.items.forEach( function( dataItem ) {
-						
-					});
-					*/
 					return that.clearItems();
 				})
 				.then( function( obj ) {
@@ -342,7 +337,10 @@ function DataRecord( beneficiaryID ) {
 							});
 					});
 				})
-				.catch(reject);
+				.catch( function(err) {
+					console.log(err);
+					reject(err);
+				});
 		});
 	};
 	
@@ -368,31 +366,62 @@ function DataRecord( beneficiaryID ) {
 					return checkDataItems(items);
 				})
 				.then( function( items ) {
-					 that.items.forEach( function( dataItem ) {
+					var count = that.items.length;
+					that.items.forEach( function( dataItem ) {
 						// search in items if the current dataItem is updated or removed
-						 var modified = null;
-						 for( var i=0,l=items.length;i<l;i++) {
-							 if( items[i].text === dataItem.text ) {
-								 modified = i;
-								 break;
-							 }
-						 }
-						 if( modified !== null ) {
-							 // check if value change
-							 if( items[modified].comment === undefined ) { items[modified].comment = ""; }
-							 console.log(items[modified]);
-							 if( dataItem.value !== items[modified].value || dataItem.comment !== items[modified].comment ) {
-								 // value has been updated
-								 console.log( dataItem._id +" is updated");
-							 } else {
-								 console.log( dataItem._id +" no change");
-							 }
-						 } else {
-							 // the item has been deleted
-							 console.log( dataItem._id +" is deleted");
-						 }
+						var modified = null;
+						for( var i=0,l=items.length;i<l;i++) {
+							if( items[i].text === dataItem.text ) {
+								modified = i;
+								break;
+							}
+						}
+						if( modified !== null ) {
+							var dataRecordItem = new DataRecordItem( that._id );
+							console.log( "dataRecordItem", dataRecordItem);
+							// check if value change
+							if( items[modified].comment === undefined ) { items[modified].comment = ""; }
+							// console.log(items[modified]);
+							if( dataItem.value !== items[modified].value || dataItem.comment !== items[modified].comment ) {
+								// value has been updated
+								items[modified]._id = new ObjectID( items[modified]._id );
+								items[modified].dataRecordID = new ObjectID( items[modified].dataRecordID );
+								items[modified].subject = that.subject;
+								items[modified].datetime = that.datetime;
+								items[modified].source = professionalID;
+								
+								dataRecordItem.setup( items[modified] )
+									.then( function( result ) {
+										if (--count === 0) {
+											resolve(that);
+										}
+									})
+									.catch( function(err) {
+										console.log(err.stack);
+										if (--count === 0) {
+											resolve(that);
+										}
+									});
+							} else {
+								console.log( dataItem._id +" no change");
+								if (--count === 0) {
+									resolve(that);
+								}
+							}
+						} else {
+							// the item has been deleted
+							console.log( typeof dataItem._id+" "+ dataItem._id  +" is deleted");
+							
+							physioDOM.db.collection("dataRecordItems").remove( { _id : dataItem._id }, function( err, nb) {
+								if(err) {
+									throw err;
+								}
+								if (--count === 0) {
+									resolve(that);
+								}
+							});
+						}
 					 });
-					resolve( that );
 				})
 				.catch(reject);
 		});

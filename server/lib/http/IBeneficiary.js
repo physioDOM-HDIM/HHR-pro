@@ -11,7 +11,8 @@ var Logger = require("logger"),
 	ObjectID = require("mongodb").ObjectID,
 	DataRecords = require("../class/dataRecords"),
 	RSVP = require("rsvp"),
-	promise = require("rsvp").Promise;
+	promise = require("rsvp").Promise,
+	moment = require('moment');
 var CurrentStatus = require('../class/currentStatus');
 var logger = new Logger("IBeneficiary");
 
@@ -106,8 +107,18 @@ var IBeneficiary = {
 				}
 			})
 			.then( function(beneficiary) {
-				res.send(beneficiary);
-				next();
+				var log = {
+					subject: beneficiary._id,
+					datetime: moment().toISOString(),
+					source: req.session.person.id,
+					collection: "beneficiary",
+					action: "create",
+					what: beneficiary
+				};
+				physioDOM.db.collection("journal").save( log, function() {
+					res.send(beneficiary);
+					next();
+				});
 			})
 			.catch( function(err) {
 				res.send(err.code || 400, err);
@@ -219,8 +230,18 @@ var IBeneficiary = {
 					}
 				})
 				.then( function() {
-					res.send( beneficiary );
-					next();
+					var log = {
+						subject: beneficiary._id,
+						datetime: moment().toISOString(),
+						source: req.session.person.id,
+						collection: "beneficiary",
+						action: "update",
+						what: beneficiary
+					};
+					physioDOM.db.collection("journal").save( log, function() {
+						res.send(beneficiary);
+						next();
+					});
 				})
 				.catch(function (err) {
 					res.send(err.code || 400, err);
@@ -234,7 +255,7 @@ var IBeneficiary = {
 
 	deleteBeneficiary: function(req, res, next) {
 		logger.trace("deleteBeneficiary");
-		var beneficiaries;
+		var beneficiaries, beneficiary;
 		
 		physioDOM.Beneficiaries()
 			.then( function( _beneficiaries) {
@@ -245,8 +266,8 @@ var IBeneficiary = {
 					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID );
 				}
 			})
-			.then( function(beneficiary) {
-
+			.then( function(_beneficiary) {
+				beneficiary = _beneficiary;
 				beneficiary.hasProfessional(req.session.person.id)
 					.then(function(hasProfessional) {
 						if(hasProfessional || ["administrator","coordinator"].indexOf(req.session.role) !== -1) {
@@ -258,8 +279,18 @@ var IBeneficiary = {
 
 			})
 			.then( function() {
-				res.send(410, { code:410, message: "entry deleted"});
-				next();
+				var log = {
+					subject: beneficiary._id,
+					datetime: moment().toISOString(),
+					source: req.session.person.id,
+					collection: "beneficiary",
+					action: "delete",
+					what: beneficiary
+				};
+				physioDOM.db.collection("journal").save( log, function() {
+					res.send(410, { code:410, message: "entry deleted"});
+					next();
+				});
 			})
 			.catch(function (err) {
 				res.send(err.code || 400, err);
@@ -494,8 +525,19 @@ var IBeneficiary = {
 				return dataRecord.getComplete();
 			})
 			.then(function( _completeDataRecord ) {
-				res.send(_completeDataRecord);
-				completeDataRecord = _completeDataRecord;
+				var log = {
+					subject   : beneficiary._id,
+					datetime  : moment().toISOString(),
+					source    : req.session.person.id,
+					collection: "dataRecords",
+					action    : "update",
+					what      : _completeDataRecord
+				};
+				logPromise(log)
+					.then( function() {
+						res.send(_completeDataRecord);
+						completeDataRecord = _completeDataRecord;
+					});
 			})
 			.then( function() {
 				return beneficiary.getThreshold();
@@ -562,8 +604,19 @@ var IBeneficiary = {
 				return beneficiary.deleteDataRecordByID(req.params.dataRecordID);
 			})
 			.then(function( nb ) {
-				res.send( 200, { code:200, message:"Datarecord removed"} );
-				next();
+				var log = {
+					subject   : beneficiary._id,
+					datetime  : moment().toISOString(),
+					source    : req.session.person.id,
+					collection: "dataRecords",
+					action    : "delete",
+					what      : {}
+				};
+				logPromise(log)
+					.then( function() {
+						res.send(200, {code: 200, message: "Datarecord removed"});
+						next();
+					});
 			})
 			.catch( function(err) {
 				res.send(err.code || 400, err);
@@ -629,8 +682,18 @@ var IBeneficiary = {
 				return beneficiary.setThresholds( updateItems );
 			})
 			.then( function (thresholds) {
-				res.send( thresholds );
-				next();
+				var log = {
+					subject: beneficiary._id,
+					datetime: moment().toISOString(),
+					source: req.session.person.id,
+					collection: "beneficiary",
+					action: "threshold",
+					what: beneficiary
+				};
+				physioDOM.db.collection("journal").save( log, function() {
+					res.send( thresholds );
+					next();
+				});
 			})
 			.catch( function(err) {
 				res.send(err.code || 400, err);
@@ -886,8 +949,19 @@ var IBeneficiary = {
 				return beneficiary.setDataProg( JSON.parse(req.body), req.session.person.id );
 			})
 			.then( function( prescription ) {
-				res.send(prescription);
-				next();
+				var log = {
+					subject   : beneficiary._id,
+					datetime  : moment().toISOString(),
+					source    : req.session.person.id,
+					collection: "measurePlan",
+					action    : "create/update",
+					what      : prescription
+				};
+				logPromise(log)
+					.then( function() {
+						res.send(prescription);
+						next();
+					});
 			})
 			.catch(function (err) {
 				res.send(err.code || 400, err);
@@ -923,8 +997,19 @@ var IBeneficiary = {
 				return beneficiary.delDataProg( req.params.dataProgItemID );
 			})
 			.then( function( done ) {
-				res.send(200, { err: 200, message: "item successfully deleted"});
-				next();
+				var log = {
+					subject   : beneficiary._id,
+					datetime  : moment().toISOString(),
+					source    : req.session.person.id,
+					collection: "measurePlan",
+					action    : "delete",
+					what      : { _id: new ObjectID( req.params.dataProgItemID ) }
+				};
+				logPromise(log)
+					.then( function() {
+						res.send(200, {err: 200, message: "item successfully deleted"});
+						next();
+					});
 			})
 			.catch(function (err) {
 				res.send(err.code || 400, err);
@@ -1157,6 +1242,8 @@ var IBeneficiary = {
 
 	createDietaryPlan: function(req,res, next) {
 		logger.trace("newDietaryPlan");
+		var beneficiary;
+		
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
 				if( req.session.role === "beneficiary") {
@@ -1165,13 +1252,25 @@ var IBeneficiary = {
 					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
 				}
 			})
-			.then(function (beneficiary) {
+			.then(function (_beneficiary) {
+				beneficiary = _beneficiary;
 				var dietaryPlan = JSON.parse( req.body );
 				return beneficiary.createDietaryPlan( dietaryPlan, req.session.person.id );
 			})
 			.then( function( dietaryPlan) {
-				res.send( dietaryPlan );
-				next();
+				var log = {
+					subject   : beneficiary._id,
+					datetime  : moment().toISOString(),
+					source    : req.session.person.id,
+					collection: "dietaryPlan",
+					action    : "update",
+					what      : dietaryPlan
+				};
+				logPromise(log)
+					.then(function() {
+						res.send(dietaryPlan);
+						next();
+					});
 			})
 			.catch( function(err) {
 				res.send(err.code || 400, err);
@@ -1240,6 +1339,7 @@ var IBeneficiary = {
 
 	createPhysicalPlan: function(req,res, next) {
 		logger.trace("newPhysicalPlan");
+		var beneficiary;
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
 				if( req.session.role === "beneficiary") {
@@ -1248,13 +1348,25 @@ var IBeneficiary = {
 					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
 				}
 			})
-			.then(function (beneficiary) {
+			.then(function (_beneficiary) {
+				beneficiary = _beneficiary;
 				var physicalPlan = JSON.parse( req.body );
 				return beneficiary.createPhysicalPlan( physicalPlan, req.session.person.id );
 			})
 			.then( function( physicalPlan) {
-				res.send( physicalPlan );
-				next();
+				var log = {
+					subject   : beneficiary._id,
+					datetime  : moment().toISOString(),
+					source    : req.session.person.id,
+					collection: "physicalPlan",
+					action    : "update",
+					what      : physicalPlan
+				};
+				logPromise(log)
+					.then(function() {
+						res.send(physicalPlan);
+						next();
+					});
 			})
 			.catch( function(err) {
 				res.send(err.code || 400, err);
@@ -1425,5 +1537,13 @@ var IBeneficiary = {
 			});
 	}
 };
+
+function logPromise(log) {
+	return new promise(function (resolve, reject) {
+		physioDOM.db.collection("journal").save(log, function (err) {
+			resolve(log);
+		});
+	});
+}
 
 module.exports = IBeneficiary;

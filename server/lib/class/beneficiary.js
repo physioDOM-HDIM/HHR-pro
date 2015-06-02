@@ -976,7 +976,7 @@ function Beneficiary( ) {
 
 	this.deleteDataRecordByID = function( dataRecordID ) {
 		return new promise( function(resolve, reject) {
-			logger.trace("getDataRecordByID", dataRecordID);
+			logger.trace("deleteDataRecordByID", dataRecordID);
 			var search = { _id: new ObjectID( dataRecordID ) };
 			physioDOM.db.collection("dataRecords").remove(search, function (err, nb) {
 				if (err) {
@@ -986,7 +986,12 @@ function Beneficiary( ) {
 					if (err) {
 						reject(err);
 					}
-					resolve(nb);
+					physioDOM.db.collection("events").remove( { ref: new ObjectID( dataRecordID ) }, function (err, nbItems) {
+						if (err) {
+							reject(err);
+						}
+						resolve(nb);
+					})
 				});
 			});
 		});
@@ -1054,6 +1059,21 @@ function Beneficiary( ) {
 				})
 				.then( function() {
 					return that.getCompleteDataRecordByID(dataRecord._id);
+				})
+				.then( function() {
+					return new promise(function (resolve, reject) {
+						var log = {
+							subject   : that._id,
+							datetime  : moment().toISOString(),
+							source    : professionalID,
+							collection: "dataRecords",
+							action    : "create",
+							what      : dataRecord
+						};
+						physioDOM.db.collection("journal").save(log, function (err) {
+							resolve(log);
+						});
+					});
 				})
 				.then(resolve)
 				.catch(reject);
