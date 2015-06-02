@@ -3,6 +3,7 @@ __v0.0.41-pre__
   - \#255 : Bug 372 - [CHS][v040] suppression "Special Diet Prescription"
   - \#254 : Bug 309 - Traçabilité identité du professionel et date impactant un beneficiaire
   - \#256 : Bug 378 - [Prescription of data monitoring][v040] Impossible de saisir les thresholds dans le cas d'une duplication
+  - Fix ScrollIntoView for login panel
 
 __v0.0.40-1__
 
