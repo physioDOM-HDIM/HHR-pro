@@ -151,8 +151,8 @@ var updateParam = function (elt) {
 		min.max = max.value;
 		max.min = min.value;
 	 } else {
-		 min.max = null;
-		 max.min = null;
+		if( min ) { min.max = null; }
+		if( max ) { max.min = null; }
 	 }
 };
 
