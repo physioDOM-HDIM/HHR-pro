@@ -13,6 +13,7 @@ var logger = new Logger("DataRecordItem");
 
 function dataRecordItem( dataRecordID ) {
 	this.dataRecordID = dataRecordID;
+	this.comment = "";
 	
 	this.save = function() {
 		var that = this;
@@ -26,6 +27,7 @@ function dataRecordItem( dataRecordID ) {
 				if( isNaN(result)) {
 					that._id = result._id;
 				}
+				
 				resolve(that);
 			});
 		});

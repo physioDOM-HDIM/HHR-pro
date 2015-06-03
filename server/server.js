@@ -696,6 +696,7 @@ physioDOM.connect()
             	
 							RSVP.all(promises)
 								.then(function () {
+									logger.info("push plans end");
 									done();
 								});
 						});

@@ -269,13 +269,13 @@
 				</div>
 			</div>
 		</zdk-panel>
-		<zdk-panel heading="{{'Account' |i18n}}" collapsable="false" collapsed="false">
+		<zdk-panel id="login" heading="{{'Account' |i18n}}" collapsable="false" collapsed="false">
 			{% if !IDS %}
 			<input type="hidden" name="account.IDS" value="false">
 			
 			<div class="row">
 				<label>{{"Login"|i18n}} :</label>
-				<input type="text" id="login" name="account.login" value="{{professional.account.login}}"/>
+				<input type="text" name="account.login" value="{{professional.account.login}}"/>
 			</div>
 			{% else %}
 			<input type="hidden" name="account.IDS" value="true">

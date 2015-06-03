@@ -4,10 +4,12 @@
  */
 
 /* jslint node:true */
+/* global physioDOM */
 'use strict';
 
 var Logger        = require('logger');
-var RSVP          = require('rsvp');
+var RSVP          = require('rsvp'),
+	promise       = RSVP.Promise; 
 var ObjectID      = require('mongodb').ObjectID;
 var logger        = new Logger('ICurrentStatus');
 var CurrentStatus = require('../class/currentStatus');
@@ -134,6 +136,7 @@ var ICurrentStatus = {
 								});
 						}
 						else {
+							console.log( currentStatus );
 							resolve(currentStatus);
 						}
 					});
@@ -144,9 +147,24 @@ var ICurrentStatus = {
 						updateItem._id = current._id;
 						current.update(updateItem, req.session.person.id)
 							.then(function (current) {
-								return beneficiary.createEvent('Health status : '+ current.name, 'update', current._id, req.session.person.id)
+								var log = {
+									subject   : beneficiary._id,
+									datetime  : moment().toISOString(),
+									source    : req.session.person.id,
+									collection: "currentStatuses",
+									action    : current.validated && current.validated.status?"validate":"update",
+									what      : current
+								};
+								return logPromise(log)
+									.then( function() {
+										console.log("create Event");
+										return beneficiary.createEvent('Health status : ' + current.name, 'update', current._id, req.session.person.id);
+									})
 									.then( function() {
 										return createDataRecord(current);
+									})
+									.catch( function(err) {
+										console.log(err.stack);
 									});
 							})
 							.then(function (current) {
@@ -172,7 +190,18 @@ var ICurrentStatus = {
 					new CurrentStatus().update(updateItem, req.session.person.id)
 						.then(function (current) {
 							console.log( "validated ? ", current.validated );
-							return beneficiary.createEvent('Health status : '+ current.name, 'create', current._id, req.session.person.id)
+							var log = {
+								subject   : beneficiary._id,
+								datetime  : moment().toISOString(),
+								source    : req.session.person.id,
+								collection: "currentStatuses",
+								action    : current.validated && current.validated.status?"validate":"update",
+								what      : current
+							};
+							return logPromise(log)
+								.then( function() {
+									return beneficiary.createEvent('Health status : ' + current.name, 'create', current._id, req.session.person.id)
+								})
 								.then( function() {
 									return createDataRecord(current);
 								});
@@ -211,5 +240,13 @@ var ICurrentStatus = {
 		});
 	}
 };
+
+function logPromise(log) {
+	return new promise(function (resolve, reject) {
+		physioDOM.db.collection("journal").save(log, function (err) {
+			resolve(log);
+		});
+	});
+}
 
 module.exports = ICurrentStatus;

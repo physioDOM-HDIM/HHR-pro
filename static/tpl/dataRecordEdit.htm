@@ -331,7 +331,7 @@
 		<input type="hidden" id="createdDataRecordID" value="{{dataRecordItems._id}}">
 	</div>
 
-	<form name="dataRecord" id="dataRecord" onsubmit="create(); return false;">
+	<form name="dataRecord" id="dataRecord" onsubmit="create('{{view}}'); return false;">
 		<zdk-panel heading="{{'Physiological parameters' |i18n}}" collapsable="false" collapsed="false">
 			<div class="row row-legend">
 				<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{{ "Parameter"|i18n }}</div>

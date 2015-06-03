@@ -15,8 +15,10 @@
  */
 	
 var Logger = require("logger"),
+	ObjectID = require("mongodb").ObjectID,
 	promise = require("rsvp").Promise,
-	Cookies = require("cookies");
+	Cookies = require("cookies"),
+	moment = require("moment");
 var logger = new Logger("IDirectory");
 
 /**
@@ -78,8 +80,19 @@ var IDirectory = {
 				}
 			})
 			.then( function(entry) {
-				res.send(entry);
-				next();
+				var log = {
+					subject   : entry._id,
+					datetime  : moment().toISOString(),
+					source    : req.session.person.id,
+					collection: "professionals",
+					action    : "create",
+					what      : entry
+				};
+				logPromise(log)
+					.then( function() {
+						res.send(entry);
+						next();
+					});
 			})
 			.catch( function(err) {
 				res.send(err.code || 400, err);
@@ -127,8 +140,19 @@ var IDirectory = {
 						var cookies = new Cookies(req, res);
 						cookies.set('lang',physioDOM.lang, { path: '/', httpOnly : false});
 					}
-					res.send(professional);
-					next();
+					var log = {
+						subject   : professional._id,
+						datetime  : moment().toISOString(),
+						source    : req.session.person.id,
+						collection: "professionals",
+						action    : "update",
+						what      : professional
+					};
+					logPromise(log)
+						.then( function() {
+							res.send(professional);
+							next();
+						});
 				})
 				.catch(function (err) {
 					res.send(err.code || 400, err);
@@ -143,8 +167,19 @@ var IDirectory = {
 				return directory.deleteEntry(req.params.entryID);
 			})
 			.then( function() {
-				res.send(410, { error: "entry deleted"});
-				next();
+				var log = {
+					subject   : new ObjectID( req.params.entryID ),
+					datetime  : moment().toISOString(),
+					source    : req.session.person.id,
+					collection: "professionals",
+					action    : "delete",
+					what      : {}
+				};
+				logPromise(log)
+					.then( function() {
+						res.send(410, {error: "entry deleted"});
+						next();
+					});
 			})
 			.catch(function (err) {
 				res.send(err.code || 400, err);
@@ -328,5 +363,13 @@ var IDirectory = {
 			});
 	}
 };
+
+function logPromise(log) {
+	return new promise(function (resolve, reject) {
+		physioDOM.db.collection("journal").save(log, function (err) {
+			resolve(log);
+		});
+	});
+}
 
 module.exports = IDirectory;
