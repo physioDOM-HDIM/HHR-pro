@@ -1,4 +1,4 @@
-__v0.0.41-pre__
+__v0.0.41__
 
   - \#255 : Bug 372 - [CHS][v040] suppression "Special Diet Prescription"
   - \#254 : Bug 309 - Traçabilité identité du professionel et date impactant un beneficiaire
