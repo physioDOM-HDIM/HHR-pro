@@ -1,5 +1,7 @@
 __v1.0.0__
 
+  - FIX regression on "Prescription of symptoms assessments" 
+
 >__Nota :__  The version 0.0.41 is marked as version 1.0.0 ( prod version ).  
 > The patched production versions  will be marked as 1.0.x
 >
