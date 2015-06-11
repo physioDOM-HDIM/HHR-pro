@@ -1492,7 +1492,11 @@ function IPage() {
 				})
 				.then( function(directory) {
 					if(data.status.validated.author) {
-						return directory.getEntryByID(data.status.validated.author.toString());
+						return new promise( function(resolve, reject) {
+							directory.getEntryByID(data.status.validated.author.toString())
+								.then( resolve )
+								.catch( function() { resolve( null ) });
+						});
 					} else {
 						return null;
 					}
@@ -1515,6 +1519,9 @@ function IPage() {
 					render('/static/tpl/current/' + name + '.htm', data, res, next);
 				})
 				.catch(function(err) {
+					if(err && err.stack ) {
+						console.log(err.stack);
+					}
 					if (err.code && err.code === 404) {
 						data.status = {};
 						render('/static/tpl/current/' + name + '.htm', data, res, next);
