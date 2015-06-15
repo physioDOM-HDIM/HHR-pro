@@ -443,7 +443,31 @@ function checkAllForms(isValidate) {
     */
 
     if (invalid) {
-        return false;
+		if( Utils.isSafari() ) {
+			var log = "", label = "";
+			var elt = document.querySelector("*:required:invalid")
+			elt.scrollIntoView();
+			if( elt.value ) {
+				if (elt.min) {
+					log = "the value must be greater than " + elt.min;
+				}
+				if (elt.max) {
+					log = "the value must be lower than " + elt.max;
+				}
+				if (elt.min && elt.max) {
+					log = "the value must be between " + elt.min + " and " + elt.max;
+				}
+			} else {
+				log = "must not be empty";
+			}
+			
+			if( elt.id && document.querySelector("label[for='"+elt.id+"']")) {
+				label = document.querySelector("label[for='"+elt.id+"']").innerHTML;
+				log = "<b>The field '"+label+"'</b><br/>" + log;
+			}
+			new Modal('emptyRequired', null, log);
+		}
+		return false;
     }
 
     var mixin = function(dest, source) {
@@ -792,6 +816,15 @@ function revokeCert() {
 		});
 }
 
+function cancelForm() {
+	modified=false;
+	if( document.querySelector("*[name=_id]").value === parent.document.querySelector("#beneficiary input").value ) {
+		window.location.href = "/beneficiary/"+ document.querySelector("*[name=_id]").value ;
+	} else {
+		window.location.href = "/beneficiaries";
+	}
+}
+
 function init() {
     tsanteListProfessionalElt = document.querySelector("#tsanteListProfessional");
     tsanteListProfessionalElt.addEventListener("tsante-response", _onHaveProfessionalsData, false);
@@ -899,7 +932,6 @@ window.addEventListener("beforeunload", function( e) {
 });
 
 window.addEventListener("DOMContentLoaded", function () {
-
     var inputTextList = document.querySelectorAll("input[type='text']"),
         inputEmailList = document.querySelectorAll("input[type='email']"),
         textareaList = document.querySelectorAll("textarea"),
