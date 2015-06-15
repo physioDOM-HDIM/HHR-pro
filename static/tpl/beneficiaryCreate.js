@@ -415,7 +415,7 @@ function checkAllForms(isValidate) {
 		if( form.name === "account" && form.login && !form.login.value ) {
 			continue;
 		}
-		if( form.name === "account" && form.login === undefined && !form.password.value && !form.checkAccountPassword.value ) {
+		if( form.name === "account" && form.login === undefined && (!form.password || !form.password.value && !form.checkAccountPassword.value) ) {
 			continue;
 		}
 		if (!form.checkValidity()) {
@@ -712,7 +712,7 @@ function activeChange(obj) {
 		document.querySelector("#diagLabel").classList.remove("mandatory");
 		document.querySelector("input[name=size]").removeAttribute("required");
 		document.querySelector("#sizeLabel").classList.remove("mandatory");
-		document.querySelector("input[name=biomaster").removeAttribute("required");
+		document.querySelector("input[name=biomaster]").removeAttribute("required");
 		document.querySelector("#biomasterLabel").classList.remove("mandatory");
 		document.querySelector("#startDateLabel").classList.remove("mandatory");
 		document.querySelector("#startDate").removeAttribute("required");
@@ -724,7 +724,7 @@ function activeChange(obj) {
 			document.querySelector("input[name=size]").value = null;
 		}
 	} else {
-		document.querySelector("input[name=biomaster").setAttribute("required", true);
+		document.querySelector("input[name=biomaster]").setAttribute("required", true);
 		if(!document.querySelector("#biomasterLabel").classList.contains("mandatory")) {
 			document.querySelector("#biomasterLabel").classList.add("mandatory");
 		}
