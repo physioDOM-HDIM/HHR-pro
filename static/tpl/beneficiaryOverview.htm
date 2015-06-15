@@ -385,6 +385,7 @@
 
 <script>
 	parent.document.querySelector("#beneficiary a").innerHTML = '{{ beneficiary.name.family }} {{ beneficiary.name.given }}';
+	parent.document.querySelector("#beneficiary input").value = '{{ beneficiary._id.toString() }}';
 	parent.highlight("/beneficiary/overview");
 	{% if beneficiary.active %}
 		parent.enableDataRecord(true);
