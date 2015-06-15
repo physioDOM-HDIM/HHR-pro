@@ -4,6 +4,10 @@ function Utils() {
 
 }
 
+Utils.prototype.isSafari = function() {
+	return !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
+};
+
 /**
  * Promise for XHR with RSVP
  */
