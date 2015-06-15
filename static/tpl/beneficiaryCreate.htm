@@ -21,6 +21,15 @@
 	div.float {
 		float: "left";
 	}
+	
+	input:required:invalid, input:focus:invalid, 
+	select:required:invalid, select:focus:invalid, 
+	textarea:required:invalid, textarea:focus:invalid,
+	zdk-input-date:required:invalid, zdk-input-date:focus:invalid
+	{
+		border:2px solid firebrick;
+	}
+	
 </style>
 {% endblock %}
 
@@ -49,8 +58,8 @@
 	<div>
 		<div class="row">
 			<div class="col">
-				<label class="mandatory">{{ "Use"|i18n }}</label>
-				<select name="telecom[{{loop.index}} {%raw%}{{idx}}{%endraw%}].use" required>
+				<label for="telecom_{{loop.index}} {%raw%}{{idx}}{%endraw%}.use" class="mandatory">{{ "Use"|i18n }}</label>
+				<select id="telecom_{{loop.index}} {%raw%}{{idx}}{%endraw%}.use" name="telecom[{{loop.index}} {%raw%}{{idx}}{%endraw%}].use" required>
 					{% for item in use.items %}
 					<option value="{{item.value}}" {% if (!telecom.use && item.value=='home')||telecom.use===item.value%}selected{% endif %}>{{item.label}}
 					</option>
@@ -58,8 +67,8 @@
 				</select>
 			</div>
 			<div class="col">
-				<label class="mandatory">{{ "Type"|i18n }} </label>
-				<select name="telecom[{{loop.index}} {%raw%}{{idx}}{%endraw%}].system" required>
+				<label for="telecom_{{loop.index}} {%raw%}{{idx}}{%endraw%}.system" class="mandatory">{{ "Type"|i18n }} </label>
+				<select id="telecom_{{loop.index}} {%raw%}{{idx}}{%endraw%}.system" name="telecom[{{loop.index}} {%raw%}{{idx}}{%endraw%}].system" required>
 					{% for item in system.items %}
 					{% if item.value !== "email" %}
 					<option value="{{item.value}}" {% if (!telecom.system &&
@@ -72,8 +81,8 @@
 		</div>
 		<div class="row">
 			<div class="col">
-				<label class="mandatory">{{"Number"|i18n}} </label>
-				<input type="text" name="telecom[{{loop.index}} {%raw%}{{idx}}{%endraw%}].value" value="{{telecom.value}}" required/>
+				<label for="telecom_{{loop.index}} {%raw%}{{idx}}{%endraw%}.value" class="mandatory">{{"Number"|i18n}} </label>
+				<input type="text" id="telecom_{{loop.index}} {%raw%}{{idx}}{%endraw%}.value" name="telecom[{{loop.index}} {%raw%}{{idx}}{%endraw%}].value" value="{{telecom.value}}" required/>
 			</div>
 			<div class="col buttonContainer">
 				<span class="spacer"></span>
@@ -85,8 +94,8 @@
 
 <script type="template" id="tplAddressContainer">
 	<div class="row">
-		<label class="mandatory">{{ "Use"|i18n }} </label>
-		<select name="address[{%raw%}{{idx}}{%endraw%}].use" required>
+		<label for="address_{%raw%}{{idx}}{%endraw%}.use" class="mandatory">{{ "Use"|i18n }} </label>
+		<select id="address_{%raw%}{{idx}}{%endraw%}.use" name="address[{%raw%}{{idx}}{%endraw%}].use" required>
 			{% for item in use.items %}
 			<option value="{{item.value}}">{{item.label}}</option>
 			{% endfor %}
@@ -98,18 +107,18 @@
 		</div>
 	</div>
 	<div class="row">
-		<label class="mandatory">{{ "Street"|i18n }} </label>
-		<textarea name="address[{%raw%}{{idx}}{%endraw%}].line" required>{{addressItem.line}}</textarea>
+		<label for="address_{%raw%}{{idx}}{%endraw%}.line" class="mandatory">{{ "Street"|i18n }} </label>
+		<textarea id="address_{%raw%}{{idx}}{%endraw%}.line" name="address[{%raw%}{{idx}}{%endraw%}].line" required>{{addressItem.line}}</textarea>
 	</div>
 	<div class="row">
 		<div class="col">
-			<label class="mandatory">{{ "Zip code"|i18n }}</label>
-			<input type="text" name="address[{%raw%}{{idx}}{%endraw%}].zip" class="zipCode" value="{{addressItem.zip}}"
+			<label for="address_{%raw%}{{idx}}{%endraw%}.zip" class="mandatory">{{ "Zip code"|i18n }}</label>
+			<input type="text" id="address_{%raw%}{{idx}}{%endraw%}.zip" name="address[{%raw%}{{idx}}{%endraw%}].zip" class="zipCode" value="{{addressItem.zip}}"
 			       required/>
 		</div>
 		<div class="col">
-			<label class="city mandatory">{{ "City"|i18n }} </label>
-			<input type="text" name="address[{%raw%}{{idx}}{%endraw%}].city" value="{{addressItem.city}}" required/>
+			<label for="address_{%raw%}{{idx}}{%endraw%}.city" class="city mandatory">{{ "City"|i18n }} </label>
+			<input type="text" id="address_{%raw%}{{idx}}{%endraw%}.city" name="address[{%raw%}{{idx}}{%endraw%}].city" value="{{addressItem.city}}" required/>
 		</div>
 		<input type="hidden" name="address[{%raw%}{{idx}}{%endraw%}].country" value="{{country}}" required/>
 	</div>
@@ -123,14 +132,14 @@
 		
 		<div class="row">
 			<label class="mandatory">{{ "Civility" | i18n }}</label>
-			<input name="gender" type="radio" value="M" {% if beneficiary.gender=='M' %}checked{% endif %} required>
+			<input name="gender" id="Male" type="radio" value="M" {% if beneficiary.gender=='M' %}checked{% endif %} required>
 			<label for="Male">{{ "Man"|i18n }}</label>
-			<input name="gender" type="radio" value="F" {% if beneficiary.gender=='F' %}checked{% endif %} required>
+			<input name="gender" id="Female" type="radio" value="F" {% if beneficiary.gender=='F' %}checked{% endif %} required>
 			<label for="Female">{{ "Woman"|i18n }}</label>
 		</div>
 		<div class="row">
-			<label class="mandatory">{{ "Last name"|i18n }}</label>
-			<input type="text" name="name.family" value="{{beneficiary.name.family}}" required
+			<label for="name.family" class="mandatory">{{ "Last name"|i18n }}</label>
+			<input type="text" id="name.family" name="name.family" value="{{beneficiary.name.family}}" required
 			       placeholder="{{ 'Mandatory field'|i18n }}"/>
 		</div>
 		<div class="row">
@@ -138,8 +147,8 @@
 			<input type="text" name="name.given" value="{{beneficiary.name.given}}"/>
 		</div>
 		<div class="row">
-			<label class="mandatory">{{ "Birth date"|i18n }}</label>
-			<input type="text" name="birthdate" required class="date" value="{{beneficiary.birthdate}}"/>
+			<label for="birthdate" class="mandatory">{{ "Birth date"|i18n }}</label>
+			<input type="text" id="birthdate" name="birthdate" required class="date" value="{{beneficiary.birthdate}}"/>
 		</div>
 		<div class="row">
 			<label>{{ "Perimeter"|i18n }}</label>
@@ -153,8 +162,8 @@
 		</div>
 		<div class="row">
 			<div class="col">
-				<label id="sizeLabel" {% if beneficiary.active %}class="mandatory"{% endif %}>{{ "Height"|i18n}} ({{"centimeters"|i18n }})</label>
-				<input type="number" min="100" max="250" step="1" name="size" value="{% if beneficiary.size %}{{ Math.round(beneficiary.size * 100) }}{% endif %}" {% if beneficiary.active %}required{% endif %}/>
+				<label id="sizeLabel" for="size" {% if beneficiary.active %}class="mandatory"{% endif %}>{{ "Height"|i18n}} ({{"centimeters"|i18n }})</label>
+				<input type="number" min="100" max="250" step="1" id="size" name="size" value="{% if beneficiary.size %}{{ Math.round(beneficiary.size * 100) }}{% endif %}" {% if beneficiary.active %}required{% endif %}/>
 			</div>
 			<div class="col">
 				<label>{{ "Social ID"|i18n }}</label>
@@ -170,8 +179,8 @@
 				<div>
 					<div class="row">
 						<div class="col">
-							<label class="mandatory">{{ "Use"|i18n }}</label>
-							<select name="telecom[{{loop.index}}].use" required>
+							<label for="telecom_{{loop.index}}.use" class="mandatory">{{ "Use"|i18n }}</label>
+							<select id="telecom_{{loop.index}}.use" name="telecom[{{loop.index}}].use" required>
 								{% for item in use.items %}
 								<option value="{{item.value}}" {% if (!telecom.use &&
 								        item.value=='home')||telecom.use===item.value %}selected{% endif %}>
@@ -181,8 +190,8 @@
 							</select>
 						</div>
 						<div class="col">
-							<label class="mandatory">{{ "Type"|i18n }}</label>
-							<select name="telecom[{{loop.index}}].system" required>
+							<label for="telecom_{{loop.index}}.system" class="mandatory">{{ "Type"|i18n }}</label>
+							<select id="telecom_{{loop.index}}.system" name="telecom[{{loop.index}}].system" required>
 								{% for item in system.items %}
 								{% if item.value !== "email" %}
 								<option value="{{item.value}}" {% if (!telecom.system &&
@@ -196,8 +205,8 @@
 					</div>
 					<div class="row">
 						<div class="col">
-							<label class="mandatory">{{"Number"|i18n}}</label>
-							<input type="text" name="telecom[{{loop.index}}].value" value="{{telecom.value}}" required/>
+							<label for="telecom_{{loop.index}}.value" class="mandatory">{{"Number"|i18n}}</label>
+							<input type="text" id="telecom_{{loop.index}}.value" name="telecom[{{loop.index}}].value" value="{{telecom.value}}" required/>
 						</div>
 						<div class="col buttonContainer">
 							<span class="spacer"></span>
@@ -219,8 +228,8 @@
 			{% for addressItem in beneficiary.address %}
 			<div class="addressContainer">
 				<div class="row">
-					<label class="mandatory">{{ "Use"|i18n }}</span></label>
-					<select name="address[{{loop.index}}].use" required>
+					<label for="address_{{loop.index}}.use" class="mandatory">{{ "Use"|i18n }}</span></label>
+					<select id="address_{{loop.index}}.use" name="address[{{loop.index}}].use" required>
 						{% for item in use.items %}
 						<option value="{{item.value}}" {% if addressItem.use== item.value %}selected{% endif %}>
 							{{item.label}}
@@ -235,18 +244,18 @@
 					</div>
 				</div>
 				<div class="row">
-					<label class="mandatory">{{ "Street"|i18n }}</label>
-					<textarea name="address[{{loop.index}}].line" required>{{addressItem.line}}</textarea>
+					<label for="address_{{loop.index}}.line" class="mandatory">{{ "Street"|i18n }}</label>
+					<textarea id="address_{{loop.index}}.line" name="address[{{loop.index}}].line" required>{{addressItem.line}}</textarea>
 				</div>
 				<div class="row">
 					<div class="col">
-						<label class="mandatory">{{ "Zip code"|i18n }}</label>
-						<input type="text" name="address[{{loop.index}}].zip" class="zipCode"
+						<label for="address_{{loop.index}}.zip" class="mandatory">{{ "Zip code"|i18n }}</label>
+						<input type="text" id="address_{{loop.index}}.zip" name="address[{{loop.index}}].zip" class="zipCode"
 						       value="{{addressItem.zip}}" required/>
 					</div>
 					<div class="col">
-						<label class="city mandatory">{{ "City"|i18n }}</label>
-						<input type="text" name="address[{{loop.index}}].city" value="{{addressItem.city}}" required/>
+						<label for="address_{{loop.index}}.city" class="city mandatory">{{ "City"|i18n }}</label>
+						<input type="text" id="address_{{loop.index}}.city" name="address[{{loop.index}}].city" value="{{addressItem.city}}" required/>
 						<input type="hidden" name="address[{{loop.index}}].country" value="{{addressItem.country || country}}" required/>
 					</div>
 				</div>
@@ -277,7 +286,7 @@
 			</div>
 			<div class="row">
 				<div class="col">
-					<label id="startDateLabel" {% if beneficiary.active===true %}class="mandatory"{% endif %}>{{ "Start date"|i18n }}</label>
+					<label id="startDateLabel" for="startDate" {% if beneficiary.active===true %}class="mandatory"{% endif %}>{{ "Start date"|i18n }}</label>
 					<zdk-input-date id="startDate" name="entry.startDate" value="{{beneficiary.entry.startDate}}" style="z-index:100" staticpos="true"
 					                required></zdk-input-date>
 				</div>
@@ -325,8 +334,8 @@
 			</div>
 			</div>
 			<div class="row">
-				<label id="biomasterLabel" {% if beneficiary.active %}class="mandatory"{% endif %}>{{ "PhysioDom-Box"|i18n }}</label>
-				<input type="text" name="biomaster" value="{{beneficiary.biomaster}}" {% if beneficiary.active %}required{% endif %}/>
+				<label id="biomasterLabel" for="biomaster" {% if beneficiary.active %}class="mandatory"{% endif %}>{{ "PhysioDom-Box"|i18n }}</label>
+				<input type="text" id="biomaster" name="biomaster" value="{{beneficiary.biomaster}}" {% if beneficiary.active %}required{% endif %}/>
 			</div>
 			<button id="entrySubmitBtn" class="hidden"></button>
 		</form>
@@ -416,20 +425,20 @@
 			</div>
 			{% endif %}
 			<div class="row">
-				<label>{{ "Password" | i18n }}</label>
+				<label for="account.password">{{ "Password" | i18n }}</label>
 				<input type="hidden" name="password"  value="{{beneficiary.account.password}}" />
-				<input type="password" name="account.password" value="{{beneficiary.account.password}}" required />
+				<input type="password" id="account.password" name="account.password" value="{{beneficiary.account.password}}"  />
 			</div>
 			<div class="row">
-				<label>{{ "Confirm password" | i18n }}</label>
-				<input type="password" name="checkAccountPassword" value="{{beneficiary.account.password}}" required />
+				<label for="checkAccountPassword">{{ "Confirm password" | i18n }}</label>
+				<input type="password" id="checkAccountPassword" name="checkAccountPassword" value="{{beneficiary.account.password}}"  />
 			</div>
 			<div class="row tip" style="line-height:initial;margin-top:5px; margin-bottom:5px;">
 				{{"Info"|i18n}}: {{"The password must contain at least 1 uppercase, 1 lowercase, 1 special character and have at least 8 characters" | i18n}}
 			</div>
 			<div class="row">
-				<label>{{ "Email"|i18n }}</label>
-				<input type="email" name="telecom.value" required
+				<label for="telecom.value">{{ "Email"|i18n }}</label>
+				<input type="email" id="telecom.value" name="telecom.value" 
 				       value="{%- for telecom in beneficiary.telecom -%}
 	                        {%- if telecom.system === 'email' -%}{{- telecom.value- }}{%- endif -%}
 	                    {%- endfor -%}"  />
@@ -516,7 +525,7 @@
 			
 			<div class="row diagnosis" style="align-items: inherit;">
 				<div class="col diagnosis" style="flex: none; width: 250px;">
-					<div id="diagLabel" {% if beneficiary.active %}class="mandatory"{% endif %}>{{ "Main diagnosis"|i18n }}</div>
+					<label for="diag" id="diagLabel" {% if beneficiary.active %}class="mandatory"{% endif %}>{{ "Main diagnosis"|i18n }}</label>
 					<select id="diag" name="diagnosis.chronic.main" {% if beneficiary.active %}required{% endif %}>
 						{% for item in diagnosis.items %}
 						{% if item.value === "NONE" && item.label === "" %}
@@ -550,7 +559,7 @@
 	<div class="row control" style="height:60px; align-content: center">
 		<span class="spacer"></span>
 		<button id="deleteBeneficiary" class="red big" onclick="confirmDeleteBeneficiary()">{{ "Delete"|i18n }}</button>
-		<button class="red big" onclick="modified=false; window.history.back();">{{ "Cancel"|i18n }}</button>
+		<button class="red big" onclick="cancelForm()">{{ "Cancel"|i18n }}</button>
 		<button class="waitForId green big" onclick="checkAllForms()">{{ "Save"|i18n }}</button>
 	</div>
 </div>
