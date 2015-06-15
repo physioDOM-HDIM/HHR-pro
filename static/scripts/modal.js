@@ -56,6 +56,20 @@ function Modal (type, callback, log) {
         }]
     };
 
+	content.emptyRequired = {
+		title: "trad_required",
+		content: "trad_required_occured",
+		buttons: [{
+			id: "trad_ok",
+			action: function() {
+				if(callback) {
+					callback();
+				}
+				self.closeModal();
+			}
+		}]
+	};
+
     content.errorDateExist = {
         title: "trad_error",
         content: "trad_error_date_exist",

@@ -394,5 +394,7 @@
   "Your login":"Su nombre de usuario",
   "Your password":"tu contraseña",
   "Your password is unchanged":"Su contraseña se ha modificado",
-  "On IDS, the identifier is the mail address":"En IDS, el identificador es la dirección de correo"
+  "On IDS, the identifier is the mail address":"En IDS, el identificador es la dirección de correo",
+  "Required":"Obligatorio",
+  "Some required fields are not correctly filled":"Algunos campos obligatorios no se llenan correctamente"
 }
