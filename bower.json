@@ -14,7 +14,7 @@
     "tests"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#~0.5.1",
+    "polymer": "Polymer/polymer#~0.5.6",
     "core-ajax": "Polymer/core-ajax#~0.5.1",
     "core-input": "Polymer/core-input#~0.5.1",
     "zdk-panel": "~0.3.0",
@@ -28,12 +28,12 @@
     "paper-elements": "Polymer/paper-elements#~0.5.1",
     "zdk-agenda": "~0.1.0",
     "momentjs": "~2.8.4",
-    "tsante-pager": "./install/tsante-pager-v0.2.2.tar.gz",
-    "tsante-listpager": "./install/tsante-listpager-v0.3.1.tar.gz",
     "highcharts-release": "~4.0.4",
-    "cookies-js": "~1.1.0"
+    "cookies-js": "~1.1.0",
+    "tsante-pager": "./install/tsante-pager-v0.2.2.tar.gz",
+    "tsante-listpager": "./install/tsante-listpager-v0.3.1.tar.gz"
   },
   "resolutions": {
-    "webcomponentsjs": "^0.6.0"
+    "webcomponentsjs": "~0.6.3"
   }
 }
