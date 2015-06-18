@@ -21,6 +21,22 @@ window.addEventListener("DOMContentLoaded", function () {
 	});
 });
 
+if(Utils.isSafari()) {
+	document.addEventListener("touchstart", function (evt) {
+		if (evt.target.tagName === "LABEL" && evt.target.htmlFor) {
+			evt.stopPropagation();
+			evt.preventDefault();
+			console.log("touch event", evt);
+			setTimeout(function () {
+				var elt = document.getElementById(evt.target.htmlFor);
+				elt.checked = !elt.checked;
+				resetLine(/-blue-/.test(evt.target.htmlFor) ? 'blue' : 'yellow', elt);
+				getDataRecords();
+			}, 0);
+		}
+	}, true);
+}
+
 window.addEventListener("polymer-ready", function() {
     infos.lang = Cookies.get("lang");
 	moment().locale(infos.lang=="en"?"en-gb":infos.lang);
@@ -128,27 +144,33 @@ var getDataRecords = function(init) {
     }
 
     //TODO when API is defined/done: update graph with received datas
-    RSVP.hash(promises).then(function(dataRecords) {
-    	if(dataRecords.blue) {
-    		physiologicalData.dataRecords.blue = JSON.parse(dataRecords.blue);
-    		physiologicalData.dataRecords.blue.category = BlueCategory;
-    	} else {
-    		physiologicalData.dataRecords.blue = null;
-    	}
-
-    	if(dataRecords.yellow) {
-    		physiologicalData.dataRecords.yellow = JSON.parse(dataRecords.yellow);
-    		physiologicalData.dataRecords.yellow.category = YellowCategory;
-    	} else {
-    		physiologicalData.dataRecords.yellow = null;
-    	}
-    }, function(res) {
-    	new Modal('errorOccured',undefined, res);
-    }).then(function() {
-    	if(BlueChoice || YellowChoice) {
-    		renderGraph(physiologicalData.dataRecords);
-    	}
-    });
+    RSVP.hash(promises)
+		.then(function(dataRecords) {
+    		if(dataRecords.blue) {
+    			physiologicalData.dataRecords.blue = JSON.parse(dataRecords.blue);
+    			physiologicalData.dataRecords.blue.category = BlueCategory;
+    		} else {
+    			physiologicalData.dataRecords.blue = null;
+    		}
+	
+    		if(dataRecords.yellow) {
+    			physiologicalData.dataRecords.yellow = JSON.parse(dataRecords.yellow);
+    			physiologicalData.dataRecords.yellow.category = YellowCategory;
+    		} else {
+    			physiologicalData.dataRecords.yellow = null;
+    		}
+    	}, function(res) {
+    		new Modal('errorOccured',undefined, res);
+    	})
+		.then(function() {
+    		if(BlueChoice || YellowChoice) {
+    			renderGraph(physiologicalData.dataRecords);
+    		}
+    	})
+		.catch( function(err) {
+			console.error("getDataRecords error", err);
+			if(err.stack) { console.info(err.stack); }
+		});
 
     if(!BlueChoice && !YellowChoice) {
     	renderGraph();
@@ -313,16 +335,15 @@ var initGraph = function() {
 };
 
 var renderGraph = function(dataRecords) {
-	var user = JSON.parse(document.querySelector('#user').innerHTML),
-		label = "",
-		unit = "",
-		datas = [],
-		yAxisConf = [],
-		tooltip = true,
-		noDataTip = document.querySelector('.empty-graph'),
-		dateFrom = moment(document.querySelector('.date-from').value).valueOf(),
-		dateTo = moment(document.querySelector('.date-to').value).valueOf();
-	
+	var user = JSON.parse(document.querySelector('#user').innerHTML);
+	var label = "";
+	var unit = "";
+	var datas = [];
+	var yAxisConf = [];
+	var tooltip = true;
+	var noDataTip = document.querySelector('.empty-graph');
+	var dateFrom = moment(document.querySelector('.date-from').value).valueOf();
+	var dateTo = moment(document.querySelector('.date-to').value).valueOf();
 	var threshold = document.querySelector(".threshold").innerHTML;
 	
 	Utils.hideElt(noDataTip);
