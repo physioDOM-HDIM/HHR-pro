@@ -375,6 +375,14 @@ function init() {
         Utils.limitText(textareaList[i], 500);
     }
 
+	setTimeout(function() {
+		if(window.location.pathname === "/directory/create") {
+			document.querySelector('.account-password').value = "";
+			document.querySelector('.account-check-password').value = "";
+			document.querySelector("input[name='address.city']").value = "";
+			modified = false;
+		}
+	},100);
 }
 
 window.addEventListener("beforeunload", function( e) {
@@ -386,4 +394,4 @@ window.addEventListener("beforeunload", function( e) {
 	}
 });
 
-window.addEventListener("DOMContentLoaded", init, false);
+window.addEventListener("polymer-ready", init, false);
