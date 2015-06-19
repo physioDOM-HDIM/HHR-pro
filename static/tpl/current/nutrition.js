@@ -31,7 +31,7 @@ function showConfirm() {
 
 	if(!formElt.checkValidity()) {
 
-		if( utils.isSafari() ) {
+		if( Utils.isSafari() ) {
 			var log = "", label = "";
 			var elt = document.querySelector("*:required:invalid");
 			elt.scrollIntoView();
@@ -50,9 +50,9 @@ function showConfirm() {
 				log = "must not be empty";
 			}
 
-			if( elt.id && document.querySelector("label[for='"+elt.id+"']")) {
-				label = document.querySelector("label[for='"+elt.id+"']").innerHTML;
-				log = "<b>The field '"+label+"'</b><br/>" + log;
+			label = elt.parentNode.querySelector(".value-name");
+			if( label ) {
+				log = "<b>The field '"+ label.innerHTML +"'</b><br/>" + log;
 			}
 			new Modal('emptyRequired', null, log);
 		}
@@ -113,7 +113,7 @@ function saveDatas(validate) {
 	var formElt = document.getElementById('formDiet');
 	if(!formElt.checkValidity()) {
 
-		if( utils.isSafari() ) {
+		if( Utils.isSafari() ) {
 			var log = "", label = "";
 			var elt = document.querySelector("*:required:invalid");
 			elt.scrollIntoView();
@@ -132,9 +132,9 @@ function saveDatas(validate) {
 				log = "must not be empty";
 			}
 
-			if( elt.id && document.querySelector("label[for='"+elt.id+"']")) {
-				label = document.querySelector("label[for='"+elt.id+"']").innerHTML;
-				log = "<b>The field '"+label+"'</b><br/>" + log;
+			label = elt.parentNode.querySelector(".value-name");
+			if( label ) {
+				log = "<b>The field '"+ label.innerHTML +"'</b><br/>" + log;
 			}
 			new Modal('emptyRequired', null, log);
 		}
