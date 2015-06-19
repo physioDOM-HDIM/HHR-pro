@@ -982,7 +982,7 @@ function Beneficiary( ) {
 				if (err) {
 					reject(err);
 				}
-				physioDOM.db.collection("dataRecords").remove({ dataRecordID:new ObjectID( dataRecordID ) }, function (err, nbItems) {
+				physioDOM.db.collection("dataRecordItems").remove({ dataRecordID:new ObjectID( dataRecordID ) }, function (err, nbItems) {
 					if (err) {
 						reject(err);
 					}
@@ -991,7 +991,7 @@ function Beneficiary( ) {
 							reject(err);
 						}
 						resolve(nb);
-					})
+					});
 				});
 			});
 		});

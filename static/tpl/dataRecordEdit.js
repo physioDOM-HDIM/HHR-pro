@@ -407,7 +407,7 @@ function create(mode) {
 		if (invalid) {
 			if( utils.isSafari() ) {
 				var log = "", label = "";
-				var elt = document.querySelector("*:required:invalid")
+				var elt = document.querySelector("*:required:invalid");
 				elt.scrollIntoView();
 				elt.focus(true);
 				if( elt.value ) {
