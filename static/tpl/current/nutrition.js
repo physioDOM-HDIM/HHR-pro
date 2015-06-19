@@ -204,6 +204,11 @@ function paramChange( obj, oldValue) {
 		obj.parentNode.querySelector(".value-date").innerHTML = "";
 		obj.parentNode.querySelector(".param-date").value = moment().format("YYYY-MM-DD");
 	}
+	if( obj.value ) {
+		obj.required = true;
+	} else {
+		obj.required = null;
+	}
 }
 
 function validate() {
