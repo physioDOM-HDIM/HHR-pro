@@ -1071,7 +1071,7 @@ function Beneficiary( ) {
 							what      : dataRecord
 						};
 						physioDOM.db.collection("journal").save(log, function (err) {
-							resolve(log);
+							resolve(dataRecord);
 						});
 					});
 				})
