@@ -1,4 +1,5 @@
 'use strict';
+var Utils = new Utils();
 
 function init() {
 	moment.locale(Cookies.get("lang")=="en"?"en-gb":Cookies.get("lang"));
@@ -16,6 +17,10 @@ function init() {
 	});
 	if( document.querySelector("#biomasterStatus") && document.querySelector("#biomasterStatus").value === "pending" ) {
 		setTimeout(getQueueStatus,2000);
+	}
+	
+	if( Utils.isSafari() ) {
+		document.querySelector( "zdk-panel#personal").style.float = "left";
 	}
 }
 
