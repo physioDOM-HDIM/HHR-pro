@@ -147,16 +147,21 @@ function checkForm(validate) {
 
 	var formObj = form2js(formElt);
 
-	if(formObj.stepsNumber && (datas.savedData.stepsNumber !== formObj.stepsNumber)) {
-		var todayDate = moment().format('L'),
-		dateContainer = document.querySelector('.stepsNumberDate');
-		dateContainer.innerHTML = todayDate;
-
-		formObj['stepsNumberDate'] = todayDate;
-	}
-
-	if (formObj.stepsNumber) {
-		formObj.stepsNumber = parseInt(formObj.stepsNumber, 10);
+	if( formObj.parameters ) {
+		formObj.parameters.forEach(function (parameter) {
+			if (!parameter.value) {
+				parameter.value = null;
+				parameter.date = null;
+			} else {
+				parameter.value = parseInt(parameter.value, 10);
+				if (!parameter.date) {
+					parameter.date = moment().format("YYYY-MM-DD");
+				}
+			}
+			if (!parameter.comment) {
+				parameter.comment = "";
+			}
+		});
 	}
 
 	formObj.validated = validate;

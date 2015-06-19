@@ -185,8 +185,7 @@ function saveDatas(validate) {
 				parameter.comment = "";
 			}
 		});
-	}	
-	console.log( formObj );
+	}
 	
 	if(!validate) {
 		sendDatas(formObj, function() {
