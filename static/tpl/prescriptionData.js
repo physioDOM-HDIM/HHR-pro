@@ -383,6 +383,33 @@ var saveData = function () {
 	
 	if( !document.querySelector("form[name=dataprog]").checkValidity() ) {
 		document.querySelector("#Save").click();
+
+		if( utils.isSafari() ) {
+			var log = "", label = "";
+			var elt = document.querySelector("*:required:invalid");
+			elt.scrollIntoView();
+			elt.focus(true);
+			if( elt.value ) {
+				if (elt.min) {
+					log = "the value must be greater than " + elt.min;
+				}
+				if (elt.max) {
+					log = "the value must be lower than " + elt.max;
+				}
+				if (elt.min && elt.max) {
+					log = "the value must be between " + elt.min + " and " + elt.max;
+				}
+			} else {
+				log = "must not be empty";
+			}
+
+			if( elt.id && document.querySelector("label[for='"+elt.id+"']")) {
+				label = document.querySelector("label[for='"+elt.id+"']").innerHTML;
+				log = "<b>The field '"+label+"'</b><br/>" + log;
+			}
+			new Modal('emptyRequired', null, log);
+		}
+		
 		return false;
 	}
 	

@@ -427,20 +427,6 @@ function checkAllForms(isValidate) {
 			}
 		}
 	}
-	/*
-    [].map.call(forms, function(form) {
-		if( form.name === "account" && !form.login.value ) {
-			return;
-		}
-        if (!form.checkValidity()) {
-            invalid = true;
-            btn = document.querySelector("#" + form.name + "SubmitBtn");
-            if (btn) {
-                btn.click();
-            }
-        }
-    });
-    */
 
     if (invalid) {
 		if( Utils.isSafari() ) {

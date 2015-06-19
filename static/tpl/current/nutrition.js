@@ -30,6 +30,33 @@ function showConfirm() {
 	var formElt = document.getElementById('formDiet');
 
 	if(!formElt.checkValidity()) {
+
+		if( utils.isSafari() ) {
+			var log = "", label = "";
+			var elt = document.querySelector("*:required:invalid");
+			elt.scrollIntoView();
+			elt.focus(true);
+			if( elt.value ) {
+				if (elt.min) {
+					log = "the value must be greater than " + elt.min;
+				}
+				if (elt.max) {
+					log = "the value must be lower than " + elt.max;
+				}
+				if (elt.min && elt.max) {
+					log = "the value must be between " + elt.min + " and " + elt.max;
+				}
+			} else {
+				log = "must not be empty";
+			}
+
+			if( elt.id && document.querySelector("label[for='"+elt.id+"']")) {
+				label = document.querySelector("label[for='"+elt.id+"']").innerHTML;
+				log = "<b>The field '"+label+"'</b><br/>" + log;
+			}
+			new Modal('emptyRequired', null, log);
+		}
+		
 		return;
 	}
 
@@ -85,7 +112,34 @@ function addValue (valueName, formObj, isFloat) {
 function saveDatas(validate) {
 	var formElt = document.getElementById('formDiet');
 	if(!formElt.checkValidity()) {
-		return;
+
+		if( utils.isSafari() ) {
+			var log = "", label = "";
+			var elt = document.querySelector("*:required:invalid");
+			elt.scrollIntoView();
+			elt.focus(true);
+			if( elt.value ) {
+				if (elt.min) {
+					log = "the value must be greater than " + elt.min;
+				}
+				if (elt.max) {
+					log = "the value must be lower than " + elt.max;
+				}
+				if (elt.min && elt.max) {
+					log = "the value must be between " + elt.min + " and " + elt.max;
+				}
+			} else {
+				log = "must not be empty";
+			}
+
+			if( elt.id && document.querySelector("label[for='"+elt.id+"']")) {
+				label = document.querySelector("label[for='"+elt.id+"']").innerHTML;
+				log = "<b>The field '"+label+"'</b><br/>" + log;
+			}
+			new Modal('emptyRequired', null, log);
+		}
+		
+		return false;
 	}
 
 	var formObj = form2js(formElt);
