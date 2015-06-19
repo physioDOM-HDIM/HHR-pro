@@ -244,8 +244,8 @@
 	<script type="template" id="newItem">
 	<div class="row questionnaire-row">
 		<div class="col item-text" style="min-width:200px;max-width:200px"></div>
-		<input type="hidden" class="questionnaire-text" name="items[{% raw %}{{idx}}{% endraw %}].text" value="" />
 		{% raw %}{{#questionnaire}}{% endraw %}
+			<input type="hidden" class="questionnaire-text" name="items[{% raw %}{{idx}}{% endraw %}].text" value="" />
 			<div class="col" style="max-width:150px">
 				<input  type="number" class="questionnaire-score" name="items[{% raw %}{{idx}}{% endraw %}].value" value="" disabled />
 				<input type="hidden" class="questionnaire-score" name="items[{% raw %}{{idx}}{% endraw %}].value" value="" />
@@ -260,7 +260,7 @@
 		{% raw %}{{/questionnaire}}{% endraw %}
 		
 		{% raw %}{{^questionnaire}}{% endraw %}
-			<div class="col" style="max-width:150px"><input type="number" step="any"  name="items[{% raw %}{{idx}}{% endraw %}].value"/></div>
+			<div class="col" style="max-width:150px"><input type="number" step="any"  name="items[{% raw %}{{idx}}{% endraw %}].value" required/></div>
 			<div class="col" style="max-width:150px"><span class="units"></span></div>
 			<div class="col" style="max-width:150px">
 				<div class="min-treshold spacing-around"></div>
