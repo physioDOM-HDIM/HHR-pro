@@ -561,10 +561,15 @@ var renderGraph = function(dataRecords) {
 			enabled: tooltip,
 			crosshairs: true,
 			formatter: function () {
+				var str = "";
 				if( this.points[0].series.tooltipOptions.valueSuffix ) {
-					return moment(this.x).format("LLL") + '<br/>' + this.points[0].series.name + ' <b>' + this.y + ' ' + this.points[0].series.tooltipOptions.valueSuffix + '</b>';
+					str = moment(this.x).format("LLL") + '<br/>';
+					this.points.forEach( function(point) {
+						str+= '<span style="color:'+point.series.color+'">'+point.series.name + '</span>&nbsp;&nbsp;<b>' + point.y + ' ' + point.series.tooltipOptions.valueSuffix + '</b><br/>';
+					});
+					return str;
 				} else {
-					var str = '<span style="color:'+this.points[0].series.color+'">'+this.points[0].series.name + '</span><br/><b> min : '+this.points[0].series.dataMin+ ' - max : '+this.points[0].series.dataMax+'</b>';
+					str = '<span style="color:'+this.points[0].series.color+'">'+this.points[0].series.name + '</span><br/><b> min : '+this.points[0].series.dataMin+ ' - max : '+this.points[0].series.dataMax+'</b>';
 					if( this.points[1] ) {
 						str += "<br/>";
 						str += '<span style="color:'+this.points[1].series.color+'">'+this.points[1].series.name + '</span><br/><b> min : '+this.points[1].series.dataMin+ ' - max : '+this.points[1].series.dataMax+'</b>';
