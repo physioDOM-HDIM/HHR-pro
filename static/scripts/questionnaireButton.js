@@ -86,11 +86,16 @@ function onQuestionnaireButtonClick(e) {
 
 function showAnswer(answerID) {
 	// console.log(answerID);
+	var elt = document.querySelector("div#questionnaireContainer");
 	var iframe = document.createElement('iframe');
 	iframe.id = 'questionnaireIframe';
 	iframe.setAttribute('scrolling', 'no');
 	iframe.addEventListener('load', onIframeLoaded);
-	document.documentElement.appendChild(iframe);
+	if( !elt ) {
+		document.documentElement.appendChild(iframe);
+	} else {
+		elt.appendChild(iframe);
+	}
 	iframe.src = "/answers/"+answerID;
 }
 
