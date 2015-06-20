@@ -22,14 +22,6 @@
 		float: "left";
 	}
 	
-	input:required:invalid, input:focus:invalid, 
-	select:required:invalid, select:focus:invalid, 
-	textarea:required:invalid, textarea:focus:invalid,
-	zdk-input-date:required:invalid, zdk-input-date:focus:invalid
-	{
-		border:2px solid firebrick;
-	}
-	
 </style>
 {% endblock %}
 
@@ -268,6 +260,7 @@
 		</fieldset>
 		<div class="row control">
 			<span class="spacer"></span>
+			<button id="beneficiaryCancel" type="button" class="red big" onclick="cancelForm()">{{ "Cancel"|i18n }}</button>
 			<button id="beneficiarySubmitBtn" class="green">{{ "Save"|i18n }}</button>
 		</div>
 	</form>

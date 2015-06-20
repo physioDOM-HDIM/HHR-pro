@@ -632,6 +632,47 @@ function deleteBeneficiary() {
 
 function checkBeneficiaryForm(backgroundTask) {
     var obj = form2js(document.querySelector("form[name='beneficiary']"));
+	var form = document.querySelector("form[name=beneficiary]");
+	var btn, invalid = false;
+	
+	if(!backgroundTask) {
+		if (!form.checkValidity()) {
+			invalid = true;
+			btn = document.querySelector("#" + form.name + "SubmitBtn");
+			if (btn) {
+				btn.click();
+			}
+		}
+
+		if (invalid) {
+			if( Utils.isSafari() ) {
+				var log = "", label = "";
+				var elt = document.querySelector("*:required:invalid");
+				elt.scrollIntoView();
+				if( elt.value ) {
+					if (elt.min) {
+						log = "the value must be greater than " + elt.min;
+					}
+					if (elt.max) {
+						log = "the value must be lower than " + elt.max;
+					}
+					if (elt.min && elt.max) {
+						log = "the value must be between " + elt.min + " and " + elt.max;
+					}
+				} else {
+					log = "must not be empty";
+				}
+	
+				if( elt.id && document.querySelector("label[for='"+elt.id+"']")) {
+					label = document.querySelector("label[for='"+elt.id+"']").innerHTML;
+					log = "<b>The field '"+label+"'</b><br/>" + log;
+				}
+				new Modal('emptyRequired', null, log);
+			}
+			return false;
+		}
+	}
+	
 	
     if (!_checkDateFormat(obj.birthdate)) {
         new Modal('errorDateRequired');
@@ -640,26 +681,6 @@ function checkBeneficiaryForm(backgroundTask) {
 
 	if( !obj.biomaster ) { obj.biomaster = ""; }
 	if( !obj.socialID ) { obj.socialID = ""; }
-	/*
-    if (isNaN(parseFloat(obj.size))) {
-        new Modal('errorSizeNumber');
-        return false;
-    }
-	*/
-	
-	/*
-    if (!obj.address) {
-        new Modal('errorNoAddress');
-        return false;
-    }
-    */
-
-	/*
-    if (!obj.telecom) {
-        new Modal('errorNoTelecom');
-        return false;
-    }
-	*/
 	
     if(obj.telecom) {
         var telecomSystemError = false;
@@ -823,6 +844,7 @@ function init() {
         id = document.querySelector("form[name='beneficiary'] input[name='_id']").value;
 
     if (id) {
+		document.querySelector("#beneficiaryCancel").classList.add("hidden");
 		document.querySelector("#hasPersonal").classList.remove("hidden");
 		
         promises = {
