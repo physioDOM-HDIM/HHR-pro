@@ -1,4 +1,4 @@
-__v1.0.1-pre__
+__v1.0.1__
 
   - Update des fichters de langues fournis par Viveris le 18/06
   - \#260 : Bug 398 : [Tout ecrans][[SAFARI IPad v100] Contrôle sur les champs non opérants et messages popup tooltip associés ne s’affichent jamais sur Safari iPad
