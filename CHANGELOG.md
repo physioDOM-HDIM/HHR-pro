@@ -1,3 +1,24 @@
+__v1.0.1-pre__
+
+  - Update des fichters de langues fournis par Viveris le 18/06
+  - \#260 : Bug 398 : [Tout ecrans][[SAFARI IPad v100] Contrôle sur les champs non opérants et messages popup tooltip associés ne s’affichent jamais sur Safari iPad
+  - \#261 : Bug 380 : [data curves+result synthesis][v1.0.0] données en double
+  - Bug 390 : [UpdateBeneficiary - Firefox][v1.0.0] Gestion de l'activation du beneficaire et save inopérants avec Firefox
+  - Bug 389 : [CreateBeneficiary - Firefox][v1.0.0] Affichage d'un message d'erreur au Save du formulaire
+  - \#266 : Bug 379 : [Data recording][v1.0.0] an error occured sur le bouton 'Save'
+  - \#267 : Bug 391 : [CreateProfessional - Firefox][v1.0.0] Champs city et password initialisés par defaut a tort avec FIREFOX
+  - \#268 : Bug 384 : [Data recording][v1.0.0] décalage colonne value/unit/threshold
+  - \#269 : Bug 383 : [Data curves][v1.0.0] valeur des graph orange manquante
+  - Bug 397 : [Data Recording][v100] Questionnaire Form - SAFARI IPad v1.0.0 : Questionnaire tronqué aux limites de l’ecran sur Safari iPad
+  - Bug 396 : [UpdateBeneficiary - Safari IPAD][v1.0.0] Gestion de l'activation du beneficaire et save inopérants avec SAFARI sur iPad
+  - Bug 395 : [CreateBeneficiary - SAFARI iPad][v1.0.0] Affichage d'un message d'erreur au Save du formulaire avec Safari iPad
+  - Bug 370 : [Data curves][v038] suppression d'un datarecording
+  - Bug 399 : [Data Graphs][v100] Parameters list - SAFARI IPad v1.0.0 : Case a cocher ne se coche pas sur l’ecran tactile sur Safari iPad
+  - Bug 398 : [Tout ecrans][[SAFARI IPad v100] Contrôle sur les champs non opérants et messages popup tooltip associés ne s’affichent jamais sur Safari iPad
+  - Bug 387 : [CHS/activity motricity status][v1.0.0] affichage date Distance travelled
+  
+> __Nota :__ deux labels supplémentaires ont été ajoutés à la fin des fichiers de langues
+
 __v1.0.0__
 
   - FIX regression on "Prescription of symptoms assessments" 
