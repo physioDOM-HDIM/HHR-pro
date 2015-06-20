@@ -20,9 +20,6 @@ window.addEventListener("DOMContentLoaded", function () {
 
 	if( location.search ) {
 		var navs = document.querySelectorAll(".nav");
-		[].slice.call(navs).forEach( function(elt) {
-			elt.classList.remove("hidden");
-		});
 			
 		var qs = location.search.slice(1).split("&");
 		qs.forEach(function (item) {
@@ -31,31 +28,43 @@ window.addEventListener("DOMContentLoaded", function () {
 		});
 		console.log(filter);
 		var url = '/api/beneficiary/datarecords?pg=1&offset=1000';
-		if (filter.filter) { url += "&filter=" + filter.filter; }
-		if (filter.sort) { url += "&sort=" + filter.sort; }
-		if (filter.dir) { url += "&dir=" + filter.dir; }
-		
-		var xhrItems = new XMLHttpRequest();
-		xhrItems.open("GET", url, true);
-		xhrItems.onload = function (e) {
-			var list = JSON.parse(this.responseText);
-			if( filter.indx === 1 ) {
-				[].slice.call(document.querySelectorAll("button.previous")).forEach( function(elt) {
-					elt.disabled = true;
-				});
-				
-			} else {
-				prev = list.items[filter.indx-2]._id;
+		if(filter.indx) {
+			[].slice.call(navs).forEach( function(elt) {
+				elt.classList.remove("hidden");
+			});
+			
+			if (filter.filter) {
+				url += "&filter=" + filter.filter;
 			}
-			if( list.nb <= filter.indx ) {
-				[].slice.call(document.querySelectorAll("button.next")).forEach( function(elt) {
-					elt.disabled = true;
-				});
-			} else {
-				next = list.items[filter.indx]._id;
+			if (filter.sort) {
+				url += "&sort=" + filter.sort;
 			}
-		};
-		xhrItems.send();
+			if (filter.dir) {
+				url += "&dir=" + filter.dir;
+			}
+
+			var xhrItems = new XMLHttpRequest();
+			xhrItems.open("GET", url, true);
+			xhrItems.onload = function (e) {
+				var list = JSON.parse(this.responseText);
+				if (filter.indx === 1) {
+					[].slice.call(document.querySelectorAll("button.previous")).forEach(function (elt) {
+						elt.disabled = true;
+					});
+
+				} else {
+					prev = list.items[filter.indx - 2]._id;
+				}
+				if (list.nb <= filter.indx) {
+					[].slice.call(document.querySelectorAll("button.next")).forEach(function (elt) {
+						elt.disabled = true;
+					});
+				} else {
+					next = list.items[filter.indx]._id;
+				}
+			};
+			xhrItems.send();
+		}
 	}
 	
 	moment.locale(infos.lang === "en"?"en_gb":infos.lang );
@@ -381,10 +390,49 @@ function update(dataRecordID, mode) {
 }
 
 function create(mode) {
-
+	var form, invalid, btn;
+	
 	if (createdDataRecordID) {
 		update(createdDataRecordID, mode);
 	} else {
+		form = document.forms.dataRecord;
+		if (!form.checkValidity()) {
+			invalid = true;
+			btn = document.querySelector("#saveBtn");
+			if (btn) {
+				btn.click();
+			}
+		}
+
+		if (invalid) {
+			if( utils.isSafari() ) {
+				var log = "", label = "";
+				var elt = document.querySelector("*:required:invalid");
+				elt.scrollIntoView();
+				elt.focus(true);
+				if( elt.value ) {
+					if (elt.min) {
+						log = "the value must be greater than " + elt.min;
+					}
+					if (elt.max) {
+						log = "the value must be lower than " + elt.max;
+					}
+					if (elt.min && elt.max) {
+						log = "the value must be between " + elt.min + " and " + elt.max;
+					}
+				} else {
+					log = "must not be empty";
+				}
+
+				if( elt.id && document.querySelector("label[for='"+elt.id+"']")) {
+					label = document.querySelector("label[for='"+elt.id+"']").innerHTML;
+					log = "<b>The field '"+label+"'</b><br/>" + log;
+				}
+				new Modal('emptyRequired', null, log);
+			}
+			return false;
+		}
+		
 		var obj = form2js(document.forms.dataRecord),
 			sourceID = document.querySelector('#sourceID');
 

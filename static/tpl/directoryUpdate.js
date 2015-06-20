@@ -78,7 +78,45 @@ function checkEmailTypeValidation(node) {
 
 function checkForm() {
     var obj;
+	var invalid = false, btn, form;
+	
+	form = document.forms["directoryForm"];
+	if (!form.checkValidity()) {
+		invalid = true;
+		btn = document.querySelector("#createItemBtn") || document.querySelector("#saveItemBtn");
+		if (btn) {
+			btn.click();
+		}
+	}
 
+	if (invalid) {
+		if( Utils.isSafari() ) {
+			var log = "", label = "";
+			var elt = document.querySelector("*:required:invalid");
+			elt.scrollIntoView();
+			if( elt.value ) {
+				if (elt.min) {
+					log = "the value must be greater than " + elt.min;
+				}
+				if (elt.max) {
+					log = "the value must be lower than " + elt.max;
+				}
+				if (elt.min && elt.max) {
+					log = "the value must be between " + elt.min + " and " + elt.max;
+				}
+			} else {
+				log = "must not be empty";
+			}
+
+			if( elt.id && document.querySelector("label[for='"+elt.id+"']")) {
+				label = document.querySelector("label[for='"+elt.id+"']").innerHTML;
+				log = "<b>The field '"+label+"'</b><br/>" + log;
+			}
+			new Modal('emptyRequired', null, log);
+		}
+		return false;
+	}
+	
     function isEmailSet() {
         var isEmail = false,
             systemElt, valueElt;
@@ -375,6 +413,14 @@ function init() {
         Utils.limitText(textareaList[i], 500);
     }
 
+	setTimeout(function() {
+		if(window.location.pathname === "/directory/create") {
+			document.querySelector('.account-password').value = "";
+			document.querySelector('.account-check-password').value = "";
+			document.querySelector("input[name='address.city']").value = "";
+			modified = false;
+		}
+	},100);
 }
 
 window.addEventListener("beforeunload", function( e) {
@@ -386,4 +432,4 @@ window.addEventListener("beforeunload", function( e) {
 	}
 });
 
-window.addEventListener("DOMContentLoaded", init, false);
+window.addEventListener("polymer-ready", init, false);

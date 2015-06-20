@@ -53,8 +53,8 @@
 	</div>
 	<div class="row">
 		<div class="col">
-			<label>{{"Value"|i18n}} :</label>
-			<input name="telecom[{%raw%}{{indx}}{%endraw%}].value" required
+			<label for="telecom[{%raw%}{{indx}}{%endraw%}].value">{{"Value"|i18n}} :</label>
+			<input name="telecom[{%raw%}{{indx}}{%endraw%}].value" id="telecom[{%raw%}{{indx}}{%endraw%}].value" required
 			       type="{%raw%}{{telecom_email_type_default}}{%endraw%}" class="text"/>
 		</div>
 		<div>
@@ -72,8 +72,8 @@
 			<input type="hidden" name="_id" value="{{professional._id.toString()}}">
 			{% if !professional._id %}
 			<div class="row">
-				<label {{organization_disabled}}>{{"Organization"|i18n}}:</label>
-				<input type="checkbox" name="organization" onchange="checkOrganization()" {% if professional &&
+				<label {{organization_disabled}} for="organization">{{"Organization"|i18n}}:</label>
+				<input type="checkbox" id="organization" name="organization" onchange="checkOrganization()" {% if professional &&
 				       professional.organization===true %}checked{% endif %}/>
 			</div>
 			{% endif %}
@@ -85,8 +85,8 @@
 			</div>
 			{% endif %}
 			<div class="row">
-				<label class="mandatory">{{"Name"|i18n}} :</label>
-				<input type="text" name="name.family" placeholder="Mandatory field" required
+				<label class="mandatory" for="name.family">{{"Name"|i18n}} :</label>
+				<input type="text" id="name.family" name="name.family" placeholder="Mandatory field" required
 				       value="{{professional.name.family}}"/>
 			</div>
 			{% if professional._id && professional.organization %}
@@ -104,20 +104,20 @@
 			{% if !professional._id || !professional.organization %}
 			<div id="nonOrgContainer">
 				<div class="row">
-					<label class="mandatory">{{"Given"|i18n}} :</label>
-					<input type="text" name="name.given" placeholder="Mandatory field" required
+					<label class="mandatory" for="name.given">{{"Given"|i18n}} :</label>
+					<input type="text" name="name.given" id="name.given" placeholder="Mandatory field" required
 					       value="{{professional.name.given}}"/>
 				</div>
 				<div class="row">
-					<label class="mandatory">{{"Civility"|i18n}} :</label>
-					<input type="radio" name="gender" value="M" required {% if professional.gender=='M' %}checked{%
+					<label class="mandatory" for="gender">{{"Civility"|i18n}} :</label>
+					<input type="radio" name="gender" id="gender" value="M" required {% if professional.gender=='M' %}checked{%
 					endif %} />{{"Man"|i18n}}
-					<input type="radio" name="gender" value="F" {% if professional.gender=='F' %}checked{% endif %}
+					<input type="radio" name="gender" id="gender" value="F" {% if professional.gender=='F' %}checked{% endif %}
 					/>{{"Woman"|i18n}}
 				</div>
 				<div class="row">
-					<label class="mandatory">{{ "Job" | i18n }} :</label>
-					<select name="job" required>
+					<label class="mandatory" for="job">{{ "Job" | i18n }} :</label>
+					<select name="job" id="job" required>
 						{% for item in job.items %}
 						<option value="{% if item.value!='NONE' %}{{item.value}}{% endif %}" {% if professional.job==item.value %}selected{% endif %}>{{item.label}}
 						</option>
@@ -129,8 +129,8 @@
 			{% if !professional._id %}
 			<div id="OrgContainer" class="hidden">
 				<div class="row">
-					<label class="mandatory">{{"Organization type"|i18n}} :</label>
-					<select name="organizationType" required>
+					<label class="mandatory" for="organizationType">{{"Organization type"|i18n}} :</label>
+					<select name="organizationType" id="organizationType" required>
 						{% for item in organizationType.items %}
 						<option value="{% if item.value!='NONE' %}{{item.value}}{% endif %}" {% if
 						        professional.organizationType== item.value %}selected{% endif %}>{{item.label}}
@@ -141,8 +141,8 @@
 			</div>
 			{% endif %}
 			<div class="row">
-				<label class="mandatory">{{ "Role" | i18n }}:</label>
-				<select name="role" required>
+				<label class="mandatory" for="role">{{ "Role" | i18n }}:</label>
+				<select name="role" id="role" required>
 					{% for item in role.items %}
 					{% if item.roleClass !== "PAT" %}
 					<option value="{% if item.value!='NONE' %}{{item.value}}{% endif %}" {% if professional.role==
@@ -153,8 +153,8 @@
 				</select>
 			</div>
 			<div class="row">
-				<label class="mandatory">{{ "Language" | i18n }} :</label>
-				<select name="communication">
+				<label class="mandatory" for="communication">{{ "Language" | i18n }} :</label>
+				<select name="communication" id="communication">
 					{% for item in communication.items %}
 					<option value="{{item.value}}" {% if professional.communication %}{% if professional.communication==
 					        item.value %}selected{% endif %}{% else %}{% if lang== item.value %}selected{% endif %}{%
@@ -189,8 +189,8 @@
 				</div>
 				<div class="row">
 					<div class="col">
-						<label class="mandatory">{{"Value"|i18n}} :</label>
-						<input name="telecom[0].value" value="" type="email" required/>
+						<label class="mandatory" for="telecom[0].value">{{"Value"|i18n}} :</label>
+						<input name="telecom[0].value" id="telecom[0].value" value="" type="email" required/>
 					</div>
 					<div>
 						<span class="spacer"></span>
@@ -214,7 +214,7 @@
 						{% endfor %}
 						<input type="hidden" name="telecom[{{loop.index}}].system" value="{{entry.system}}">
 						{% else %}
-						<select name="telecom[{{loop.index}}].system" style="min-width: 150px;"
+						<select name="telecom[{{loop.index}}].system" id="telecom[{{loop.index}}].system" style="min-width: 150px;"
 						        onchange="checkEmailTypeValidation(this)" required>
 							{% for item in system.items %}
 							{% if item.value !== "email" %}
@@ -229,8 +229,8 @@
 				</div>
 				<div class="row">
 					<div class="col">
-						<label>{{"Value"|i18n}} :</label>
-						<input name="telecom[{{loop.index}}].value" value="{{entry.value}}" required
+						<label for="telecom[{{loop.index}}].value">{{"Value"|i18n}} :</label>
+						<input name="telecom[{{loop.index}}].value" id="telecom[{{loop.index}}].value" value="{{entry.value}}" required
 						       type="{% if entry.system=='email' %}email{% else %}text{% endif %}"/>
 					</div>
 					<div>

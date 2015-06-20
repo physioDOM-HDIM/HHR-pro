@@ -336,7 +336,7 @@ function Queue ( beneficiaryID ) {
 										newDataRecord.items.push({
 											"text": item.id,
 											"value": item.value,
-											"category": listItems[item.id].category,
+											"category": "measures",
 											"automatic": item.automatic && item.automatic === 1 ? true:false
 										});
 									});

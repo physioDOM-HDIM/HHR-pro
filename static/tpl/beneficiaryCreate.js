@@ -415,7 +415,7 @@ function checkAllForms(isValidate) {
 		if( form.name === "account" && form.login && !form.login.value ) {
 			continue;
 		}
-		if( form.name === "account" && form.login === undefined && !form.password.value && !form.checkAccountPassword.value ) {
+		if( form.name === "account" && form.login === undefined && (!form.password || !form.password.value && !form.checkAccountPassword.value) ) {
 			continue;
 		}
 		if (!form.checkValidity()) {
@@ -427,23 +427,33 @@ function checkAllForms(isValidate) {
 			}
 		}
 	}
-	/*
-    [].map.call(forms, function(form) {
-		if( form.name === "account" && !form.login.value ) {
-			return;
-		}
-        if (!form.checkValidity()) {
-            invalid = true;
-            btn = document.querySelector("#" + form.name + "SubmitBtn");
-            if (btn) {
-                btn.click();
-            }
-        }
-    });
-    */
 
     if (invalid) {
-        return false;
+		if( Utils.isSafari() ) {
+			var log = "", label = "";
+			var elt = document.querySelector("*:required:invalid")
+			elt.scrollIntoView();
+			if( elt.value ) {
+				if (elt.min) {
+					log = "the value must be greater than " + elt.min;
+				}
+				if (elt.max) {
+					log = "the value must be lower than " + elt.max;
+				}
+				if (elt.min && elt.max) {
+					log = "the value must be between " + elt.min + " and " + elt.max;
+				}
+			} else {
+				log = "must not be empty";
+			}
+			
+			if( elt.id && document.querySelector("label[for='"+elt.id+"']")) {
+				label = document.querySelector("label[for='"+elt.id+"']").innerHTML;
+				log = "<b>The field '"+label+"'</b><br/>" + log;
+			}
+			new Modal('emptyRequired', null, log);
+		}
+		return false;
     }
 
     var mixin = function(dest, source) {
@@ -622,6 +632,47 @@ function deleteBeneficiary() {
 
 function checkBeneficiaryForm(backgroundTask) {
     var obj = form2js(document.querySelector("form[name='beneficiary']"));
+	var form = document.querySelector("form[name=beneficiary]");
+	var btn, invalid = false;
+	
+	if(!backgroundTask) {
+		if (!form.checkValidity()) {
+			invalid = true;
+			btn = document.querySelector("#" + form.name + "SubmitBtn");
+			if (btn) {
+				btn.click();
+			}
+		}
+
+		if (invalid) {
+			if( Utils.isSafari() ) {
+				var log = "", label = "";
+				var elt = document.querySelector("*:required:invalid");
+				elt.scrollIntoView();
+				if( elt.value ) {
+					if (elt.min) {
+						log = "the value must be greater than " + elt.min;
+					}
+					if (elt.max) {
+						log = "the value must be lower than " + elt.max;
+					}
+					if (elt.min && elt.max) {
+						log = "the value must be between " + elt.min + " and " + elt.max;
+					}
+				} else {
+					log = "must not be empty";
+				}
+	
+				if( elt.id && document.querySelector("label[for='"+elt.id+"']")) {
+					label = document.querySelector("label[for='"+elt.id+"']").innerHTML;
+					log = "<b>The field '"+label+"'</b><br/>" + log;
+				}
+				new Modal('emptyRequired', null, log);
+			}
+			return false;
+		}
+	}
+	
 	
     if (!_checkDateFormat(obj.birthdate)) {
         new Modal('errorDateRequired');
@@ -630,26 +681,6 @@ function checkBeneficiaryForm(backgroundTask) {
 
 	if( !obj.biomaster ) { obj.biomaster = ""; }
 	if( !obj.socialID ) { obj.socialID = ""; }
-	/*
-    if (isNaN(parseFloat(obj.size))) {
-        new Modal('errorSizeNumber');
-        return false;
-    }
-	*/
-	
-	/*
-    if (!obj.address) {
-        new Modal('errorNoAddress');
-        return false;
-    }
-    */
-
-	/*
-    if (!obj.telecom) {
-        new Modal('errorNoTelecom');
-        return false;
-    }
-	*/
 	
     if(obj.telecom) {
         var telecomSystemError = false;
@@ -712,7 +743,7 @@ function activeChange(obj) {
 		document.querySelector("#diagLabel").classList.remove("mandatory");
 		document.querySelector("input[name=size]").removeAttribute("required");
 		document.querySelector("#sizeLabel").classList.remove("mandatory");
-		document.querySelector("input[name=biomaster").removeAttribute("required");
+		document.querySelector("input[name=biomaster]").removeAttribute("required");
 		document.querySelector("#biomasterLabel").classList.remove("mandatory");
 		document.querySelector("#startDateLabel").classList.remove("mandatory");
 		document.querySelector("#startDate").removeAttribute("required");
@@ -724,7 +755,7 @@ function activeChange(obj) {
 			document.querySelector("input[name=size]").value = null;
 		}
 	} else {
-		document.querySelector("input[name=biomaster").setAttribute("required", true);
+		document.querySelector("input[name=biomaster]").setAttribute("required", true);
 		if(!document.querySelector("#biomasterLabel").classList.contains("mandatory")) {
 			document.querySelector("#biomasterLabel").classList.add("mandatory");
 		}
@@ -792,6 +823,15 @@ function revokeCert() {
 		});
 }
 
+function cancelForm() {
+	modified=false;
+	if( document.querySelector("*[name=_id]").value === parent.document.querySelector("#beneficiary input").value ) {
+		window.location.href = "/beneficiary/"+ document.querySelector("*[name=_id]").value ;
+	} else {
+		window.location.href = "/beneficiaries";
+	}
+}
+
 function init() {
     tsanteListProfessionalElt = document.querySelector("#tsanteListProfessional");
     tsanteListProfessionalElt.addEventListener("tsante-response", _onHaveProfessionalsData, false);
@@ -804,6 +844,7 @@ function init() {
         id = document.querySelector("form[name='beneficiary'] input[name='_id']").value;
 
     if (id) {
+		document.querySelector("#beneficiaryCancel").classList.add("hidden");
 		document.querySelector("#hasPersonal").classList.remove("hidden");
 		
         promises = {
@@ -899,7 +940,6 @@ window.addEventListener("beforeunload", function( e) {
 });
 
 window.addEventListener("DOMContentLoaded", function () {
-
     var inputTextList = document.querySelectorAll("input[type='text']"),
         inputEmailList = document.querySelectorAll("input[type='email']"),
         textareaList = document.querySelectorAll("textarea"),

@@ -516,7 +516,7 @@ zdk-input-date {
 .info-detail {
 	color: #515151;
 	font-style: italic;
-	font-size: 11px;
+	font-size: 13px;
 	padding: 10px;
 	border-top: 1px solid #313131;
 }
@@ -544,4 +544,13 @@ zdk-input-date {
 
 #dataRecord .line:last-child {
 	border-bottom: 0px solid #ccc;
+}
+
+/* ------------------------------------------- */
+input:required:invalid, input:focus:invalid,
+select:required:invalid, select:focus:invalid,
+textarea:required:invalid, textarea:focus:invalid,
+zdk-input-date:required:invalid, zdk-input-date:focus:invalid
+{
+	border:2px solid firebrick;
 }

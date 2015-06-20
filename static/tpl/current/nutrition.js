@@ -30,6 +30,33 @@ function showConfirm() {
 	var formElt = document.getElementById('formDiet');
 
 	if(!formElt.checkValidity()) {
+
+		if( Utils.isSafari() ) {
+			var log = "", label = "";
+			var elt = document.querySelector("*:required:invalid");
+			elt.scrollIntoView();
+			elt.focus(true);
+			if( elt.value ) {
+				if (elt.min) {
+					log = "the value must be greater than " + elt.min;
+				}
+				if (elt.max) {
+					log = "the value must be lower than " + elt.max;
+				}
+				if (elt.min && elt.max) {
+					log = "the value must be between " + elt.min + " and " + elt.max;
+				}
+			} else {
+				log = "must not be empty";
+			}
+
+			label = elt.parentNode.querySelector(".value-name");
+			if( label ) {
+				log = "<b>The field '"+ label.innerHTML +"'</b><br/>" + log;
+			}
+			new Modal('emptyRequired', null, log);
+		}
+		
 		return;
 	}
 
@@ -85,7 +112,34 @@ function addValue (valueName, formObj, isFloat) {
 function saveDatas(validate) {
 	var formElt = document.getElementById('formDiet');
 	if(!formElt.checkValidity()) {
-		return;
+
+		if( Utils.isSafari() ) {
+			var log = "", label = "";
+			var elt = document.querySelector("*:required:invalid");
+			elt.scrollIntoView();
+			elt.focus(true);
+			if( elt.value ) {
+				if (elt.min) {
+					log = "the value must be greater than " + elt.min;
+				}
+				if (elt.max) {
+					log = "the value must be lower than " + elt.max;
+				}
+				if (elt.min && elt.max) {
+					log = "the value must be between " + elt.min + " and " + elt.max;
+				}
+			} else {
+				log = "must not be empty";
+			}
+
+			label = elt.parentNode.querySelector(".value-name");
+			if( label ) {
+				log = "<b>The field '"+ label.innerHTML +"'</b><br/>" + log;
+			}
+			new Modal('emptyRequired', null, log);
+		}
+		
+		return false;
 	}
 
 	var formObj = form2js(formElt);
@@ -131,8 +185,7 @@ function saveDatas(validate) {
 				parameter.comment = "";
 			}
 		});
-	}	
-	console.log( formObj );
+	}
 	
 	if(!validate) {
 		sendDatas(formObj, function() {
@@ -150,6 +203,11 @@ function paramChange( obj, oldValue) {
 	if( obj.value !== oldValue ) {
 		obj.parentNode.querySelector(".value-date").innerHTML = "";
 		obj.parentNode.querySelector(".param-date").value = moment().format("YYYY-MM-DD");
+	}
+	if( obj.value ) {
+		obj.required = true;
+	} else {
+		obj.required = null;
 	}
 }
 

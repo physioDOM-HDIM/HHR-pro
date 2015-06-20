@@ -51,7 +51,7 @@
 						min="{{parameters.weight.range.min}}"
 						max="{{parameters.weight.range.max}}"
 						value="{{parameter.value}}"
-						onchange="paramChange(this,{{ parameter.value }} || null )"
+						onchange="paramChange(this,{% if parameter.value %}{{ parameter.value }}{% else %}null{% endif %} )"
 						{% if !rights.write || !beneficiary.active %}disabled{% endif %}/>
 					<div class="value-unit">{{"kilogram"|i18n}}</div>
 				</div>

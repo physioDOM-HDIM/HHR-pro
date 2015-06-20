@@ -6,6 +6,7 @@
 {% parent %}
 <link rel="import" href="/bower_components/paper-dialog/paper-action-dialog.html">
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
+<script src="/scripts/utils.js"></script>
 <script src="/tpl/beneficiaryOverview.js"></script>
 {% endblock %}
 {% block content %}
@@ -385,6 +386,7 @@
 
 <script>
 	parent.document.querySelector("#beneficiary a").innerHTML = '{{ beneficiary.name.family }} {{ beneficiary.name.given }}';
+	parent.document.querySelector("#beneficiary input").value = '{{ beneficiary._id.toString() }}';
 	parent.highlight("/beneficiary/overview");
 	{% if beneficiary.active %}
 		parent.enableDataRecord(true);

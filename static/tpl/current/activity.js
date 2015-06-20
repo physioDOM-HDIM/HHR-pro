@@ -109,27 +109,64 @@ function paramChange( obj, oldValue) {
 		obj.parentNode.querySelector(".value-date").innerHTML = "";
 		obj.parentNode.querySelector(".param-date").value = moment().format("YYYY-MM-DD");
 	}
+	if( obj.value ) {
+		obj.required = true;
+	} else {
+		obj.required = null;
+	}
 }
 
 function checkForm(validate) {
 	var formElt = document.getElementById('form');
 
 	if(!formElt.checkValidity()) {
-		return;
+
+		if( Utils.isSafari() ) {
+			var log = "", label = "";
+			var elt = document.querySelector("*:required:invalid");
+			elt.scrollIntoView();
+			elt.focus(true);
+			if( elt.value ) {
+				if (elt.min) {
+					log = "the value must be greater than " + elt.min;
+				}
+				if (elt.max) {
+					log = "the value must be lower than " + elt.max;
+				}
+				if (elt.min && elt.max) {
+					log = "the value must be between " + elt.min + " and " + elt.max;
+				}
+			} else {
+				log = "must not be empty";
+			}
+
+			label = elt.parentNode.querySelector(".value-name");
+			if( label ) {
+				log = "<b>The field '"+ label.innerHTML +"'</b><br/>" + log;
+			}
+			new Modal('emptyRequired', null, log);
+		}
+		
+		return false;
 	}
 
 	var formObj = form2js(formElt);
 
-	if(formObj.stepsNumber && (datas.savedData.stepsNumber !== formObj.stepsNumber)) {
-		var todayDate = moment().format('L'),
-		dateContainer = document.querySelector('.stepsNumberDate');
-		dateContainer.innerHTML = todayDate;
-
-		formObj['stepsNumberDate'] = todayDate;
-	}
-
-	if (formObj.stepsNumber) {
-		formObj.stepsNumber = parseInt(formObj.stepsNumber, 10);
+	if( formObj.parameters ) {
+		formObj.parameters.forEach(function (parameter) {
+			if (!parameter.value) {
+				parameter.value = null;
+				parameter.date = null;
+			} else {
+				parameter.value = parseInt(parameter.value, 10);
+				if (!parameter.date) {
+					parameter.date = moment().format("YYYY-MM-DD");
+				}
+			}
+			if (!parameter.comment) {
+				parameter.comment = "";
+			}
+		});
 	}
 
 	formObj.validated = validate;
@@ -153,6 +190,33 @@ function showConfirm() {
 	var formElt = document.getElementById('form');
 
 	if(!formElt.checkValidity()) {
+
+		if( Utils.isSafari() ) {
+			var log = "", label = "";
+			var elt = document.querySelector("*:required:invalid");
+			elt.scrollIntoView();
+			elt.focus(true);
+			if( elt.value ) {
+				if (elt.min) {
+					log = "the value must be greater than " + elt.min;
+				}
+				if (elt.max) {
+					log = "the value must be lower than " + elt.max;
+				}
+				if (elt.min && elt.max) {
+					log = "the value must be between " + elt.min + " and " + elt.max;
+				}
+			} else {
+				log = "must not be empty";
+			}
+
+			label = elt.parentNode.querySelector(".value-name");
+			if( label ) {
+				log = "<b>The field '"+ label.innerHTML +"'</b><br/>" + log;
+			}
+			new Modal('emptyRequired', null, log);
+		}
+		
 		return;
 	}
 
