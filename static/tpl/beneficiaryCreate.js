@@ -55,7 +55,7 @@ function _findReferentInBeneficiary(obj) {
 }
 
 function updateProfessionalReferent(node, idxItem) {
-
+	
     var currentItem = _dataAllProfessionnalObj && _dataAllProfessionnalObj.items && _dataAllProfessionnalObj.items[idxItem];
     if (currentItem) {
         //Remove old referent
@@ -603,7 +603,10 @@ function updateBeneficiary(obj) {
 				document.querySelector("input[name=active]").checked = false;
 				activeChange(document.querySelector("input[name=active]"));
 				document.querySelector("#endDate").value = "";
-				new Modal('createSuccess');
+				modified = false;
+				new Modal('createSuccess', function() {
+					modified = false;
+				});
 			})
 			.catch(function(error) {
 				new Modal('errorOccured');
@@ -837,7 +840,9 @@ function init() {
     tsanteListProfessionalElt.addEventListener("tsante-response", _onHaveProfessionalsData, false);
 
 	document.addEventListener('change', function( evt ) {
-			modified = true;
+		var e = new Error('dummy');
+		console.log(e.stack);
+		modified = true;
 	}, true );
 	
     var promises,
@@ -930,7 +935,7 @@ function init() {
 
 window.addEventListener("polymer-ready", init, false);
 
-window.addEventListener("beforeunload", function( e) {
+window.addEventListener("beforeunload", function( e ) {
 	var confirmationMessage;
 	if(modified) {
 		confirmationMessage = document.querySelector("#unsave").innerHTML;
