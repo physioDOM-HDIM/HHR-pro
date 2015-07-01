@@ -137,7 +137,7 @@
         </div>
 		{% endif %}
 	</zdk-panel>
-	 
+	
 	<zdk-panel id="addresses" heading="{{ 'Addresses'|i18n }}">
 		{% for addr in beneficiary.address %}
 			{% if !loop.first %}
@@ -151,6 +151,33 @@
 		{% endfor %}
 	</zdk-panel>
 </div>
+
+<zdk-panel id="status" heading="{{ 'Warning Status'|i18n }}">
+	<div layout horizontal>
+	{% if beneficiary.warning && beneficiary.warning.status %}
+		<div style="width:80px; text-align:center">
+			<core-icon icon="warning" style="color: firebrick; height:40px; width:40px;"></core-icon>
+		</div>
+		<div flex>
+			<div style="color:firebrick; font-weight: bold;">{{"Warning status" | i18n}} : {{"On" | i18n}}</div>
+			<div>Source : {{ beneficiary.warning.source }}</div>
+			<div>date : {{ beneficiary.warning.date | fulldate }}</div>
+		</div>
+		<div style="width:150px; text-align:right">
+			<button class="blue" style="margin-top:10px" onclick="disableWarning()" >{{"Lower alert" | i18n}}</button>
+		</div>
+	{% endif %}
+	{% if (beneficiary.warning && beneficiary.warning.status === false) || !beneficiary.warning %}
+		<div style="width:80px; text-align:center"></div>
+		<div flex>
+			<div style="color:seagreen; font-weight: bold;">{{"Warning status" | i18n}} : {{"Off" | i18n}}</div>
+			<div>Source : {{ beneficiary.warning.source }}</div>
+			<div>date : {{ beneficiary.warning.date | fulldate }}</div>
+		</div>
+		<div style="width:150px; text-align:right"></div>
+	{% endif %}
+	</div>
+</zdk-panel>
 
 <zdk-panel heading="{{ 'Events log'|i18n }}" collapsable="true" collapsed="false">
 	<tsante-list url="/api/beneficiary/events" pg="1" auto="true" autoRender="false" unresolved id="tsanteList" style="margin-top: 0;">
@@ -238,10 +265,12 @@
 </zdk-panel>
 
 {% if IDS %}
+<!--
 <div class="row">
 	<span class="spacer"></span><a href="/IDSLog"><button class="blue small">{{ "IDS Log"|i18n }}</button></a>
 </div>
 <div class="row"></div>
+-->
 {% endif %}
 
 

@@ -391,5 +391,9 @@
   "Your password is unchanged": "Su contraseña no esta modificada",
   "On IDS, the identifier is the mail address": "Se identifica el usuario con la dirección de correo electronico",
   "Required":"Obligatorio",
-  "Some required fields are not correctly filled":"Algunos campos obligatorios no se llenan correctamente"
+  "Some required fields are not correctly filled":"Algunos campos obligatorios no se llenan correctamente",
+  "Warning status": "Estado de Advertencia",
+  "Lower alert":"Desactivar la advertencia",
+  "On":"Izado",
+  "Off":"Apagado"
 }

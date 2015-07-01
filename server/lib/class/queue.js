@@ -341,6 +341,20 @@ function Queue ( beneficiaryID ) {
 										});
 									});
 									beneficiary.createDataRecord(newDataRecord)
+										.then( function( datarecordObj ) {
+											return beneficiary.getDataRecordByID(datarecordObj._id);
+										})
+										.then( function(datarecord) {
+											return datarecord.checkWarningStatus();
+										})
+										.then( function( warning ) {
+											console.log( "warning", warning);
+											if( warning ) {
+												return beneficiary.setWarningStatus(warning, "Home");
+											} else {
+												return;
+											}
+										})
 										.then(function () {
 											// remove the measures
 											return that.delMsg([{branch: leaf + ".measures[" + msg.message.id + "]"}]);

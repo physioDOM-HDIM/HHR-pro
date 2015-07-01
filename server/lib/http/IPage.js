@@ -77,6 +77,10 @@ function IPage() {
 		swig.setFilter("date", function( date ) {
 			return moment(date).format("L");
 		});
+
+		swig.setFilter("fulldate", function( date ) {
+			return moment(date).format("L LT");
+		});
 	}
 
 	function convertDate(strDate) {
@@ -672,14 +676,18 @@ function IPage() {
 				}
 			})
 			.then( function( beneficiary ) {
-				moment.locale(req.cookies.lang==="en"?"en-gb":req.cookies.lang);
+				moment.locale(req.cookies.lang === "en" ? "en-gb" : req.cookies.lang);
 				data.beneficiary = beneficiary;
-				data.beneficiary.address.forEach( function(address) {
+				data.beneficiary.address.forEach(function (address) {
 					address.use = data.useArray.items[address.use];
 				});
 				data.beneficiary.gender = data.civilityArray.items[data.beneficiary.gender];
 				data.beneficiary.birthdate = moment(data.beneficiary.birthdate).format("L");
-				return beneficiary._id ? beneficiary.getProfessionals() : null;
+				// if( data.beneficiary.warning && data.beneficiary.warning.source !== "Home" )
+				return data.beneficiary.getWarningProfessional();
+			}).then( function( warningPro ) {
+				data.beneficiary.warning.source = warningPro;
+				return data.beneficiary._id ? data.beneficiary.getProfessionals() : null;
 			}).then(function(professionals){
 				if( professionals ){
 					professionals.forEach( function(professional) {
@@ -691,6 +699,7 @@ function IPage() {
 			})
 			.catch( function(err) {
 				logger.error(err);
+				if(err.stack) { console.log(err.stack); }
 				req.session.beneficiary = null;
 				req.session.save()
 					.then( function() {

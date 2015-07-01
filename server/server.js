@@ -445,6 +445,7 @@ server.get( '/api/beneficiary/professionals', IBeneficiary.beneficiaryProfession
 server.get( '/api/beneficiary/datarecords', IBeneficiary.dataRecords );
 server.get( '/api/beneficiary/datarecords/:dataRecordID', IBeneficiary.dataRecord );
 server.post('/api/beneficiary/datarecord', IBeneficiary.newDataRecord );
+server.get( '/api/beneficiary/datarecords/:dataRecordID/warning', IBeneficiary.checkWarning );
 server.put( '/api/beneficiary/datarecords/:dataRecordID', IBeneficiary.updateDataRecord );
 server.post('/api/beneficiary/thresholds', IBeneficiary.setThreshold);
 server.get( '/api/beneficiary/thresholds', IBeneficiary.getThreshold);
@@ -476,6 +477,7 @@ server.del('/api/beneficiary/questionnaires/answers/:entryID', IBeneficiary.remo
 
 //Events
 server.get( '/api/beneficiary/events', IBeneficiary.getEventList);
+server.post( '/api/beneficiary/warning', IBeneficiary.setWarningStatus );
 
 //Dietary Plan
 server.get( '/api/beneficiary/dietary-plan', IBeneficiary.getDietaryPlan);
