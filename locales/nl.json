@@ -391,5 +391,9 @@
   "Your password is unchanged": "Je wachtwoord is ongewijzigd",
   "On IDS, the identifier is the mail address": "Op IDS, de identifier is het e-mailadres",
   "Required":"Verplichte velden",
-  "Some required fields are not correctly filled":"Enkele verplichte velden zijn niet correct ingevuld"
+  "Some required fields are not correctly filled":"Enkele verplichte velden zijn niet correct ingevuld",
+  "Warning status": "Status waarschuwing",
+  "Lower alert":"Disable waarschuwing",
+  "On":"On",
+  "Off":"Off"
 }
