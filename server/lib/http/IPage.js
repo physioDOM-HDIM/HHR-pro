@@ -686,7 +686,11 @@ function IPage() {
 				// if( data.beneficiary.warning && data.beneficiary.warning.source !== "Home" )
 				return data.beneficiary.getWarningProfessional();
 			}).then( function( warningPro ) {
-				data.beneficiary.warning.source = warningPro;
+				if( data.beneficiary.warning && data.beneficiary.warning.source ) {
+					data.beneficiary.warning.source = warningPro;
+				} else {
+					data.beneficiary.warning = { status: false, source: null, date: null };
+				}
 				return data.beneficiary._id ? data.beneficiary.getProfessionals() : null;
 			}).then(function(professionals){
 				if( professionals ){
