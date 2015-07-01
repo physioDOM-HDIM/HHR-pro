@@ -644,6 +644,71 @@ function Beneficiary( ) {
 	};
 
 	/**
+	 * Get the Professional name for the warning status
+	 *
+	 * @returns {promise}
+	 */
+	this.getWarningProfessional = function() {
+		var that = this;
+		return new promise( function( resolve, reject) {
+			if (!that.warning || !that.warning.source) {
+				resolve( "-" );
+			} else if (that.warning.source === "Home") {
+				resolve( "Home" );
+			} else {
+				physioDOM.Directory()
+					.then(function (directory) {
+						return directory.getEntryByID( that.warning.source.toString() );
+					})
+					.then( function( professional ) {
+						resolve( professional.name.family+' '+professional.name.given);
+					})
+					.catch( function(err) {
+						resolve("-");
+					});
+			}
+		});
+	};
+	
+	this.setWarningStatus = function( status, professionalID ) {
+		logger.trace("setWarningStatus", status, professionalID );
+		var that = this;
+		return new promise( function( resolve, reject) {
+			if( !that.warning ) {
+				that.warning = { status: false, source:null, date:null };
+			}
+			if( status && that.warning.status ) {
+				// a warning is already raised : do nothing
+				resolve( that.warning );
+			} else if( status === true && that.warning.status === false ) {
+				// raise the warning status
+				that.warning.status = true;
+				that.warning.source = professionalID;
+				that.warning.date = moment().toISOString();
+				that.save()
+					.then( resolve( that.warning ))
+					.catch( function(err) {
+						if( err.stack ) { console.log(err.stack); }
+						reject(err);
+					});
+			} else if( status === false && that.warning.status === true ) {
+				// disable the warning status
+				that.warning.status = false;
+				that.warning.source = professionalID;
+				that.warning.date = moment().toISOString();
+				that.save()
+					.then( resolve( that.warning ))
+					.catch( function(err) {
+						if( err.stack ) { console.log(err.stack); }
+						reject(err);
+					});
+			} else {
+				resolve( that.warning );
+			}
+		});
+	};
+	
+	/**
 	 * Get Professionals list attached to the beneficiary
 	 * 
 	 * @returns {promise}

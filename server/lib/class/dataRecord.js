@@ -8,7 +8,7 @@
 
 var RSVP = require("rsvp"),
 	dbPromise = require("./database.js"),
-	promise = require("rsvp").Promise,
+	Promise = require("rsvp").Promise,
 	Logger = require("logger"),
 	ObjectID = require("mongodb").ObjectID,
 	dataRecordSchema = require("./../schema/dataRecordSchema"),
@@ -32,11 +32,11 @@ function DataRecord( beneficiaryID ) {
 	 * 
 	 * @param beneficiaryID
 	 * @param dataRecordID
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.getByID = function( beneficiaryID, dataRecordID ) {
 		var that = this;
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("getByID", beneficiaryID, dataRecordID);
 			var search = { subject: beneficiaryID, _id: dataRecordID };
 			
@@ -133,13 +133,13 @@ function DataRecord( beneficiaryID ) {
 	/**
 	 * on resolve return a complete DataRecord for display
 	 * 
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.getComplete = function() {
 		var that = this;
 		var parameters;
 		
-		return new promise( function( resolve, reject) {
+		return new Promise( function( resolve, reject) {
 			logger.trace("getComplete", that._id);
 			physioDOM.Lists.getListItemsObj("parameters")
 				.then( function( list ) {
@@ -171,11 +171,11 @@ function DataRecord( beneficiaryID ) {
 	/**
 	 * Save the dataRecord in the database ( collection dataRecords )
 	 * 
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.save = function() {
 		var that = this;
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("save" );
 
 			physioDOM.db.collection("dataRecords").save( that, function(err, result) {
@@ -196,13 +196,13 @@ function DataRecord( beneficiaryID ) {
 	 * @param beneficiaryID
 	 * @param dataRecordObj
 	 * @param professionalID
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.setup = function( beneficiaryID, dataRecordObj, professionalID ) {
 		var that = this;
 		
 		function checkDataRecord( entry ) {
-			return new promise( function(resolve, reject) {
+			return new Promise( function(resolve, reject) {
 				logger.trace("checkDataRecord");
 				var check = dataRecordSchema.validator.validate( entry, { "$ref":"/DataRecord"} );
 				if( check.errors.length ) {
@@ -213,7 +213,7 @@ function DataRecord( beneficiaryID ) {
 			});
 		}
 
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("setup");
 			var items;
 			
@@ -267,12 +267,12 @@ function DataRecord( beneficiaryID ) {
 	 * 
 	 * used only by updateItems
 	 * 
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.clearItems = function() {
 		var that = this;
 	
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("clearItems");
 			that.items = [];
 			physioDOM.db.collection("dataRecordItems").remove( { dataRecordID: that._id }, function( err, nb) {
@@ -291,12 +291,12 @@ function DataRecord( beneficiaryID ) {
 	 * old items are removed only if the given array of items validate the schema
 	 * 
 	 * @param items
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.updateItems = function( items, professionalID ) {
 		var that = this;
 		function checkDataItems( entry ) {
-			return new promise( function(resolve, reject) {
+			return new Promise( function(resolve, reject) {
 				logger.trace("checkDataItems");
 				var check = dataRecordSchema.validator.validate( entry, { "$ref":"/DataItems"} );
 				if( check.errors.length ) {
@@ -307,7 +307,7 @@ function DataRecord( beneficiaryID ) {
 			});
 		}
 		
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("updateItems");
 			
 			that.getAllItems()
@@ -347,7 +347,7 @@ function DataRecord( beneficiaryID ) {
 	this.upgradeItems = function( items, professionalID ) {
 		var that = this;
 		function checkDataItems( entry ) {
-			return new promise( function(resolve, reject) {
+			return new Promise( function(resolve, reject) {
 				logger.trace("checkDataItems");
 				var check = dataRecordSchema.validator.validate( entry, { "$ref":"/DataItems"} );
 				if( check.errors.length ) {
@@ -358,7 +358,7 @@ function DataRecord( beneficiaryID ) {
 			});
 		}
 
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("upgradeItems");
 
 			that.getAllItems()
@@ -426,6 +426,51 @@ function DataRecord( beneficiaryID ) {
 				.catch(reject);
 		});
 	};
+
+	/**
+	 * Check the datarecord and if needed set the beneficairy warning status
+	 * 
+	 * on fulfilled return if a warning should be raised ( boolean )
+	 */
+	this.checkWarningStatus = function( ) {
+		logger.trace("checkWarningStatus");
+		var that = this;
+		var beneficiary = null;
+		
+		return new Promise( function( resolve, reject) {
+			that.getAllItems()
+				.then( function( ) {
+					return physioDOM.Beneficiaries();
+				})
+				.then(function (beneficiaries) {
+					return beneficiaries.getHHR( that.subject );
+				})
+				.then(function( _beneficiary ) {
+					beneficiary = _beneficiary;
+					return beneficiary.getThreshold();
+				})
+				.then( function( thresholds ) {
+					console.log( thresholds );
+					var warning = false;
+					that.items.forEach( function( item ) {
+						if( thresholds[item.text] ) {
+							if( thresholds[item.text].min && item.value < thresholds[item.text].min ) {
+								warning = true;
+							}
+							if( thresholds[item.text].max && item.value > thresholds[item.text].max ) {
+								warning = true;
+							}
+						}
+					});
+					resolve( warning ); 
+				})
+				.catch( function(err) {
+					if( err.stack ) { console.log(err.stack); }
+					reject(err);
+				});
+		});
+	};
+	
 }
 
 module.exports = DataRecord;

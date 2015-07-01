@@ -95,7 +95,7 @@
 				<div class="col" vertical layout>
 					<div class="row">
 						{% raw %}{{#item}}{% endraw %}
-						<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{% raw %}{{ labelLang }}{% endraw %} {% if item.automatic %}({{"Auto"|i18n}}){% endif %}</div>
+						<div class="col bold" style="min-width:220px;max-width:220px">{% raw %}{{ labelLang }}{% endraw %} {% if item.automatic %}({{"Auto"|i18n}}){% endif %}</div>
 						<div class="col item-value" style="max-width:150px">{{ item.value }}</div>
 						{% if cat !== 'questionnaire' %}
 						<div class="col" style="max-width:150px">{% raw %}{{ unitsLabel }}{% endraw %}</div>
@@ -155,7 +155,7 @@
 				{% if cat !== 'questionnaire' %}
 
 					{% raw %}{{#item}}{% endraw %}
-						<div class="col item-text" style="-webkit-flex:2; -ms-flex:2; flex:2;"></div>
+						<div class="col item-text" style="min-width:220px;max-width:220px"></div>
 						<div class="col item-value" style="max-width:150px">
 						   <input type="number" step="any" value="{{ item.value }}" name="items[{{item._id.toString()}}].value"/></div>
 						   {% raw %}
@@ -172,7 +172,7 @@
 				{% else %}
 
 					{% raw %}{{#item}}{% endraw %}
-						<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{% raw %}{{ labelLang }}{% endraw %} {% if item.automatic %}({{"Auto"|i18n}}){% endif %}</div>
+						<div class="col bold" style="min-width:220px;max-width:220px">{% raw %}{{ labelLang }}{% endraw %} {% if item.automatic %}({{"Auto"|i18n}}){% endif %}</div>
 						<div class="col item-value" style="max-width:150px">{{ item.value }}</div>
 						<div class="col" style="max-width:150px">
 						<button type="button" class="blue small answer not-disabled" data-answer="{{item.ref}}" onclick="showAnswer('{{item.ref}}')">{{"Questionnaire"|i18n}}</button>
