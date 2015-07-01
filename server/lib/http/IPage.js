@@ -77,6 +77,10 @@ function IPage() {
 		swig.setFilter("date", function( date ) {
 			return moment(date).format("L");
 		});
+
+		swig.setFilter("fulldate", function( date ) {
+			return moment(date).format("L LT");
+		});
 	}
 
 	function convertDate(strDate) {
