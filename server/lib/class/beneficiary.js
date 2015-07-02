@@ -2030,6 +2030,7 @@ function Beneficiary( ) {
 											// logger.debug("dates", dat.toISOString(), closeDate.toISOString(), today.toISOString());
 											if (dat.unix() <= closeDate.unix() && dat.unix() > today.unix()) {
 												logger.debug("monthly prog", {ref: prog.ref, date: nextDate.unix()});
+												dat = dat.hour(12).minute(0).second(0);
 												msgs.push({ref: prog.ref, date: dat.unix()});
 											}
 										});
@@ -2379,6 +2380,7 @@ function Beneficiary( ) {
 											dat.subtract(Math.floor(-day / 10) - 1, 'w');
 										}
 										if (dat.unix() <= closeDate.unix() && dat.unix() > today.unix()) {
+											dat = dat.hour(12).minute(0).second(0);
 											msgs.push({ref: prog.ref, date: dat.unix()});
 										}
 									});
