@@ -164,7 +164,9 @@
 			<div>date : {{ beneficiary.warning.date | fulldate }}</div>
 		</div>
 		<div style="width:150px; text-align:right">
+			{% if alert.write %}
 			<button class="blue" style="margin-top:10px" onclick="disableWarning()" >{{"Lower alert" | i18n}}</button>
+			{% endif %}
 		</div>
 	{% endif %}
 	{% if (beneficiary.warning && beneficiary.warning.status === false) || !beneficiary.warning %}

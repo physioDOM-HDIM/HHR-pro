@@ -657,6 +657,10 @@ function IPage() {
 		new Menu().rights( req.session.role, data.rights.url )
 			.then( function( _rights ) {
 				data.rights = _rights;
+				return new SpecialRights().rights( req.session.role, "Alert" );
+			}).then( function(_rights) {
+				data.alert = _rights;
+				console.log( data );
 				return RSVP.all(promisesArray);
 			})
 			.then( function(lists) {
