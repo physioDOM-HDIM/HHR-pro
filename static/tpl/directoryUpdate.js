@@ -250,14 +250,30 @@ function updateItem(obj) {
 								window.history.back();
 							});
 						})
-						.catch( function() {
-							new Modal('conflictLogin', function() {
-								var login = document.getElementById("login");
-								login.scrollIntoView();
-								login.style.border = "2px solid red";
-								login.focus();
+						.catch( function(error) {
+							var err = JSON.parse(error.responseText);
+							var modalType = 'conflictLogin';
+							if( err.message.match(/email/i) ) {
+								modalType = 'conflictEmail';
+							}
+							new Modal(modalType, function() {
+								if( modalType === 'conflictLogin') {
+									var login = document.getElementById("login");
+									if( login ) {
+										login.scrollIntoView();
+										login.style.border = "2px solid red";
+										login.focus();
+									}
+								} else {
+									var email = document.querySelector("input[type=email]");
+									if (email) {
+										email.scrollIntoView();
+										email.style.border = "2px solid red";
+										email.focus();
+									}
+								}
 							});
-						})
+						});
 				} else {
 					new Modal('updateSuccess', function() {
 						modified = false;

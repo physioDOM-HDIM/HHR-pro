@@ -423,7 +423,11 @@ function Professional() {
 			checkUniqLogin()
 				.then( function(count) {
 					if(count) {
-						reject( { code:409, message:"login already used"} );
+						var err = { code:409, message:"login already used" };
+						if( accountData.IDS==="true" ) {
+							err = { code:409, message:"email already used" };
+						}
+						reject(err);
 					} else {
 						return that.getAccount();
 					}

@@ -364,10 +364,25 @@ function Modal (type, callback, log) {
 				self.closeModal();
 			}
 		}]
-	}
+	};
+	
 	content.conflictLogin = {
 		title: "trad_errorFormConflict",
 		content: "trad_conflict_login",
+		buttons: [{
+			id: "trad_ok",
+			action: function() {
+				if(callback) {
+					callback();
+				}
+				self.closeModal();
+			}
+		}]
+	};
+
+	content.conflictEmail = {
+		title: "trad_errorFormConflict",
+		content: "trad_conflict_email",
 		buttons: [{
 			id: "trad_ok",
 			action: function() {

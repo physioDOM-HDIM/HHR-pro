@@ -327,7 +327,9 @@ function Beneficiary( ) {
 
 		function checkUniqLogin() {
 			return new Promise( function(resolve, reject) {
-				physioDOM.db.collection("account").count( { login: accountData.login.toLowerCase(), 'person.id': {'$ne': that._id }}, function (err, count) {
+				var search = { login: accountData.login.toLowerCase(), 'person.id': {'$ne': that._id }};
+				console.log( search );
+				physioDOM.db.collection("account").count( search , function (err, count) {
 					resolve( count );
 				});
 			});
@@ -339,7 +341,11 @@ function Beneficiary( ) {
 				.then( function(count) {
 					if(count) {
 						logger.warning("login conflict");
-						reject({ code:409, message:"login already used"});
+						var err = { code:409, message:"login already used" };
+						if( accountData.IDS==="true" ) {
+							err = { code:409, message:"email already used" };
+						}
+						reject(err);
 					} else {
 						return that.getAccount();
 					}

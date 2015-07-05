@@ -2,7 +2,7 @@
 var Utils = new Utils();
 
 function init() {
-	moment.locale(Cookies.get("lang")=="en"?"en-gb":Cookies.get("lang"));
+	moment.locale(Cookies.get("lang")==="en"?"en-gb":Cookies.get("lang"));
 	var listPager = document.querySelector('tsante-list');
 	listPager.addEventListener('tsante-response', function(data) {
 		var list = data.detail.list;
