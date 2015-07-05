@@ -198,7 +198,7 @@ var IDirectory = {
 	 * @param next
 	 */
 	accountUpdate: function(req, res, next) {
-		var professional;
+		var professional, OTP;
 		
 		try {
 			var account = JSON.parse(req.body);
@@ -220,7 +220,8 @@ var IDirectory = {
 				.then( function( update ) {
 					return new promise( function( resolve, reject) {
 						logger.info("account updated");
-						if( !update.OTP && req.headers["ids-user"]) {
+						OTP = update.OTP;
+						if( !update.OTP && req.headers["ids-user"] && update.professional.active === true ) {
 							logger.alert( "create cert" );
 							update.professional.createCert( req, res )
 								.then( resolve )
@@ -232,8 +233,9 @@ var IDirectory = {
 					});
 				})
 				.then( function(_account) {
+					var data;
 					if( account.password !== _account.password ) {
-						var data = {
+						data = {
 							account : _account,
 							password: account.password,
 							server  : physioDOM.config.server,
@@ -243,6 +245,17 @@ var IDirectory = {
 							data.idsUser = true;
 						}
 						return require("./ISendmail").passwordMail( data );
+					} else if( OTP === false && _account.OTP ) {
+						data = {
+							account : _account,
+							password: false,
+							server  : physioDOM.config.server,
+							lang    : professional.communication
+						};
+						if (req.headers["ids-user"]) {
+							data.idsUser = true;
+						}
+						return require("./ISendmail").passwordMail(data);
 					}
 				})
 				.then( function() {
