@@ -335,7 +335,7 @@ var IDirectory = {
 	},
 
 	revoqCert: function (req, res, next) {
-		logger.trace("revoqCert");
+		logger.trace("revoqCert", req.params.entryID);
 
 		var professional;
 

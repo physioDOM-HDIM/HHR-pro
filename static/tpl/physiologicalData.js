@@ -27,7 +27,7 @@ if(Utils.isSafari()) {
 		if (evt.target.tagName === "LABEL" && evt.target.htmlFor) {
 			evt.stopPropagation();
 			evt.preventDefault();
-			console.log("touch event", evt);
+			
 			setTimeout(function () {
 				var elt = document.getElementById(evt.target.htmlFor);
 				elt.checked = !elt.checked;
@@ -165,7 +165,6 @@ var getDataRecords = function(init) {
     	})
 		.then(function() {
     		if(BlueChoice || YellowChoice) {
-				console.log("test");
     			renderGraph(physiologicalData.dataRecords);
     		}
     	})

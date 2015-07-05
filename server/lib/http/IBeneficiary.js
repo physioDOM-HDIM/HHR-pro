@@ -244,6 +244,7 @@ var IBeneficiary = {
 					});
 				})
 				.catch(function (err) {
+					if( err.stack ) { console.log( err.stack ); }
 					res.send(err.code || 400, err);
 					next(false);
 				});
