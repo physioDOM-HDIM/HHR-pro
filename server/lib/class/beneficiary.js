@@ -2464,7 +2464,7 @@ function Beneficiary( ) {
 						});
 						msg.push({
 							name: leaf + ".new",
-							value: newFlag ? 1 : 0,
+							value: newFlag ? 1 : 1,
 							type: "integer"
 						});
 						for (var i = 0, l = quest.history.length; i < l; i++) {
@@ -2779,7 +2779,7 @@ function Beneficiary( ) {
 									});
 									msg.push({
 										name : leaf + ".new",
-										value: newFlag?1:0,
+										value: newFlag?1:1,
 										type : "integer"
 									});
 									for( var i= 0, l=answer.questions.length; i<l;i++) {
