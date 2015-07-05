@@ -621,7 +621,7 @@ server.get( '/dietary-plan', IPage.dietaryPlan);
 server.get( '/physical-plan', IPage.physicalPlan);
 
 server.get(/\/[^api|components\/]?$/, function(req, res, next) {
-	logger.trace("index");
+	logger.trace("index", req.session );
 	if( req.session ) {
 		if( req.session.firstlogin ) {
 			return IPage.password( req, res, next);
@@ -642,7 +642,11 @@ server.get(/\/[^api|components\/]?$/, function(req, res, next) {
 					cookies.set('sessionID', session.sessionID, cookieOptions);
 					cookies.set('role', session.role, { path: '/', httpOnly : false} );
 					cookies.set('lang', session.lang || physioDOM.lang, { path: '/', httpOnly : false});
-					return IPage.ui( req, res, next);
+					if( session.firstlogin === true ) {
+						return IPage.password( req, res, next);
+					} else {
+						return IPage.ui(req, res, next);
+					}
 				})
 				.catch( function(err) {
 					logger.warning(err.message || "bad login or password");
