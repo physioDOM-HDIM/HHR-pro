@@ -396,5 +396,6 @@
   "Lower alert":"Disable waarschuwing",
   "On":"On",
   "Off":"Off",
-  "This email is already used, please choose another one": "Deze e-mail is al in gebruik, kies dan een andere"
+  "This email is already used, please choose another one": "Deze e-mail is al in gebruik, kies dan een andere",
+  "Your certificate has been revoked":"Uw certificaat is ingetrokken"
 }

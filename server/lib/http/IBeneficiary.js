@@ -1605,6 +1605,16 @@ var IBeneficiary = {
 				return beneficiary.revokeCert(req, res );
 			})
 			.then(function ( account ) {
+				var data = {
+					account : account,
+					password: false,
+					server  : physioDOM.config.server,
+					lang    : physioDOM.Lang
+				};
+				if (req.headers["ids-user"]) {
+					data.idsUser = true;
+				}
+				require("./ISendmail").certificateRevoqMail(data);
 				logger.info("receive account", account );
 				res.send( account );
 				next();

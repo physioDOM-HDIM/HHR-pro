@@ -396,5 +396,6 @@
   "Lower alert":"Desactivar la advertencia",
   "On":"Izado",
   "Off":"Apagado",
-  "This email is already used, please choose another one": "Este correo electrónico ya está en uso, elija otra"
+  "This email is already used, please choose another one": "Este correo electrónico ya está en uso, elija otra",
+  "Your certificate has been revoked":"Su certificado ha sido revocado"
 }
