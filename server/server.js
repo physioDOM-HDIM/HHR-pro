@@ -621,7 +621,7 @@ server.get( '/dietary-plan', IPage.dietaryPlan);
 server.get( '/physical-plan', IPage.physicalPlan);
 
 server.get(/\/[^api|components\/]?$/, function(req, res, next) {
-	logger.trace("index", req.session );
+	logger.trace("index" );
 	if( req.session ) {
 		if( req.session.firstlogin ) {
 			return IPage.password( req, res, next);
@@ -637,7 +637,7 @@ server.get(/\/[^api|components\/]?$/, function(req, res, next) {
 				.then( function(account) {
 					return account.createSession();
 				}).then( function(session) {
-					console.log( session );
+					// console.log( session );
 					req.session = session;
 					cookies.set('sessionID', session.sessionID, cookieOptions);
 					cookies.set('role', session.role, { path: '/', httpOnly : false} );
