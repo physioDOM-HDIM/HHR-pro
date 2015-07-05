@@ -23,7 +23,7 @@ server {
     }
 
     location ~  \.(jpeg|gif|png|ico|css|zip|tgz|gz|rar|bz2|pdf|txt|tar|wav|bmp|rtf|js|flv|swf|html|htm|woff|woff2|svg)$ {
-        set $args "{{version}}";
+        set $args "v={{version}}";
         rewrite ^(.*)$ $1?${args} break;
         root {{rootDir}};
     }
