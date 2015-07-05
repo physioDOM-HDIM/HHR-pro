@@ -78,7 +78,7 @@
 			</div>
 			<div class="col buttonContainer">
 				<span class="spacer"></span>
-				<button type="button" class="small red" onclick="deleteTelecom(this)">{{ "Delete"|i18n }}</button>
+				<button type="button" class="small red" onclick="deleteTelecom(this)">{{ "Remove"|i18n }}</button>
 			</div>
 		</div>
 	</div>
@@ -95,7 +95,7 @@
 		
 		<div class="col buttonContainer">
 			<span class="spacer"></span>
-			<button type="button" class="small red" onclick="deleteAddress(this)">{{ "Delete"|i18n }}</button>
+			<button type="button" class="small red" onclick="deleteAddress(this)">{{ "Remove"|i18n }}</button>
 		</div>
 	</div>
 	<div class="row">
@@ -202,7 +202,7 @@
 						</div>
 						<div class="col buttonContainer">
 							<span class="spacer"></span>
-							<button type="button" class="small red" onclick="deleteTelecom(this)">{{ "Delete"|i18n }}
+							<button type="button" class="small red" onclick="deleteTelecom(this)">{{ "Remove"|i18n }}
 							</button>
 						</div>
 					</div>
@@ -231,7 +231,7 @@
 					
 					<div class="col buttonContainer">
 						<span class="spacer"></span>
-						<button type="button" class="small red" onclick="deleteAddress(this)">{{ "Delete"|i18n }}
+						<button type="button" class="small red" onclick="deleteAddress(this)">{{ "Remove"|i18n }}
 						</button>
 					</div>
 				</div>
@@ -550,8 +550,8 @@
 	</zdk-panel>
 	
 	<div class="row control" style="height:60px; align-content: center">
-		<span class="spacer"></span>
 		<button id="deleteBeneficiary" class="red big" onclick="confirmDeleteBeneficiary()">{{ "Delete"|i18n }}</button>
+		<span class="spacer"></span>
 		<button class="red big" onclick="cancelForm()">{{ "Cancel"|i18n }}</button>
 		<button class="waitForId green big" onclick="checkAllForms()">{{ "Save"|i18n }}</button>
 	</div>
@@ -592,7 +592,7 @@
 		</div>
 		<div class="modalButtonContainer">
 			<button class="red" onclick="closeProfessionals()">{{ "Cancel"|i18n }}</button>
-			<button class="green" onclick="addProfessionals()">{{ "Save"|i18n }}</button>
+			<button class="green" onclick="addProfessionals()">{{ "Ok"|i18n }}</button>
 		</div>
 	</div>
 </zdk-modal>

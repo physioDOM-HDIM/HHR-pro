@@ -9,6 +9,7 @@ var Utils = new Utils(),
 physiologicalData.list = {};
 physiologicalData.dataRecords = {};
 
+moment.locale( Cookies.get("lang") ==="en"?"en_gb":Cookies.get("lang") );
 
 /**
  * INIT
@@ -26,7 +27,7 @@ if(Utils.isSafari()) {
 		if (evt.target.tagName === "LABEL" && evt.target.htmlFor) {
 			evt.stopPropagation();
 			evt.preventDefault();
-			console.log("touch event", evt);
+			
 			setTimeout(function () {
 				var elt = document.getElementById(evt.target.htmlFor);
 				elt.checked = !elt.checked;
@@ -168,8 +169,8 @@ var getDataRecords = function(init) {
     		}
     	})
 		.catch( function(err) {
+			if(err.stack) { console.error(err.stack); }
 			console.error("getDataRecords error", err);
-			if(err.stack) { console.info(err.stack); }
 		});
 
     if(!BlueChoice && !YellowChoice) {
@@ -352,7 +353,7 @@ var renderGraph = function(dataRecords) {
 	dateTo = moment(new Date(dateTo)).add(1, 'days').valueOf();
 
 	//blue graph config
-	if(dataRecords && dataRecords.blue !== null && dataRecords.blue.data.length !== 0) {
+	if(dataRecords && dataRecords.blue !== null ) { // && dataRecords.blue.data.length !== 0
 
 		var blueIndex = 0;
 
@@ -430,7 +431,8 @@ var renderGraph = function(dataRecords) {
 
 		var yellowIndex = 1;
 
-		if(dataRecords.blue === null) {
+		// if(dataRecords.blue === null || dataRecords.blue.data.length === 0) {
+		if(dataRecords.blue === null ) {
 			yellowIndex = 0;
 		}
 
@@ -544,7 +546,7 @@ var renderGraph = function(dataRecords) {
 			text: ''
 		},
 		subtitle: {
-			text: user.name.given + ' ' + user.name.family,
+			text: (user.name.given?user.name.given:"") + ' ' + (user.name.family?user.name.family:"")
 		},
 		xAxis: {
 			type: 'datetime',
@@ -565,7 +567,7 @@ var renderGraph = function(dataRecords) {
 				if( this.points[0].series.tooltipOptions.valueSuffix ) {
 					str = moment(this.x).format("LLL") + '<br/>';
 					this.points.forEach( function(point) {
-						str+= '<span style="color:'+point.series.color+'">'+point.series.name + '</span>&nbsp;&nbsp;<b>' + point.y + ' ' + point.series.tooltipOptions.valueSuffix + '</b><br/>';
+						str+= '<span style="color:'+point.series.color+'">'+point.series.name + '</span>  <b>' + point.y + ' ' + point.series.tooltipOptions.valueSuffix + '</b><br/>';
 					});
 					return str;
 				} else {
@@ -596,6 +598,9 @@ var renderGraph = function(dataRecords) {
 	};
 
 	Highcharts.setOptions({
+		global: {
+			useUTC: false
+		},
 		lang: {
 			months: moment.localeData()._months,
 			weekdays: moment.localeData()._weekdays,

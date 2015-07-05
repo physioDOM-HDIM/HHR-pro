@@ -7,7 +7,7 @@ var Utils = new Utils(),
 	lists= {};
 
 window.addEventListener('DOMContentLoaded', function() {
-	moment.locale(Cookies.get("lang")=="en"?"en-gb":Cookies.get("lang"));
+	moment.locale(Cookies.get("lang")==="en"?"en-gb":Cookies.get("lang"));
 	infos.lang = Cookies.get("lang");
 	document.addEventListener('change', function (evt) {
 		modified = true;

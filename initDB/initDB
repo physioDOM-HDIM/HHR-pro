@@ -30,3 +30,4 @@ mongoimport -h ${IP} -d ${DBNAME} --drop -c account --file account.json
 mongoimport -h ${IP} -d ${DBNAME} --drop -c specialRights --file specialRights.json
 
 echo "database initialized"
+

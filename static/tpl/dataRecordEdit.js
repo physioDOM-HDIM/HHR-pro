@@ -145,8 +145,15 @@ function isHealthStatusValidated() {
 
 window.addEventListener("beforeunload", function (e) {
 	var confirmationMessage;
+	var xhr = new XMLHttpRequest();
+	
+	if( createdDataRecordID ) {
+		xhr.open("GET", "/api/beneficiary/datarecords/"+createdDataRecordID+"/warning", false);
+		xhr.send();
+		console.log( xhr.responseText );
+	}
+	
 	if( createdNew ) {
-		var xhr = new XMLHttpRequest();
 		xhr.open("GET", "/api/queue/history", true);
 		xhr.send();
 	}

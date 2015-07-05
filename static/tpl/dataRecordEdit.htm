@@ -95,7 +95,7 @@
 				<div class="col" vertical layout>
 					<div class="row">
 						{% raw %}{{#item}}{% endraw %}
-						<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{% raw %}{{ labelLang }}{% endraw %} {% if item.automatic %}({{"Auto"|i18n}}){% endif %}</div>
+						<div class="col bold" style="min-width:220px;max-width:220px">{% raw %}{{ labelLang }}{% endraw %} {% if item.automatic %}({{"Auto"|i18n}}){% endif %}</div>
 						<div class="col item-value" style="max-width:150px">{{ item.value }}</div>
 						{% if cat !== 'questionnaire' %}
 						<div class="col" style="max-width:150px">{% raw %}{{ unitsLabel }}{% endraw %}</div>
@@ -155,7 +155,7 @@
 				{% if cat !== 'questionnaire' %}
 
 					{% raw %}{{#item}}{% endraw %}
-						<div class="col item-text" style="-webkit-flex:2; -ms-flex:2; flex:2;"></div>
+						<div class="col item-text" style="min-width:220px;max-width:220px"></div>
 						<div class="col item-value" style="max-width:150px">
 						   <input type="number" step="any" value="{{ item.value }}" name="items[{{item._id.toString()}}].value"/></div>
 						   {% raw %}
@@ -172,7 +172,7 @@
 				{% else %}
 
 					{% raw %}{{#item}}{% endraw %}
-						<div class="col bold" style="-webkit-flex:2; -ms-flex:2; flex:2;">{% raw %}{{ labelLang }}{% endraw %} {% if item.automatic %}({{"Auto"|i18n}}){% endif %}</div>
+						<div class="col bold" style="min-width:220px;max-width:220px">{% raw %}{{ labelLang }}{% endraw %} {% if item.automatic %}({{"Auto"|i18n}}){% endif %}</div>
 						<div class="col item-value" style="max-width:150px">{{ item.value }}</div>
 						<div class="col" style="max-width:150px">
 						<button type="button" class="blue small answer not-disabled" data-answer="{{item.ref}}" onclick="showAnswer('{{item.ref}}')">{{"Questionnaire"|i18n}}</button>
@@ -234,7 +234,7 @@
 		<div class="row control">
 			<span class="spacer"></span>
 			{% if rights.write && beneficiary.active %}
-			<button type="button" class="green small" onclick="addLine('{{category}}')">{{"Add"|i18n}}</button>
+			<button type="button" class="blue small" onclick="addLine('{{category}}')">{{"Add"|i18n}}</button>
 			{% endif %}
 		</div>
 	</div>
@@ -272,7 +272,7 @@
 
 		<input name="items[{% raw %}{{idx}}{% endraw %}].category" id="new-item-category" type="hidden">
 		<div style="width:100px; text-align:right">
-			<button type="button" class="blue small" onclick="removeLine(this)">{{"Cancel"|i18n}}</button>
+			<button type="button" class="red small" onclick="removeLine(this)">{{"Cancel"|i18n}}</button>
 		</div>
 	</div>
 	{% raw %}{{#questionnaire}}{% endraw %}
@@ -404,7 +404,7 @@
 			<button id="saveBtn" class="green">{{"Save"|i18n}}</button>
 			{% endif %}
 			{% else %}
-			<button type="button" class="blue big not-disabled" onclick="backDatarecord()">{{"Back"|i18n}}</button>
+			<button type="button" class="red big not-disabled" onclick="backDatarecord()">{{"Cancel"|i18n}}</button>
 			{% if rights.write && beneficiary.active && !dataRecordItems.healthStatus %}
 			<button id="saveBtn" class="green">{{"Save"|i18n}}</button>
 			{% endif %}

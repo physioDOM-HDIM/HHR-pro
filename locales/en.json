@@ -391,5 +391,14 @@
   "Your password is unchanged": "Your password is unchanged",
   "On IDS, the identifier is the mail address": "On IDS, the identifier is the mail address",
   "Required":"Required fields",
-  "Some required fields are not correctly filled":"Some required fields are not correctly filled"
+  "Some required fields are not correctly filled":"Some required fields are not correctly filled",
+  "Warning status": "Warning status",
+  "Lower alert":"Disable warning",
+  "On":"On",
+  "Off":"Off",
+  "This email is already used, please choose another one": "This email is already used, please choose another one",
+  "Your certificate has been revoked":"Your certificate has been revoked",
+  "New beneficiary":"New beneficiary",
+  "Remove":"Remove",
+  "New Professional":"New Professional"
 }

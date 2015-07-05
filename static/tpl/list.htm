@@ -257,7 +257,7 @@
 		{% if list.editable && roleClass==="ADMIN" %}
 		<div class="row" style="margin-bottom:20px">
 			<span class="spacer"></span>
-			<button type="button" class="blue" onclick="addItem(this)">{{ "New item"|i18n }}</button>
+			<button type="button" class="blue" onclick="addItem(this)">{{ "Add"|i18n }}</button>
 		</div>
 		{% endif %}
 	</form>
@@ -267,7 +267,7 @@
 		<span class="spacer"></span>
 		{% if roleClass==="ADMIN" %}
 		<button type="button" class="red" onclick="modified=false; window.history.back(1)">{{ "Cancel"|i18n }}</button>
-		{% if list.editable %}<button class="blue btn-save" onclick="save()">{{ "Save"|i18n }}</button>{% endif %}
+		{% if list.editable %}<button class="green btn-save" onclick="save()">{{ "Save"|i18n }}</button>{% endif %}
 		{% else %}
 		<button type="button" class="blue" onclick="modified=false; window.history.back(1)">{{ "Back"|i18n }}</button>
 		{% endif %}

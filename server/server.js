@@ -445,6 +445,7 @@ server.get( '/api/beneficiary/professionals', IBeneficiary.beneficiaryProfession
 server.get( '/api/beneficiary/datarecords', IBeneficiary.dataRecords );
 server.get( '/api/beneficiary/datarecords/:dataRecordID', IBeneficiary.dataRecord );
 server.post('/api/beneficiary/datarecord', IBeneficiary.newDataRecord );
+server.get( '/api/beneficiary/datarecords/:dataRecordID/warning', IBeneficiary.checkWarning );
 server.put( '/api/beneficiary/datarecords/:dataRecordID', IBeneficiary.updateDataRecord );
 server.post('/api/beneficiary/thresholds', IBeneficiary.setThreshold);
 server.get( '/api/beneficiary/thresholds', IBeneficiary.getThreshold);
@@ -476,6 +477,7 @@ server.del('/api/beneficiary/questionnaires/answers/:entryID', IBeneficiary.remo
 
 //Events
 server.get( '/api/beneficiary/events', IBeneficiary.getEventList);
+server.post( '/api/beneficiary/warning', IBeneficiary.setWarningStatus );
 
 //Dietary Plan
 server.get( '/api/beneficiary/dietary-plan', IBeneficiary.getDietaryPlan);
@@ -619,7 +621,7 @@ server.get( '/dietary-plan', IPage.dietaryPlan);
 server.get( '/physical-plan', IPage.physicalPlan);
 
 server.get(/\/[^api|components\/]?$/, function(req, res, next) {
-	logger.trace("index");
+	logger.trace("index" );
 	if( req.session ) {
 		if( req.session.firstlogin ) {
 			return IPage.password( req, res, next);
@@ -635,12 +637,16 @@ server.get(/\/[^api|components\/]?$/, function(req, res, next) {
 				.then( function(account) {
 					return account.createSession();
 				}).then( function(session) {
-					console.log( session );
+					// console.log( session );
 					req.session = session;
 					cookies.set('sessionID', session.sessionID, cookieOptions);
 					cookies.set('role', session.role, { path: '/', httpOnly : false} );
 					cookies.set('lang', session.lang || physioDOM.lang, { path: '/', httpOnly : false});
-					return IPage.ui( req, res, next);
+					if( session.firstlogin === true ) {
+						return IPage.password( req, res, next);
+					} else {
+						return IPage.ui(req, res, next);
+					}
 				})
 				.catch( function(err) {
 					logger.warning(err.message || "bad login or password");

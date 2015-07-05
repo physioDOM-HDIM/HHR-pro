@@ -1,4 +1,5 @@
 "use strict";
+/* global moment, Modal, Utils */
 
 var utils = new Utils(),
 	infos = {},
@@ -182,6 +183,18 @@ var showOptions = function (frequency, dataModel) {
 
 };
 
+function updateCal() {
+	var inputStartDate = document.querySelector("zdk-input-date[name=startDate]");
+	var inputEndDate = document.querySelector("zdk-input-date[name=endDate]");
+
+	if( inputStartDate.value && inputEndDate ) {
+		inputEndDate.start = inputStartDate.value;
+	}
+	if( inputEndDate.value && inputStartDate ) {
+		inputStartDate.stop = inputEndDate.value;
+	}
+}
+
 /**
  * Modal Form
  */
@@ -201,7 +214,7 @@ function showForm(ref, duplication) {
 		}
 
 		if(!freeParam) {
-			new Modal('errorNoParamAvailable')
+			new Modal('errorNoParamAvailable');
 			return;
 		}
 	}
@@ -312,23 +325,22 @@ function showForm(ref, duplication) {
 	formContainer.appendChild(formDiv);
 	
 	setTimeout( function() {
-		moment.locale( infos.lang==="en"?"en_gb":infos.lang );
+		moment.locale( infos.lang === "en"?"en_gb":infos.lang );
 		[].slice.call(document.querySelectorAll("zdk-input-date")).forEach( function(item) {
-			item.setAttribute("i18n", infos.lang=="en"?"en-gb":infos.lang );
+			item.setAttribute("i18n", infos.lang === "en"?"en-gb":infos.lang );
 		});
 		
 		updateCal();
+		
 		var inputStartDate = document.querySelector("zdk-input-date[name=startDate]");
 		var inputEndDate = document.querySelector("zdk-input-date[name=endDate]");
 		inputStartDate.onchange = updateCal;
-		inputEndDate.onchange = updateCal;
+		inputEndDate.onchange   = updateCal;
 	}, 100 );
-	
 
 	//Set threshold for first param of the list
 	var select = formContainer.querySelector('#ref-select');
 	updateParam(select);
-
 
 	if(ref && !duplication) {
 		select.disabled = true;
@@ -500,18 +512,6 @@ var saveData = function () {
 	return true;
 };
 
-function updateCal() {
-	var inputStartDate = document.querySelector("zdk-input-date[name=startDate]");
-	var inputEndDate = document.querySelector("zdk-input-date[name=endDate]");
-
-	if( inputStartDate.value && inputEndDate ) {
-		inputEndDate.start = inputStartDate.value;
-	}
-	if( inputEndDate.value && inputStartDate ) {
-		inputStartDate.stop = inputEndDate.value;
-	}
-}
-
 var removeData = function (id) {
 	if( !id ) {
 		window.location.href = "/prescription/" + ( infos.category || infos.paramList ).toLowerCase();
@@ -532,15 +532,15 @@ var removeData = function (id) {
 	new Modal('confirmDeleteItem', deleteAction);
 };
 
-window.addEventListener("DOMContentLoaded", function () {
+window.addEventListener("polymer-ready", function () {
 	infos.category = document.querySelector('.param-category').textContent;
 	infos.paramList = document.querySelector('.param-list').textContent;
 	infos.lang = Cookies.get("lang");
-	moment.locale( infos.lang==="en"?"en_gb":infos.lang );
+	moment.locale( infos.lang === "en"?"en_gb":infos.lang );
 
 	var zdkInputDates = document.querySelectorAll("zdk-input-date");
 	[].slice.call(zdkInputDates).forEach(function (elt) {
-		elt.setAttribute("i18n", Cookies.get("lang")=="en"?"en_gb":Cookies.get("lang"));
+		elt.setAttribute("i18n", Cookies.get("lang")==="en"?"en_gb":Cookies.get("lang"));
 	});
 	
 	getList();

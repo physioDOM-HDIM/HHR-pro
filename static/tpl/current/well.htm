@@ -111,10 +111,10 @@
 	{% if rights.write && beneficiary.active %}
 		{% if !status.validated.status %}
 		<div id="buttons" class="row control">
-			<span class="spacer"></span>
 			{% if validate.write %}
 			<button type="button" class="blue" onclick="showConfirm();">{{"Validate"|i18n}}</button>
 			{% endif %}
+			<span class="spacer"></span>
 			<button type="button" class="red" onclick="modified=false; location.reload();">{{"Cancel"|i18n}}</button>
 			<button type="button" class="green" onclick="checkForm();">{{"Save"|i18n}}</button>
 		</div>

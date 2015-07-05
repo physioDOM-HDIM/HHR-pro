@@ -78,7 +78,11 @@ function Beneficiaries( ) {
 		var cursorSort = {};
 		if(sort) {
 			cursorSort[sort] = [-1,1].indexOf(sortDir)!==-1?sortDir:1;
+			if( sort !== "name.family") {
+				cursorSort["name.family"] = 1;
+			}
 		} else {
+			cursorSort["warning.status"] = -1;
 			cursorSort["name.family"] = 1;
 		}
 		cursor = cursor.sort( cursorSort );

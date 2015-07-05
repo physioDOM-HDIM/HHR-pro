@@ -8,7 +8,7 @@
 "use strict";
 
 var RSVP = require("rsvp"),
-	promise = require("rsvp").Promise,
+	Promise = require("rsvp").Promise,
 	Logger = require("logger"),
 	ObjectID = require("mongodb").ObjectID,
 	beneficiarySchema = require("./../schema/beneficiarySchema"),
@@ -44,16 +44,16 @@ function Beneficiary( ) {
 	/**
 	 * Get a beneficiary in the database known by its ID
 	 * 
-	 * on success the promise returns the beneficiary record,
+	 * on success the Promise returns the beneficiary record,
 	 * else return an error ( code 404 )
 	 * 
 	 * @param beneficiaryID
 	 * @param professional
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.getById = function( beneficiaryID, professional ) {
 		var that = this;
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("getById", beneficiaryID);
 			var search = { _id: beneficiaryID };
 			if( ["administrator","coordinator"].indexOf(professional.role) === -1 && beneficiaryID.toString() !== professional._id.toString() ) {
@@ -90,15 +90,15 @@ function Beneficiary( ) {
 	 * This method is used to create or modify a beneficiary
 	 * the professional must be an administrator or a coordinator
 	 * 
-	 * if beneficiaryID is null the promise return an empty structure
+	 * if beneficiaryID is null the Promise return an empty structure
 	 * 
 	 * @param beneficiaryID
 	 * @param professional
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.getAdminById = function( beneficiaryID, professional ) {
 		var that = this;
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("getAdminById", beneficiaryID);
 			var result = { telecom: [ { system:"phone" } ], address:[ { use:"home"} ] };
 			that.getById(beneficiaryID, professional)
@@ -121,16 +121,16 @@ function Beneficiary( ) {
 	 * Get a beneficiary in the database known by its ID
 	 * this method is only used by the Queue API
 	 *
-	 * on success the promise returns the beneficiary record,
+	 * on success the Promise returns the beneficiary record,
 	 * else return an error ( code 404 )
 	 *
 	 * @param beneficiaryID
 	 * @param professional
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.getHHR = function( beneficiaryID ) {
 		var that = this;
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("getHHR", beneficiaryID);
 			var search = { _id: beneficiaryID };
 
@@ -162,14 +162,14 @@ function Beneficiary( ) {
 	/**
 	 * return account information about the beneficiary
 	 *
-	 * the promise resolve with account information as object,
+	 * the Promise resolve with account information as object,
 	 * if no account information is found the resolve return an empty object
 	 *
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.getAccount = function() {
 		var that = this;
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			var search = { "person.id": that._id, "role":"beneficiary" };
 			physioDOM.db.collection("account").findOne( search, function( err, item ) {
 				if(err) {
@@ -184,13 +184,13 @@ function Beneficiary( ) {
 	/**
 	 * save the beneficiary in the database
 	 * 
-	 * the promise return the beneficiary object completed with the `_id` for a new record
+	 * the Promise return the beneficiary object completed with the `_id` for a new record
 	 * 
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.save = function() {
 		var that = this;
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("-> save" );
 			
 			physioDOM.db.collection("beneficiaries").save( that, function(err, result) {
@@ -212,10 +212,10 @@ function Beneficiary( ) {
 	 * @todo set a regexp case insensitive for the name
 	 * 
 	 * @param entry
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	function checkUniq( entry ) {
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("checkUniq");
 			// check that the entry have an email
 			
@@ -242,10 +242,10 @@ function Beneficiary( ) {
 	 * Check the schema of a beneficiary record
 	 * 
 	 * @param entry
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	function checkSchema( entry ) {
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("checkSchema");
 			var check = beneficiarySchema.validator.validate( entry, { "$ref":"/Beneficiary"} );
 			if( check.errors.length ) {
@@ -259,14 +259,14 @@ function Beneficiary( ) {
 	/**
 	 * initialize a beneficiary with the object `newEntry`
 	 * 
-	 * the promise return on success the beneficiary record
+	 * the Promise return on success the beneficiary record
 	 * 
 	 * @param newEntry
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.setup = function( newEntry ) {
 		var that = this;
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("setup");
 			checkSchema(newEntry)
 				.then(checkUniq)
@@ -320,26 +320,32 @@ function Beneficiary( ) {
 	 * update account information of the beneficiary, resolve with the updated object
 	 *
 	 * @param accountData
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.accountUpdate = function( accountData ) {
 		var that = this;
 
 		function checkUniqLogin() {
-			return new promise( function(resolve, reject) {
-				physioDOM.db.collection("account").count( { login: accountData.login.toLowerCase(), 'person.id': {'$ne': that._id }}, function (err, count) {
+			return new Promise( function(resolve, reject) {
+				var search = { login: accountData.login.toLowerCase(), 'person.id': {'$ne': that._id }};
+				console.log( search );
+				physioDOM.db.collection("account").count( search , function (err, count) {
 					resolve( count );
 				});
 			});
 		}
 		
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace( "accountUpdate" );
 			checkUniqLogin()
 				.then( function(count) {
 					if(count) {
 						logger.warning("login conflict");
-						reject({ code:409, message:"login already used"});
+						var err = { code:409, message:"login already used" };
+						if( accountData.IDS==="true" ) {
+							err = { code:409, message:"email already used" };
+						}
+						reject(err);
 					} else {
 						return that.getAccount();
 					}
@@ -399,13 +405,13 @@ function Beneficiary( ) {
 	 * `updatedEntry` is a full object that replace the old one
 	 * 
 	 * @param updatedEntry
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.update = function( updatedEntry, professionalID, IDS) {
 		var that = this;
 		var accountData = null;
 		var pushFirstName = false;
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("update");
 			if( that._id.toString() !== updatedEntry._id ) {
 				logger.warning("not same beneficiary");
@@ -460,7 +466,7 @@ function Beneficiary( ) {
 					return that.createEvent("Beneficiary","update", updatedEntry._id, professionalID);
 				})
 				.then( function() {
-					return new promise( function(resolve, reject) {
+					return new Promise( function(resolve, reject) {
 						if (accountData && Object.keys(accountData).length ) {
 							if( IDS && !accountData.login ) {
 								accountData.login = that.getEmail();
@@ -495,7 +501,7 @@ function Beneficiary( ) {
 	this.accountUpdatePasswd = function(newPasswd) {
 		logger.trace( "accountUpdatePasswd" );
 		var that = this;
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			that.getAccount()
 				.then(function (account) {
 					account.password = md5(newPasswd);
@@ -512,7 +518,7 @@ function Beneficiary( ) {
 	this.createCert = function(req, res) {
 		var that = this;
 
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("createCert" );
 			that.getAccount()
 				.then( function(account) {
@@ -529,7 +535,7 @@ function Beneficiary( ) {
 							Identifier        : email,
 							Privilege         : 255,
 							Profile           : 0,
-							Duration          : 365,
+							Duration          : physioDOM.config.IDS.duration?physioDOM.config.IDS.duration:365,
 							AuthenticationMask: 8,
 							Number            : 3,
 							Comment           : "Create certificate for " + email
@@ -568,7 +574,7 @@ function Beneficiary( ) {
 		var that = this;
 		logger.trace("revokeCert" );
 
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			that.getAccount()
 				.then( function(account) {
 					var cookies = new Cookies(req, res);
@@ -590,8 +596,7 @@ function Beneficiary( ) {
 					soap.createClient(wsdl, function (err, client) {
 						if(err) {
 							logger.alert(err);
-							res.send(400, { code:400, message:err });
-							return next(false);
+							throw err;
 						}
 
 						client.CertRevocate(CertRevocate, function (err, result ) {
@@ -616,37 +621,102 @@ function Beneficiary( ) {
 	};
 
 	this.getEvents = function() {
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("getEvents");
 			resolve({});
 		});
 	};
 
 	this.getHealthServices = function() {
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("getHealthServices");
 			resolve({});
 		});
 	};
 
 	this.getSocialServices = function() {
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("getSocialServices");
 			resolve({});
 		});
 	};
 
 	this.getDietaryServices = function() {
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("getDietaryServices");
 			resolve({});
 		});
 	};
 
 	/**
+	 * Get the Professional name for the warning status
+	 *
+	 * @returns {Promise}
+	 */
+	this.getWarningProfessional = function() {
+		var that = this;
+		return new Promise( function( resolve, reject) {
+			if (!that.warning || !that.warning.source) {
+				resolve( "-" );
+			} else if (that.warning.source === "Home") {
+				resolve( "Home" );
+			} else {
+				physioDOM.Directory()
+					.then(function (directory) {
+						return directory.getEntryByID( that.warning.source.toString() );
+					})
+					.then( function( professional ) {
+						resolve( professional.name.family+' '+professional.name.given);
+					})
+					.catch( function(err) {
+						resolve("-");
+					});
+			}
+		});
+	};
+	
+	this.setWarningStatus = function( status, professionalID ) {
+		logger.trace("setWarningStatus", status, professionalID );
+		var that = this;
+		return new Promise( function( resolve, reject) {
+			if( !that.warning ) {
+				that.warning = { status: false, source:null, date:null };
+			}
+			if( status && that.warning.status ) {
+				// a warning is already raised : do nothing
+				resolve( that.warning );
+			} else if( status === true && that.warning.status === false ) {
+				// raise the warning status
+				that.warning.status = true;
+				that.warning.source = professionalID;
+				that.warning.date = moment().toISOString();
+				that.save()
+					.then( resolve( that.warning ))
+					.catch( function(err) {
+						if( err.stack ) { console.log(err.stack); }
+						reject(err);
+					});
+			} else if( status === false && that.warning.status === true ) {
+				// disable the warning status
+				that.warning.status = false;
+				that.warning.source = professionalID;
+				that.warning.date = moment().toISOString();
+				that.save()
+					.then( resolve( that.warning ))
+					.catch( function(err) {
+						if( err.stack ) { console.log(err.stack); }
+						reject(err);
+					});
+			} else {
+				resolve( that.warning );
+			}
+		});
+	};
+	
+	/**
 	 * Get Professionals list attached to the beneficiary
 	 * 
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.getProfessionals = function(jobFilter) {
 		var that = this,
@@ -654,7 +724,7 @@ function Beneficiary( ) {
 		if( that.professionals === undefined ) {
 			that.professionals = [];
 		}
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("getProfessionals");
 			var count = that.professionals.length;
 			that.professionals.sort( function(a,b) { return b.referent?true:false; });
@@ -709,13 +779,13 @@ function Beneficiary( ) {
 	/**
 	 * Get Professionals list attached to the beneficiary
 	 *
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.getProfessionalsRoleClass = function(roleClass) {
 		var that = this,
 			proList = [];
 		
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("getProfessionalsRoleClass");
 			
 			physioDOM.Lists.getListItemsObj("role")
@@ -738,7 +808,7 @@ function Beneficiary( ) {
 		if( that.professionals === undefined ) {
 			that.professionals = [];
 		}
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("hasProfessional", professionalID);
 			var hasProfessional = false;
 			that.professionals.forEach( function(professional) {
@@ -755,14 +825,14 @@ function Beneficiary( ) {
 	 * 
 	 * @param professionalID
 	 * @param referent
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.addProfessional = function( professionalID, referent ) {
 		var that = this;
 		if( !that.professionals ) {
 			that.professionals = [];
 		}
-		return new promise(function (resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("addProfessional ", professionalID);
 			physioDOM.Directory()
 				.then(function (directory) {
@@ -802,7 +872,7 @@ function Beneficiary( ) {
 	 * @param professionals {array} array of objects 
 	 *        { professionalID: xxxx, referent: true|false }`
 	 * @param referent
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.addProfessionals = function( professionals ) {
 		var that = this;
@@ -810,12 +880,12 @@ function Beneficiary( ) {
 			that.professionals = [];
 		}
 		
-		return new promise(function (resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("addProfessionals ");
 			physioDOM.Directory()
 				.then(function (directory) {
 					function check( professionalObj ) {
-						return new promise(function (resolve, reject) {
+						return new Promise(function (resolve, reject) {
 							directory.getEntryByID(professionalObj.professionalID)
 								.then(function( professional) {
 									resolve({
@@ -852,14 +922,14 @@ function Beneficiary( ) {
 	 * remove a professional from a beneficiary
 	 * 
 	 * @param professionalID
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.delProfessional = function( professionalID ) {
 		var that = this;
 		if( !that.professionals ) {
 			that.professionals = [];
 		}
-		return new promise(function (resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("delProfessional ", professionalID);
 			physioDOM.Directory()
 				.then(function (directory) {
@@ -901,10 +971,10 @@ function Beneficiary( ) {
 	/**
 	 * Not implemented
 	 * 
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.getContacts = function() {
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("getContact");
 		});
 	};
@@ -919,11 +989,11 @@ function Beneficiary( ) {
 	 * @param sort
 	 * @param sortDir
 	 * @param filter
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.getDataRecords = function(pg, offset, sort, sortDir, filter) {
 		var that = this;
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("getDataRecords");
 			physioDOM.DataRecords( that._id )
 				.then( function( datarecords ) {
@@ -936,12 +1006,12 @@ function Beneficiary( ) {
 	 * on resolve return a complete DataRecord for display
 	 * 
 	 * @param dataRecordID
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.getCompleteDataRecordByID = function( dataRecordID ) {
 		var that = this;
 		
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("getCompleteDataRecordByID", dataRecordID);
 			physioDOM.DataRecords( that._id )
 				.then( function (datarecords ) {
@@ -960,7 +1030,7 @@ function Beneficiary( ) {
 	this.getDataRecordByID = function( dataRecordID ) {
 		var that = this;
 
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("getDataRecordByID", dataRecordID);
 			physioDOM.DataRecords( that._id )
 				.then( function (datarecords ) {
@@ -975,7 +1045,7 @@ function Beneficiary( ) {
 	};
 
 	this.deleteDataRecordByID = function( dataRecordID ) {
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("deleteDataRecordByID", dataRecordID);
 			var search = { _id: new ObjectID( dataRecordID ) };
 			physioDOM.db.collection("dataRecords").remove(search, function (err, nb) {
@@ -1003,12 +1073,12 @@ function Beneficiary( ) {
 	 * on resolve return the full dataRecord Object
 	 * 
 	 * @param dataRecordObj
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.createDataRecord = function( dataRecordObj, professionalID) {
 		var that = this;
 		
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("createDataRecord", dataRecordObj, professionalID);
 			var dataRecord = new DataRecord();
 			dataRecord.setup(that._id, dataRecordObj, professionalID)
@@ -1061,7 +1131,7 @@ function Beneficiary( ) {
 					return that.getCompleteDataRecordByID(dataRecord._id);
 				})
 				.then( function() {
-					return new promise(function (resolve, reject) {
+					return new Promise(function (resolve, reject) {
 						var log = {
 							subject   : that._id,
 							datetime  : moment().toISOString(),
@@ -1083,7 +1153,7 @@ function Beneficiary( ) {
 	this.getThreshold = function() {
 		var thresholdResult = {};
 		var that = this;
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("getThreshold", that._id);
 			dbPromise.findOne(physioDOM.db, "lists", {name: "parameters"}, {"items.ref": 1, "items.threshold": 1})
 				.then(function (thresholds) {
@@ -1108,12 +1178,12 @@ function Beneficiary( ) {
 	 * the given "updatedThresholds" object
 	 *
 	 * @param updatedThresholds
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.setThresholds = function( updatedThresholds ) {
 		var that = this;
 		
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("setThreshold", that._id);
 			
 			that.getThreshold()
@@ -1183,7 +1253,7 @@ function Beneficiary( ) {
 	this.getGraphDataList = function( lang ) {
 		var that = this;
 
-		return new promise(function (resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("getGraphDataList", that._id);
 			var graphList = {
 				"General"      : [],
@@ -1309,7 +1379,7 @@ function Beneficiary( ) {
 	this.getHistoryDataList = function( lang ) {
 		var that = this;
 
-		return new promise(function (resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("getHistoricDataList", that._id);
 			var parameters;
 			
@@ -1495,7 +1565,7 @@ function Beneficiary( ) {
 		}
 
 		function paramPromise(listName, param) {
-			return new promise(function (resolve, reject) {
+			return new Promise(function (resolve, reject) {
 				physioDOM.Lists.getList(listName)
 					.then(function (list) {
 						return list.getItem(paramName);
@@ -1522,7 +1592,7 @@ function Beneficiary( ) {
 			});
 		}
 		
-		return new promise(function (resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("getGraphData", paramName, graphData.startDate, graphData.stopDate);
 			
 			paramPromise( category, paramName )
@@ -1553,12 +1623,12 @@ function Beneficiary( ) {
 	/**
 	 * getDataProg
 	 * 
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.getDataProg = function() {
 		var that = this;
 
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("getDataProg", that._id);
 			resolve( {} );
 		});
@@ -1569,7 +1639,7 @@ function Beneficiary( ) {
 	 * 
 	 * category is one of "General","HDIM","symptom","questionnaire"
 	 * 
-	 * the promise, if succeed, return an array of all data prescription.
+	 * the Promise, if succeed, return an array of all data prescription.
 	 * 
 	 * @param category
 	 * @returns {*}
@@ -1586,7 +1656,7 @@ function Beneficiary( ) {
 	 * add a data prescription`defined by the given `prescription` object
 	 *
 	 * @param prescription 
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.setDataProg = function( prescription, source ) {
 		var that = this;
@@ -1615,7 +1685,7 @@ function Beneficiary( ) {
 
 	this.createDietaryPlan = function( dietaryPlanObj, professionalID ) {
 		var that = this;
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("createDietaryPlan");
 			var dietaryPlan = new DietaryPlan(new ObjectID(that._id));
 			dietaryPlan.setup(that._id, dietaryPlanObj, professionalID)
@@ -1630,7 +1700,7 @@ function Beneficiary( ) {
 	this.getDietaryPlan = function() {
 		var that = this;
 
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("getDietaryPlan");
 			var dietaryPlan = new DietaryPlan(new ObjectID(that._id));
 			dietaryPlan.getLastOne()
@@ -1644,7 +1714,7 @@ function Beneficiary( ) {
 
 	this.getDietaryPlanList = function(pg, offset, sort, sortDir, filter) {
 		var that = this;
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("getDietaryPlanList");
 			var dietaryPlan = new DietaryPlan(new ObjectID(that._id));
 			resolve(dietaryPlan.getItems(pg, offset, sort, sortDir, filter));
@@ -1657,7 +1727,7 @@ function Beneficiary( ) {
 
 	this.createPhysicalPlan = function( physicalPlanObj, professionalID ) {
 		var that = this;
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("createPhysicalPlan");
 			var physicalPlan = new PhysicalPlan(new ObjectID(that._id));
 			physicalPlan.setup(that._id, physicalPlanObj, professionalID)
@@ -1672,7 +1742,7 @@ function Beneficiary( ) {
 	this.getPhysicalPlan = function() {
 		var that = this;
 
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("getPhysicalPlan");
 			var physicalPlan = new PhysicalPlan(new ObjectID(that._id));
 			physicalPlan.getLastOne()
@@ -1686,7 +1756,7 @@ function Beneficiary( ) {
 
 	this.getPhysicalPlanList = function(pg, offset, sort, sortDir, filter) {
 		var that = this;
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("getPhysicalPlanList");
 			var physicalPlan = new PhysicalPlan(new ObjectID(that._id));
 			resolve(physicalPlan.getItems(pg, offset, sort, sortDir, filter));
@@ -1695,7 +1765,7 @@ function Beneficiary( ) {
 
 	this.getEventList = function(pg, offset, sort, sortDir, filter) {
 		var that = this;
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("getEventList");
 			var events = new Events(new ObjectID(that._id));
 			resolve(events.getItems(pg, offset, sort, sortDir, filter));
@@ -1705,7 +1775,7 @@ function Beneficiary( ) {
 	function pushMeasure( queue, hhr, units, parameters, measures, force ) {
 		force = force?force:false;
 		
-		return new promise( function(resolve,reject) {
+		return new Promise( function(resolve,reject) {
 			// logger.trace("pushMeasure", force, measures);
 			var leaf = "hhr[" + hhr + "].measures[" + measures.datetime + "]";
 			physioDOM.db.collection("agendaMeasure").findOne({
@@ -1765,7 +1835,7 @@ function Beneficiary( ) {
 				});
 				
 				function postMsg(msg) {
-					return new promise( function( resolve, reject ) {
+					return new Promise( function( resolve, reject ) {
 						queue.postMsg(msg)
 							.then(function () {
 								var data = {
@@ -1781,7 +1851,7 @@ function Beneficiary( ) {
 				}
 				
 				function delMsg() {
-					return new promise( function( resolve, reject ) {
+					return new Promise( function( resolve, reject ) {
 						queue.delMsg([{branch: leaf}])
 							.then(function () {
 								var data = {
@@ -1826,7 +1896,7 @@ function Beneficiary( ) {
 	 * @returns {*|RSVP.Promise}
 	 */
 	function removeMeasures(queue, hhr, measures) {
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("removeMeasures");
 			var datetimes = [];
 			measures.forEach( function( measure ) {
@@ -1839,7 +1909,7 @@ function Beneficiary( ) {
 				} else {
 					logger.info("to remove", items );
 					var promises = items.map( function(item) {
-						return new promise( function(done, reject) {
+						return new Promise( function(done, reject) {
 							var leaf = "hhr[" + hhr + "].measures[" + item.datetime + "]";
 							queue.delMsg([{branch: leaf}])
 								.then( function() {
@@ -1860,7 +1930,7 @@ function Beneficiary( ) {
 	 * get the measure Plan and push it to the box
 	 * 
 	 * @param date
-	 * @returns {$$rsvp$promise$$default|RSVP.Promise|*|l|Dn}
+	 * @returns {$$rsvp$Promise$$default|RSVP.Promise|*|l|Dn}
 	 */
 	this.getMeasurePlan = function( force ) {
 		var queue = new Queue(this._id);
@@ -1875,7 +1945,7 @@ function Beneficiary( ) {
 
 		moment.locale( physioDOM.lang === "en"?"en-gb":physioDOM.lang );
 		
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			
 			var promises = ["General","HDIM"].map(function (category) {
 				return dataProg.getCategory( category );
@@ -1965,6 +2035,7 @@ function Beneficiary( ) {
 											// logger.debug("dates", dat.toISOString(), closeDate.toISOString(), today.toISOString());
 											if (dat.unix() <= closeDate.unix() && dat.unix() > today.unix()) {
 												logger.debug("monthly prog", {ref: prog.ref, date: nextDate.unix()});
+												dat = dat.hour(12).minute(0).second(0);
 												msgs.push({ref: prog.ref, date: dat.unix()});
 											}
 										});
@@ -2002,7 +2073,7 @@ function Beneficiary( ) {
 									physioDOM.Lists.getListItemsObj("parameters")
 										.then(function (parameters) {
 											var promises = measures.map(function (measure) {
-												return new promise(function (resolve, reject) {
+												return new Promise(function (resolve, reject) {
 													measure.subject = that._id;
 
 													pushMeasure(queue, that._id, units, parameters, measure, force)
@@ -2044,7 +2115,7 @@ function Beneficiary( ) {
 		var queue = new Queue(this._id);
 		var leaf = "hhr[" + this._id + "].symptomsSelf.scales["+symptomSelf.ref+"]";
 		
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			var msg = [];
 			if( !symptomSelf.active ) {
 				resolve(false);
@@ -2080,7 +2151,7 @@ function Beneficiary( ) {
 		
 		var symptoms = new Symptoms( this );
 		
-		return new promise( function(resolve,reject) {
+		return new Promise( function(resolve,reject) {
 			queue.delMsg([ { branch : name} ])
 				.then(function () {
 					logger.trace("symptomsSelf cleared");
@@ -2103,7 +2174,7 @@ function Beneficiary( ) {
 		logger.trace("pushSymptom");
 		force = force?force:false;
 		
-		return new promise( function(resolve,reject) {
+		return new Promise( function(resolve,reject) {
 			var leaf = "hhr[" + hhr + "].symptoms[" + measures.datetime + "]";
 			physioDOM.db.collection("agendaSymptoms").findOne({
 				subject : hhr,
@@ -2140,7 +2211,7 @@ function Beneficiary( ) {
 				});
 
 				function postMsg(msg) {
-					return new promise(function (resolve, reject) {
+					return new Promise(function (resolve, reject) {
 						queue.postMsg(msg)
 							.then(function () {
 								var data = {
@@ -2156,7 +2227,7 @@ function Beneficiary( ) {
 				}
 
 				function delMsg() {
-					return new promise(function (resolve, reject) {
+					return new Promise(function (resolve, reject) {
 						queue.delMsg([{branch: leaf}])
 							.then(function () {
 								var data = {
@@ -2201,7 +2272,7 @@ function Beneficiary( ) {
 	 * @returns {*|RSVP.Promise}
 	 */
 	function removeSymptomsPlan(queue, hhr, symptoms) {
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("removeSymptomsPlan");
 			var datetimes = [];
 			symptoms.forEach( function( symptom ) {
@@ -2214,7 +2285,7 @@ function Beneficiary( ) {
 				} else {
 					logger.info("to remove ", items.length );
 					var promises = items.map( function(item) {
-						return new promise( function(done, reject) {
+						return new Promise( function(done, reject) {
 							var leaf = "hhr[" + hhr + "].symptoms[" + item.datetime + "]";
 							queue.delMsg([{branch: leaf}])
 								.then( function() {
@@ -2234,7 +2305,7 @@ function Beneficiary( ) {
 	/**
 	 * Get the symptoms plan and push it to the box
 	 * 
-	 * @returns {$$rsvp$promise$$default|RSVP.Promise|*|l|Dn}
+	 * @returns {$$rsvp$Promise$$default|RSVP.Promise|*|l|Dn}
 	 */
 	this.getSymptomsPlan = function( force ) {
 		var queue = new Queue(this._id);
@@ -2246,7 +2317,7 @@ function Beneficiary( ) {
 		var msgs = [];
 		var that = this;
 
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			dataProg.getCategory("symptom")
 				.then(function (progs) {
 					progs.forEach(function (prog) {
@@ -2314,6 +2385,7 @@ function Beneficiary( ) {
 											dat.subtract(Math.floor(-day / 10) - 1, 'w');
 										}
 										if (dat.unix() <= closeDate.unix() && dat.unix() > today.unix()) {
+											dat = dat.hour(12).minute(0).second(0);
 											msgs.push({ref: prog.ref, date: dat.unix()});
 										}
 									});
@@ -2342,7 +2414,7 @@ function Beneficiary( ) {
 							physioDOM.Lists.getListItemsObj("symptom")
 								.then(function (symptoms) {
 									var promises = measures.map(function (measure) {
-										return new promise(function (resolve, reject) {
+										return new Promise(function (resolve, reject) {
 											measure.subject = that._id;
 
 											pushSymptom(queue, that._id, symptoms, measure, force)
@@ -2368,7 +2440,7 @@ function Beneficiary( ) {
 	};
 	
 	function pushQuestionnaire(queue, name, quest, newFlag ) {
-		return new promise( function(resolve,reject) {
+		return new Promise( function(resolve,reject) {
 			/*
 			 questionnaires[id].label
 			 questionnaires[id].new
@@ -2392,7 +2464,7 @@ function Beneficiary( ) {
 						});
 						msg.push({
 							name: leaf + ".new",
-							value: newFlag ? 1 : 0,
+							value: newFlag ? 1 : 1,
 							type: "integer"
 						});
 						for (var i = 0, l = quest.history.length; i < l; i++) {
@@ -2419,7 +2491,7 @@ function Beneficiary( ) {
 	}
 
 	function pushParam( queue, name,  param ) {
-		return new promise( function(resolve,reject) {
+		return new Promise( function(resolve,reject) {
 			/*
 			 measuresHistory.params[id].label
 			 measuresHistory.params[id].type
@@ -2479,7 +2551,7 @@ function Beneficiary( ) {
 	}
 
 	function pushSymptomsHistory( queue, name, symptom ) {
-		return new promise( function(resolve,reject) {
+		return new Promise( function(resolve,reject) {
 			/*
 			 symptomsHistory.scales[id].label
 			 symptomsHistory.scales[id].values[id].datetime
@@ -2522,7 +2594,7 @@ function Beneficiary( ) {
 	 * 
 	 * @param questionnaire
 	 * @param newFlag
-	 * @returns {$$rsvp$promise$$default|RSVP.Promise|*|l|Dn}
+	 * @returns {$$rsvp$Promise$$default|RSVP.Promise|*|l|Dn}
 	 */
 	this.sendQuestionnaire = function( questionnaire, newFlag ) {
 		var that = this;
@@ -2530,7 +2602,7 @@ function Beneficiary( ) {
 		var queue = new Queue(this._id);
 		var name = "hhr[" + this._id + "]";
 
-		return new promise(function (resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			var msgs = [];
 			that.getHistoryDataList()
 				.then(function (history) {
@@ -2547,7 +2619,7 @@ function Beneficiary( ) {
 	};
 
 	this.pushHistoryMeasures = function( history, queue, leaf ) {
-		return new promise( function( resolve, reject) {
+		return new Promise( function( resolve, reject) {
 			var msgs = [];
 			
 			queue.delMsg([ { branch : leaf + ".measuresHistory"} ])
@@ -2577,7 +2649,7 @@ function Beneficiary( ) {
 	this.pushHistorySymptoms = function( history, queue, leaf ) {
 		logger.trace("pushHistorySymptoms");
 		
-		return new promise( function( resolve, reject) {
+		return new Promise( function( resolve, reject) {
 			var msgs = [];
 			
 			queue.delMsg([ { branch : leaf + ".symptomsHistory"} ])
@@ -2597,7 +2669,7 @@ function Beneficiary( ) {
 	};
 
 	this.pushHistoryQuestionnaires = function( history, queue, leaf ) {
-		return new promise( function( resolve, reject) {
+		return new Promise( function( resolve, reject) {
 			var msgs = [];
 
 			var promises = history.questionnaire.map(function (param) {
@@ -2616,7 +2688,7 @@ function Beneficiary( ) {
 	/**
 	 * push measures history ( the last 5 measures of each parameters ) to the box
 	 * 
-	 * @returns {$$rsvp$promise$$default|RSVP.Promise|*|l|Dn}
+	 * @returns {$$rsvp$Promise$$default|RSVP.Promise|*|l|Dn}
 	 */
 	this.pushHistory = function( category ) {
 		var that = this;
@@ -2624,7 +2696,7 @@ function Beneficiary( ) {
 		var queue = new Queue(this._id);
 		var name = "hhr[" + this._id + "]";
 		
-		return new promise(function (resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			var msgs = [];
 			that.getHistoryDataList()
 				.then(function (history) {
@@ -2672,7 +2744,7 @@ function Beneficiary( ) {
 	 * Push the last DHD-FFQ (Eetscore) to the box
 	 * 
 	 * @param newFlag
-	 * @returns {$$rsvp$promise$$default|RSVP.Promise|*|l|Dn}
+	 * @returns {$$rsvp$Promise$$default|RSVP.Promise|*|l|Dn}
 	 */
 	this.pushLastDHDFFQ = function( newFlag ) {
 		var that = this;
@@ -2680,7 +2752,7 @@ function Beneficiary( ) {
 		var leaf = "hhr[" + this._id + "].dhdffq";
 		
 		logger.trace("pushLastDHDFFQ");
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			var search = { category: "questionnaire", text: "DHD-FFQ", subject: that._id };
 			physioDOM.db.collection("dataRecordItems").find(search).sort({datetime: -1}).limit(1).toArray(function (err, quests) {
 				if (quests.length) {
@@ -2707,7 +2779,7 @@ function Beneficiary( ) {
 									});
 									msg.push({
 										name : leaf + ".new",
-										value: newFlag?1:0,
+										value: newFlag?1:1,
 										type : "integer"
 									});
 									for( var i= 0, l=answer.questions.length; i<l;i++) {
@@ -2744,7 +2816,7 @@ function Beneficiary( ) {
 	 * 
 	 * @param {physicalPlan} physicalPlan
 	 * @param {boolean} newFlag
-	 * @returns {$$rsvp$promise$$default|RSVP.Promise|*|Dn}
+	 * @returns {$$rsvp$Promise$$default|RSVP.Promise|*|Dn}
 	 */
 	this.pushPhysicalPlanToQueue = function( physicalPlan, newFlag ) {
 		logger.trace("pushPhysicalPlanToQueue");
@@ -2752,7 +2824,7 @@ function Beneficiary( ) {
 		var queue = new Queue(this._id);
 		var name = "hhr[" + this._id + "].physical";
 
-		return new promise(function (resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			/*
 			 physical.new
 			 physical.history[id].datetime
@@ -2786,12 +2858,12 @@ function Beneficiary( ) {
 	/**
 	 * push the whole physical plan and history to the queue
 	 * 
-	 * @returns {$$rsvp$promise$$default|RSVP.Promise|*|Dn}
+	 * @returns {$$rsvp$Promise$$default|RSVP.Promise|*|Dn}
 	 */
 	this.physicalPlanToQueue = function() {
 		var that = this;
 
-		return new promise(function (resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			var physicalPlan = new PhysicalPlan(that._id);
 			physicalPlan.getItemsArray(1, 1000)
 				.then( function(results) {
@@ -2811,7 +2883,7 @@ function Beneficiary( ) {
 	 * 
 	 * @param {dietaryPlan} dietaryPlan the recommandation to send
 	 * @param {boolean} newFlag  set to true if it's a new advice
-	 * @returns {$$rsvp$promise$$default|RSVP.Promise|*|Dn}
+	 * @returns {$$rsvp$Promise$$default|RSVP.Promise|*|Dn}
 	 */
 	this.pushDietaryPlanToQueue = function( dietaryPlan, newFlag ) {
 		logger.trace("pushDietaryPlanToQueue");
@@ -2820,7 +2892,7 @@ function Beneficiary( ) {
 		var queue = new Queue(this._id);
 		var name = "hhr[" + this._id + "].dietary";
 		
-		return new promise(function (resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			/*
 			 dietary.recommendations.new
 			 dietary.recommendations.history[id].datetime
@@ -2855,12 +2927,12 @@ function Beneficiary( ) {
 	/**
 	 * Push the whole dietary plan to the queue
 	 * 
-	 * @returns {$$rsvp$promise$$default|RSVP.Promise|*|Dn}
+	 * @returns {$$rsvp$Promise$$default|RSVP.Promise|*|Dn}
 	 */
 	this.dietaryPlanToQueue = function() {
 		var that = this;
 
-		return new promise(function (resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			var dietaryPlan = new DietaryPlan( that._id );
 			dietaryPlan.getItemsArray(1, 1000)
 				.then( function(results) {
@@ -2880,7 +2952,7 @@ function Beneficiary( ) {
 
 		var queue = new Queue(this._id);
 		var name = "hhr[" + this._id + "].firstName";
-		return new promise(function (resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("pushFirstName ", that.name.given || that.name.family );
 			var msg = [];
 			msg.push({

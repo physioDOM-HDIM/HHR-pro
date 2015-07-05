@@ -21,8 +21,14 @@ server {
     location ~ (index\.htm|ui\.htm) {
         return 301 /;
     }
-  
+
     location ~  \.(jpeg|gif|png|ico|css|zip|tgz|gz|rar|bz2|pdf|txt|tar|wav|bmp|rtf|js|flv|swf|html|htm|woff|woff2|svg)$ {
+        set $args "v={{version}}";
+        rewrite ^(.*)$ $1?${args} break;
+        root {{rootDir}};
+    }
+  
+    location ~  \.(jpeg|gif|png|ico|css|zip|tgz|gz|rar|bz2|pdf|txt|tar|wav|bmp|rtf|js|flv|swf|html|htm|woff|woff2|svg)(\?v=[0-9.]+(-.*)?)?$ {
         # access_log off;
         expires max;
         root {{rootDir}};

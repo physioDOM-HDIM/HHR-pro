@@ -23,56 +23,58 @@
 {% block content %}
 	{% if hasBeneficiary %}
 	<zdk-panel id="filter" heading="{{'Filter'|i18n}} / {{'Sort'|i18n}}" collapsable="true" collapsed={% if admin %}"false"{% else %}"true"{% endif %}>
-			<div>
-				<form class="filter" name="filter" autocomplete="off" onsubmit="validFilter(); return false;">
-					<div class="row">
-						<div class="col">
-							<label class="collabel" for="lastname">{{ "Last name"|i18n }} : </label>
-							<div class="colcontent">
-								<input type="text" name="name" id="lastname">
-							</div>
-						</div>
-						<div class="col">
-							<label class="collabel" for="Perimeter">{{ "Perimeter"|i18n }} : </label>
-							<div class="colcontent">
-							<select name="perimeter" id="Perimeter">
-								{% for item in perimeter.items %}
-								<option value="{{item.value}}" >{{item.label}}</option>
-								{% endfor %}
-							</select>
-							</div>
+		<div>
+			<form class="filter" name="filter" autocomplete="off" onsubmit="validFilter(); return false;">
+				<div class="row">
+					<div class="col">
+						<label class="collabel" for="lastname">{{ "Last name"|i18n }} : </label>
+						<div class="colcontent">
+							<input type="text" name="name" id="lastname">
 						</div>
 					</div>
-					<div class="row">
-						<div class="col">
-							<label class="collabel" for="zipcode">{{ "Zip code"|i18n }} : </label>
-							<div class="colcontent">
-								<input type="text" name="zip" id="zipcode">
-							</div>
-						</div>
-						<div class="col">
-							<label class="collabel" for="city">{{ "City"|i18n }} : </label>
-							<div class="colcontent">
-								<input type="text" name="city" id="city">
-							</div>
+					<div class="col">
+						<label class="collabel" for="Perimeter">{{ "Perimeter"|i18n }} : </label>
+						<div class="colcontent">
+						<select name="perimeter" id="Perimeter">
+							{% for item in perimeter.items %}
+							<option value="{{item.value}}" >{{item.label}}</option>
+							{% endfor %}
+						</select>
 						</div>
 					</div>
-					
-					<div class="row control">
-						<span class="spacer"></span>
-						<button type="button" class="red" onclick="resetFilter()">{{ "Reset"|i18n }}</button>
-						<button class="green">{{ "Filter"|i18n }}</button>
+				</div>
+				<div class="row">
+					<div class="col">
+						<label class="collabel" for="zipcode">{{ "Zip code"|i18n }} : </label>
+						<div class="colcontent">
+							<input type="text" name="zip" id="zipcode">
+						</div>
 					</div>
-				</form>
+					<div class="col">
+						<label class="collabel" for="city">{{ "City"|i18n }} : </label>
+						<div class="colcontent">
+							<input type="text" name="city" id="city">
+						</div>
+					</div>
+				</div>
 				
-				<div style="height:10px">&nbsp;</div>
-				<hr/>
-				
-				<form class="order" name="order" autocomplete="off" onsubmit="validFilter(); return false;">
-					<div class="row">
-						<div class="col">
-							<label>{{"Sort"|i18n}} :</label>
+				<div class="row control">
+					<span class="spacer"></span>
+					<button type="button" class="red" onclick="resetFilter()">{{ "Reset"|i18n }}</button>
+					<button class="green">{{ "Filter"|i18n }}</button>
+				</div>
+			</form>
+			
+			<div style="height:10px">&nbsp;</div>
+			<hr/>
+			
+			<form class="order" name="order" autocomplete="off" onsubmit="validFilter(); return false;">
+				<div class="row">
+					<div class="col">
+						<label class="collabel">{{"Sort"|i18n}} :</label>
+						<div class="colcontent">
 							<select name="sort">
+								<option value="warning.status">{{"Warning status"|i18n}}</option>
 								<option value="name.family">{{"Name"|i18n}}</option>
 								<option value="lastEvent">{{"Last event"|i18n}}</option>
 								<option value="perimeter">{{"Perimeter"|i18n}}</option>
@@ -80,28 +82,31 @@
 								<option value="address.city">{{"City"|i18n}}</option>
 							</select>
 						</div>
-						<div class="col">
-							<label>{{ "Direction"|i18n }} :</label>
+					</div>
+					<div class="col">
+						<label class="collabel">{{ "Direction"|i18n }} :</label>
+						<div class="colcontent">
 							<select name="dir">
 								<option value="1">{{"ascending"|i18n}}</option>
-								<option value="-1">{{"descending"|i18n}}</option>
+								<option value="-1" selected>{{"descending"|i18n}}</option>
 							</select>
 						</div>
 					</div>
-					<div class="row control">
-						<span class="spacer"></span>
-						<button type="button" class="red" onclick="resetOrder()">{{"Reset" | i18n }}</button>
-						<button class="green">{{"Sort"|i18n}}</button>
-					</div>
-				</form>
-			</div>
+				</div>
+				<div class="row control">
+					<span class="spacer"></span>
+					<button type="button" class="red" onclick="resetOrder()">{{"Reset" | i18n }}</button>
+					<button class="green">{{"Sort"|i18n}}</button>
+				</div>
+			</form>
+		</div>
 	</zdk-panel>
 	{% endif %}
 
 	{% if rights.write && admin %}
 	<div class="row control" style="height:60px; align-content: center">
 		<span class="spacer"></span>
-		<a href="/beneficiaries/create"><button class="blue big">{{ "Add"|i18n }}</button></a>
+		<a href="/beneficiaries/create"><button class="blue big">{{ "New beneficiary"|i18n }}</button></a>
 	</div>
 	{% endif %}
 	
@@ -111,20 +116,27 @@
 			<div class="item" style="height:70px">
 				<div class="row">
 					<div style="-webkit-flex:1; -ms-flex:1; flex:1;" class="{% raw %}{{item.activeClass}}{% endraw %}">
-							<div>
+						<div>
 							<div flex>
 								<div style="font-weight:bold">{% raw %}{{item.name.family}} {{item.name.given}}{% endraw %}</div>
 							</div>
-							<div flex style="padding-left:50px;">
-								<div class="col"><span style="-webkit-flex:1; -ms-flex:1; flex:1">{{ "Last event"|i18n }} : <b>{% raw %}{{ item.date }}{% endraw %}</b> {% raw %}{{item.dateFrom}}{% endraw %}</span></div>
-							</div>
-							<div class="row" style="padding-left:50px;">
-								<div class="col">{{ "Birth date"| i18n }} : {% raw %}{{item.birthdate}}{% endraw %}</div>
-								<div class="col">{{ "Perimeter" | i18n }} : {% raw %}{{item.perimeter | labelPerimeter}}{% endraw %}</div>
-							</div>
-							<div class="row" style="padding-left:50px;">
-								<div class="col">{{ "Zip code"  | i18n }} : {% raw %}{{item.address | zipcode}}{% endraw %}</div>
-								<div class="col">{{ "City"      | i18n }} : {% raw %}{{item.address | city}}{% endraw %}</div>
+							<div layout horizontal>
+								<div style="width: 50px;text-align: center;">
+									<core-icon icon="warning" style="color: firebrick; height:40px; width:40px;display:{% raw %}{{item.warning | status}}{% endraw %}"></core-icon>
+								</div>
+								<div flex>
+									<div flex>
+										<div class="col"><span style="-webkit-flex:1; -ms-flex:1; flex:1">{{ "Last event"|i18n }} : <b>{% raw %}{{ item.date }}{% endraw %}</b> {% raw %}{{item.dateFrom}}{% endraw %}</span></div>
+									</div>
+									<div class="row">
+										<div class="col">{{ "Birth date"| i18n }} : {% raw %}{{item.birthdate}}{% endraw %}</div>
+										<div class="col">{{ "Perimeter" | i18n }} : {% raw %}{{item.perimeter | labelPerimeter}}{% endraw %}</div>
+									</div>
+									<div class="row">
+										<div class="col">{{ "Zip code"  | i18n }} : {% raw %}{{item.address | zipcode}}{% endraw %}</div>
+										<div class="col">{{ "City"      | i18n }} : {% raw %}{{item.address | city}}{% endraw %}</div>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -149,7 +161,7 @@
 	{% if rights.write && admin %}
 	<div class="row control" style="height:60px; align-content: center">
 		<span class="spacer"></span>
-		<a href="/beneficiaries/create"><button class="blue big">{{ "Add"|i18n }}</button></a>
+		<a href="/beneficiaries/create"><button class="blue big">{{ "New beneficiary"|i18n }}</button></a>
 	</div>
 	{% endif %}
 	{% if beneficiary && beneficiary.name %}
@@ -166,7 +178,15 @@
 			{{p.value}}: "{{p.label}}",
 			{% endfor %}
 		};
-
+	
+		PolymerExpressions.prototype.status = function(warning) {
+			if( warning ) {
+				return warning.status ? 'inline-block' : 'none';
+			} else {
+				return 'none';
+			}
+		};
+	
 		PolymerExpressions.prototype.labelPerimeter = function(p) {
 			return perimeters[p] || '-';
 		};

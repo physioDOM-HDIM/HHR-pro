@@ -55,7 +55,7 @@ function _findReferentInBeneficiary(obj) {
 }
 
 function updateProfessionalReferent(node, idxItem) {
-
+	
     var currentItem = _dataAllProfessionnalObj && _dataAllProfessionnalObj.items && _dataAllProfessionnalObj.items[idxItem];
     if (currentItem) {
         //Remove old referent
@@ -385,11 +385,27 @@ function updateAll(obj) {
 			});
         }, function(error) {
 			if( error.status === 409 ) {
-				new Modal('conflictLogin', function() {
-					var login = document.getElementById("login");
-					login.scrollIntoView();
-					login.style.border = "2px solid red";
-					login.focus();
+				var err = JSON.parse(error.responseText);
+				var modalType = 'conflictLogin';
+				if( err.message.match(/email/i) ) {
+					modalType = 'conflictEmail';
+				}
+				new Modal(modalType, function() {
+					if( modalType === 'conflictLogin') {
+						var login = document.getElementById("login");
+						if( login ) {
+							login.scrollIntoView();
+							login.style.border = "2px solid red";
+							login.focus();
+						}
+					} else {
+						var email = document.getElementById("Telecom.value");
+						if (email ) {
+							email.scrollIntoView();
+							email.style.border = "2px solid red";
+							email.focus();
+						}
+					}
 				});
 			} else {
 				new Modal('errorOccured');
@@ -603,7 +619,10 @@ function updateBeneficiary(obj) {
 				document.querySelector("input[name=active]").checked = false;
 				activeChange(document.querySelector("input[name=active]"));
 				document.querySelector("#endDate").value = "";
-				new Modal('createSuccess');
+				modified = false;
+				new Modal('createSuccess', function() {
+					modified = false;
+				});
 			})
 			.catch(function(error) {
 				new Modal('errorOccured');
@@ -837,7 +856,9 @@ function init() {
     tsanteListProfessionalElt.addEventListener("tsante-response", _onHaveProfessionalsData, false);
 
 	document.addEventListener('change', function( evt ) {
-			modified = true;
+		//var e = new Error('dummy');
+		//console.log(e.stack);
+		modified = true;
 	}, true );
 	
     var promises,
@@ -930,7 +951,7 @@ function init() {
 
 window.addEventListener("polymer-ready", init, false);
 
-window.addEventListener("beforeunload", function( e) {
+window.addEventListener("beforeunload", function( e ) {
 	var confirmationMessage;
 	if(modified) {
 		confirmationMessage = document.querySelector("#unsave").innerHTML;

@@ -202,6 +202,7 @@ var IBeneficiary = {
 				})
 				.then( function (_beneficiary ) {
 					beneficiary = _beneficiary;
+					/*
 					if( updateItem.account ) {
 						beneficiary.getAccount()
 							.then( function(_account) {
@@ -228,6 +229,7 @@ var IBeneficiary = {
 								}
 							});
 					}
+					*/
 				})
 				.then( function() {
 					var log = {
@@ -244,6 +246,7 @@ var IBeneficiary = {
 					});
 				})
 				.catch(function (err) {
+					if( err.stack ) { console.log( err.stack ); }
 					res.send(err.code || 400, err);
 					next(false);
 				});
@@ -557,7 +560,7 @@ var IBeneficiary = {
 					}
 				});
 				if( outOfRange ) {
-					return beneficiary.createEvent('Data record', 'overtake', new ObjectID(completeDataRecord._id), req.session.person.id);
+					beneficiary.createEvent('Data record', 'overtake', new ObjectID(completeDataRecord._id), req.session.person.id);
 				} else {
 					return beneficiary.createEvent('Data record', 'update', new ObjectID(completeDataRecord._id), req.session.person.id);
 				}
@@ -577,6 +580,55 @@ var IBeneficiary = {
 				next(false);
 			});
 	},
+
+	/**
+	 * Check the warning status for a given datarecord
+	 * url : /api/beneficiary/datarecords/:dataRecordID/warning
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	checkWarning: function( req, res, next) {
+		var beneficiary;
+		logger.trace("checkWarning");
+		
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
+			})
+			.then(function (beneficiaryObj) {
+				beneficiary = beneficiaryObj;
+				return beneficiary.getDataRecordByID(req.params.dataRecordID);
+			})
+			.then( function(dataRecord) {
+				return dataRecord.checkWarningStatus( );
+			})
+			.then( function( warning ) {
+				if( warning ) {
+					return beneficiary.setWarningStatus(warning, req.session.person.id);
+				} else {
+					if( !beneficiary.warning ) {
+						return { status: false, source:null, date:null };
+					} else {
+						return beneficiary.warning;
+					}
+				}
+			})
+			.then( function( warningStatus ) {
+				res.send( warningStatus );
+				next();
+			})
+			.catch( function(err) {
+				if(err.stack) { console.log( err.stack); }
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	}, 
 
 	/**
 	 * remove a data record
@@ -1425,7 +1477,37 @@ var IBeneficiary = {
 				next(false);
 			});
 	},
-
+	
+	setWarningStatus: function( req, res, next ) {
+		logger.trace("setWarningStatus");
+		
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				}
+			})
+			.then(function (beneficiary) {
+				var param =  JSON.parse( req.body );
+				if( param.status === undefined || param.status === null || typeof param.status !== "boolean" ) {
+					throw { code: 405, message: "status is not a boolean" };
+				}
+				return beneficiary.setWarningStatus( param.status, req.session.person.id  );
+			})
+			.then( function( warning ) {
+				res.send( warning );
+				next();
+			})
+			.catch( function(err) {
+				if( err.stack ) { console.log( err.stack ); }
+				res.send(err.code || 400, err);
+				next(false);
+			});
+	},
+	
+	
 	getEventList: function(req,res, next) {
 		logger.trace("eventList");
 		var pg = parseInt(req.params.pg,10) || 1;
@@ -1525,6 +1607,16 @@ var IBeneficiary = {
 				return beneficiary.revokeCert(req, res );
 			})
 			.then(function ( account ) {
+				var data = {
+					account : account,
+					password: false,
+					server  : physioDOM.config.server,
+					lang    : physioDOM.Lang
+				};
+				if (req.headers["ids-user"]) {
+					data.idsUser = true;
+				}
+				require("./ISendmail").certificateRevoqMail(data);
 				logger.info("receive account", account );
 				res.send( account );
 				next();

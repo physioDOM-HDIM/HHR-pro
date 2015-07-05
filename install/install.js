@@ -5,6 +5,8 @@
 var fs = require("fs"),
 	swig = require("swig");
 
+var pkg = require('../package.json');
+
 var confSchema = {
 	"id": "/installConf",
 	"description" : "install configuration file",
@@ -57,7 +59,8 @@ fs.exists(__dirname+"/../install.json", function(exists) {
 	}
 
 	conf.nginxDestDir = (require('os').platform() === "darwin" ? "/usr/local":"")+"/etc/nginx/sites-available";
-
+    conf.version = pkg.version;
+	
 	var nginxConfFile =  swig.renderFile('install/nginx.tpl', conf );
 	var filepath = conf.nginxDestDir + "/" + conf.serverName;
 	fs.writeFileSync("./nginx.conf", nginxConfFile );
