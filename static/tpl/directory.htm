@@ -79,7 +79,7 @@
 	<div class="row control">
 		<a href="/api/directory/export"><button class="blue" type="button">{{"Export CSV"|i18n}}</button></a>
 		<span class="spacer"></span>
-		<a href="/directory/create"><button class="blue" type="button">{{"Add entry"|i18n}}</button></a>
+		<a href="/directory/create"><button class="blue" type="button">{{"New Professional"|i18n}}</button></a>
 	</div>
 	{% endif %}
 
@@ -131,7 +131,7 @@
                     </div>
                     <div style="width:80px">
                         <template if="{% raw %}{{item.address && item.address.line && item.address.line.length > 0 || item.address.zip || item.address.city}}{% endraw %}">
-                            <button type="button" class="green small" onclick="toggleHiddenNode(this, '.address')">{{"Detail"|i18n}}</button><br/>
+                            <button type="button" class="blue small" onclick="toggleHiddenNode(this, '.address')">{{"Detail"|i18n}}</button><br/>
                         </template>
                         {% if rights.write %}
                         <a href="/directory/{% raw %}{{item._id}}{% endraw %}" class="button blue small">{{"Edit"|i18n}}</a>
@@ -154,7 +154,7 @@
     <div class="row control">
         <a href="/api/directory/export"><button class="blue" type="button">{{"Export CSV"|i18n}}</button></a>
         <span class="spacer"></span>
-        <a href="/directory/create"><button class="blue" type="button">{{"Add entry"|i18n}}</button></a>
+        <a href="/directory/create"><button class="blue" type="button">{{"New Professional"|i18n}}</button></a>
     </div>
     {% endif %}
 <zdk-modal id="statusModal" closebutton="false">

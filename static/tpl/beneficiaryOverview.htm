@@ -126,14 +126,14 @@
 		{% if rights.write %}
 		<div class="row control">
 			{% if admin && beneficiary.biomaster && queue && beneficiary.active %}
-			<button class="red small" onclick="initQueueDlg();">{{ "Init"|i18n }}</button>&nbsp;
+			<button class="green" onclick="initQueueDlg();">{{ "Init"|i18n }}</button>&nbsp;
 			<span id="queueStatusOK" {% if beneficiary.biomasterStatus !== true %}class="hidden"{% endif %}>( {{"initialized"|i18n}} )</span>
 			<span id="queueStatusUnknown" {% if beneficiary.biomasterStatus !== false %}class="hidden"{% endif %}>( {{"unknown box"|i18n}} )</span>
 			<span id="queueStatusPending" {% if beneficiary.biomasterStatus !== "pending" %}class="hidden"{% endif %}>( {{"pending"|i18n}}... )</span>
 			<input type="hidden" id="biomasterStatus" value="{{beneficiary.biomasterStatus}}" />
 			{% endif %}
             <span class="spacer"></span>
-            <a href="/beneficiary/update"><button class="green small">{{ "Edit"|i18n }}</button></a>
+            <a href="/beneficiary/update"><button class="blue">{{ "Edit"|i18n }}</button></a>
         </div>
 		{% endif %}
 	</zdk-panel>

@@ -59,7 +59,7 @@
 		</div>
 		<div>
 			<span class="spacer"></span>
-			<button type="button" class="red small" onclick="deleteTelecom(this)">{{"Delete"|i18n}}</button>
+			<button type="button" class="red small" onclick="deleteTelecom(this)">{{"Remove"|i18n}}</button>
 		</div>
 	</div>
 </script>
@@ -236,7 +236,7 @@
 					<div>
 						<span class="spacer"></span>
 						{% if entry.system !== 'email' %}
-						<button type="button" class="red small" onclick="deleteTelecom(this)">{{"Delete"|i18n}}</button>
+						<button type="button" class="red small" onclick="deleteTelecom(this)">{{"Remove"|i18n}}</button>
 						{% endif %}
 					</div>
 				</div>
@@ -340,19 +340,19 @@
 			{% endif %}
 		{% endif %}
 		<div class="row">
-			<span class="spacer"></span>
 			
-			<div class="buttonContainer">
+			<!--<div class="buttonContainer">-->
 				{% if professional._id && sessionID.toString() !== professional._id.toString() %}
 				<button id="deleteItem" class="red" type="button" onclick="confirmDelete()">{{"Delete"|i18n}}</button>
 				{% endif %}
-				<button type="button" class="blue" onclick="modified=false; window.history.back()">{{"Cancel"|i18n}}</button>
+				<span class="spacer"></span>
+				<button type="button" class="red" onclick="modified=false; window.history.back()">{{"Cancel"|i18n}}</button>
 				{% if professional._id %}
 				<button id="saveItemBtn" class="green">{{"Save"|i18n}}</button>
 				{% else %}
 				<button id="createItemBtn" class="green">{{"Create"|i18n}}</button>
 				{% endif %}
-			</div>
+			<!--</div>-->
 		</div>
 	</form>
 </div>

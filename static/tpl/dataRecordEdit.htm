@@ -234,7 +234,7 @@
 		<div class="row control">
 			<span class="spacer"></span>
 			{% if rights.write && beneficiary.active %}
-			<button type="button" class="green small" onclick="addLine('{{category}}')">{{"Add"|i18n}}</button>
+			<button type="button" class="blue small" onclick="addLine('{{category}}')">{{"Add"|i18n}}</button>
 			{% endif %}
 		</div>
 	</div>
@@ -272,7 +272,7 @@
 
 		<input name="items[{% raw %}{{idx}}{% endraw %}].category" id="new-item-category" type="hidden">
 		<div style="width:100px; text-align:right">
-			<button type="button" class="blue small" onclick="removeLine(this)">{{"Cancel"|i18n}}</button>
+			<button type="button" class="red small" onclick="removeLine(this)">{{"Cancel"|i18n}}</button>
 		</div>
 	</div>
 	{% raw %}{{#questionnaire}}{% endraw %}
@@ -404,7 +404,7 @@
 			<button id="saveBtn" class="green">{{"Save"|i18n}}</button>
 			{% endif %}
 			{% else %}
-			<button type="button" class="blue big not-disabled" onclick="backDatarecord()">{{"Back"|i18n}}</button>
+			<button type="button" class="red big not-disabled" onclick="backDatarecord()">{{"Cancel"|i18n}}</button>
 			{% if rights.write && beneficiary.active && !dataRecordItems.healthStatus %}
 			<button id="saveBtn" class="green">{{"Save"|i18n}}</button>
 			{% endif %}

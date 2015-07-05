@@ -274,7 +274,7 @@ select {
 	padding-left:5px;
 	font-size:inherit;
 	font-family: inherit;
-	border:1px solid gray;
+	border:1px solid lightgray;
 	/*
 	-webkit-appearance:none !important;
 	-moz-appearance:none  !important;
@@ -295,6 +295,7 @@ a.button {
 	margin-left: 5px; 
 	border: none;
 	box-sizing: border-box;
+	border-radius: 5px;
 }
 
 .row button:first-child,
@@ -332,13 +333,14 @@ a.button.small {
 	min-width: 75px;
 	font-size: 75%;
 	/* height: 75%; */
-	height: 19px;
+	height: 24px;
 	line-height:19px;
 	box-sizing: border-box;
 	margin: 5px 0px;
+	border-radius: 3px;
 }
 a.button.small {
-	line-height: 19px;
+	line-height: 24px;
 }
 button[disabled] { 
 	color:darkgray; 

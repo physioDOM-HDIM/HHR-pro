@@ -397,5 +397,8 @@
   "On":"On",
   "Off":"Off",
   "This email is already used, please choose another one": "This email is already used, please choose another one",
-  "Your certificate has been revoked":"Your certificate has been revoked"
+  "Your certificate has been revoked":"Your certificate has been revoked",
+  "New beneficiary":"New beneficiary",
+  "Remove":"Remove",
+  "New Professional":"New Professional"
 }
