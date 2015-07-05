@@ -1,1 +1,2 @@
-{ "rights" : { "administrator" : 2, "coordinator" : 2, "social" : 0, "physician" : 2, "medical" : 0, "beneficiary" : 0 }, "_id" : { "$oid" : "552be294735e055ee05b55c2" }, "label" : "Validate" }
+{ "rights" : { "administrator" : 2, "coordinator" : 2, "socialworker" : 0, "physician" : 2, "nurse" : 0, "beneficiary" : 0 }, "_id" : { "$oid" : "552be294735e055ee05b55c2" }, "label" : "Validate" }
+{ "_id" : { "$oid" : "55968d02e571fe748c24b038" }, "rights" : { "administrator" : 2, "coordinator" : 2, "socialworker" : 0, "physician" : 2, "nurse" : 0, "beneficiary" : 0 }, "label" : "Alert" }
