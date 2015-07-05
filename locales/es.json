@@ -395,5 +395,6 @@
   "Warning status": "Estado de Advertencia",
   "Lower alert":"Desactivar la advertencia",
   "On":"Izado",
-  "Off":"Apagado"
+  "Off":"Apagado",
+  "This email is already used, please choose another one": "Este correo electrónico ya está en uso, elija otra"
 }

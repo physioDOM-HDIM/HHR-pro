@@ -395,5 +395,6 @@
   "Warning status": "Status waarschuwing",
   "Lower alert":"Disable waarschuwing",
   "On":"On",
-  "Off":"Off"
+  "Off":"Off",
+  "This email is already used, please choose another one": "Deze e-mail is al in gebruik, kies dan een andere"
 }
