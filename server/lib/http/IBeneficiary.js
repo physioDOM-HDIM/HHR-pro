@@ -202,6 +202,7 @@ var IBeneficiary = {
 				})
 				.then( function (_beneficiary ) {
 					beneficiary = _beneficiary;
+					/*
 					if( updateItem.account ) {
 						beneficiary.getAccount()
 							.then( function(_account) {
@@ -228,6 +229,7 @@ var IBeneficiary = {
 								}
 							});
 					}
+					*/
 				})
 				.then( function() {
 					var log = {
