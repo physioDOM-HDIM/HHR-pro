@@ -535,7 +535,7 @@ function Beneficiary( ) {
 							Identifier        : email,
 							Privilege         : 255,
 							Profile           : 0,
-							Duration          : 365,
+							Duration          : physioDOM.config.IDS.duration?physioDOM.config.IDS.duration:365,
 							AuthenticationMask: 8,
 							Number            : 3,
 							Comment           : "Create certificate for " + email
@@ -596,8 +596,7 @@ function Beneficiary( ) {
 					soap.createClient(wsdl, function (err, client) {
 						if(err) {
 							logger.alert(err);
-							res.send(400, { code:400, message:err });
-							return next(false);
+							throw err;
 						}
 
 						client.CertRevocate(CertRevocate, function (err, result ) {

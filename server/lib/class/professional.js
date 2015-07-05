@@ -515,7 +515,7 @@ function Professional() {
 							Identifier        : email,
 							Privilege         : 255,
 							Profile           : 0,
-							Duration          : 365,
+							Duration          : physioDOM.config.IDS.duration?physioDOM.config.IDS.duration:365,
 							AuthenticationMask: 8,
 							Number            : 3,
 							Comment           : "Create certificate for " + email
@@ -576,25 +576,25 @@ function Professional() {
 					soap.createClient(wsdl, function (err, client) {
 						if(err) {
 							logger.alert(err);
-							res.send(400, { code:400, message:err });
-							return next(false);
+							throw(err);
+						} else {
+							client.CertRevocate(CertRevocate, function (err, result) {
+								if (err) {
+									log.warning( err );
+									throw err;
+								} else {
+									logger.info("certRevokeResponse", result);
+									account.OTP = false;
+									physioDOM.db.collection("account").save(account, function (err, result) {
+										if (err) {
+											reject(err);
+										} else {
+											resolve(account);
+										}
+									});
+								}
+							});
 						}
-						
-						client.CertRevocate(CertRevocate, function (err, result ) {
-							if (err) {
-								throw err;
-							} else {
-								logger.info("certRevokeResponse", result);
-								account.OTP = false;
-								physioDOM.db.collection("account").save(account, function(err, result) {
-									if(err) {
-										reject(err);
-									} else {
-										resolve(account);
-									}
-								});
-					 		}
-						});
 					});
 				})
 				.catch( reject );
