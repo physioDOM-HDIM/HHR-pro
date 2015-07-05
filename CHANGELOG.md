@@ -1,6 +1,33 @@
+__v1.0.2__
+
+  - Update des fichiers de langues fournis par Viveris le 26/06
+  - Update des fichiers bootstrap database fournis par Viveris le 26/06
+  - Bug 413 : Cache
+    > add the version to file before serving and cache ( internal nginx )
+  - Bug 405 : Date inversée
+    > enforce the date locale
+  - Bug 389 : Fix messages de modification
+  - Bug 414 : Le bouton est caché
+  - Bug 410 : Erreur lors de la génération du certificat
+  - Bug 404 : Différentiation des prescriptions mensuelle
+  - Bug 385 : modification du message d'erreur sur IDS
+  - Bug 350 : force les nouveaux questionnaires à new
+  - Bug 83 : Correctif de l'UI
+  - Bug 408 : [data curves][v1.0.1] Prénom "undefined"
+  - Bug 407 : [data curves][v1.0.1] Problème affichage caractère spéciaux
+  - Bug 406 : [Data curves][v1.0.1] mauvais positionnement courbe par rapport à l'heure
+  - Bug 384 : [Data recording][v1.0.0] décalage colonne value/unit/threshold
+  - Bug 382 : [Create/update a beneficiary][v1.0.0] Revocation beneficiaire KO
+  - Bug 381 : [Create/update a professional][v1.0.0] Revocation professionel KO
+
+  
+> __Nota : Pour les revocation de certificats__  
+> Suite à la revocation d'un certificat d'un professionel, si l'on clique sur "save" et que le professionel est actif, 
+> une nouvelle demande de certificats est effectuées. 
+
 __v1.0.1__
 
-  - Update des fichters de langues fournis par Viveris le 18/06
+  - Update des fichiers de langues fournis par Viveris le 18/06
   - \#260 : Bug 398 : [Tout ecrans][[SAFARI IPad v100] Contrôle sur les champs non opérants et messages popup tooltip associés ne s’affichent jamais sur Safari iPad
   - \#261 : Bug 380 : [data curves+result synthesis][v1.0.0] données en double
   - Bug 390 : [UpdateBeneficiary - Firefox][v1.0.0] Gestion de l'activation du beneficaire et save inopérants avec Firefox
