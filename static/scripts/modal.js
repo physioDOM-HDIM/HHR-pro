@@ -508,6 +508,26 @@ function Modal (type, callback, log) {
 		]
     };
 
+	content.disableWarningStatus = {
+		title  : "trad_WarningStatus",
+		content: "trad_confirm_disable",
+		buttons: [
+			{
+				id: "trad_no",
+				action: function() {
+					self.closeModal();
+				}
+			},
+			{
+				id: "trad_yes",
+				action: function() {
+					callback();
+					self.closeModal();
+				}
+			}
+		]
+	};
+	
     if(content[type] === undefined) {
         if(!this.isOpen(type)) {
             this.showModal(null, type); 

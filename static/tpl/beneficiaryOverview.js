@@ -85,20 +85,22 @@ function getQueueStatus() {
 }
 
 function disableWarning() {
-	var xhr = new XMLHttpRequest();
-	
-	xhr.open('POST','/api/beneficiary/warning', true );
-	xhr.onload = function() {
-		if( xhr.status === 200 ) {
-			window.location.reload();
-		} else {
-			console.log( "bad status code", xhr.status );
-		}
-	};
-	xhr.onerror = function() {
-		console.log( "oops an error occurs" );
-	};
-	xhr.send('{ "status":false }');
+	new Modal('disableWarningStatus', function() {
+		var xhr = new XMLHttpRequest();
+		
+		xhr.open('POST','/api/beneficiary/warning', true );
+		xhr.onload = function() {
+			if( xhr.status === 200 ) {
+				window.location.reload();
+			} else {
+				console.log( "bad status code", xhr.status );
+			}
+		};
+		xhr.onerror = function() {
+			console.log( "oops an error occurs" );
+		};
+		xhr.send('{ "status":false }');
+	});
 }
 
 window.addEventListener("polymer-ready", init, false);
