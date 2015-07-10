@@ -14,4 +14,4 @@ var alertRight = {
 	"label" : "Alert"
 }
 
-db.specialrights.save( alertRight );
+db.specialRights.save( alertRight );
