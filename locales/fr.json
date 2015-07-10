@@ -400,5 +400,9 @@
   "Your certificate has been revoked":"Votre certificat a été révoqué",
   "New beneficiary":"Nouveau bénéficiaire",
   "Remove":"Remove",
-  "New Professional":"Nouveau Professionnel"
+  "New Professional":"Nouveau Professionnel",
+  "Warning status":"Statut d'alerte",
+  "Source":"Source",
+  "Date":"Date",
+  "Are you sure to disable the warning status ?":"Êtes-vous sûr de désactiver l'état d'alerte ?"
 }

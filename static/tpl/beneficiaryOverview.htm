@@ -7,6 +7,7 @@
 <link rel="import" href="/bower_components/paper-dialog/paper-action-dialog.html">
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
 <script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
 <script src="/tpl/beneficiaryOverview.js"></script>
 {% endblock %}
 {% block content %}
@@ -152,7 +153,7 @@
 	</zdk-panel>
 </div>
 
-<zdk-panel id="status" heading="{{ 'Warning Status'|i18n }}">
+<zdk-panel id="status" heading="{{ 'Warning status'|i18n }}">
 	<div layout horizontal>
 	{% if beneficiary.warning && beneficiary.warning.status %}
 		<div style="width:80px; text-align:center">
@@ -160,8 +161,8 @@
 		</div>
 		<div flex>
 			<div style="color:firebrick; font-weight: bold;">{{"Warning status" | i18n}} : {{"On" | i18n}}</div>
-			<div>Source : {{ beneficiary.warning.source }}</div>
-			<div>date : {{ beneficiary.warning.date | fulldate }}</div>
+			<div>{{"Source" | i18n }} : {{ beneficiary.warning.source }}</div>
+			<div>{{"Date" | i18n }} : {{ beneficiary.warning.date | fulldate }}</div>
 		</div>
 		<div style="width:150px; text-align:right">
 			{% if alert.write %}
@@ -425,4 +426,5 @@
 		parent.enableDataRecord(false);
 	{% endif %}
 </script>
+{% include 'modal.htm' %}
 {% endblock %}
