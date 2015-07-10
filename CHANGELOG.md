@@ -1,3 +1,9 @@
+__v1.0.3__
+
+  - Bug 419 : [beneficiary overview][v1.0.2] Source et date : libellés en dur 
+  - Bug 420 : [Beneficary overview][v1.0.2] Message de confirmation manquant lors du 'Disable warning'
+  - [Data recording questionnaire] for dutch and spanish languages, the question answers may be cut.
+
 __v1.0.2__
 
   - Update des fichiers de langues fournis par Viveris le 26/06
