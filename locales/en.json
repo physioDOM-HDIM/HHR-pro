@@ -400,5 +400,9 @@
   "Your certificate has been revoked":"Your certificate has been revoked",
   "New beneficiary":"New beneficiary",
   "Remove":"Remove",
-  "New Professional":"New Professional"
+  "New Professional":"New Professional",
+  "Warning status":"Warning status",
+  "Source":"Source",
+  "Date":"Date",
+  "Are you sure to disable the warning status ?":"Are you sure to disable the warning status ?"
 }
