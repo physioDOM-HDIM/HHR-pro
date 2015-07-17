@@ -30,7 +30,7 @@ server {
   
     location ~  \.(jpeg|gif|png|ico|css|zip|tgz|gz|rar|bz2|pdf|txt|tar|wav|bmp|rtf|js|flv|swf|html|htm|woff|woff2|svg)(\?v=[0-9.]+(-.*)?)?$ {
         # access_log off;
-        expires max;
+        expires off;
         root {{rootDir}};
     }
 

@@ -193,6 +193,13 @@ function Beneficiary( ) {
 		return new Promise( function(resolve, reject) {
 			logger.trace("-> save" );
 			
+			if( !that.warning ) {
+				that.warning = {
+					status : false,
+					source: null,
+					date: null
+				};
+			}
 			physioDOM.db.collection("beneficiaries").save( that, function(err, result) {
 				if(err) { 
 					throw err; 
@@ -2464,7 +2471,7 @@ function Beneficiary( ) {
 						});
 						msg.push({
 							name: leaf + ".new",
-							value: newFlag ? 1 : 1,
+							value: newFlag ? 1 : 0,
 							type: "integer"
 						});
 						for (var i = 0, l = quest.history.length; i < l; i++) {

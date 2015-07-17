@@ -162,7 +162,7 @@
 		<div flex>
 			<div style="color:firebrick; font-weight: bold;">{{"Warning status" | i18n}} : {{"On" | i18n}}</div>
 			<div>{{"Source" | i18n }} : {{ beneficiary.warning.source }}</div>
-			<div>{{"Date" | i18n }} : {{ beneficiary.warning.date | fulldate }}</div>
+			<div>{{"Date" | i18n }} : <span id="status-date" data-value="{{beneficiary.warning.date}}"></span></div>
 		</div>
 		<div style="width:150px; text-align:right">
 			{% if alert.write %}
@@ -174,8 +174,8 @@
 		<div style="width:80px; text-align:center"></div>
 		<div flex>
 			<div style="color:seagreen; font-weight: bold;">{{"Warning status" | i18n}} : {{"Off" | i18n}}</div>
-			<div>Source : {{ beneficiary.warning.source }}</div>
-			<div>date : {{ beneficiary.warning.date | fulldate }}</div>
+			<div>{{"Source" | i18n }} : {{ beneficiary.warning.source }}</div>
+			<div>{{"Date" | i18n }} : <span id="status-date" data-value="{{beneficiary.warning.date}}"></span></div>
 		</div>
 		<div style="width:150px; text-align:right"></div>
 	{% endif %}

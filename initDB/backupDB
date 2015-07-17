@@ -1,0 +1,24 @@
+#!/bin/bash
+
+if (( $# < 2 ))
+then
+  echo "Usage: backupDB MONGOHOST MONGODB"
+  echo "  Where :"
+  echo "   - MONGOHOST is the namn of the mongodb docker ( by example: mongo)"
+  echo "   - MONGODB   is the name of the database to save ( by example: hhrpro-test)"
+  echo ""
+  exit 0
+fi
+
+MONGOHOST=$1
+MONGODB=$2
+if [ -z "$3" ]
+then
+	DEST="."
+else
+	DEST=$3
+fi
+
+/usr/bin/mongodump --host $(docker-ip ${MONGOHOST}) -d ${MONGODB} > /dev/null
+tar -cvjf ${DEST}/${MONGODB}-$(date +%Y%m%d%H%M%S).tar.bz2 dump > /dev/null
+rm -rf dump

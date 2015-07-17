@@ -1,3 +1,13 @@
+__v1.0.4__
+
+  - Bug 421 : [select beneficiary][v1.0.2] Problème tri de la liste avec les alertes 
+  - Bug 418 : [Notification Quest.][v.1.0.2] Notification de questionnaire à chaque MàJ HHR1
+  - Bug 417 : [Date Warning Status][v1.0.2] Décalage de 2 heures
+  - Bug 416 : [Précision Thresholds][v.1.0.2] Pas de prise en comptes des Thresholds de type "Decimal"
+  - Bug 419 : [beneficiary overview][v1.0.2] Source et date : libellés en dur
+  
+> __Nota :__ Il est necessaire de passer le script d'upgrade ( upgrade-1.0.4.js ) sur la base données pour la résolution du bug 421.
+  
 __v1.0.3__
 
   - Bug 419 : [beneficiary overview][v1.0.2] Source et date : libellés en dur 
