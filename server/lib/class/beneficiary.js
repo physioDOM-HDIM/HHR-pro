@@ -2471,7 +2471,7 @@ function Beneficiary( ) {
 						});
 						msg.push({
 							name: leaf + ".new",
-							value: newFlag ? 1 : 1,
+							value: newFlag ? 1 : 0,
 							type: "integer"
 						});
 						for (var i = 0, l = quest.history.length; i < l; i++) {
