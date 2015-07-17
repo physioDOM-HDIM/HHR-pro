@@ -98,7 +98,12 @@
 					<span class="read-min">{{min}}</span>
 				</div>
 				<div class="mode-update hidden">
-					<input type="number" value="{{min}}" name="{{text}}.min" class="input-min"/>
+					{{#precision}}
+					<input type="number" value="{{min}}" name="{{text}}.min" class="input-min" step="0.1"/>
+					{{/precision}}
+					{{^precision}}
+					<input type="number" value="{{min}}" name="{{text}}.min" class="input-min" step="1"/>
+					{{/precision}}
 				</div>
 			</div>
 			<div style="width:120px">
@@ -106,7 +111,12 @@
 					<span class="read-max">{{max}}</span>
 				</div>
 				<div class="mode-update hidden">
-					<input type="number" value="{{max}}" name="{{text}}.max" class="input-max"/>
+					{{#precision}}
+					<input type="number" value="{{max}}" name="{{text}}.max" class="input-max" step="0.1" />
+					{{/precision}}
+					{{^precision}}
+					<input type="number" value="{{max}}" name="{{text}}.max" class="input-max" step="1" />
+					{{/precision}}
 				</div>
 			</div>
 		{{/threshold}}

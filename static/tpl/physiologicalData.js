@@ -44,7 +44,7 @@ window.addEventListener("polymer-ready", function() {
 
 	var promises = {
 		units: Utils.promiseXHR("GET", "/api/lists/units/array", 200),
-		params: Utils.promiseXHR("GET", "/api/lists/parameters/array", 200),
+		params: Utils.promiseXHR("GET", "/api/lists/parameters", 200),
 		symptoms: Utils.promiseXHR("GET", "/api/lists/symptom/array", 200),
 		questionnaires: Utils.promiseXHR("GET", "/api/lists/questionnaire/array", 200)
 	};
@@ -182,6 +182,7 @@ var getDataRecords = function(init) {
 var updateThreshold = function(elt) {
 	var error = false;
 	var line = elt;
+	var precision = 1;
 	while(! line.classList.contains("row")) {
 		line = line.parentNode;
 	}
@@ -190,21 +191,22 @@ var updateThreshold = function(elt) {
 		var i = 0,
 			len = datas.length;
 
+	precision = parseFloat(line.querySelector(".input-min").step);
 	line.querySelector(".input-min").classList.remove("error");
 	line.querySelector(".input-max").classList.remove("error");
 	
 	for(var prop in datas) {
-		if( datas[prop].min !== parseFloat(datas[prop].min)+"" ) {
+		if( datas[prop].min !== (precision===0.1?parseFloat(datas[prop].min):parseInt(datas[prop].min,10))+"" ) {
 			error = true;
 			line.querySelector(".input-min").classList.add("error");
 		} else {
-			datas[prop].min = parseFloat(datas[prop].min);
+			datas[prop].min = precision===0.1?parseFloat(datas[prop].min):parseInt(datas[prop].min,10);
 		}
-		if( datas[prop].max !== parseFloat(datas[prop].max)+"" ) {
+		if( datas[prop].max !== (precision===0.1?parseFloat(datas[prop].max):parseInt(datas[prop].max,10))+"" ) {
 			error = true;
 			line.querySelector(".input-max").classList.add("error");
 		} else {
-			datas[prop].max = parseFloat(datas[prop].max);
+			datas[prop].max = precision===0.1?parseFloat(datas[prop].max):parseInt(datas[prop].max,10);
 		}
 	}
 
@@ -213,14 +215,12 @@ var updateThreshold = function(elt) {
 	}
 	
 	Utils.promiseXHR("POST", "/api/beneficiary/thresholds", 200, JSON.stringify(datas)).then(function(response) {
-
        	setThresholdUI(line);
     	toggleMode(line);
     	getParamList(true); //Get once again Param List (with isRendered arg) to have newly thresholds added
        	new Modal('updateSuccess');
 
     }, function(error) {
-
     	resetThresholdUI(line);
     	toggleMode(line);
     	new Modal('errorOccured');
@@ -296,13 +296,19 @@ var renderLine = function(list, containerName) {
 		paramLineTpl = document.querySelector('#param-line-tpl'),
 		i = 0,
 		len = list.length;
+	var param;
 
 	for(i; i<len; i++) {
 		var row = document.createElement('div'),
 			model = {
 				param: list[i]
 			};
-
+		if( model.param.category.indexOf( ["General", "HDIM"] !== -1) ) {
+			param = Utils.findInObject( _dataLists.params, 'ref', model.param.text );
+			if( param ) {
+				model.param.precision = param.precision;
+			}
+		}
 		row.className = 'row';
 		row.innerHTML = Mustache.render(paramLineTpl.innerHTML, model);
 		paramContainer.appendChild(row);
@@ -338,6 +344,7 @@ var initGraph = function() {
 var renderGraph = function(dataRecords) {
 	var user = JSON.parse(document.querySelector('#user').innerHTML);
 	var label = "";
+	var params, param;
 	var unit = "";
 	var datas = [];
 	var yAxisConf = [];
@@ -362,9 +369,12 @@ var renderGraph = function(dataRecords) {
 				line: '#2980b9',
 				area: '#5C97BF'
 			};
-
-		label = _dataLists[ ["HDIM","General"].indexOf(dataRecords.blue.category)!==-1?"params":dataRecords.blue.category][dataRecords.blue.text];
-		label = label[Cookies.get("lang")] || label["en"];
+		
+		//label = _dataLists[ ["HDIM","General"].indexOf(dataRecords.blue.category)!==-1?"params":dataRecords.blue.category][dataRecords.blue.text];
+		//label = label[Cookies.get("lang")] || label["en"];
+		params = _dataLists[ ["HDIM","General"].indexOf(dataRecords.blue.category)!==-1?"params":dataRecords.blue.category];
+		param = Utils.findInObject( params, 'ref', dataRecords.blue.text );
+		label = param.label[Cookies.get("lang")] || param.label["en"];
 		unit = "";
 		if( dataRecords.blue.unitRef ) {
 			unit = _dataLists.units[dataRecords.blue.unitRef];
@@ -442,8 +452,11 @@ var renderGraph = function(dataRecords) {
 				area: '#EB974E'
 			};
 
-		label = _dataLists[ ["HDIM","General"].indexOf(dataRecords.yellow.category)!==-1?"params":dataRecords.yellow.category][dataRecords.yellow.text];
-		label = label[Cookies.get("lang")] || label["en"];
+		// label = _dataLists[ ["HDIM","General"].indexOf(dataRecords.yellow.category)!==-1?"params":dataRecords.yellow.category][dataRecords.yellow.text];
+		// label = label[Cookies.get("lang")] || label["en"];
+		params = _dataLists[ ["HDIM","General"].indexOf(dataRecords.blue.category)!==-1?"params":dataRecords.blue.category];
+		param = Utils.findInObject( params, 'ref', dataRecords.blue.text );
+		label = param.label[Cookies.get("lang")] || param.label["en"];
 		unit = "";
 		if( dataRecords.yellow.unitRef ) {
 			unit = _dataLists.units[dataRecords.yellow.unitRef];

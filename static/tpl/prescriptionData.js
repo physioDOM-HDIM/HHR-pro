@@ -145,16 +145,24 @@ var updateParam = function (elt) {
 		param = lists.thresholds[ref],
 		min = container.querySelector('.min-threshold'),
 		max = container.querySelector('.max-threshold');
+	var tmpParam = utils.findInObject(lists.parameters.items, 'ref', ref);
 
-	 if(param && min && max) {
-	 	min.value = param.min;
-	 	max.value = param.max;
+	if(param && min && max) {
+		min.value = param.min;
+		max.value = param.max;
 		min.max = max.value;
 		max.min = min.value;
-	 } else {
+		if( tmpParam.precision ) {
+			min.step = 0.1;
+			max.step = 0.1;
+		} else {
+			min.step = 1;
+			max.step = 1;
+		}
+	} else {
 		if( min ) { min.max = null; }
 		if( max ) { max.min = null; }
-	 }
+	}
 };
 
 var showOptions = function (frequency, dataModel) {
