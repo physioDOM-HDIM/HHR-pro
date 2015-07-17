@@ -22,6 +22,14 @@ function init() {
 	if( Utils.isSafari() ) {
 		document.querySelector( "zdk-panel#personal").style.float = "left";
 	}
+	
+	var statusDate = document.getElementById("status-date");
+	if( statusDate && statusDate.getAttribute("data-value") ) {
+		var tmpDate = moment(statusDate.getAttribute("data-value"));
+		if( tmpDate.isValid() ) {
+			statusDate.innerHTML = tmpDate.format("L LT");
+		}
+	}
 }
 
 function initQueueDlg() {
