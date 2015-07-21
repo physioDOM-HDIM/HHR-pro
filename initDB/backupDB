@@ -1,24 +1,29 @@
 #!/bin/bash
+	. /etc/environment
 
 if (( $# < 2 ))
 then
-  echo "Usage: backupDB MONGOHOST MONGODB"
-  echo "  Where :"
-  echo "   - MONGOHOST is the namn of the mongodb docker ( by example: mongo)"
-  echo "   - MONGODB   is the name of the database to save ( by example: hhrpro-test)"
-  echo ""
-  exit 0
+echo "Usage: backupDB MONGOHOST MONGODB"
+echo "  Where :"
+echo "   - MONGOHOST is the name of the mongodb docker ( by example: mongo)"
+echo "   - MONGODB   is the name of the database to save ( by example: hhrpro-test)"
+echo "   - DEST [option] : the directory where to save the backup"
+echo ""
+exit 0
 fi
 
 MONGOHOST=$1
 MONGODB=$2
 if [ -z "$3" ]
-then
-	DEST="."
+	then
+DEST="."
 else
-	DEST=$3
+DEST=$3
 fi
 
-/usr/bin/mongodump --host $(docker-ip ${MONGOHOST}) -d ${MONGODB} > /dev/null
+DOCKERIP="/usr/local/bin/docker-ip"
+
+cd /home/telecomsante/tmp
+/usr/bin/mongodump --host $($DOCKERIP ${MONGOHOST}) -d ${MONGODB} > /dev/null
 tar -cvjf ${DEST}/${MONGODB}-$(date +%Y%m%d%H%M%S).tar.bz2 dump > /dev/null
 rm -rf dump
