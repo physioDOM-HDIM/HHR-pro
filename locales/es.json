@@ -392,7 +392,7 @@
   "On IDS, the identifier is the mail address": "Se identifica el usuario con la dirección de correo electronico",
   "Required": "Campo obligatorio",
   "Some required fields are not correctly filled": "Algunos campos obligatorios no estan rellenados correctamente",
-  "Warning status": "Estado de Advertencia",
+  "Warning status": "Estado de advertencia",
   "Lower alert": "Apagar advertencia",
   "On": "On",
   "Off": "Off",
@@ -401,8 +401,8 @@
   "New beneficiary": "Nuevo beneficiario",
   "Remove": "Remover",
   "New Professional": "Nuevo Profesional",
-  "Warning status":"Warning status",
-  "Source":"Source",
-  "Date":"Date",
-  "Are you sure to disable the warning status ?":"¿Seguro desactivar el estado de alerta ?"
+  "Warning status":"Estado de advertencia",
+  "Source":"Origen",
+  "Date":"Fecha",
+  "Are you sure to disable the warning status ?":"¿Seguro desactivar el estado de advertencia ?"
 }

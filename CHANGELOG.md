@@ -1,3 +1,10 @@
+__v1.0.5__
+
+  - Bug 424 [Data Graphs][v.1.0.4] Libellé jaune prend la valeur du libellé bleu
+  - Bug 425 [Data Graphs][v.1.0.4] Pas d'affichage des Symptômes et Scores de questionnaires
+  - Remove flag for new EETScore
+  - Locales ( Viveris 07-10 )
+
 __v1.0.4__
 
   - Bug 421 : [select beneficiary][v1.0.2] Problème tri de la liste avec les alertes 
