@@ -372,10 +372,16 @@ var renderGraph = function(dataRecords) {
 		
 		//label = _dataLists[ ["HDIM","General"].indexOf(dataRecords.blue.category)!==-1?"params":dataRecords.blue.category][dataRecords.blue.text];
 		//label = label[Cookies.get("lang")] || label["en"];
-		params = _dataLists[ ["HDIM","General"].indexOf(dataRecords.blue.category)!==-1?"params":dataRecords.blue.category];
-		param = Utils.findInObject( params, 'ref', dataRecords.blue.text );
-		label = param.label[Cookies.get("lang")] || param.label["en"];
 		unit = "";
+		if( ["HDIM","General"].indexOf(dataRecords.blue.category)!==-1 ) {
+			params = _dataLists.params;
+			param = Utils.findInObject(params, 'ref', dataRecords.blue.text);
+			label = param.label[Cookies.get("lang")] || param.label["en"];
+			
+		} else {
+			label = _dataLists[dataRecords.blue.category][dataRecords.blue.text];
+			label = label[Cookies.get("lang")] || label["en"];
+		}
 		if( dataRecords.blue.unitRef ) {
 			unit = _dataLists.units[dataRecords.blue.unitRef];
 			unit = unit[Cookies.get("lang")] || unit["en"];
@@ -454,9 +460,15 @@ var renderGraph = function(dataRecords) {
 
 		// label = _dataLists[ ["HDIM","General"].indexOf(dataRecords.yellow.category)!==-1?"params":dataRecords.yellow.category][dataRecords.yellow.text];
 		// label = label[Cookies.get("lang")] || label["en"];
-		params = _dataLists[ ["HDIM","General"].indexOf(dataRecords.yellow.category)!==-1?"params":dataRecords.yellow.category];
-		param = Utils.findInObject( params, 'ref', dataRecords.yellow.text );
-		label = param.label[Cookies.get("lang")] || param.label["en"];
+		if( ["HDIM","General"].indexOf(dataRecords.yellow.category)!==-1 ) {
+			params = _dataLists.params;
+			param = Utils.findInObject(params, 'ref', dataRecords.yellow.text);
+			label = param.label[Cookies.get("lang")] || param.label["en"];
+
+		} else {
+			label = _dataLists[dataRecords.yellow.category][dataRecords.yellow.text];
+			label = label[Cookies.get("lang")] || label["en"];
+		}
 		unit = "";
 		if( dataRecords.yellow.unitRef ) {
 			unit = _dataLists.units[dataRecords.yellow.unitRef];
