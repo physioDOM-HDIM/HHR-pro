@@ -400,9 +400,9 @@
   "Your certificate has been revoked": "Uw certificaat is ingetrokken",
   "New beneficiary": "Nieuwe deelnemer",
   "Remove": "Remove",
-  "New Professional": "Nieuwe professionele",
-  "Warning status":"Warning status",
-  "Source":"Source",
-  "Date":"Date",
+  "New Professional": "Nieuwe professional",
+  "Warning status":"Waarschuwingsstatus",
+  "Source":"Bron",
+  "Date":"Datum",
   "Are you sure to disable the warning status ?":"Weet u zeker dat u de status waarschuwing uitschakelen?"
 }
