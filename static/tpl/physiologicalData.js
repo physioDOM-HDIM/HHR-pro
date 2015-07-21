@@ -454,8 +454,8 @@ var renderGraph = function(dataRecords) {
 
 		// label = _dataLists[ ["HDIM","General"].indexOf(dataRecords.yellow.category)!==-1?"params":dataRecords.yellow.category][dataRecords.yellow.text];
 		// label = label[Cookies.get("lang")] || label["en"];
-		params = _dataLists[ ["HDIM","General"].indexOf(dataRecords.blue.category)!==-1?"params":dataRecords.blue.category];
-		param = Utils.findInObject( params, 'ref', dataRecords.blue.text );
+		params = _dataLists[ ["HDIM","General"].indexOf(dataRecords.yellow.category)!==-1?"params":dataRecords.yellow.category];
+		param = Utils.findInObject( params, 'ref', dataRecords.yellow.text );
 		label = param.label[Cookies.get("lang")] || param.label["en"];
 		unit = "";
 		if( dataRecords.yellow.unitRef ) {
