@@ -337,7 +337,7 @@ function Beneficiary() {
 		function checkUniqLogin() {
 			return new Promise(function (resolve, reject) {
 				var search = {login: accountData.login.toLowerCase(), 'person.id': {'$ne': that._id}};
-				console.log(search);
+				
 				physioDOM.db.collection("account").count(search, function (err, count) {
 					resolve(count);
 				});
@@ -472,7 +472,7 @@ function Beneficiary() {
 					}
 					that.source = professionalID;
 					that.datetime = moment().toISOString();
-					// console.log("-->", updatedEntry.active, that.active );
+					
 					return that.save();
 				})
 				.then(function () {
@@ -1108,7 +1108,6 @@ function Beneficiary() {
 				})
 				.then(function (_dataRecord) {
 					dataRecord = _dataRecord;
-					console.log(dataRecord);
 					return that.createEvent('Data record', 'create', new ObjectID(dataRecord._id), professionalID);
 				})
 				.then(function () {
@@ -1119,11 +1118,9 @@ function Beneficiary() {
 					dataRecord.items.items.forEach(function (item) {
 						if (thresholds[item.text]) {
 							if (thresholds[item.text].min && item.value < thresholds[item.text].min) {
-								console.log("overtake min", item.text);
 								outOfRange = true;
 							}
 							if (thresholds[item.text].max && item.value > thresholds[item.text].max) {
-								console.log("overtake max", item.text);
 								outOfRange = true;
 							}
 						}
@@ -1510,7 +1507,6 @@ function Beneficiary() {
 												item.category = parameters[item.text].category;
 											}
 										});
-										// console.log("->", results);
 
 										graphList.General = results.filter(function (item) {
 											return item.category === "General";
@@ -2523,16 +2519,6 @@ function Beneficiary() {
 
 	function pushParam(queue, name, param) {
 		return new Promise(function (resolve, reject) {
-			/*
-			 measuresHistory.params[id].label
-			 measuresHistory.params[id].type
-			 measuresHistory.params[id].precision
-			 measuresHistory.params[id].unit
-			 measuresHistory.params[id].values[id].datetime
-			 measuresHistory.params[id].values[id].value
-			 */
-
-			// console.log( param );
 			var msg = [];
 			if (param.rank) {
 				var leaf = name + ".measuresHistory.params[" + param.text + "]";
@@ -2583,11 +2569,6 @@ function Beneficiary() {
 
 	function pushSymptomsHistory(queue, name, symptom) {
 		return new Promise(function (resolve, reject) {
-			/*
-			 symptomsHistory.scales[id].label
-			 symptomsHistory.scales[id].values[id].datetime
-			 symptomsHistory.scales[id].values[id].value
-			 */
 			var msg = [];
 			if (symptom.rank) {
 				var leaf = name + ".symptomsHistory.scales[" + symptom.text + "]";
@@ -2858,11 +2839,6 @@ function Beneficiary() {
 		var name = "hhr[" + this._id + "].physical";
 
 		return new Promise(function (resolve, reject) {
-			/*
-			 physical.new
-			 physical.history[id].datetime
-			 physical.history[id].description
-			 */
 			var msg = [];
 			if (newFlag) {
 				msg.push({
@@ -2926,11 +2902,6 @@ function Beneficiary() {
 		var name = "hhr[" + this._id + "].dietary";
 
 		return new Promise(function (resolve, reject) {
-			/*
-			 dietary.recommendations.new
-			 dietary.recommendations.history[id].datetime
-			 dietary.recommendations.history[id].description
-			 */
 			var msg = [];
 			if (newFlag) {
 				msg.push({
