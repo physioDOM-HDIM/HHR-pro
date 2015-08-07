@@ -31,52 +31,54 @@ var RSVP = require("rsvp"),
 var logger = new Logger("Beneficiary");
 
 function capitalize(str) {
-	return str.replace( /(^|\s)([a-z])/g , function(m,p1,p2){ return p1+p2.toUpperCase(); } );
+	return str.replace(/(^|\s)([a-z])/g, function (m, p1, p2) {
+		return p1 + p2.toUpperCase();
+	});
 }
 
 /**
  * Manage a beneficiary record
- * 
+ *
  * @constructor
  */
-function Beneficiary( ) {
+function Beneficiary() {
 
 	/**
 	 * Get a beneficiary in the database known by its ID
-	 * 
+	 *
 	 * on success the Promise returns the beneficiary record,
 	 * else return an error ( code 404 )
-	 * 
+	 *
 	 * @param beneficiaryID
 	 * @param professional
 	 * @returns {Promise}
 	 */
-	this.getById = function( beneficiaryID, professional ) {
+	this.getById = function (beneficiaryID, professional) {
 		var that = this;
-		return new Promise( function(resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("getById", beneficiaryID);
-			var search = { _id: beneficiaryID };
-			if( ["administrator","coordinator"].indexOf(professional.role) === -1 && beneficiaryID.toString() !== professional._id.toString() ) {
-				search.professionals = { '$elemMatch' : { professionalID: professional._id.toString() }};
+			var search = {_id: beneficiaryID};
+			if (["administrator", "coordinator"].indexOf(professional.role) === -1 && beneficiaryID.toString() !== professional._id.toString()) {
+				search.professionals = {'$elemMatch': {professionalID: professional._id.toString()}};
 			}
 			physioDOM.db.collection("beneficiaries").findOne(search, function (err, doc) {
 				if (err) {
 					logger.alert("Error");
 					throw err;
 				}
-				if(!doc) {
-					reject( {code:404, error:"beneficiary not found"});
+				if (!doc) {
+					reject({code: 404, error: "beneficiary not found"});
 				} else {
 					for (var prop in doc) {
 						if (doc.hasOwnProperty(prop)) {
 							that[prop] = doc[prop];
 						}
 					}
-					if( !that.address ) {
-						that.address = [ { use:"home" }];
+					if (!that.address) {
+						that.address = [{use: "home"}];
 					}
-					if( !that.telecom ) {
-						that.telecom = [ { system:"phone" }];
+					if (!that.telecom) {
+						that.telecom = [{system: "phone"}];
 					}
 					resolve(that);
 				}
@@ -86,32 +88,32 @@ function Beneficiary( ) {
 
 	/**
 	 * Get a beneficiary known by its ID : `beneficiaryID`
-	 * 
+	 *
 	 * This method is used to create or modify a beneficiary
 	 * the professional must be an administrator or a coordinator
-	 * 
+	 *
 	 * if beneficiaryID is null the Promise return an empty structure
-	 * 
+	 *
 	 * @param beneficiaryID
 	 * @param professional
 	 * @returns {Promise}
 	 */
-	this.getAdminById = function( beneficiaryID, professional ) {
+	this.getAdminById = function (beneficiaryID, professional) {
 		var that = this;
-		return new Promise( function(resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("getAdminById", beneficiaryID);
-			var result = { telecom: [ { system:"phone" } ], address:[ { use:"home"} ] };
+			var result = {telecom: [{system: "phone"}], address: [{use: "home"}]};
 			that.getById(beneficiaryID, professional)
 				.then(function (beneficiary) {
 					result = beneficiary;
 					return beneficiary.getAccount();
 				})
-				.then( function(account) {
+				.then(function (account) {
 					result.account = account;
 					resolve(result);
 				})
-				.catch( function( err ) {
-					logger.warning("error",err);
+				.catch(function (err) {
+					logger.warning("error", err);
 					resolve(result);
 				});
 		});
@@ -128,37 +130,37 @@ function Beneficiary( ) {
 	 * @param professional
 	 * @returns {Promise}
 	 */
-	this.getHHR = function( beneficiaryID ) {
+	this.getHHR = function (beneficiaryID) {
 		var that = this;
-		return new Promise( function(resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("getHHR", beneficiaryID);
-			var search = { _id: beneficiaryID };
+			var search = {_id: beneficiaryID};
 
 			physioDOM.db.collection("beneficiaries").findOne(search, function (err, doc) {
 				if (err) {
 					logger.alert("Error");
 					throw err;
 				}
-				if(!doc) {
-					reject( {code:404, error:"beneficiary not found"});
+				if (!doc) {
+					reject({code: 404, error: "beneficiary not found"});
 				} else {
 					for (var prop in doc) {
 						if (doc.hasOwnProperty(prop)) {
 							that[prop] = doc[prop];
 						}
 					}
-					if( !that.address ) {
-						that.address = [ { use:"home" }];
+					if (!that.address) {
+						that.address = [{use: "home"}];
 					}
-					if( !that.telecom ) {
-						that.telecom = [ { system:"phone" }];
+					if (!that.telecom) {
+						that.telecom = [{system: "phone"}];
 					}
 					resolve(that);
 				}
 			});
 		});
 	};
-	
+
 	/**
 	 * return account information about the beneficiary
 	 *
@@ -167,12 +169,12 @@ function Beneficiary( ) {
 	 *
 	 * @returns {Promise}
 	 */
-	this.getAccount = function() {
+	this.getAccount = function () {
 		var that = this;
-		return new Promise( function(resolve, reject) {
-			var search = { "person.id": that._id, "role":"beneficiary" };
-			physioDOM.db.collection("account").findOne( search, function( err, item ) {
-				if(err) {
+		return new Promise(function (resolve, reject) {
+			var search = {"person.id": that._id, "role": "beneficiary"};
+			physioDOM.db.collection("account").findOne(search, function (err, item) {
+				if (err) {
 					throw err;
 				} else {
 					resolve(item || {});
@@ -183,28 +185,28 @@ function Beneficiary( ) {
 
 	/**
 	 * save the beneficiary in the database
-	 * 
+	 *
 	 * the Promise return the beneficiary object completed with the `_id` for a new record
-	 * 
+	 *
 	 * @returns {Promise}
 	 */
-	this.save = function() {
+	this.save = function () {
 		var that = this;
-		return new Promise( function(resolve, reject) {
-			logger.trace("-> save" );
-			
-			if( !that.warning ) {
+		return new Promise(function (resolve, reject) {
+			logger.trace("-> save");
+
+			if (!that.warning) {
 				that.warning = {
-					status : false,
+					status: false,
 					source: null,
-					date: null
+					date  : null
 				};
 			}
-			physioDOM.db.collection("beneficiaries").save( that, function(err, result) {
-				if(err) { 
-					throw err; 
+			physioDOM.db.collection("beneficiaries").save(that, function (err, result) {
+				if (err) {
+					throw err;
 				}
-				if( isNaN(result)) {
+				if (isNaN(result)) {
 					that._id = result._id;
 				}
 				resolve(that);
@@ -215,31 +217,31 @@ function Beneficiary( ) {
 	/**
 	 * Check that there's no beneficiary already exists with the same
 	 *  name, birthdate and telecom
-	 *  
+	 *
 	 * @todo set a regexp case insensitive for the name
-	 * 
+	 *
 	 * @param entry
 	 * @returns {Promise}
 	 */
-	function checkUniq( entry ) {
-		return new Promise( function(resolve, reject) {
+	function checkUniq(entry) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("checkUniq");
 			// check that the entry have an email
-			
-			var filter = { name: entry.name, birthdate: entry.birthdate, telecom: entry.telecom };
-			if( entry._id ) {
-				filter._id = { "$ne": new ObjectID(entry._id) };
+
+			var filter = {name: entry.name, birthdate: entry.birthdate, telecom: entry.telecom};
+			if (entry._id) {
+				filter._id = {"$ne": new ObjectID(entry._id)};
 			}
-			physioDOM.db.collection("beneficiaries").count( filter , function(err,nb) {
-				if(err) {
+			physioDOM.db.collection("beneficiaries").count(filter, function (err, nb) {
+				if (err) {
 					logger.error(err);
 					reject(err);
 				}
-				if(nb > 0) {
+				if (nb > 0) {
 					logger.warning("duplicate");
-					reject({error:"duplicate"});
+					reject({error: "duplicate"});
 				} else {
-					resolve( entry );
+					resolve(entry);
 				}
 			});
 		});
@@ -247,16 +249,16 @@ function Beneficiary( ) {
 
 	/**
 	 * Check the schema of a beneficiary record
-	 * 
+	 *
 	 * @param entry
 	 * @returns {Promise}
 	 */
-	function checkSchema( entry ) {
-		return new Promise( function(resolve, reject) {
+	function checkSchema(entry) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("checkSchema");
-			var check = beneficiarySchema.validator.validate( entry, { "$ref":"/Beneficiary"} );
-			if( check.errors.length ) {
-				return reject( { error:"bad format", detail: check.errors } );
+			var check = beneficiarySchema.validator.validate(entry, {"$ref": "/Beneficiary"});
+			if (check.errors.length) {
+				return reject({error: "bad format", detail: check.errors});
 			} else {
 				return resolve(entry);
 			}
@@ -265,34 +267,34 @@ function Beneficiary( ) {
 
 	/**
 	 * initialize a beneficiary with the object `newEntry`
-	 * 
+	 *
 	 * the Promise return on success the beneficiary record
-	 * 
+	 *
 	 * @param newEntry
 	 * @returns {Promise}
 	 */
-	this.setup = function( newEntry ) {
+	this.setup = function (newEntry) {
 		var that = this;
-		return new Promise( function(resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("setup");
 			checkSchema(newEntry)
 				.then(checkUniq)
 				.then(function (entry) {
 					for (var key in newEntry) {
 						if (newEntry.hasOwnProperty(key)) {
-							switch(key) {
+							switch (key) {
 								case "name":
 									that.name = newEntry.name;
-									if(that.name.family) {
+									if (that.name.family) {
 										that.name.family = capitalize(that.name.family);
 									}
-									if(that.name.given) {
+									if (that.name.given) {
 										that.name.given = capitalize(that.name.given);
 									}
 									break;
 								case "address":
 									that.address = newEntry.address;
-									that.address.forEach( function(address) {
+									that.address.forEach(function (address) {
 										address.city = address.city.toUpperCase();
 									});
 									break;
@@ -304,17 +306,17 @@ function Beneficiary( ) {
 					return that.save();
 				})
 				.then(resolve)
-				.catch(function(err) {
+				.catch(function (err) {
 					logger.error(err);
 					reject(err);
 				});
 		});
 	};
 
-	this.getEmail = function() {
+	this.getEmail = function () {
 		var email = "";
-		this.telecom.forEach( function(item) {
-			if( !email && item.system === "email") {
+		this.telecom.forEach(function (item) {
+			if (!email && item.system === "email") {
 				email = item.value;
 			}
 		});
@@ -329,35 +331,35 @@ function Beneficiary( ) {
 	 * @param accountData
 	 * @returns {Promise}
 	 */
-	this.accountUpdate = function( accountData ) {
+	this.accountUpdate = function (accountData) {
 		var that = this;
 
 		function checkUniqLogin() {
-			return new Promise( function(resolve, reject) {
-				var search = { login: accountData.login.toLowerCase(), 'person.id': {'$ne': that._id }};
-				console.log( search );
-				physioDOM.db.collection("account").count( search , function (err, count) {
-					resolve( count );
+			return new Promise(function (resolve, reject) {
+				var search = {login: accountData.login.toLowerCase(), 'person.id': {'$ne': that._id}};
+				console.log(search);
+				physioDOM.db.collection("account").count(search, function (err, count) {
+					resolve(count);
 				});
 			});
 		}
-		
-		return new Promise( function(resolve, reject) {
-			logger.trace( "accountUpdate" );
+
+		return new Promise(function (resolve, reject) {
+			logger.trace("accountUpdate");
 			checkUniqLogin()
-				.then( function(count) {
-					if(count) {
+				.then(function (count) {
+					if (count) {
 						logger.warning("login conflict");
-						var err = { code:409, message:"login already used" };
-						if( accountData.IDS==="true" ) {
-							err = { code:409, message:"email already used" };
+						var err = {code: 409, message: "login already used"};
+						if (accountData.IDS === "true") {
+							err = {code: 409, message: "email already used"};
 						}
 						reject(err);
 					} else {
 						return that.getAccount();
 					}
 				})
-				.then( function(account) {
+				.then(function (account) {
 					logger.trace("account", accountData);
 					if (accountData.IDS === "true") {
 						if (account.login) {
@@ -367,62 +369,64 @@ function Beneficiary( ) {
 							accountData.login = that.getEmail();
 						}
 					}
-					if (!(accountData.login || accountData.IDS==="true" ) || !accountData.password) {
+					if (!(accountData.login || accountData.IDS === "true" ) || !accountData.password) {
 						return reject({error: "account data incomplete"});
 					}
 					var newAccount = {
-						login   : accountData.login.toLowerCase(),
-						password: accountData.password === account.password?account.password:md5(accountData.password),
-						active  : that.active,
-						role    : "beneficiary",
-						email   : that.getEmail(),
+						login     : accountData.login.toLowerCase(),
+						password  : accountData.password === account.password ? account.password : md5(accountData.password),
+						active    : that.active,
+						role      : "beneficiary",
+						email     : that.getEmail(),
 						firstlogin: true,
-						person  : {
+						person    : {
 							id        : that._id,
 							collection: "beneficiaries"
 						}
 					};
-					if( account && account._id) {
+					if (account && account._id) {
 						newAccount._id = account._id;
-						newAccount.OTP = account.OTP?account.OTP:false;
+						newAccount.OTP = account.OTP ? account.OTP : false;
 					} else {
 						newAccount.OTP = false;
 					}
 					physioDOM.db.collection("account").save(newAccount, function (err, result) {
-						if(err) { throw err; }
-						if( isNaN(result)) {
+						if (err) {
+							throw err;
+						}
+						if (isNaN(result)) {
 							newAccount._id = result._id;
 						}
 						that.account = newAccount._id;
 						// that.active = true;
 						that.save()
-							.then( function( beneficiary ) {
-								logger.info("benneficiary saved, OTP : ",newAccount.OTP );
-								resolve(beneficiary, newAccount.OTP );
+							.then(function (beneficiary) {
+								logger.info("benneficiary saved, OTP : ", newAccount.OTP);
+								resolve(beneficiary, newAccount.OTP);
 							})
-							.catch( reject );
+							.catch(reject);
 					});
 				});
 		});
 	};
-	
+
 	/**
 	 * Update the beneficiary
-	 * 
+	 *
 	 * `updatedEntry` is a full object that replace the old one
-	 * 
+	 *
 	 * @param updatedEntry
 	 * @returns {Promise}
 	 */
-	this.update = function( updatedEntry, professionalID, IDS) {
+	this.update = function (updatedEntry, professionalID, IDS) {
 		var that = this;
 		var accountData = null;
 		var pushFirstName = false;
-		return new Promise( function(resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("update");
-			if( that._id.toString() !== updatedEntry._id ) {
+			if (that._id.toString() !== updatedEntry._id) {
 				logger.warning("not same beneficiary");
-				throw { code:405, message:"not same beneficiary"};
+				throw {code: 405, message: "not same beneficiary"};
 			}
 			updatedEntry._id = that._id;
 			checkSchema(updatedEntry)
@@ -430,14 +434,14 @@ function Beneficiary( ) {
 					logger.debug("schema is valid");
 					for (var key in updatedEntry) {
 						if (key !== "_id" && updatedEntry.hasOwnProperty(key)) {
-							switch(key) {
+							switch (key) {
 								case "name":
 									that.name = updatedEntry.name;
-									if(updatedEntry.name.family) {
+									if (updatedEntry.name.family) {
 										that.name.family = capitalize(that.name.family);
 										pushFirstName = true;
 									}
-									if(updatedEntry.name.given) {
+									if (updatedEntry.name.given) {
 										that.name.given = capitalize(that.name.given);
 										pushFirstName = true;
 									}
@@ -447,12 +451,12 @@ function Beneficiary( ) {
 									break;
 								case "address":
 									that.address = updatedEntry.address;
-									that.address.forEach( function(address) {
+									that.address.forEach(function (address) {
 										address.city = address.city.toUpperCase();
 									});
 									break;
 								case "biomaster":
-									if( that.biomaster !== updatedEntry.biomaster ) {
+									if (that.biomaster !== updatedEntry.biomaster) {
 										// biomaster box have changed, remove the status
 										that.biomasterStatus = null;
 									}
@@ -463,72 +467,76 @@ function Beneficiary( ) {
 							}
 						}
 					}
-					if( !updatedEntry.size ) { delete that.size; }
+					if (!updatedEntry.size) {
+						delete that.size;
+					}
 					that.source = professionalID;
 					that.datetime = moment().toISOString();
 					// console.log("-->", updatedEntry.active, that.active );
 					return that.save();
 				})
-				.then( function() {
-					return that.createEvent("Beneficiary","update", updatedEntry._id, professionalID);
+				.then(function () {
+					return that.createEvent("Beneficiary", "update", updatedEntry._id, professionalID);
 				})
-				.then( function() {
-					return new Promise( function(resolve, reject) {
-						if (accountData && Object.keys(accountData).length ) {
-							if( IDS && !accountData.login ) {
+				.then(function () {
+					return new Promise(function (resolve, reject) {
+						if (accountData && Object.keys(accountData).length) {
+							if (IDS && !accountData.login) {
 								accountData.login = that.getEmail();
 								accountData.IDS = true;
 							}
 							that.accountUpdate(accountData)
-								.then( resolve )
-								.catch( function(err) {
-									logger.warning("accountUpdate", err );
+								.then(resolve)
+								.catch(function (err) {
+									logger.warning("accountUpdate", err);
 									reject(err);
 								});
 						} else {
-							resolve( that );
+							resolve(that);
 						}
 					});
 				})
-				.then( function() {
-					if( pushFirstName ) {
+				.then(function () {
+					if (pushFirstName) {
 						return that.pushFirstName();
 					}
 				})
-				.then( function() {
-					resolve( that );
+				.then(function () {
+					resolve(that);
 				})
-				.catch( function(err) {
-					logger.warning("catch", err );
+				.catch(function (err) {
+					logger.warning("catch", err);
 					reject(err);
 				});
 		});
 	};
 
-	this.accountUpdatePasswd = function(newPasswd) {
-		logger.trace( "accountUpdatePasswd" );
+	this.accountUpdatePasswd = function (newPasswd) {
+		logger.trace("accountUpdatePasswd");
 		var that = this;
-		return new Promise( function(resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			that.getAccount()
 				.then(function (account) {
 					account.password = md5(newPasswd);
 					account.firstlogin = false;
 					physioDOM.db.collection("account").save(account, function (err, result) {
-						if(err) { throw err; }
-						resolve( account );
+						if (err) {
+							throw err;
+						}
+						resolve(account);
 					});
 				})
 				.catch(reject);
 		});
 	};
 
-	this.createCert = function(req, res) {
+	this.createCert = function (req, res) {
 		var that = this;
 
-		return new Promise( function(resolve, reject) {
-			logger.trace("createCert" );
+		return new Promise(function (resolve, reject) {
+			logger.trace("createCert");
 			that.getAccount()
-				.then( function(account) {
+				.then(function (account) {
 					var email = that.getEmail();
 					var cookies = new Cookies(req, res);
 
@@ -542,7 +550,7 @@ function Beneficiary( ) {
 							Identifier        : email,
 							Privilege         : 255,
 							Profile           : 0,
-							Duration          : physioDOM.config.IDS.duration?physioDOM.config.IDS.duration:365,
+							Duration          : physioDOM.config.IDS.duration ? physioDOM.config.IDS.duration : 365,
 							AuthenticationMask: 8,
 							Number            : 3,
 							Comment           : "Create certificate for " + email
@@ -562,8 +570,8 @@ function Beneficiary( ) {
 							} else {
 								logger.info("certResponse", result);
 								account.OTP = result.certresponse.OTP;
-								physioDOM.db.collection("account").save(account, function(err, result) {
-									if(err) {
+								physioDOM.db.collection("account").save(account, function (err, result) {
+									if (err) {
 										reject(err);
 									} else {
 										resolve(account);
@@ -573,47 +581,47 @@ function Beneficiary( ) {
 						});
 					});
 				})
-				.catch( reject );
+				.catch(reject);
 		});
 	};
 
-	this.revokeCert = function(req, res) {
+	this.revokeCert = function (req, res) {
 		var that = this;
-		logger.trace("revokeCert" );
+		logger.trace("revokeCert");
 
-		return new Promise( function(resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			that.getAccount()
-				.then( function(account) {
+				.then(function (account) {
 					var cookies = new Cookies(req, res);
 					var email = that.getEmail();
 
 					var CertRevocate = {
-						certRevocateRequest : {
-							Application       : physioDOM.config.IDS.appName,
-							Requester         : req.headers["ids-user"],
-							AuthCookie        : cookies.get("sessionids"),
-							OrganizationUnit  : physioDOM.config.IDS.OrganizationUnit,
-							Owner             : "03" + email,
-							Index             : -1,
-							Comment           : "Revoke all certificates for " + email
+						certRevocateRequest: {
+							Application     : physioDOM.config.IDS.appName,
+							Requester       : req.headers["ids-user"],
+							AuthCookie      : cookies.get("sessionids"),
+							OrganizationUnit: physioDOM.config.IDS.OrganizationUnit,
+							Owner           : "03" + email,
+							Index           : -1,
+							Comment         : "Revoke all certificates for " + email
 						}
 					};
 
 					var wsdl = 'http://api.idshost.priv/pki.wsdl';
 					soap.createClient(wsdl, function (err, client) {
-						if(err) {
+						if (err) {
 							logger.alert(err);
 							throw err;
 						}
 
-						client.CertRevocate(CertRevocate, function (err, result ) {
+						client.CertRevocate(CertRevocate, function (err, result) {
 							if (err) {
 								throw err;
 							} else {
 								logger.info("certRevokeResponse", result);
 								account.OTP = false;
-								physioDOM.db.collection("account").save(account, function(err, result) {
-									if(err) {
+								physioDOM.db.collection("account").save(account, function (err, result) {
+									if (err) {
 										reject(err);
 									} else {
 										resolve(account);
@@ -623,33 +631,33 @@ function Beneficiary( ) {
 						});
 					});
 				})
-				.catch( reject );
+				.catch(reject);
 		});
 	};
 
-	this.getEvents = function() {
-		return new Promise( function(resolve, reject) {
+	this.getEvents = function () {
+		return new Promise(function (resolve, reject) {
 			logger.trace("getEvents");
 			resolve({});
 		});
 	};
 
-	this.getHealthServices = function() {
-		return new Promise( function(resolve, reject) {
+	this.getHealthServices = function () {
+		return new Promise(function (resolve, reject) {
 			logger.trace("getHealthServices");
 			resolve({});
 		});
 	};
 
-	this.getSocialServices = function() {
-		return new Promise( function(resolve, reject) {
+	this.getSocialServices = function () {
+		return new Promise(function (resolve, reject) {
 			logger.trace("getSocialServices");
 			resolve({});
 		});
 	};
 
-	this.getDietaryServices = function() {
-		return new Promise( function(resolve, reject) {
+	this.getDietaryServices = function () {
+		return new Promise(function (resolve, reject) {
 			logger.trace("getDietaryServices");
 			resolve({});
 		});
@@ -660,124 +668,130 @@ function Beneficiary( ) {
 	 *
 	 * @returns {Promise}
 	 */
-	this.getWarningProfessional = function() {
+	this.getWarningProfessional = function () {
 		var that = this;
-		return new Promise( function( resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			if (!that.warning || !that.warning.source) {
-				resolve( "-" );
+				resolve("-");
 			} else if (that.warning.source === "Home") {
-				resolve( "Home" );
+				resolve("Home");
 			} else {
 				physioDOM.Directory()
 					.then(function (directory) {
-						return directory.getEntryByID( that.warning.source.toString() );
+						return directory.getEntryByID(that.warning.source.toString());
 					})
-					.then( function( professional ) {
-						resolve( professional.name.family+' '+professional.name.given);
+					.then(function (professional) {
+						resolve(professional.name.family + ' ' + professional.name.given);
 					})
-					.catch( function(err) {
+					.catch(function (err) {
 						resolve("-");
 					});
 			}
 		});
 	};
-	
-	this.setWarningStatus = function( status, professionalID ) {
-		logger.trace("setWarningStatus", status, professionalID );
+
+	this.setWarningStatus = function (status, professionalID) {
+		logger.trace("setWarningStatus", status, professionalID);
 		var that = this;
-		return new Promise( function( resolve, reject) {
-			if( !that.warning ) {
-				that.warning = { status: false, source:null, date:null };
+		return new Promise(function (resolve, reject) {
+			if (!that.warning) {
+				that.warning = {status: false, source: null, date: null};
 			}
-			if( status && that.warning.status ) {
+			if (status && that.warning.status) {
 				// a warning is already raised : do nothing
-				resolve( that.warning );
-			} else if( status === true && that.warning.status === false ) {
+				resolve(that.warning);
+			} else if (status === true && that.warning.status === false) {
 				// raise the warning status
 				that.warning.status = true;
 				that.warning.source = professionalID;
 				that.warning.date = moment().toISOString();
 				that.save()
-					.then( resolve( that.warning ))
-					.catch( function(err) {
-						if( err.stack ) { console.log(err.stack); }
+					.then(resolve(that.warning))
+					.catch(function (err) {
+						if (err.stack) {
+							console.log(err.stack);
+						}
 						reject(err);
 					});
-			} else if( status === false && that.warning.status === true ) {
+			} else if (status === false && that.warning.status === true) {
 				// disable the warning status
 				that.warning.status = false;
 				that.warning.source = professionalID;
 				that.warning.date = moment().toISOString();
 				that.save()
-					.then( resolve( that.warning ))
-					.catch( function(err) {
-						if( err.stack ) { console.log(err.stack); }
+					.then(resolve(that.warning))
+					.catch(function (err) {
+						if (err.stack) {
+							console.log(err.stack);
+						}
 						reject(err);
 					});
 			} else {
-				resolve( that.warning );
+				resolve(that.warning);
 			}
 		});
 	};
-	
+
 	/**
 	 * Get Professionals list attached to the beneficiary
-	 * 
+	 *
 	 * @returns {Promise}
 	 */
-	this.getProfessionals = function(jobFilter) {
+	this.getProfessionals = function (jobFilter) {
 		var that = this,
 			proList = [];
-		if( that.professionals === undefined ) {
+		if (that.professionals === undefined) {
 			that.professionals = [];
 		}
-		return new Promise( function(resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("getProfessionals");
 			var count = that.professionals.length;
-			that.professionals.sort( function(a,b) { return b.referent?true:false; });
-			if( !count ) {
-				resolve( [] );
+			that.professionals.sort(function (a, b) {
+				return b.referent ? true : false;
+			});
+			if (!count) {
+				resolve([]);
 			}
 			physioDOM.Directory()
 				.then(function (directory) {
-					that.professionals.forEach( function( item, i ) {
-						directory.getEntryByID( item.professionalID.toString() )
-							.then( function( professional ) {
+					that.professionals.forEach(function (item, i) {
+						directory.getEntryByID(item.professionalID.toString())
+							.then(function (professional) {
 								that.professionals[i] = professional;
 								that.professionals[i].referent = item.referent;
 
-								if(jobFilter && jobFilter.indexOf(that.professionals[i].role) !== -1 ) {
+								if (jobFilter && jobFilter.indexOf(that.professionals[i].role) !== -1) {
 									// && that.professionals[i].active : to filter only active professionnal
 									proList.push(that.professionals[i]);
 								}
 							})
-							.then( function() {
-								if( --count === 0) {
-									if(jobFilter) {
-										resolve( proList );
+							.then(function () {
+								if (--count === 0) {
+									if (jobFilter) {
+										resolve(proList);
 									} else {
-										that.professionals.sort( function(a,b) { 
-											if(b.referent ) {
+										that.professionals.sort(function (a, b) {
+											if (b.referent) {
 												return true;
-											} else if(a.referent) {
+											} else if (a.referent) {
 												return false;
 											} else {
 												return b.name.family < a.name.family ? true : false;
 											}
 										});
-										resolve( that.professionals );
+										resolve(that.professionals);
 									}
 								}
 							})
-							.catch( function(err) {
-								if( --count === 0) {
-									resolve( that.professionals );
+							.catch(function (err) {
+								if (--count === 0) {
+									resolve(that.professionals);
 								}
 							});
 					});
 				})
-				.catch( function(err) {
-					logger.error("error ",err);
+				.catch(function (err) {
+					logger.error("error ", err);
 					reject(err);
 				});
 		});
@@ -788,55 +802,55 @@ function Beneficiary( ) {
 	 *
 	 * @returns {Promise}
 	 */
-	this.getProfessionalsRoleClass = function(roleClass) {
+	this.getProfessionalsRoleClass = function (roleClass) {
 		var that = this,
 			proList = [];
-		
-		return new Promise( function(resolve, reject) {
+
+		return new Promise(function (resolve, reject) {
 			logger.trace("getProfessionalsRoleClass");
-			
+
 			physioDOM.Lists.getListItemsObj("role")
-				.then( function( list ) {
+				.then(function (list) {
 					var keys = Object.keys(list);
-					keys.forEach( function(key) {
+					keys.forEach(function (key) {
 						var item = list[key];
-						if( item.roleClass === roleClass ) {
-							proList.push( item.ref );
+						if (item.roleClass === roleClass) {
+							proList.push(item.ref);
 						}
 					});
 					return that.getProfessionals(proList)
 				})
-				.then( resolve );
+				.then(resolve);
 		});
 	};
 
-	this.hasProfessional = function( professionalID ) {
+	this.hasProfessional = function (professionalID) {
 		var that = this;
-		if( that.professionals === undefined ) {
+		if (that.professionals === undefined) {
 			that.professionals = [];
 		}
-		return new Promise( function(resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("hasProfessional", professionalID);
 			var hasProfessional = false;
-			that.professionals.forEach( function(professional) {
-				if( professional.professionalID === professionalID.toString() ) { 
+			that.professionals.forEach(function (professional) {
+				if (professional.professionalID === professionalID.toString()) {
 					hasProfessional = true;
 				}
 			});
-			resolve( hasProfessional );
+			resolve(hasProfessional);
 		});
 	};
-	
+
 	/**
 	 * Attach a professional to the beneficiary
-	 * 
+	 *
 	 * @param professionalID
 	 * @param referent
 	 * @returns {Promise}
 	 */
-	this.addProfessional = function( professionalID, referent ) {
+	this.addProfessional = function (professionalID, referent) {
 		var that = this;
-		if( !that.professionals ) {
+		if (!that.professionals) {
 			that.professionals = [];
 		}
 		return new Promise(function (resolve, reject) {
@@ -845,29 +859,29 @@ function Beneficiary( ) {
 				.then(function (directory) {
 					return directory.getEntryByID(professionalID);
 				})
-				.then( function( professional ) {
+				.then(function (professional) {
 					// check if professional is already added
 					var indx = -1;
-					that.professionals.forEach( function( item, i ) {
-						if ( item.professionalID.toString() === professional._id.toString() ) {
+					that.professionals.forEach(function (item, i) {
+						if (item.professionalID.toString() === professional._id.toString()) {
 							indx = i;
 						}
 					});
-					if(indx !== -1) {
+					if (indx !== -1) {
 						that.professionals[indx] = {professionalID: professional._id, referent: referent || false};
 					} else {
 						that.professionals.push({professionalID: professional._id, referent: referent || false});
 					}
 					return that.save();
 				})
-				.then( function() {
+				.then(function () {
 					return that.getProfessionals();
 				})
-				.then( function(professionals) {
+				.then(function (professionals) {
 					resolve(professionals);
 				})
-				.catch( function(err) {
-					logger.error("error ",err);
+				.catch(function (err) {
+					logger.error("error ", err);
 					reject(err);
 				});
 		});
@@ -876,64 +890,64 @@ function Beneficiary( ) {
 	/**
 	 * Attach an array of professionals to the beneficiary
 	 *
-	 * @param professionals {array} array of objects 
+	 * @param professionals {array} array of objects
 	 *        { professionalID: xxxx, referent: true|false }`
 	 * @param referent
 	 * @returns {Promise}
 	 */
-	this.addProfessionals = function( professionals ) {
+	this.addProfessionals = function (professionals) {
 		var that = this;
-		if( !that.professionals ) {
+		if (!that.professionals) {
 			that.professionals = [];
 		}
-		
+
 		return new Promise(function (resolve, reject) {
 			logger.trace("addProfessionals ");
 			physioDOM.Directory()
 				.then(function (directory) {
-					function check( professionalObj ) {
+					function check(professionalObj) {
 						return new Promise(function (resolve, reject) {
 							directory.getEntryByID(professionalObj.professionalID)
-								.then(function( professional) {
+								.then(function (professional) {
 									resolve({
 										professionalID: professional._id,
-										referent: professionalObj.referent && professionalObj.referent===true?true:false
+										referent      : professionalObj.referent && professionalObj.referent === true ? true : false
 									});
 								})
-								.catch( function(err) {
+								.catch(function (err) {
 									reject(err);
-								} );
+								});
 						});
 					}
-					
+
 					return RSVP.all(professionals.map(check));
 				})
-				.then( function( professionals ) {
+				.then(function (professionals) {
 					that.professionals = professionals;
 					return that.save();
 				})
-				.then( function() {
+				.then(function () {
 					return that.getProfessionals();
 				})
-				.then( function(professionals) {
+				.then(function (professionals) {
 					resolve(professionals);
 				})
-				.catch( function(err) {
-					logger.error("error ",err);
+				.catch(function (err) {
+					logger.error("error ", err);
 					reject(err);
 				});
 		});
 	};
-	
+
 	/**
 	 * remove a professional from a beneficiary
-	 * 
+	 *
 	 * @param professionalID
 	 * @returns {Promise}
 	 */
-	this.delProfessional = function( professionalID ) {
+	this.delProfessional = function (professionalID) {
 		var that = this;
-		if( !that.professionals ) {
+		if (!that.professionals) {
 			that.professionals = [];
 		}
 		return new Promise(function (resolve, reject) {
@@ -945,7 +959,7 @@ function Beneficiary( ) {
 				.then(function (professional) {
 					// check if professional is already added
 					var indx = -1;
-					
+
 					that.professionals.forEach(function (item, i) {
 						if (item.professionalID.toString() === professional._id.toString()) {
 							indx = i;
@@ -972,25 +986,25 @@ function Beneficiary( ) {
 					logger.error("error ", err);
 					reject(err);
 				});
-		});	
+		});
 	};
 
 	/**
 	 * Not implemented
-	 * 
+	 *
 	 * @returns {Promise}
 	 */
-	this.getContacts = function() {
-		return new Promise( function(resolve, reject) {
+	this.getContacts = function () {
+		return new Promise(function (resolve, reject) {
 			logger.trace("getContact");
 		});
 	};
 
 	/**
 	 * on resolve return the list of dataRecords of the current beneficiary
-	 * 
+	 *
 	 * dataRecords are sorted by default by date
-	 * 
+	 *
 	 * @param pg
 	 * @param offset
 	 * @param sort
@@ -998,72 +1012,72 @@ function Beneficiary( ) {
 	 * @param filter
 	 * @returns {Promise}
 	 */
-	this.getDataRecords = function(pg, offset, sort, sortDir, filter) {
+	this.getDataRecords = function (pg, offset, sort, sortDir, filter) {
 		var that = this;
-		return new Promise( function(resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("getDataRecords");
-			physioDOM.DataRecords( that._id )
-				.then( function( datarecords ) {
-					resolve( datarecords.getList(pg, offset, sort, sortDir, filter) );
+			physioDOM.DataRecords(that._id)
+				.then(function (datarecords) {
+					resolve(datarecords.getList(pg, offset, sort, sortDir, filter));
 				});
 		});
 	};
 
 	/**
 	 * on resolve return a complete DataRecord for display
-	 * 
+	 *
 	 * @param dataRecordID
 	 * @returns {Promise}
 	 */
-	this.getCompleteDataRecordByID = function( dataRecordID ) {
+	this.getCompleteDataRecordByID = function (dataRecordID) {
 		var that = this;
-		
-		return new Promise( function(resolve, reject) {
+
+		return new Promise(function (resolve, reject) {
 			logger.trace("getCompleteDataRecordByID", dataRecordID);
-			physioDOM.DataRecords( that._id )
-				.then( function (datarecords ) {
-					return datarecords.getByID( new ObjectID(dataRecordID) );
+			physioDOM.DataRecords(that._id)
+				.then(function (datarecords) {
+					return datarecords.getByID(new ObjectID(dataRecordID));
 				})
-				.then( function( datarecord ) {
-					resolve( datarecord.getComplete());
+				.then(function (datarecord) {
+					resolve(datarecord.getComplete());
 				})
-				.catch( function(err) {
+				.catch(function (err) {
 					logger.error("error ", err);
 					reject(err);
 				});
 		});
 	};
 
-	this.getDataRecordByID = function( dataRecordID ) {
+	this.getDataRecordByID = function (dataRecordID) {
 		var that = this;
 
-		return new Promise( function(resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("getDataRecordByID", dataRecordID);
-			physioDOM.DataRecords( that._id )
-				.then( function (datarecords ) {
-					return datarecords.getByID( new ObjectID(dataRecordID) );
+			physioDOM.DataRecords(that._id)
+				.then(function (datarecords) {
+					return datarecords.getByID(new ObjectID(dataRecordID));
 				})
-				.then( resolve )
-				.catch( function(err) {
+				.then(resolve)
+				.catch(function (err) {
 					logger.error("error ", err);
 					reject(err);
 				});
 		});
 	};
 
-	this.deleteDataRecordByID = function( dataRecordID ) {
-		return new Promise( function(resolve, reject) {
+	this.deleteDataRecordByID = function (dataRecordID) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("deleteDataRecordByID", dataRecordID);
-			var search = { _id: new ObjectID( dataRecordID ) };
+			var search = {_id: new ObjectID(dataRecordID)};
 			physioDOM.db.collection("dataRecords").remove(search, function (err, nb) {
 				if (err) {
 					reject(err);
 				}
-				physioDOM.db.collection("dataRecordItems").remove({ dataRecordID:new ObjectID( dataRecordID ) }, function (err, nbItems) {
+				physioDOM.db.collection("dataRecordItems").remove({dataRecordID: new ObjectID(dataRecordID)}, function (err, nbItems) {
 					if (err) {
 						reject(err);
 					}
-					physioDOM.db.collection("events").remove( { ref: new ObjectID( dataRecordID ) }, function (err, nbItems) {
+					physioDOM.db.collection("events").remove({ref: new ObjectID(dataRecordID)}, function (err, nbItems) {
 						if (err) {
 							reject(err);
 						}
@@ -1073,71 +1087,71 @@ function Beneficiary( ) {
 			});
 		});
 	};
-	
+
 	/**
 	 * Create a dataRecord for the current beneficiary from the given dataRecordObj
-	 * 
+	 *
 	 * on resolve return the full dataRecord Object
-	 * 
+	 *
 	 * @param dataRecordObj
 	 * @returns {Promise}
 	 */
-	this.createDataRecord = function( dataRecordObj, professionalID) {
+	this.createDataRecord = function (dataRecordObj, professionalID) {
 		var that = this;
-		
-		return new Promise( function(resolve, reject) {
+
+		return new Promise(function (resolve, reject) {
 			logger.trace("createDataRecord", dataRecordObj, professionalID);
 			var dataRecord = new DataRecord();
 			dataRecord.setup(that._id, dataRecordObj, professionalID)
-				.then(function ( _dataRecord ) {
+				.then(function (_dataRecord) {
 					return _dataRecord.getComplete();
 				})
-				.then( function(_dataRecord) {
+				.then(function (_dataRecord) {
 					dataRecord = _dataRecord;
-					console.log( dataRecord );
+					console.log(dataRecord);
 					return that.createEvent('Data record', 'create', new ObjectID(dataRecord._id), professionalID);
 				})
-				.then(function() {
+				.then(function () {
 					return that.getThreshold();
 				})
-				.then( function(thresholds) {
+				.then(function (thresholds) {
 					var outOfRange = false;
-					dataRecord.items.items.forEach( function( item ) {
-						if( thresholds[item.text] ) {
-							if( thresholds[item.text].min && item.value < thresholds[item.text].min ) {
-								console.log( "overtake min", item.text);
+					dataRecord.items.items.forEach(function (item) {
+						if (thresholds[item.text]) {
+							if (thresholds[item.text].min && item.value < thresholds[item.text].min) {
+								console.log("overtake min", item.text);
 								outOfRange = true;
 							}
-							if( thresholds[item.text].max && item.value > thresholds[item.text].max ) {
-								console.log( "overtake max", item.text);
+							if (thresholds[item.text].max && item.value > thresholds[item.text].max) {
+								console.log("overtake max", item.text);
 								outOfRange = true;
 							}
 						}
 					});
-					if( outOfRange ) {
+					if (outOfRange) {
 						return that.createEvent('Data record', 'overtake', new ObjectID(dataRecord._id), professionalID);
 					} else {
 						return;
 					}
 				})
-				.then( function() {
-					if( physioDOM.config.queue ) {
+				.then(function () {
+					if (physioDOM.config.queue) {
 						return that.pushLastDHDFFQ();
 					} else {
 						return false;
 					}
 				})
-				.then( function() {
-					if( physioDOM.config.queue ) {
+				.then(function () {
+					if (physioDOM.config.queue) {
 						return that.pushHistory();
 					} else {
 						return false;
 					}
 				})
-				.then( function() {
+				.then(function () {
 					return that.getCompleteDataRecordByID(dataRecord._id);
 				})
-				.then( function() {
+				.then(function () {
 					return new Promise(function (resolve, reject) {
 						var log = {
 							subject   : that._id,
@@ -1156,11 +1170,11 @@ function Beneficiary( ) {
 				.catch(reject);
 		});
 	};
-	
-	this.getThreshold = function() {
+
+	this.getThreshold = function () {
 		var thresholdResult = {};
 		var that = this;
-		return new Promise( function(resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("getThreshold", that._id);
 			dbPromise.findOne(physioDOM.db, "lists", {name: "parameters"}, {"items.ref": 1, "items.threshold": 1})
 				.then(function (thresholds) {
@@ -1187,16 +1201,16 @@ function Beneficiary( ) {
 	 * @param updatedThresholds
 	 * @returns {Promise}
 	 */
-	this.setThresholds = function( updatedThresholds ) {
+	this.setThresholds = function (updatedThresholds) {
 		var that = this;
-		
-		return new Promise( function(resolve, reject) {
+
+		return new Promise(function (resolve, reject) {
 			logger.trace("setThreshold", that._id);
-			
+
 			that.getThreshold()
-				.then( function( thresholdResult ) {
-					if( that.threshold === undefined ) { 
-						that.threshold = {}; 
+				.then(function (thresholdResult) {
+					if (that.threshold === undefined) {
+						that.threshold = {};
 					}
 					for (var prop in updatedThresholds) {
 						if (thresholdResult.hasOwnProperty(prop)) {
@@ -1209,55 +1223,55 @@ function Beneficiary( ) {
 					}
 					return that.save();
 				})
-				.then( function() {
+				.then(function () {
 					return that.getThreshold();
 				})
-				.then( function( thresholdResult) {
+				.then(function (thresholdResult) {
 					resolve(thresholdResult);
 				})
-				.catch( function(err) {
+				.catch(function (err) {
 					reject(err);
 				});
 		});
 	};
-	
-	this.getMessages = function( pg, offset, sort, sortDir, filter ) {
+
+	this.getMessages = function (pg, offset, sort, sortDir, filter) {
 		logger.trace("getMessages");
 
-		var messages = new Messages( this._id );
-		return messages.list( pg, offset, sort, sortDir, filter );
+		var messages = new Messages(this._id);
+		return messages.list(pg, offset, sort, sortDir, filter);
 	};
 
 	/**
 	 * Create a message to home
-	 * 
+	 *
 	 * @param professionalID
 	 * @param msg
 	 */
-	this.createMessage = function( session, professionalID, msg ) {
+	this.createMessage = function (session, professionalID, msg) {
 		logger.trace("createMessage");
 
-		var messages = new Messages( this._id ),
+		var messages = new Messages(this._id),
 			that = this;
 
-		return messages.create( session, professionalID, msg ).then(function(message) {
+		return messages.create(session, professionalID, msg).then(function (message) {
 			that.createEvent('Message', 'create', message._id, professionalID);
 		});
 	};
 
-	this.createEvent = function(service, operation, elementID, senderID) {
+	this.createEvent = function (service, operation, elementID, senderID) {
 		logger.trace("create event", service);
 		var events = new Events(this._id);
 		var that = this;
 
 		return events.setup(service, operation, elementID, senderID)
-			.then(function(eventObj) {
+			.then(function (eventObj) {
 				that.lastEvent = eventObj.datetime;
 				that.save();
 			});
 	};
 
-	this.getGraphDataList = function( lang ) {
+	this.getGraphDataList = function (lang) {
 		var that = this;
 
 		return new Promise(function (resolve, reject) {
@@ -1270,13 +1284,13 @@ function Beneficiary( ) {
 			};
 
 			var parameters;
-			
-			var reduceFunction = function ( curr, result ) {
-				if(result.lastReport < curr.datetime) {
+
+			var reduceFunction = function (curr, result) {
+				if (result.lastReport < curr.datetime) {
 					result.lastReport = curr.datetime;
 					result.lastValue = curr.value;
 				}
-				if(!result.firstReport || result.firstReport > curr.datetime) {
+				if (!result.firstReport || result.firstReport > curr.datetime) {
 					result.firstReport = curr.datetime;
 					result.firstValue = curr.value;
 				}
@@ -1302,14 +1316,14 @@ function Beneficiary( ) {
 			var promises = ["parameters", "symptom", "questionnaire"].map(function (listName) {
 				return physioDOM.Lists.getList(listName);
 			});
-			
+
 			var thresholds;
 			that.getThreshold()
-				.then( function(_thresholds) {
+				.then(function (_thresholds) {
 					thresholds = _thresholds;
 					return physioDOM.Lists.getListItemsObj("parameters");
 				})
-				.then( function(_parameters) {
+				.then(function (_parameters) {
 					parameters = _parameters;
 					return physioDOM.Lists.getList("units");
 				})
@@ -1325,8 +1339,8 @@ function Beneficiary( ) {
 
 								labels[ref] = lists[i].items[y].label[lang];
 
-								for(var z in units.items) {
-									if(units.items[z].ref === lists[i].items[y].units) {
+								for (var z in units.items) {
+									if (units.items[z].ref === lists[i].items[y].units) {
 										unitsData[ref] = units.items[z].label[lang];
 									}
 								}
@@ -1338,18 +1352,18 @@ function Beneficiary( ) {
 							if (err) {
 								reject(err);
 							} else {
-								RSVP.all( results.map(function (result) {
-											result.name = labels[result.text] || result.text;
-											result.unit = unitsData[result.text] || '';
-											if (thresholds[result.text]) {
-												result.threshold = thresholds[result.text];
-											}
-											return result;
-										})
-									)
-									.then( function(results) {
-										results.forEach( function( item ) {
-											if( parameters[item.text] ) {
+								RSVP.all(results.map(function (result) {
+										result.name = labels[result.text] || result.text;
+										result.unit = unitsData[result.text] || '';
+										if (thresholds[result.text]) {
+											result.threshold = thresholds[result.text];
+										}
+										return result;
+									})
+								)
+									.then(function (results) {
+										results.forEach(function (item) {
+											if (parameters[item.text]) {
 												item.category = parameters[item.text].category;
 											}
 										});
@@ -1373,23 +1387,23 @@ function Beneficiary( ) {
 
 										resolve(graphList);
 									})
-									.catch( reject );
+									.catch(reject);
 							}
 						});
 					});
 				})
-				.catch( reject );
+				.catch(reject);
 		});
 	};
-	
-	
-	this.getHistoryDataList = function( lang ) {
+
+
+	this.getHistoryDataList = function (lang) {
 		var that = this;
 
 		return new Promise(function (resolve, reject) {
 			logger.trace("getHistoricDataList", that._id);
 			var parameters;
-			
+
 			var graphList = {
 				"General"      : [],
 				"HDIM"         : [],
@@ -1397,32 +1411,32 @@ function Beneficiary( ) {
 				"questionnaire": []
 			};
 
-			var reduceFunction = function ( curr, result ) {
-				if( !result.history.length ) {
-					result.history.push( { datetime: curr.datetime, value: curr.value} );
+			var reduceFunction = function (curr, result) {
+				if (!result.history.length) {
+					result.history.push({datetime: curr.datetime, value: curr.value});
 				} else {
 					var done = false;
-					for( var i= 0, l = result.history.length; i < l; i++ ) {
-						if ( result.history[i].datetime < curr.datetime ) {
-							result.history.splice(i,0, { datetime: curr.datetime, value: curr.value} );
+					for (var i = 0, l = result.history.length; i < l; i++) {
+						if (result.history[i].datetime < curr.datetime) {
+							result.history.splice(i, 0, {datetime: curr.datetime, value: curr.value});
 							done = true;
 							break;
 						}
 					}
-					if( done === false && result.history.length < 5) {
-						result.history.push( { datetime: curr.datetime, value: curr.value} );
+					if (done === false && result.history.length < 5) {
+						result.history.push({datetime: curr.datetime, value: curr.value});
 					}
-					if( result.history.length > 5 ) {
-						result.history = result.history.slice(0,5);
+					if (result.history.length > 5) {
+						result.history = result.history.slice(0, 5);
 					}
 				}
 			};
 
 			var groupRequest = {
-				key    : {text: 1, category: 1, rank:1, precision:1, TVLabel:1 },
+				key    : {text: 1, category: 1, rank: 1, precision: 1, TVLabel: 1},
 				cond   : {subject: that._id},
 				reduce : reduceFunction.toString(),
-				initial: { history: [] }
+				initial: {history: []}
 			};
 
 			function compareItems(a, b) {
@@ -1441,11 +1455,11 @@ function Beneficiary( ) {
 
 			var thresholds;
 			that.getThreshold()
-				.then( function(_thresholds) {
+				.then(function (_thresholds) {
 					thresholds = _thresholds;
 					return physioDOM.Lists.getListItemsObj("parameters");
 				})
-				.then( function(_parameters) {
+				.then(function (_parameters) {
 					parameters = _parameters;
 					return physioDOM.Lists.getList("units");
 				})
@@ -1460,13 +1474,13 @@ function Beneficiary( ) {
 						for (var i = 0; i < lists.length; i++) {
 							for (var y in lists[i].items) { // jshint ignore:line
 								var ref = lists[i].items[y].ref;
-								
-								labels[ref] = lists[i].items[y].label[lang  || physioDOM.lang ] || lists[i].items[y].label.en;
+
+								labels[ref] = lists[i].items[y].label[lang || physioDOM.lang] || lists[i].items[y].label.en;
 								ranks[ref] = lists[i].items[y].rank || '';
 								TVLabels[ref] = lists[i].items[y].TVLabel || '';
 								precisions[ref] = lists[i].items[y].precision ? 1 : 0;
-								for(var z in units.items) {
-									if(units.items[z].ref === lists[i].items[y].units) {
+								for (var z in units.items) {
+									if (units.items[z].ref === lists[i].items[y].units) {
 										unitsData[ref] = units.items[z].label[lang || physioDOM.lang] || units.items[z].label.en;
 									}
 								}
@@ -1477,67 +1491,67 @@ function Beneficiary( ) {
 							if (err) {
 								reject(err);
 							} else {
-								RSVP.all( results.map(function (result) {
+								RSVP.all(results.map(function (result) {
 										result.name = labels[result.text] || result.text;
 										result.unit = unitsData[result.text] || '';
 										result.rank = ranks[result.text];
 										result.TVLabel = TVLabels[result.text];
 										result.precision = precisions[result.text];
-										
+
 										if (thresholds[result.text]) {
 											result.threshold = thresholds[result.text];
 										}
 										return result;
 									})
 								)
-								.then( function(results) {
-									results.forEach( function( item ) {
-										if( parameters[item.text] ) {
-											item.category = parameters[item.text].category;
-										}
-									});
-									// console.log("->", results);
-									
-									graphList.General = results.filter(function (item) {
-										return item.category === "General";
-									});
-									graphList.HDIM = results.filter(function (item) {
-										return item.category === "HDIM";
-									});
-									graphList.symptom = results.filter(function (item) {
-										return item.category === "symptom";
-									});
-									graphList.questionnaire = results.filter(function (item) {
-										return item.category === "questionnaire";
-									});
+									.then(function (results) {
+										results.forEach(function (item) {
+											if (parameters[item.text]) {
+												item.category = parameters[item.text].category;
+											}
+										});
+										// console.log("->", results);
 
-									graphList.General.sort(compareItems);
-									graphList.HDIM.sort(compareItems);
-									graphList.symptom.sort(compareItems);
-									graphList.questionnaire.sort(compareItems);
-										
-									resolve(graphList);
-								})
-								.catch( function(err) {
-									if(err.stack) {
-										console.log(err.stack);
-									} else {
-										console.log(err);
-									}
-									reject(err);
-								});
+										graphList.General = results.filter(function (item) {
+											return item.category === "General";
+										});
+										graphList.HDIM = results.filter(function (item) {
+											return item.category === "HDIM";
+										});
+										graphList.symptom = results.filter(function (item) {
+											return item.category === "symptom";
+										});
+										graphList.questionnaire = results.filter(function (item) {
+											return item.category === "questionnaire";
+										});
+
+										graphList.General.sort(compareItems);
+										graphList.HDIM.sort(compareItems);
+										graphList.symptom.sort(compareItems);
+										graphList.questionnaire.sort(compareItems);
+
+										resolve(graphList);
+									})
+									.catch(function (err) {
+										if (err.stack) {
+											console.log(err.stack);
+										} else {
+											console.log(err);
+										}
+										reject(err);
+									});
 							}
 						});
 					});
 				})
-				.catch( reject );
+				.catch(reject);
 		});
 	};
-	
-	this.getGraphData = function(category, paramName, startDate, stopDate, session ) {
+
+	this.getGraphData = function (category, paramName, startDate, stopDate, session) {
 		var graphData = {text: paramName, data: []};
 		var that = this;
-		
+
 		if (!stopDate) {
 			graphData.stopDate = moment().utc();
 			graphData.stopDate.hours(23);
@@ -1546,8 +1560,8 @@ function Beneficiary( ) {
 			graphData.stopDate = moment(stopDate);
 			graphData.stopDate.hours(23);
 			graphData.stopDate.minutes(59);
-			if( !graphData.stopDate.isValid() ) {
-				throw { code:405, message: "stop date is invalid"};
+			if (!graphData.stopDate.isValid()) {
+				throw {code: 405, message: "stop date is invalid"};
 			}
 		}
 		if (!startDate) {
@@ -1557,17 +1571,17 @@ function Beneficiary( ) {
 			graphData.startDate = moment(startDate);
 			graphData.startDate.hours(0);
 			graphData.startDate.minutes(0);
-			if( !graphData.startDate.isValid() ) {
-				throw { code:405, message: "start date is invalid"};
+			if (!graphData.startDate.isValid()) {
+				throw {code: 405, message: "start date is invalid"};
 			}
 		}
-		
-		if(graphData.startDate.valueOf() >=  graphData.stopDate.valueOf() ) {
-			throw { code:405, message: "start date must be before stop date"};
+
+		if (graphData.startDate.valueOf() >= graphData.stopDate.valueOf()) {
+			throw {code: 405, message: "start date must be before stop date"};
 		}
 
 		// to get the label we need to know from which list comes the parameter
-		if (["General", "HDIM","measures"].indexOf(category) !== -1) {
+		if (["General", "HDIM", "measures"].indexOf(category) !== -1) {
 			category = "parameters";
 		}
 
@@ -1577,20 +1591,20 @@ function Beneficiary( ) {
 					.then(function (list) {
 						return list.getItem(paramName);
 					})
-					.then(function(param) {
+					.then(function (param) {
 						physioDOM.Lists.getList("units")
-							.then(function(units) {
+							.then(function (units) {
 								return units.getItem(param.units);
 							})
-							.then( function(unit) {
-								if( unit.label[session.lang || "en"] === undefined ) {
+							.then(function (unit) {
+								if (unit.label[session.lang || "en"] === undefined) {
 									param.unitLabel = unit.ref;
 								} else {
 									param.unitLabel = unit.label[session.lang || "en"];
 								}
 								resolve(param);
 							})
-							.catch(function() {
+							.catch(function () {
 								param.unitLabel = "";
 								resolve(param);
 							});
@@ -1598,12 +1612,12 @@ function Beneficiary( ) {
 					.catch(reject);
 			});
 		}
-		
+
 		return new Promise(function (resolve, reject) {
 			logger.trace("getGraphData", paramName, graphData.startDate, graphData.stopDate);
-			
-			paramPromise( category, paramName )
-				.then( function( param ) {
+
+			paramPromise(category, paramName)
+				.then(function (param) {
 					graphData.label = param.label[session.lang || "en"] || paramName;
 					graphData.unit = param.unitLabel;
 					graphData.unitRef = param.units;
@@ -1617,111 +1631,111 @@ function Beneficiary( ) {
 					};
 					physioDOM.db.collection("dataRecordItems").find(search).sort({datetime: 1}).toArray(function (err, results) {
 						results.forEach(function (result) {
-							graphData.data.push([ moment(result.datetime).valueOf(), result.value]);
+							graphData.data.push([moment(result.datetime).valueOf(), result.value]);
 						});
 						resolve(graphData);
 					});
 				})
-				.catch( reject );
+				.catch(reject);
 		});
 	};
 
 
 	/**
 	 * getDataProg
-	 * 
+	 *
 	 * @returns {Promise}
 	 */
-	this.getDataProg = function() {
+	this.getDataProg = function () {
 		var that = this;
 
-		return new Promise( function(resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("getDataProg", that._id);
-			resolve( {} );
+			resolve({});
 		});
 	};
 
 	/**
 	 * get the data prescription for a given category
-	 * 
+	 *
 	 * category is one of "General","HDIM","symptom","questionnaire"
-	 * 
+	 *
 	 * the Promise, if succeed, return an array of all data prescription.
-	 * 
+	 *
 	 * @param category
 	 * @returns {*}
 	 */
-	this.getDataProgCategory = function( category ) {
+	this.getDataProgCategory = function (category) {
 		var that = this;
-		logger.trace("getDataProgCategory", that._id, category );
-		
-		var dataProg = new DataProg( that._id );
-		return dataProg.getCategory( category );
+		logger.trace("getDataProgCategory", that._id, category);
+
+		var dataProg = new DataProg(that._id);
+		return dataProg.getCategory(category);
 	};
 
 	/**
 	 * add a data prescription`defined by the given `prescription` object
 	 *
-	 * @param prescription 
+	 * @param prescription
 	 * @returns {Promise}
 	 */
-	this.setDataProg = function( prescription, source ) {
+	this.setDataProg = function (prescription, source) {
 		var that = this;
-		logger.trace("setDataProg", that._id, prescription.ref );
+		logger.trace("setDataProg", that._id, prescription.ref);
 
-		var dataProgItem = new DataProgItem( that._id );
-		return dataProgItem.setup( prescription, source );
+		var dataProgItem = new DataProgItem(that._id);
+		return dataProgItem.setup(prescription, source);
 	};
-	
-	this.delDataProg = function( dataProgItemID ) {
+
+	this.delDataProg = function (dataProgItemID) {
 		var that = this;
-		logger.trace("delDataProg", that._id, dataProgItemID );
+		logger.trace("delDataProg", that._id, dataProgItemID);
 
-		var dataProg = new DataProg( that._id );
-		return dataProg.remove( dataProgItemID );
+		var dataProg = new DataProg(that._id);
+		return dataProg.remove(dataProgItemID);
 	};
-	
-	this.questionnairePlan = function() {
-		logger.trace("questionnairePlan", this._id );
-		return  new QuestionnairePlan( this._id );
+
+	this.questionnairePlan = function () {
+		logger.trace("questionnairePlan", this._id);
+		return new QuestionnairePlan(this._id);
 	};
 
 	/**
 	 * Dietary Plan
 	 */
 
-	this.createDietaryPlan = function( dietaryPlanObj, professionalID ) {
+	this.createDietaryPlan = function (dietaryPlanObj, professionalID) {
 		var that = this;
-		return new Promise( function(resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("createDietaryPlan");
 			var dietaryPlan = new DietaryPlan(new ObjectID(that._id));
 			dietaryPlan.setup(that._id, dietaryPlanObj, professionalID)
-				.then(function(item) {
-					that.createEvent("Dietary plan", item.count?"update":"create", that._id, professionalID);
+				.then(function (item) {
+					that.createEvent("Dietary plan", item.count ? "update" : "create", that._id, professionalID);
 				})
-				.then( resolve )
+				.then(resolve)
 				.catch(reject);
 		});
 	};
 
-	this.getDietaryPlan = function() {
+	this.getDietaryPlan = function () {
 		var that = this;
 
-		return new Promise( function(resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("getDietaryPlan");
 			var dietaryPlan = new DietaryPlan(new ObjectID(that._id));
 			dietaryPlan.getLastOne()
-				.then( resolve )
-				.catch( function(err) {
+				.then(resolve)
+				.catch(function (err) {
 					logger.error("error ", err);
 					reject(err);
 				});
 		});
 	};
 
-	this.getDietaryPlanList = function(pg, offset, sort, sortDir, filter) {
+	this.getDietaryPlanList = function (pg, offset, sort, sortDir, filter) {
 		var that = this;
-		return new Promise( function(resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("getDietaryPlanList");
 			var dietaryPlan = new DietaryPlan(new ObjectID(that._id));
 			resolve(dietaryPlan.getItems(pg, offset, sort, sortDir, filter));
@@ -1732,57 +1746,57 @@ function Beneficiary( ) {
 	 * Physical Plan
 	 */
 
-	this.createPhysicalPlan = function( physicalPlanObj, professionalID ) {
+	this.createPhysicalPlan = function (physicalPlanObj, professionalID) {
 		var that = this;
-		return new Promise( function(resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("createPhysicalPlan");
 			var physicalPlan = new PhysicalPlan(new ObjectID(that._id));
 			physicalPlan.setup(that._id, physicalPlanObj, professionalID)
-				.then(function(item) {
-					that.createEvent("Physical plan",item.count?"update":"create", that._id, professionalID);
+				.then(function (item) {
+					that.createEvent("Physical plan", item.count ? "update" : "create", that._id, professionalID);
 				})
 				.then(resolve)
 				.catch(reject);
 		});
 	};
 
-	this.getPhysicalPlan = function() {
+	this.getPhysicalPlan = function () {
 		var that = this;
 
-		return new Promise( function(resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("getPhysicalPlan");
 			var physicalPlan = new PhysicalPlan(new ObjectID(that._id));
 			physicalPlan.getLastOne()
-				.then( resolve )
-				.catch( function(err) {
+				.then(resolve)
+				.catch(function (err) {
 					logger.error("error ", err);
 					reject(err);
 				});
 		});
 	};
 
-	this.getPhysicalPlanList = function(pg, offset, sort, sortDir, filter) {
+	this.getPhysicalPlanList = function (pg, offset, sort, sortDir, filter) {
 		var that = this;
-		return new Promise( function(resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("getPhysicalPlanList");
 			var physicalPlan = new PhysicalPlan(new ObjectID(that._id));
 			resolve(physicalPlan.getItems(pg, offset, sort, sortDir, filter));
 		});
 	};
 
-	this.getEventList = function(pg, offset, sort, sortDir, filter) {
+	this.getEventList = function (pg, offset, sort, sortDir, filter) {
 		var that = this;
-		return new Promise( function(resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("getEventList");
 			var events = new Events(new ObjectID(that._id));
 			resolve(events.getItems(pg, offset, sort, sortDir, filter));
 		});
 	};
 
-	function pushMeasure( queue, hhr, units, parameters, measures, force ) {
-		force = force?force:false;
-		
-		return new Promise( function(resolve,reject) {
+	function pushMeasure(queue, hhr, units, parameters, measures, force) {
+		force = force ? force : false;
+
+		return new Promise(function (resolve, reject) {
 			// logger.trace("pushMeasure", force, measures);
 			var leaf = "hhr[" + hhr + "].measures[" + measures.datetime + "]";
 			physioDOM.db.collection("agendaMeasure").findOne({
@@ -1840,9 +1854,9 @@ function Beneficiary( ) {
 						}
 					}
 				});
-				
+
 				function postMsg(msg) {
-					return new Promise( function( resolve, reject ) {
+					return new Promise(function (resolve, reject) {
 						queue.postMsg(msg)
 							.then(function () {
 								var data = {
@@ -1856,9 +1870,9 @@ function Beneficiary( ) {
 							});
 					});
 				}
-				
+
 				function delMsg() {
-					return new Promise( function( resolve, reject ) {
+					return new Promise(function (resolve, reject) {
 						queue.delMsg([{branch: leaf}])
 							.then(function () {
 								var data = {
@@ -1871,21 +1885,21 @@ function Beneficiary( ) {
 							});
 					});
 				}
-				
+
 				if (hasMeasure) {
-					if( doc ) {
-						if(JSON.stringify(doc.items) === JSON.stringify(msg) && !force ) {
+					if (doc) {
+						if (JSON.stringify(doc.items) === JSON.stringify(msg) && !force) {
 							resolve([]);
 						} else {
 							delMsg()
-								.then( function() {
+								.then(function () {
 									return postMsg(msg);
 								})
-								.then( resolve );
+								.then(resolve);
 						}
 					} else {
 						postMsg(msg)
-							.then( resolve );
+							.then(resolve);
 					}
 				} else {
 					resolve([]);
@@ -1896,30 +1910,33 @@ function Beneficiary( ) {
 
 	/**
 	 * remove from agendaMeasure all measures that are not in measures
-	 * 
+	 *
 	 * @param queue    the queue object
 	 * @param hhr      the current beneficiary
 	 * @param measures the current measures array
 	 * @returns {*|RSVP.Promise}
 	 */
 	function removeMeasures(queue, hhr, measures) {
-		return new Promise( function(resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("removeMeasures");
 			var datetimes = [];
-			measures.forEach( function( measure ) {
-				datetimes.push( measure.datetime );
+			measures.forEach(function (measure) {
+				datetimes.push(measure.datetime);
 			});
-			var search = { subject: hhr, datetime: { '$nin': datetimes, '$gt': moment().hour(12).minute(0).second(0).unix() } };
-			physioDOM.db.collection("agendaMeasure").find( search ).toArray( function(err, items ) {
-				if( !items.length ) {
+			var search = {
+				subject : hhr,
+				datetime: {'$nin': datetimes, '$gt': moment().hour(12).minute(0).second(0).unix()}
+			};
+			physioDOM.db.collection("agendaMeasure").find(search).toArray(function (err, items) {
+				if (!items.length) {
 					resolve();
 				} else {
-					logger.info("to remove", items );
-					var promises = items.map( function(item) {
-						return new Promise( function(done, reject) {
+					logger.info("to remove", items);
+					var promises = items.map(function (item) {
+						return new Promise(function (done, reject) {
 							var leaf = "hhr[" + hhr + "].measures[" + item.datetime + "]";
 							queue.delMsg([{branch: leaf}])
-								.then( function() {
+								.then(function () {
 									physioDOM.db.collection("agendaMeasure").remove(item, function (err, nb) {
 										done();
 									});
@@ -1927,35 +1944,35 @@ function Beneficiary( ) {
 						});
 					});
 					RSVP.all(promises)
-						.then( resolve );
+						.then(resolve);
 				}
 			});
 		});
 	}
-	
+
 	/**
 	 * get the measure Plan and push it to the box
-	 * 
+	 *
 	 * @param date
 	 * @returns {$$rsvp$Promise$$default|RSVP.Promise|*|l|Dn}
 	 */
-	this.getMeasurePlan = function( force ) {
+	this.getMeasurePlan = function (force) {
 		var queue = new Queue(this._id);
-		
+
 		var today = moment().hour(12).minute(0).second(0);
-		var endDate = moment().add(physioDOM.config.duration,'d').hour(12).minute(0).second(0);
-		logger.trace("getMeasurePlan", this._id );
-		logger.debug( "MeasurePlan from "+today.toISOString()+" to "+endDate.toISOString());
-		var dataProg = new DataProg( this._id );
+		var endDate = moment().add(physioDOM.config.duration, 'd').hour(12).minute(0).second(0);
+		logger.trace("getMeasurePlan", this._id);
+		logger.debug("MeasurePlan from " + today.toISOString() + " to " + endDate.toISOString());
+		var dataProg = new DataProg(this._id);
 		var msgs = [];
 		var that = this;
 
-		moment.locale( physioDOM.lang === "en"?"en-gb":physioDOM.lang );
-		
-		return new Promise( function(resolve, reject) {
-			
-			var promises = ["General","HDIM"].map(function (category) {
-				return dataProg.getCategory( category );
+		moment.locale(physioDOM.lang === "en" ? "en-gb" : physioDOM.lang);
+
+		return new Promise(function (resolve, reject) {
+
+			var promises = ["General", "HDIM"].map(function (category) {
+				return dataProg.getCategory(category);
 			});
 
 			RSVP.all(promises)
@@ -1970,15 +1987,15 @@ function Beneficiary( ) {
 							case "daily":
 								startDate = moment().subtract(prog.repeat, 'd');
 								nextDate = moment(prog.startDate).hour(12).minute(0).second(0);
-								closeDate = prog.endDate?moment(prog.endDate).hour(12).minute(0).second(0):endDate;
-								closeDate = closeDate.unix() < endDate.unix() ? closeDate:endDate;
+								closeDate = prog.endDate ? moment(prog.endDate).hour(12).minute(0).second(0) : endDate;
+								closeDate = closeDate.unix() < endDate.unix() ? closeDate : endDate;
 								while (nextDate.unix() < startDate.unix()) {
 									nextDate.add(prog.repeat, 'd');
 								}
 								if (nextDate.unix() <= closeDate.unix()) {
 									do {
 										if (nextDate.unix() <= closeDate.unix() && nextDate.unix() > today.unix()) {
-											logger.debug("daily prog", {ref: prog.ref, date: nextDate.unix()} );
+											logger.debug("daily prog", {ref: prog.ref, date: nextDate.unix()});
 											msgs.push({ref: prog.ref, date: nextDate.unix()});
 										}
 										nextDate.add(prog.repeat, 'd');
@@ -1988,8 +2005,8 @@ function Beneficiary( ) {
 							case "weekly":
 								startDate = moment().subtract(prog.repeat, 'w');
 								nextDate = moment(prog.startDate).day(prog.when.days[0]).hour(12).minute(0).second(0);
-								closeDate = prog.endDate?moment(prog.endDate).hour(12).minute(0).second(0):endDate;
-								closeDate = closeDate.unix() < endDate.unix() ? closeDate:endDate;
+								closeDate = prog.endDate ? moment(prog.endDate).hour(12).minute(0).second(0) : endDate;
+								closeDate = closeDate.unix() < endDate.unix() ? closeDate : endDate;
 								while (nextDate.unix() < startDate.unix()) {
 									nextDate.add(prog.repeat, 'w');
 								}
@@ -1999,7 +2016,7 @@ function Beneficiary( ) {
 										prog.when.days.forEach(function (day) {
 											firstDay.day(day);
 											if (firstDay.unix() <= closeDate.unix() && firstDay.unix() > today.unix()) {
-												logger.debug("weekly prog", {ref: prog.ref, date: nextDate.unix()} );
+												logger.debug("weekly prog", {ref: prog.ref, date: nextDate.unix()});
 												msgs.push({ref: prog.ref, date: firstDay.unix()});
 											}
 										}); // jshint ignore:line
@@ -2011,8 +2028,8 @@ function Beneficiary( ) {
 							case "monthly":
 								startDate = moment().date(1).hour(12).minute(0).second(0);
 								nextDate = moment(prog.startDate).date(1).hour(12).minute(0).second(0);
-								closeDate = prog.endDate?moment(prog.endDate).hour(12).minute(0).second(0):endDate;
-								closeDate = closeDate.unix() < endDate.unix() ? closeDate:endDate;
+								closeDate = prog.endDate ? moment(prog.endDate).hour(12).minute(0).second(0) : endDate;
+								closeDate = closeDate.unix() < endDate.unix() ? closeDate : endDate;
 								while (nextDate.unix() < startDate.unix()) {
 									nextDate.add(prog.repeat, 'M');
 								}
@@ -2022,7 +2039,7 @@ function Beneficiary( ) {
 								// logger.debug( "nextDate",  nextDate.toISOString());
 								if (nextDate.unix() <= closeDate.unix()) {
 									do {
-										logger.debug( "nextDate",  nextDate.toISOString());
+										logger.debug("nextDate", nextDate.toISOString());
 										prog.when.days.forEach(function (day) {
 											logger.debug("-> day", day);
 											if (day > 0) {
@@ -2069,7 +2086,7 @@ function Beneficiary( ) {
 						measures.push(agenda[measure]);
 					}
 					removeMeasures(queue, that._id, measures)
-						.then( function() {
+						.then(function () {
 							var units;
 							physioDOM.Lists.getListItemsObj("units")
 								.then(function (results) {
@@ -2103,7 +2120,7 @@ function Beneficiary( ) {
 								});
 						});
 				})
-				.catch( function(err) {
+				.catch(function (err) {
 					console.log("erreur detectée");
 					console.log(err.stack);
 					reject(err);
@@ -2113,18 +2130,18 @@ function Beneficiary( ) {
 
 	/**
 	 * Push a symptom Self to the queue
-	 * 
+	 *
 	 * @param symptomSelf
 	 */
-	this.pushSymptomsSelfToQueue = function( symptomSelf ) {
+	this.pushSymptomsSelfToQueue = function (symptomSelf) {
 		logger.trace("pushSymptomsSelfToQueue");
-		
+
 		var queue = new Queue(this._id);
-		var leaf = "hhr[" + this._id + "].symptomsSelf.scales["+symptomSelf.ref+"]";
-		
-		return new Promise( function(resolve, reject) {
+		var leaf = "hhr[" + this._id + "].symptomsSelf.scales[" + symptomSelf.ref + "]";
+
+		return new Promise(function (resolve, reject) {
 			var msg = [];
-			if( !symptomSelf.active ) {
+			if (!symptomSelf.active) {
 				resolve(false);
 			}
 			msg.push({
@@ -2132,11 +2149,11 @@ function Beneficiary( ) {
 				value: symptomSelf.label[physioDOM.lang] || symptomSelf.ref,
 				type : "string"
 			});
-			if( symptomSelf.history ) {
+			if (symptomSelf.history) {
 				msg.push({
-					name: leaf + ".lastValue",
+					name : leaf + ".lastValue",
 					value: symptomSelf.history[0].value,
-					type: "double"
+					type : "double"
 				});
 			}
 			queue.postMsg(msg)
@@ -2144,30 +2161,29 @@ function Beneficiary( ) {
 					resolve(msg);
 				});
 		});
-		
+
 	};
 
 	/**
 	 * Push the whole symptoms self to queue
 	 */
-	this.symptomsSelfToQueue = function( ) {
+	this.symptomsSelfToQueue = function () {
 		var queue = new Queue(this._id);
 		var name = "hhr[" + this._id + "].symptomsSelf";
 		var that = this;
 		logger.trace("symptomsSelfToQueue");
-		
-		var symptoms = new Symptoms( this );
-		
-		return new Promise( function(resolve,reject) {
-			queue.delMsg([ { branch : name} ])
+
+		var symptoms = new Symptoms(this);
+
+		return new Promise(function (resolve, reject) {
+			queue.delMsg([{branch: name}])
 				.then(function () {
-					logger.trace("symptomsSelf cleared");
 					return symptoms.getHistoryList();
 				})
-				.then( function( list ) {
-					var promises = Object.keys(list).map(function (key ) {
+				.then(function (list) {
+					var promises = Object.keys(list).map(function (key) {
 						var symptomSelf = list[key];
-						return that.pushSymptomsSelfToQueue( symptomSelf );
+						return that.pushSymptomsSelfToQueue(symptomSelf);
 					});
 					RSVP.all(promises)
 						.then(function (results) {
@@ -2282,23 +2298,26 @@ function Beneficiary( ) {
 	 * @returns {*|RSVP.Promise}
 	 */
 	function removeSymptomsPlan(queue, hhr, symptoms) {
-		return new Promise( function(resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			logger.trace("removeSymptomsPlan");
 			var datetimes = [];
-			symptoms.forEach( function( symptom ) {
-				datetimes.push( symptom.datetime );
+			symptoms.forEach(function (symptom) {
+				datetimes.push(symptom.datetime);
 			});
-			var search = { subject: hhr, datetime: { '$nin': datetimes, '$gt': moment().hour(12).minute(0).second(0).unix() } };
-			physioDOM.db.collection("agendaSymptoms").find( search ).toArray( function(err, items ) {
-				if( !items.length ) {
+			var search = {
+				subject : hhr,
+				datetime: {'$nin': datetimes, '$gt': moment().hour(12).minute(0).second(0).unix()}
+			};
+			physioDOM.db.collection("agendaSymptoms").find(search).toArray(function (err, items) {
+				if (!items.length) {
 					resolve();
 				} else {
-					logger.info("to remove ", items.length );
-					var promises = items.map( function(item) {
-						return new Promise( function(done, reject) {
+					logger.info("to remove ", items.length);
+					var promises = items.map(function (item) {
+						return new Promise(function (done, reject) {
 							var leaf = "hhr[" + hhr + "].symptoms[" + item.datetime + "]";
 							queue.delMsg([{branch: leaf}])
-								.then( function() {
+								.then(function () {
 									physioDOM.db.collection("agendaSymptoms").remove(item, function (err, nb) {
 										done();
 									});
@@ -2306,39 +2325,39 @@ function Beneficiary( ) {
 						});
 					});
 					RSVP.all(promises)
-						.then( resolve );
+						.then(resolve);
 				}
 			});
 		});
 	}
-	
+
 	/**
 	 * Get the symptoms plan and push it to the box
-	 * 
+	 *
 	 * @returns {$$rsvp$Promise$$default|RSVP.Promise|*|l|Dn}
 	 */
-	this.getSymptomsPlan = function( force ) {
+	this.getSymptomsPlan = function (force) {
 		var queue = new Queue(this._id);
 
 		var today = moment().hour(12).minute(0).second(0);
-		var endDate = moment().add(physioDOM.config.duration,'d').hour(12).minute(0).second(0);
-		logger.debug( "SymptomPlan from "+today.toISOString()+" to "+endDate.toISOString());
-		var dataProg = new DataProg( this._id );
+		var endDate = moment().add(physioDOM.config.duration, 'd').hour(12).minute(0).second(0);
+		logger.debug("SymptomPlan from " + today.toISOString() + " to " + endDate.toISOString());
+		var dataProg = new DataProg(this._id);
 		var msgs = [];
 		var that = this;
 
-		return new Promise( function(resolve, reject) {
+		return new Promise(function (resolve, reject) {
 			dataProg.getCategory("symptom")
 				.then(function (progs) {
 					progs.forEach(function (prog) {
 						var startDate, nextDate, firstDay, dat, closeDate;
-						
+
 						switch (prog.frequency) {
 							case "daily":
 								startDate = moment().subtract(prog.repeat, 'd');
 								nextDate = moment(prog.startDate).hour(12).minute(0).second(0);
-								closeDate = prog.endDate?moment(prog.endDate).hour(12).minute(0).second(0):endDate;
-								closeDate = closeDate.unix() < endDate.unix() ? closeDate:endDate;
+								closeDate = prog.endDate ? moment(prog.endDate).hour(12).minute(0).second(0) : endDate;
+								closeDate = closeDate.unix() < endDate.unix() ? closeDate : endDate;
 								while (nextDate.unix() < startDate.unix()) {
 									nextDate.add(prog.repeat, 'd');
 								}
@@ -2354,8 +2373,8 @@ function Beneficiary( ) {
 							case "weekly":
 								startDate = moment().subtract(prog.repeat, 'w');
 								nextDate = moment(prog.startDate).day(prog.when.days[0]).hour(12).minute(0).second(0);
-								closeDate = prog.endDate?moment(prog.endDate).hour(12).minute(0).second(0):endDate;
-								closeDate = closeDate.unix() < endDate.unix() ? closeDate:endDate;
+								closeDate = prog.endDate ? moment(prog.endDate).hour(12).minute(0).second(0) : endDate;
+								closeDate = closeDate.unix() < endDate.unix() ? closeDate : endDate;
 								while (nextDate.unix() < startDate.unix()) {
 									nextDate.add(prog.repeat, 'w');
 								}
@@ -2364,7 +2383,7 @@ function Beneficiary( ) {
 										firstDay = moment.unix(nextDate.unix());
 										prog.when.days.forEach(function (day) {
 											firstDay.day(day);
-											
+
 											if (firstDay.unix() <= closeDate.unix() && firstDay.unix() > today.unix()) {
 												msgs.push({ref: prog.ref, date: firstDay.unix()});
 											}
@@ -2377,12 +2396,12 @@ function Beneficiary( ) {
 							case "monthly":
 								startDate = moment().date(1).hour(12).minute(0).second(0);
 								nextDate = moment(prog.startDate).date(1).hour(12).minute(0).second(0);
-								closeDate = prog.endDate?moment(prog.endDate).hour(12).minute(0).second(0):endDate;
-								closeDate = closeDate.unix() < endDate.unix() ? closeDate:endDate;
+								closeDate = prog.endDate ? moment(prog.endDate).hour(12).minute(0).second(0) : endDate;
+								closeDate = closeDate.unix() < endDate.unix() ? closeDate : endDate;
 								while (nextDate.unix() < startDate.unix()) {
 									nextDate.add(prog.repeat, 'M');
 								}
-								
+
 								if (nextDate.unix() <= closeDate.unix()) {
 									prog.when.days.forEach(function (day) {
 										if (day > 0) {
@@ -2408,25 +2427,27 @@ function Beneficiary( ) {
 						if (results[msg.date]) {
 							results[msg.date].measure.push(msg.ref);
 						} else {
-							results[msg.date] = { 
-								datetime:msg.date, 
-								measure: [msg.ref] ,
+							results[msg.date] = {
+								datetime: msg.date,
+								measure : [msg.ref],
 								date    : moment.unix(msg.date).toISOString()
 							};
 						}
 					});
 					var measures = [];
-					for( var measure in results ) {
-						measures.push( results[measure] );
+					for (var measure in results) {
+						measures.push(results[measure]);
 					}
-					removeSymptomsPlan(queue, that._id, measures )
-						.then( function() {
-							physioDOM.Lists.getListItemsObj("symptom")
+					removeSymptomsPlan(queue, that._id, measures)
+						.then(function () {
+							var symptoms = new Symptoms(that);
+							var symptomsHistory;
+							
+							symptoms.getHistoryList()
 								.then(function (symptoms) {
 									var promises = measures.map(function (measure) {
 										return new Promise(function (resolve, reject) {
 											measure.subject = that._id;
-
 											pushSymptom(queue, that._id, symptoms, measure, force)
 												.then(function (msg) {
 													resolve(msg);
@@ -2448,45 +2469,45 @@ function Beneficiary( ) {
 				});
 		});
 	};
-	
-	function pushQuestionnaire(queue, name, quest, newFlag ) {
-		return new Promise( function(resolve,reject) {
+
+	function pushQuestionnaire(queue, name, quest, newFlag) {
+		return new Promise(function (resolve, reject) {
 			/*
 			 questionnaires[id].label
 			 questionnaires[id].new
 			 questionnaires[id].scores[id].datetime
 			 questionnaires[id].scores[id].value
 			 */
-			logger.trace("pushQuestionnaire",quest.text );
-			
+			logger.trace("pushQuestionnaire", quest.text);
+
 			var msg = [];
-			if (quest.TVLabel ) {
+			if (quest.TVLabel) {
 				var leaf = name + ".questionnaires[" + quest.text + "]";
-				
-				queue.delMsg([ { branch : leaf } ])
-					.then( function() {
-						logger.trace("questionnare "+ quest.text +" cleared");
-						
+
+				queue.delMsg([{branch: leaf}])
+					.then(function () {
+						logger.trace("questionnare " + quest.text + " cleared");
+
 						msg.push({
-							name: leaf + ".label",
+							name : leaf + ".label",
 							value: quest.TVLabel,
-							type: "string"
+							type : "string"
 						});
 						msg.push({
-							name: leaf + ".new",
+							name : leaf + ".new",
 							value: newFlag ? 1 : 0,
-							type: "integer"
+							type : "integer"
 						});
 						for (var i = 0, l = quest.history.length; i < l; i++) {
 							msg.push({
-								name: leaf + ".scores[" + i + "].datetime",
+								name : leaf + ".scores[" + i + "].datetime",
 								value: moment(quest.history[i].datetime).unix(),
-								type: "integer"
+								type : "integer"
 							});
 							msg.push({
-								name: leaf + ".scores[" + i + "].value",
+								name : leaf + ".scores[" + i + "].value",
 								value: quest.history[i].value,
-								type: "double"
+								type : "double"
 							});
 						}
 						queue.postMsg(msg)
@@ -2500,8 +2521,8 @@ function Beneficiary( ) {
 		});
 	}
 
-	function pushParam( queue, name,  param ) {
-		return new Promise( function(resolve,reject) {
+	function pushParam(queue, name, param) {
+		return new Promise(function (resolve, reject) {
 			/*
 			 measuresHistory.params[id].label
 			 measuresHistory.params[id].type
@@ -2510,7 +2531,7 @@ function Beneficiary( ) {
 			 measuresHistory.params[id].values[id].datetime
 			 measuresHistory.params[id].values[id].value
 			 */
-			
+
 			// console.log( param );
 			var msg = [];
 			if (param.rank) {
@@ -2531,7 +2552,7 @@ function Beneficiary( ) {
 					value: param.precision,
 					type : "integer"
 				});
-				if( param.unit.length ) {
+				if (param.unit.length) {
 					msg.push({
 						name : leaf + ".unit",
 						value: param.unit,
@@ -2560,8 +2581,8 @@ function Beneficiary( ) {
 		});
 	}
 
-	function pushSymptomsHistory( queue, name, symptom ) {
-		return new Promise( function(resolve,reject) {
+	function pushSymptomsHistory(queue, name, symptom) {
+		return new Promise(function (resolve, reject) {
 			/*
 			 symptomsHistory.scales[id].label
 			 symptomsHistory.scales[id].values[id].datetime
@@ -2601,12 +2622,12 @@ function Beneficiary( ) {
 	/**
 	 * Send a questionnaire history to the box
 	 * only questionnaire that have a TVLabel are pushed
-	 * 
+	 *
 	 * @param questionnaire
 	 * @param newFlag
 	 * @returns {$$rsvp$Promise$$default|RSVP.Promise|*|l|Dn}
 	 */
-	this.sendQuestionnaire = function( questionnaire, newFlag ) {
+	this.sendQuestionnaire = function (questionnaire, newFlag) {
 		var that = this;
 
 		var queue = new Queue(this._id);
@@ -2628,11 +2649,11 @@ function Beneficiary( ) {
 		});
 	};
 
-	this.pushHistoryMeasures = function( history, queue, leaf ) {
-		return new Promise( function( resolve, reject) {
+	this.pushHistoryMeasures = function (history, queue, leaf) {
+		return new Promise(function (resolve, reject) {
 			var msgs = [];
-			
-			queue.delMsg([ { branch : leaf + ".measuresHistory"} ])
+
+			queue.delMsg([{branch: leaf + ".measuresHistory"}])
 				.then(function () {
 					logger.trace("measuresHistory cleared");
 					var promises = history["General"].map(function (param) {
@@ -2656,13 +2677,13 @@ function Beneficiary( ) {
 		});
 	};
 
-	this.pushHistorySymptoms = function( history, queue, leaf ) {
+	this.pushHistorySymptoms = function (history, queue, leaf) {
 		logger.trace("pushHistorySymptoms");
-		
-		return new Promise( function( resolve, reject) {
+
+		return new Promise(function (resolve, reject) {
 			var msgs = [];
-			
-			queue.delMsg([ { branch : leaf + ".symptomsHistory"} ])
+
+			queue.delMsg([{branch: leaf + ".symptomsHistory"}])
 				.then(function () {
 					logger.trace("symptoms history cleared");
 					var promises = history.symptom.map(function (param) {
@@ -2678,8 +2699,8 @@ function Beneficiary( ) {
 		});
 	};
 
-	this.pushHistoryQuestionnaires = function( history, queue, leaf ) {
-		return new Promise( function( resolve, reject) {
+	this.pushHistoryQuestionnaires = function (history, queue, leaf) {
+		return new Promise(function (resolve, reject) {
 			var msgs = [];
 
 			var promises = history.questionnaire.map(function (param) {
@@ -2687,63 +2708,65 @@ function Beneficiary( ) {
 			});
 			RSVP.all(promises)
 				.then(function (results) {
-					results.forEach( function( res ) {
-						if( res.length ) { msgs.push(res); }
+					results.forEach(function (res) {
+						if (res.length) {
+							msgs.push(res);
+						}
 					});
 					resolve(msgs);
 				});
 		});
 	};
-	
+
 	/**
 	 * push measures history ( the last 5 measures of each parameters ) to the box
-	 * 
+	 *
 	 * @returns {$$rsvp$Promise$$default|RSVP.Promise|*|l|Dn}
 	 */
-	this.pushHistory = function( category ) {
+	this.pushHistory = function (category) {
 		var that = this;
-		
+
 		var queue = new Queue(this._id);
 		var name = "hhr[" + this._id + "]";
-		
+
 		return new Promise(function (resolve, reject) {
 			var msgs = [];
 			that.getHistoryDataList()
 				.then(function (history) {
-					switch( category ) {
+					switch (category) {
 						case "measures":
 							logger.trace("pushHistory measures");
-							that.pushHistoryMeasures( history, queue, name )
-								.then( resolve );
+							that.pushHistoryMeasures(history, queue, name)
+								.then(resolve);
 							break;
 						case "symptoms":
 							logger.trace("pushHistory symptoms");
-							that.pushHistorySymptoms( history, queue, name )
-								.then( resolve );
+							that.pushHistorySymptoms(history, queue, name)
+								.then(resolve);
 							break;
 						case "questionnaires":
 							logger.trace("pushHistory questionnaires");
-							that.pushHistoryQuestionnaires( history, queue, name )
-								.then( resolve );
+							that.pushHistoryQuestionnaires(history, queue, name)
+								.then(resolve);
 							break;
 						default:
 							logger.trace("pushHistory all");
-							that.pushHistoryMeasures( history, queue, name )
-								.then( function( results ) {
+							that.pushHistoryMeasures(history, queue, name)
+								.then(function (results) {
 									msgs = msgs.concat(results);
-									return that.pushHistorySymptoms( history, queue, name );
+									return that.pushHistorySymptoms(history, queue, name);
 								})
-								.then( function( results ) {
+								.then(function (results) {
 									msgs = msgs.concat(results);
-									return that.pushHistoryQuestionnaires( history, queue, name );
+									return that.pushHistoryQuestionnaires(history, queue, name);
 								})
-								.then( function( results ) {
+								.then(function (results) {
 									msgs = msgs.concat(results);
-									resolve( msgs );
+									resolve(msgs);
 								})
-								.catch( function(err) {
+								.catch(function (err) {
 									logger.warning(err);
-									reject( err );
+									reject(err);
 								});
 					}
 				});
@@ -2752,18 +2775,18 @@ function Beneficiary( ) {
 
 	/**
 	 * Push the last DHD-FFQ (Eetscore) to the box
-	 * 
+	 *
 	 * @param newFlag
 	 * @returns {$$rsvp$Promise$$default|RSVP.Promise|*|l|Dn}
 	 */
-	this.pushLastDHDFFQ = function( newFlag ) {
+	this.pushLastDHDFFQ = function (newFlag) {
 		var that = this;
 		var queue = new Queue(this._id);
 		var leaf = "hhr[" + this._id + "].dhdffq";
-		
+
 		logger.trace("pushLastDHDFFQ");
-		return new Promise( function(resolve, reject) {
-			var search = { category: "questionnaire", text: "DHD-FFQ", subject: that._id };
+		return new Promise(function (resolve, reject) {
+			var search = {category: "questionnaire", text: "DHD-FFQ", subject: that._id};
 			physioDOM.db.collection("dataRecordItems").find(search).sort({datetime: -1}).limit(1).toArray(function (err, quests) {
 				if (quests.length) {
 					var Questionnaire = require("./questionnaire.js");
@@ -2771,15 +2794,15 @@ function Beneficiary( ) {
 					var questionnaire = new Questionnaire();
 					var answer = new QuestionnaireAnswer();
 					questionnaire.getByRef("DHD-FFQ")
-						.then( function(questionnaire) {
+						.then(function (questionnaire) {
 							answer.getById(new ObjectID(quests[0].ref))
 								.then(function (answer) {
 									/*
-									dhdffq.advice
-									dhdffq.new
-									dhdffq.subscores[id].label
-									dhdffq.subscores[id].value%
-									*/
+									 dhdffq.advice
+									 dhdffq.new
+									 dhdffq.subscores[id].label
+									 dhdffq.subscores[id].value%
+									 */
 									var msg = [];
 
 									msg.push({
@@ -2789,17 +2812,17 @@ function Beneficiary( ) {
 									});
 									msg.push({
 										name : leaf + ".new",
-										value: newFlag?1:0,
+										value: newFlag ? 1 : 0,
 										type : "integer"
 									});
-									for( var i= 0, l=answer.questions.length; i<l;i++) {
+									for (var i = 0, l = answer.questions.length; i < l; i++) {
 										msg.push({
-											name : leaf + ".subscores["+i+"].label",
+											name : leaf + ".subscores[" + i + "].label",
 											value: questionnaire.questions[i].label[physioDOM.lang],
 											type : "string"
 										});
 										msg.push({
-											name : leaf + ".subscores["+i+"].value",
+											name : leaf + ".subscores[" + i + "].value",
 											value: answer.questions[i].choice,
 											type : "double"
 										});
@@ -2823,12 +2846,12 @@ function Beneficiary( ) {
 
 	/**
 	 * Push a physical recommandation to the queue
-	 * 
+	 *
 	 * @param {physicalPlan} physicalPlan
 	 * @param {boolean} newFlag
 	 * @returns {$$rsvp$Promise$$default|RSVP.Promise|*|Dn}
 	 */
-	this.pushPhysicalPlanToQueue = function( physicalPlan, newFlag ) {
+	this.pushPhysicalPlanToQueue = function (physicalPlan, newFlag) {
 		logger.trace("pushPhysicalPlanToQueue");
 
 		var queue = new Queue(this._id);
@@ -2841,7 +2864,7 @@ function Beneficiary( ) {
 			 physical.history[id].description
 			 */
 			var msg = [];
-			if( newFlag ) {
+			if (newFlag) {
 				msg.push({
 					name : name + ".new",
 					value: 1,
@@ -2849,12 +2872,12 @@ function Beneficiary( ) {
 				});
 			}
 			msg.push({
-				name : name + ".history["+physicalPlan._id+"].datetime",
+				name : name + ".history[" + physicalPlan._id + "].datetime",
 				value: moment(physicalPlan.datetime).unix(),
 				type : "integer"
 			});
 			msg.push({
-				name : name + ".history["+physicalPlan._id+"].description",
+				name : name + ".history[" + physicalPlan._id + "].description",
 				value: physicalPlan.content,
 				type : "string"
 			});
@@ -2867,22 +2890,22 @@ function Beneficiary( ) {
 
 	/**
 	 * push the whole physical plan and history to the queue
-	 * 
+	 *
 	 * @returns {$$rsvp$Promise$$default|RSVP.Promise|*|Dn}
 	 */
-	this.physicalPlanToQueue = function() {
+	this.physicalPlanToQueue = function () {
 		var that = this;
 
 		return new Promise(function (resolve, reject) {
 			var physicalPlan = new PhysicalPlan(that._id);
 			physicalPlan.getItemsArray(1, 1000)
-				.then( function(results) {
-					var promises = results.map( function( physicalPlan) {
+				.then(function (results) {
+					var promises = results.map(function (physicalPlan) {
 						return that.pushPhysicalPlanToQueue(physicalPlan);
 					});
 					RSVP.all(promises)
-						.then( function( results) {
-							resolve( [].concat(results) );
+						.then(function (results) {
+							resolve([].concat(results));
 						});
 				});
 		});
@@ -2890,18 +2913,18 @@ function Beneficiary( ) {
 
 	/**
 	 * Push a dietary advice to the BOX
-	 * 
+	 *
 	 * @param {dietaryPlan} dietaryPlan the recommandation to send
 	 * @param {boolean} newFlag  set to true if it's a new advice
 	 * @returns {$$rsvp$Promise$$default|RSVP.Promise|*|Dn}
 	 */
-	this.pushDietaryPlanToQueue = function( dietaryPlan, newFlag ) {
+	this.pushDietaryPlanToQueue = function (dietaryPlan, newFlag) {
 		logger.trace("pushDietaryPlanToQueue");
 		logger.debug(dietaryPlan);
 
 		var queue = new Queue(this._id);
 		var name = "hhr[" + this._id + "].dietary";
-		
+
 		return new Promise(function (resolve, reject) {
 			/*
 			 dietary.recommendations.new
@@ -2909,7 +2932,7 @@ function Beneficiary( ) {
 			 dietary.recommendations.history[id].description
 			 */
 			var msg = [];
-			if( newFlag ) {
+			if (newFlag) {
 				msg.push({
 					name : name + ".recommendations.new",
 					value: 1,
@@ -2917,16 +2940,16 @@ function Beneficiary( ) {
 				});
 			}
 			msg.push({
-				name : name + ".recommendations.history["+dietaryPlan._id+"].datetime",
+				name : name + ".recommendations.history[" + dietaryPlan._id + "].datetime",
 				value: moment(dietaryPlan.datetime).unix(),
 				type : "integer"
 			});
 			msg.push({
-				name : name + ".recommendations.history["+dietaryPlan._id+"].description",
+				name : name + ".recommendations.history[" + dietaryPlan._id + "].description",
 				value: dietaryPlan.content,
 				type : "string"
 			});
-			logger.debug("msg to send", msg );
+			logger.debug("msg to send", msg);
 			queue.postMsg(msg)
 				.then(function () {
 					resolve(msg);
@@ -2936,34 +2959,34 @@ function Beneficiary( ) {
 
 	/**
 	 * Push the whole dietary plan to the queue
-	 * 
+	 *
 	 * @returns {$$rsvp$Promise$$default|RSVP.Promise|*|Dn}
 	 */
-	this.dietaryPlanToQueue = function() {
+	this.dietaryPlanToQueue = function () {
 		var that = this;
 
 		return new Promise(function (resolve, reject) {
-			var dietaryPlan = new DietaryPlan( that._id );
+			var dietaryPlan = new DietaryPlan(that._id);
 			dietaryPlan.getItemsArray(1, 1000)
-				.then( function(results) {
-					var promises = results.map( function( dietaryPlan) {
+				.then(function (results) {
+					var promises = results.map(function (dietaryPlan) {
 						return that.pushDietaryPlanToQueue(dietaryPlan);
 					});
 					RSVP.all(promises)
-						.then( function( results) {
+						.then(function (results) {
 							resolve([].concat(results));
 						});
 				});
 		});
 	};
-	
-	this.pushFirstName = function() {
+
+	this.pushFirstName = function () {
 		var that = this;
 
 		var queue = new Queue(this._id);
 		var name = "hhr[" + this._id + "].firstName";
 		return new Promise(function (resolve, reject) {
-			logger.trace("pushFirstName ", that.name.given || that.name.family );
+			logger.trace("pushFirstName ", that.name.given || that.name.family);
 			var msg = [];
 			msg.push({
 				name : name,
@@ -2976,8 +2999,8 @@ function Beneficiary( ) {
 				});
 		});
 	};
-	
-	this.pushMessages = function() {
+
+	this.pushMessages = function () {
 		var messages = new Messages(this._id);
 		return messages.pushMessages();
 	};
