@@ -1,3 +1,8 @@
+__v1.0.6__
+
+  - Bug 430 : [v.1.0.5][Symptom assessment] Toutes les indications "Prev." sont à zéro
+  - Locales ( Viveris 08-03 )
+  
 __v1.0.5__
 
   - Bug 424 [Data Graphs][v.1.0.4] Libellé jaune prend la valeur du libellé bleu

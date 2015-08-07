@@ -210,7 +210,7 @@
   "Start date must be before end or planned end date": "La fecha de inicio debe ser anterior a la fecha final o la fecha planeada",
   "Date format is incorrect": "Formato de fecha incorrecto",
   "The date is already added": "La fecha ya se ha sido añadida",
-  "The date can't be before today": "La fecha no puede ser anterior a la fecha actual",
+  "The date can't be before today": "La fecha no puede ser anterior al día siguiente",
   "Can't have password with empty login": "No se puede tener una contraseña con un usuario vacio",
   "Yes": "Sí",
   "No": "No",
