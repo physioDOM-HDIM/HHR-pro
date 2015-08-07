@@ -2177,12 +2177,44 @@ function Beneficiary( ) {
 		});
 	};
 
-	function pushSymptom( queue, hhr, symptoms, measures, force ) {
+	function pushSymptom(queue, hhr, symptoms, measures, force) {
 		logger.trace("pushSymptom");
-		force = force?force:false;
-		
-		return new Promise( function(resolve,reject) {
+		force = force ? force : false;
+
+		return new Promise(function (resolve, reject) {
 			var leaf = "hhr[" + hhr + "].symptoms[" + measures.datetime + "]";
+
+			function postMsg(msg) {
+				return new Promise(function (resolve, reject) {
+					queue.postMsg(msg)
+						.then(function () {
+							var data = {
+								datetime: measures.datetime,
+								subject : hhr,
+								items   : msg
+							};
+							physioDOM.db.collection("agendaSymptoms").save(data, function (err, doc) {
+								resolve(msg);
+							});
+						});
+				});
+			}
+
+			function delMsg() {
+				return new Promise(function (resolve, reject) {
+					queue.delMsg([{branch: leaf}])
+						.then(function () {
+							var data = {
+								datetime: measures.datetime,
+								subject : hhr
+							};
+							physioDOM.db.collection("agendaSymptoms").remove(data, function (err, nb) {
+								resolve();
+							});
+						});
+				});
+			}
+
 			physioDOM.db.collection("agendaSymptoms").findOne({
 				subject : hhr,
 				datetime: measures.datetime
@@ -2209,44 +2241,15 @@ function Beneficiary( ) {
 							value: symptoms[measure].label[physioDOM.lang],
 							type : "string"
 						});
-						msg.push({
-							name : name + ".lastValue",
-							value: 0,
-							type : "double"
-						});
+						if( symptoms[measure].history && symptoms[measure].history.length ) {
+							msg.push({
+								name : name + ".lastValue",
+								value: symptoms[measure].history[0].value,
+								type : "double"
+							});
+						}
 					}
 				});
-
-				function postMsg(msg) {
-					return new Promise(function (resolve, reject) {
-						queue.postMsg(msg)
-							.then(function () {
-								var data = {
-									datetime: measures.datetime,
-									subject : hhr,
-									items   : msg
-								};
-								physioDOM.db.collection("agendaSymptoms").save(data, function (err, doc) {
-									resolve(msg);
-								});
-							});
-					});
-				}
-
-				function delMsg() {
-					return new Promise(function (resolve, reject) {
-						queue.delMsg([{branch: leaf}])
-							.then(function () {
-								var data = {
-									datetime: measures.datetime,
-									subject : hhr
-								};
-								physioDOM.db.collection("agendaSymptoms").remove(data, function (err, nb) {
-									resolve();
-								});
-							});
-					});
-				}
 
 				if (hasMeasure) {
 					if (doc) {
