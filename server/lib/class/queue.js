@@ -283,6 +283,7 @@ function Queue ( beneficiaryID ) {
 		console.log(msg);
 		var that = this;
 		var leaf = "hhr["+ that.subject +"]";
+		var dataRecord;
 		
 		return new promise(function (resolve, reject) {
 			physioDOM.Beneficiaries()
@@ -310,7 +311,8 @@ function Queue ( beneficiaryID ) {
 								});
 							});
 							beneficiary.createDataRecord( newDataRecord )
-								.then( function() {
+								.then( function( _dataRecord ) {
+									dataRecord = _dataRecord;
 									// remove the measures
 									return that.delMsg([ { branch : leaf + "." + msg.type + "["+ msg.message.id+"]"} ]);
 								})
@@ -320,6 +322,9 @@ function Queue ( beneficiaryID ) {
 								})
 								.then( function() {
 									return beneficiary.symptomsSelfToQueue();
+								})
+								.then( function() {
+									beneficiary.updateSymptomsLastValue( dataRecord._id );
 								})
 								.then( function() {
 									resolve(newDataRecord);

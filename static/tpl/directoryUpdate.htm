@@ -309,11 +309,13 @@
 			<div class="row">
 				<label>{{ "Withdrawal code"|i18n }} : </label>
 				<span style="font-weight:bold" id="OTP">{% if professional.account.OTP %}{{professional.account.OTP }}{% endif %}</span>
+				<div style="width:50px"></div>
+				<button type="button" class="small blue {% if !professional.account.OTP %}hidden{% endif %}" id="newCert" >Generate a new withdrawal code</button>
 			</div>
 			<div class="row">
 				<span class="spacer"></span>
 				<button type="button" class="red {% if !professional.account.OTP %}hidden{% endif %}" id="revokeCert">
-					{{"Revoke certificate"|i18n}}
+					{{"Revoke certificates"|i18n}}
 				</button>
 				<button type="button" class="blue {% if professional.account.OTP %}hidden{% endif %}" id="createCert">
 					{{"Generate certificate"|i18n}}

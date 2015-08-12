@@ -13,6 +13,7 @@ var RSVP = require("rsvp"),
 	ObjectID = require("mongodb").ObjectID,
 	beneficiarySchema = require("./../schema/beneficiarySchema"),
 	DataRecord = require("./dataRecord"),
+	DataRecords = require("./dataRecords"),
 	Messages = require("./messages"),
 	DataProg = require("./dataProg"),
 	DataProgItem = require("./dataProgItem"),
@@ -616,7 +617,20 @@ function Beneficiary() {
 
 						client.CertRevocate(CertRevocate, function (err, result) {
 							if (err) {
-								throw err;
+								if(err.root.Envelope.Body.Fault.faultcode === "E_NOTFOUND" ) {
+									logger.warning( "certificat not found" );
+									account.OTP = false;
+									physioDOM.db.collection("account").save(account, function (err, result) {
+										if (err) {
+											reject(err);
+										} else {
+											resolve(account);
+										}
+									});
+								} else {
+									logger.warning(err);
+									throw err;
+								}
 							} else {
 								logger.info("certRevokeResponse", result);
 								account.OTP = false;
@@ -631,7 +645,12 @@ function Beneficiary() {
 						});
 					});
 				})
-				.catch(reject);
+				.catch( function(err) {
+					if (err.stack) { 
+						console.log(err.stack);
+					}
+					reject(err);
+				});
 		});
 	};
 
@@ -2326,6 +2345,79 @@ function Beneficiary() {
 			});
 		});
 	}
+	
+	this.updateSymptomsLastValue = function( dataRecordID ) {
+		// dataRecordID
+		logger.trace( "updateSymptomsLastValue", dataRecordID);
+		var that = this;
+		var queue = new Queue(this._id);
+		
+		this.getDataRecordByID( dataRecordID )
+			.then( function( record ) {
+				// console.log("record", record);
+				return record.getComplete();
+			})
+			.then( function(record) {
+				// record.items.items array of all dataRecordID
+				var items = record.items.items;
+				// console.log("items", items);
+				items.forEach( function( item ) {
+					var reg = new RegExp(".scales\\\["+item.text+"\\\]", "i");
+					var search = {
+						subject: that._id,
+						datetime: { '$gt': Math.ceil((new Date()).valueOf()/1000) },
+						'items.name': reg
+					};
+					// console.log( "search", search );
+					physioDOM.db.collection("agendaSymptoms").find(search).toArray( function (err, events) {
+						// console.log("founds : ",events.length);
+						// console.log(search, item.text );
+						var tmp;
+						for( var i= 0,l=events.length; i<l ; i++) {
+							tmp = null;
+							for( var j= 0, nbItems = events[i].items.length; j < nbItems ; j++ ) {
+								reg = new RegExp(".scales\\\["+item.text+"\\\].lastValue$", "i");
+								if( events[i].items[j].name.match(reg) ) {
+									tmp = events[i].items[j];
+									break;
+								}
+							}
+							if( tmp ) {
+								tmp.value = item.value;
+							} else {
+								tmp = {
+									name: 'hhr['+that._id+'].symptoms['+events[i].datetime+'].scales['+item.text+'].lastValue',
+									value: item.value,
+									type:"double"
+								};
+								events[i].items.push( tmp );
+							}
+							// update the event in the database
+							physioDOM.db.collection("agendaSymptoms").save( events[i], function(err, result ) {
+								if(err) {
+									logger.error("error saving to database",err);
+								}
+								
+								// push to queue
+								queue.delMsg([ { branch: tmp.name } ])
+									.then( function() {
+										// console.log("post new lastValue", tmp.name, tmp.value );
+										return queue.postMsg([ tmp ]);
+									});
+							});
+							
+						}
+					});
+				});
+			})
+			.catch( function(err) {
+				logger.warning("error detected");
+				console.log(err);
+				if(err.stack) { 
+					console.log(err.stack);
+				}
+			});
+	};
 
 	/**
 	 * Get the symptoms plan and push it to the box
