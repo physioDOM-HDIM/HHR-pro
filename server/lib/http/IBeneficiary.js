@@ -480,6 +480,7 @@ var IBeneficiary = {
 				return beneficiary.createDataRecord( dataRecord, req.session.person.id );
 			})
 			.then( function( result ) {
+				beneficiary.updateSymptomsLastValue( result._id );
 				dataRecord = result;
 				res.send( dataRecord );
 				next();
@@ -517,7 +518,6 @@ var IBeneficiary = {
 			})
 			.then( function(dataRecord) {
 				var items = JSON.parse(req.body);
-				console.log("==> mode", req.params.mode );
 				if( req.params.mode && req.params.mode === "update" ) {
 					return dataRecord.upgradeItems(items, req.session.person.id);
 				} else {
@@ -528,6 +528,7 @@ var IBeneficiary = {
 				return dataRecord.getComplete();
 			})
 			.then(function( _completeDataRecord ) {
+				beneficiary.updateSymptomsLastValue( _completeDataRecord._id );
 				var log = {
 					subject   : beneficiary._id,
 					datetime  : moment().toISOString(),
