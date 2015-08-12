@@ -450,7 +450,6 @@ function DataRecord( beneficiaryID ) {
 					return beneficiary.getThreshold();
 				})
 				.then( function( thresholds ) {
-					console.log( thresholds );
 					var warning = false;
 					that.items.forEach( function( item ) {
 						if( thresholds[item.text] ) {
