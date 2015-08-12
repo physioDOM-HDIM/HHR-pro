@@ -1,3 +1,11 @@
+__v1.0.7__
+
+  - Bug 430 : Complément, les "lastValue" dans l'agenda des symptomes sont remis à jour et pousser vers les box
+  - Certificats : 
+    - Fixe la revocation des certificats lorsque le code de retrait est trop vieux
+    - Ajout d'un bouton permettant de recréer un certificat si le code de retrait est trop vieux
+    - Update des fichiers de traductions
+
 __v1.0.6__
 
   - Bug 430 : [v.1.0.5][Symptom assessment] Toutes les indications "Prev." sont à zéro
