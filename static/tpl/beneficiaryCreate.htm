@@ -440,11 +440,13 @@
 			<div class="row {% if !beneficiary.account.OTP || !beneficiary.account.password %}hidden{% endif %}" id="withdrawal">
 				<label>{{ "Withdrawal code"|i18n }} : </label>
 				<span style="font-weight:bold" id="OTP">{% if beneficiary.account.OTP %}{{beneficiary.account.OTP }}{% endif %}</span>
+				<div style="width:50px"></div>
+				<button type="button" class="small blue {% if !professional.account.OTP %}hidden{% endif %}" id="newCert" >{{"Generate a new withdrawal code" | i18n}}</button>
 			</div>
 			<div class="row">
 				<span class="spacer"></span>
-				<button type="button" class="red {% if !beneficiary.account.OTP %}hidden{% endif %}" id="revokeCert">Revoke certificate</button>
-				<button type="button" class="blue {% if beneficiary.account.OTP || !beneficiary.account.password %}hidden{% endif %}" style="margin-top:10px" id="createCert">Generate certificate</button>
+				<button type="button" class="red {% if !beneficiary.account.OTP %}hidden{% endif %}" id="revokeCert">{{"Revoke certificates" | i18n}}</button>
+				<button type="button" class="blue {% if beneficiary.account.OTP || !beneficiary.account.password %}hidden{% endif %}" style="margin-top:10px" id="createCert">{{"Generate certificate" | i18n}}</button>
 			</div>
 			{% endif %}
 			<button id="accountSubmitBtn" class="hidden"></button>
