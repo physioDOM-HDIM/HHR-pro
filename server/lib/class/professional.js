@@ -580,8 +580,20 @@ function Professional() {
 						} else {
 							client.CertRevocate(CertRevocate, function (err, result) {
 								if (err) {
-									log.warning( err );
-									throw err;
+									if(err.root.Envelope.Body.Fault.faultcode === "E_NOTFOUND" ) {
+										logger.warning( "certificat not found" );
+										account.OTP = false;
+										physioDOM.db.collection("account").save(account, function (err, result) {
+											if (err) {
+												reject(err);
+											} else {
+												resolve(account);
+											}
+										});
+									} else {
+										logger.warning(err);
+										throw err;
+									}
 								} else {
 									logger.info("certRevokeResponse", result);
 									account.OTP = false;
@@ -597,7 +609,14 @@ function Professional() {
 						}
 					});
 				})
-				.catch( reject );
+				.catch( function(err) {
+					if(err.stack) {
+						console.log(err.stack);
+					} else {
+						console.log(err);
+					}
+					reject(err);
+				});
 		});
 	};
 }

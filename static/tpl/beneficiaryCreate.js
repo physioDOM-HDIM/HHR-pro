@@ -816,6 +816,7 @@ function createCert() {
 				OTP.innerHTML = account.OTP;
 			}
 			document.querySelector("button#revokeCert").classList.remove("hidden");
+			document.querySelector("button#newCert").classList.remove("hidden");
 			document.querySelector("#withdrawal").classList.remove("hidden");
 			document.querySelector("button#createCert").classList.add("hidden");
 		}, function(error) {
@@ -834,6 +835,7 @@ function revokeCert() {
 				OTP.innerHTML = "";
 			}
 			document.querySelector("button#revokeCert").classList.add("hidden");
+			document.querySelector("button#newCert").classList.add("hidden");
 			document.querySelector("#withdrawal").classList.add("hidden");
 			document.querySelector("button#createCert").classList.remove("hidden");
 		}, function(error) {
@@ -943,6 +945,9 @@ function init() {
 
 	if( document.querySelector("button#createCert") ) {
 		document.querySelector("button#createCert").addEventListener("click", createCert, false);
+	}
+	if( document.querySelector("button#newCert") ) {
+		document.querySelector("button#newCert").addEventListener("click", createCert, false);
 	}
 	if( document.querySelector("button#revokeCert") ) {
 		document.querySelector("button#revokeCert").addEventListener("click", revokeCert, false);

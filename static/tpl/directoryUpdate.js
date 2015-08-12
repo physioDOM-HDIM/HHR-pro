@@ -368,6 +368,7 @@ function createCert() {
 				OTP.innerHTML = account.OTP;
 			}
 			document.querySelector("button#revokeCert").classList.remove("hidden");
+			document.querySelector("button#newCert").classList.remove("hidden");
 			document.querySelector("button#createCert").classList.add("hidden");
 		}, function(error) {
 			new Modal('errorOccured');
@@ -385,6 +386,7 @@ function revokeCert() {
 				OTP.innerHTML = "";
 			}
 			document.querySelector("button#revokeCert").classList.add("hidden");
+			document.querySelector("button#newCert").classList.remove("hidden");
 			document.querySelector("button#createCert").classList.remove("hidden");
 		}, function(error) {
 			new Modal('errorOccured');
@@ -411,6 +413,9 @@ function init() {
 	}
 	if( document.querySelector("button#revokeCert") ) {
 		document.querySelector("button#revokeCert").addEventListener("click", revokeCert, false);
+	}
+	if( document.querySelector("button#newCert") ) {
+		document.querySelector("button#newCert").addEventListener("click", createCert, false);
 	}
 
     var inputTextList = document.querySelectorAll("input[type='text']"),
