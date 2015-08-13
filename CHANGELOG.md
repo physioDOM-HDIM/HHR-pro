@@ -1,3 +1,9 @@
+
+
+__v1.0.8__
+
+  - cosmetic : hide the button "Generate a new withdrawal code" when certificates has been revoked
+   
 __v1.0.7__
 
   - Bug 430 : Complément, les "lastValue" dans l'agenda des symptomes sont remis à jour et pousser vers les box
