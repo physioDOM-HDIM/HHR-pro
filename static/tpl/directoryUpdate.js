@@ -386,7 +386,7 @@ function revokeCert() {
 				OTP.innerHTML = "";
 			}
 			document.querySelector("button#revokeCert").classList.add("hidden");
-			document.querySelector("button#newCert").classList.remove("hidden");
+			document.querySelector("button#newCert").classList.add("hidden");
 			document.querySelector("button#createCert").classList.remove("hidden");
 		}, function(error) {
 			new Modal('errorOccured');
