@@ -1,4 +1,4 @@
-/*global RSVP:false */
+/* global RSVP:false */
 
 'use strict';
 
