@@ -55,7 +55,7 @@ function PhysioDOM( config ) {
 					resolve(that);
 				})
 				.catch( function(err) {
-					logger.error(err);
+					logger.emergency("error connecting to database ",that.config.mongouri );
 					reject(err);
 				});
 		});
