@@ -5,6 +5,7 @@
 var frequency = 'daily';
 var days = [];
 var agenda = null;
+var services = null; // list of services
 
 var promiseXHR = function(method, url, statusOK, data) {
 	var promise = new RSVP.Promise(function(resolve, reject) {
@@ -145,8 +146,9 @@ document.addEventListener('DOMContentLoaded', function() {
 	setFrequency('daily');
 
 	// Load types of services
-	promiseXHR('GET', '', 200)
+	promiseXHR('GET', '/api/lists/healthServices', 200)
 	.then(function(response) {
+			services = JSON.parse(response).items;
 		},
 		function(error) {
 			console.log(error);

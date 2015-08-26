@@ -1397,10 +1397,29 @@ function IPage() {
 		init(req);
 		var data = {
 			admin: ['COORD', 'ADMIN'].indexOf(req.session.roleClass) !== -1 ? true : false,
-			rights: { read:false, write:false, url: '/healthServices' }
+			rights: { read:true, write:true, url: '/healthServices' }
 		};
 
 		render('/static/tpl/healthServices.htm' , data, res, next);
+	};
+
+	/**
+	 * Basic health services creation page
+	 *
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	this.basicHealthServiceCreate = function(req, res, next) {
+		logger.trace('basicHealthServiceCreate');
+
+		init(req);
+		var data = {
+			admin: ['COORD', 'ADMIN'].indexOf(req.session.roleClass) !== -1 ? true : false,
+			rights: { read:true, write:true, url: '/healthServices' }
+		};
+
+		render('/static/tpl/healthServiceCreate.htm' , data, res, next);
 	};
 
 
@@ -1440,26 +1459,7 @@ function IPage() {
 				next();
 			});
 	};
-
-	/**
-	 * Basic health services creation page
-	 *
-	 * @param req
-	 * @param res
-	 * @param next
-	 */
-	this.basicHealthServiceCreate = function(req, res, next) {
-		logger.trace('basicHealthServiceCreate');
-
-		init(req);
-		var data = {
-			admin: ['COORD', 'ADMIN'].indexOf(req.session.roleClass) !== -1 ? true : false,
-			rights: { read:false, write:false, url: '/healthServices' }
-		};
-
-		render('/static/tpl/healthServiceCreate.htm' , data, res, next);
-	};
-
+	
 	/**
 	 * Current health status page
 	 * @param  req
