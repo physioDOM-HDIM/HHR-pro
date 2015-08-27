@@ -45,6 +45,19 @@ La taille des champs texte de descriptions est limité à 5 lignes de 60 caract�
 
 > __Nota :__ il n'y a pas sur la TV de champs correspondant au repas, ni de champs correspondant a la durée ?!?
 
+# Affichage
+
+Si beaucoup de prestation de service on pourrait afficher juste le titre de la prestation et dérouler le contenu sur click
+
+Pour la saisie des heures, mettre par défaut 09:00
+
+Mettre un widget pour saisir l'heure.
+
+Pour la saisie des rdv hebdomadaire permettre de deplacer d'un jour sur l'autre un rendez-vous par click'n drag
+
+
+
+
 menuItem = db.menus.findOne( { label:/agenda/i } )
 menuItem.disabled = false
 
