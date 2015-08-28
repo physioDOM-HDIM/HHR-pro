@@ -16,7 +16,7 @@
 var swig = require("swig"),
 	Logger = require("logger"),
 	RSVP = require("rsvp"),
-	promise = RSVP.Promise,
+	Promise = RSVP.Promise,
 	moment = require("moment"),
 	Menu     = require('../class/menu'),
 	SpecialRights = require('../class/specialRights'),
@@ -1509,7 +1509,7 @@ function IPage() {
 				})
 				.then( function(directory) {
 					if(data.status.validated.author) {
-						return new promise( function(resolve, reject) {
+						return new Promise( function(resolve, reject) {
 							directory.getEntryByID(data.status.validated.author.toString())
 								.then( resolve )
 								.catch( function() { resolve( null ) });
