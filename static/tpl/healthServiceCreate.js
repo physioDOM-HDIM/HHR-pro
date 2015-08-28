@@ -142,8 +142,8 @@ function onBtnCalMonthClick() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-
-	setFrequency('daily');
+	var respForm = form2js(document.querySelector("form[name='form']"));
+	setFrequency(respForm.frequency);
 
 	// Load types of services
 	promiseXHR('GET', '/api/lists/healthServices', 200)

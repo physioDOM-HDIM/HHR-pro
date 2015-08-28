@@ -1393,14 +1393,65 @@ function IPage() {
 	 */
 	this.basicHealthServices = function(req, res, next) {
 		logger.trace('basicHealthServices');
+		var lists = {};
+		var beneficiary;
 
 		init(req);
 		var data = {
 			admin: ['COORD', 'ADMIN'].indexOf(req.session.roleClass) !== -1 ? true : false,
 			rights: { read:true, write:true, url: '/healthServices' }
 		};
-
-		render('/static/tpl/healthServices.htm' , data, res, next);
+		
+		var promises = [
+			"job",
+			"role"
+		].map(promiseListArray);
+		
+		
+		Promise.all( promises )
+			.then( function( _lists ) {
+				lists.job = _lists[0].jobArray.items;
+				lists.role = _lists[1].roleArray.items;
+				return physioDOM.Lists.getList('healthServices');
+			})
+			.then( function(services) {
+				data.services = services.items;
+				return physioDOM.Beneficiaries();
+			})
+			.then(function(beneficiaries) {
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+				}
+			})
+			.then(function(_beneficiary) {
+				beneficiary = _beneficiary;
+				return _beneficiary.getProfessionals();
+			})
+			.then( function(professionals) {
+				professionals.forEach(function (professional) {
+					professional.role = lists.role[professional.role];
+					professional.job = lists.job[professional.job];
+				});
+				data.providers = professionals;
+				return beneficiary.getServices("HEALTH");
+			})
+			.then( function ( services ) {
+				data.services = services.items;
+				data.services.forEach( function (service) {
+					
+				});
+				console.log(data);
+				render('/static/tpl/healthServices.htm' , data, res, next);
+			})
+			.catch( function(err) {
+				logger.error( "basicHealthServices error", err);
+				if(err.stack) { 
+					console.log(err.stack);
+				}
+			});
+		
 	};
 
 	/**
@@ -1419,7 +1470,7 @@ function IPage() {
 			rights: { read:true, write:true, url: '/healthServices' }
 		};
 
-		render('/static/tpl/healthServiceCreate.htm' , data, res, next);
+		render('/static/tpl/healthServiceCreate.old.htm' , data, res, next);
 	};
 
 

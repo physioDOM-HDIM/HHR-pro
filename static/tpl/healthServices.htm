@@ -4,20 +4,18 @@
 
 {% block head %}
 {% parent %}
+<script src="/bower_components/zdk-calendar/form2js.js"></script>
+<link rel="import" href="/bower_components/zdk-agenda/zdk-agenda.html">
+<link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
+<link rel="import" href="/bower_components/zdk-calendar/custom-icons.html">
 <style>
 	div.col05 {
 		width: 130px;
 	}
 	
 	div.service {
-		padding: 5px 0px;
 		border: 1px solid lightgray;
-		border-bottom: 2px solid black;
 		margin-bottom: 10px;
-	}
-	
-	div.service.title2 {
-		background: chocolate;
 	}
 	
 	div.control button {
@@ -30,6 +28,65 @@
 	
 	div.row.h1 {
 		line-height: 25px;
+	}
+	
+	div.row.h2 {
+		line-height: 35px;
+	}
+	
+	div.row.title2 {
+		height: 40px;
+		background: #DFDFDF;
+		color:black;
+		padding: 0px 10px;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+	}
+	
+	div.content {
+		padding-top: 5px;
+		border-bottom: 2px solid black;
+	}
+	
+	zdk-modal div.content {
+		background: white;
+		padding: 20px;
+		border: none;
+	}
+	button.calendar-button {
+		min-width: 30px;
+	}
+</style>
+<style shim-shadowdom >
+	zdk-input-date #divcalendar {
+		left:none !important;
+	}
+	
+	#agenda::shadow #banner {
+		display: none;
+	}
+	zdk-modal#dialog-agenda .modalContentContainer {
+		margin: 50px 10px 50px 10px;
+		border: solid 1px #ddd;
+	}
+	
+	zdk-modal#dialog-agenda .modalButtonContainer.bottom {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		padding: 0 10px;
+	}
+	
+	zdk-modal#dialog-agenda .modalButtonContainer.top {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		padding: 0 10px;
+		margin: 10px 0px 20px 0px;
 	}
 </style>
 {% endblock %}
@@ -45,11 +102,11 @@
 </div>
 
 <div class="service">
-	<div class="row title2">
-		<div>Titre de la prestation : month</div>
+	<div class="row title2" onclick="expand(this)">
+		<core-icon icon="expand-less"></core-icon><span>Titre de la prestation : month</span>
 	</div>
 	
-	<div class="content">
+	<div class="content hidden">
 		<div class="row h1">
 			<div class="col05"></div>
 			<div class="col">
@@ -118,227 +175,233 @@ Max 5 lines of 60 characters</textarea>
 		</div>
 	</div>
 </div>
-
+<!--------------------------------------------------------------------->
 <div class="service">
-	<div class="row h1">
-		<div class="bold data-text">Titre de la prestation : semaine</div>
+	<div class="row title2" onclick="expand(this)">
+		<core-icon icon="expand-less"></core-icon><span>Titre de la prestation : semaine</span>
 	</div>
 	
-	<div class="row h1">
-		<div class="col05"></div>
-		<div class="col">
-			<label>{{"Prescriber"|i18n}}</label><span>Claire Archer</span>
+	<div class="content hidden">
+		<div class="row h1">
+			<div class="col05"></div>
+			<div class="col">
+				<label>{{"Prescriber"|i18n}}</label><span>Claire Archer</span>
+			</div>
+			<div class="col">
+				<label>{{"Provider"|i18n}}</label><span>Albert Dupont</span>
+			</div>
 		</div>
-		<div class="col">
-			<label>{{"Provider"|i18n}}</label><span>Albert Dupont</span>
+		
+		<div class="row h1">
+			<div class="col05"></div>
+			<div class="col" style="width:200px">
+				<label>{{"Detail of the service"|i18n}}</label>
+			</div>
 		</div>
-	</div>
-	
-	<div class="row h1">
-		<div class="col05"></div>
-		<div class="col" style="width:200px">
-			<label>{{"Detail of the service"|i18n}}</label>
-		</div>
-	</div>
-	<div class="row h1">
-		<div class="col05"></div>
-		<div class="col">
+		<div class="row h1">
+			<div class="col05"></div>
+			<div class="col">
 			<textarea rows="5" cols="60" wrap="hard">detail of the service
 Max 5 lines of 60 characters</textarea>
+			</div>
 		</div>
-	</div>
-	
-	<div class="row h1">
-		<div class="col05"></div>
-		<div class="col">
-			<label>{{"Start date"|i18n}}</label><span>data.startDate</span>
+		
+		<div class="row h1">
+			<div class="col05"></div>
+			<div class="col">
+				<label>{{"Start date"|i18n}}</label><span>data.startDate</span>
+			</div>
+			<div class="col">
+				<label>{{"End date"|i18n}}</label><span>data.endDate</span>
+			</div>
 		</div>
-		<div class="col">
-			<label>{{"End date"|i18n}}</label><span>data.endDate</span>
+		
+		<div class="row h1">
+			<div class="col05"></div>
+			<div class="col">
+				<!-- <label>{{"Start at"|i18n}}</label><span>10:00</span> -->
+			</div>
+			<div class="col">
+				<label>{{"Time of service"|i18n}}</label><span>02:00</span>
+			</div>
 		</div>
-	</div>
-	
-	<div class="row h1">
-		<div class="col05"></div>
-		<div class="col">
-			<!-- <label>{{"Start at"|i18n}}</label><span>10:00</span> -->
+		
+		<div class="row h1">
+			<div class="col05"></div>
+			<div class="col">
+				<label>{{"Frequency"|i18n}}</label><span>every X week</span>
+			</div>
 		</div>
-		<div class="col">
-			<label>{{"Time of service"|i18n}}</label><span>02:00</span>
+		
+		<div class="row h1">
+			<div class="col05"></div>
+			<div class="col">
+				<ul>
+					<li class="day">Monday {{"at" | i18n}} 10:00</li>
+					<li class="day">Thursday {{"at" | i18n}} 11:00</li>
+					<li class="day">Saturday {{"at" | i18n}} 15:00</li>
+				</ul>
+			</div>
 		</div>
-	</div>
-	
-	<div class="row h1">
-		<div class="col05"></div>
-		<div class="col">
-			<label>{{"Frequency"|i18n}}</label><span>every X week</span>
+		
+		<div class="row h1 control">
+			<span class="spacer"></span>
+			<button type="button" class="small red">{{"Delete"|i18n}}</button>
+			<button type="button" class="small green">{{"Edit"|i18n}}</button>
 		</div>
-	</div>
-	
-	<div class="row h1">
-		<div class="col05"></div>
-		<div class="col">
-			<ul>
-				<li class="day">Monday {{"at" | i18n}} 10:00</li>
-				<li class="day">Thursday {{"at" | i18n}} 11:00</li>
-				<li class="day">Saturday {{"at" | i18n}} 15:00</li>
-			</ul>
-		</div>
-	</div>
-	
-	<div class="row h1 control">
-		<span class="spacer"></span>
-		<button type="button" class="small red">{{"Delete"|i18n}}</button>
-		<button type="button" class="small green">{{"Edit"|i18n}}</button>
 	</div>
 </div>
-
+<!--------------------------------------------------------------------->
 <div class="service">
-	<div class="row h1">
-		<div class="bold data-text">Titre de la prestation : daily</div>
+	<div class="row title2" onclick="expand(this)">
+		<core-icon icon="expand-less"></core-icon><span>Titre de la prestation : daily</span>
 	</div>
 	
-	<div class="row h1">
-		<div class="col05"></div>
-		<div class="col">
-			<label>{{"Prescriber"|i18n}}</label><span>Claire Archer</span>
+	<div class="content hidden">
+		<div class="row h1">
+			<div class="col05"></div>
+			<div class="col">
+				<label>{{"Prescriber"|i18n}}</label><span>Claire Archer</span>
+			</div>
+			<div class="col">
+				<label>{{"Provider"|i18n}}</label><span>Albert Dupont</span>
+			</div>
 		</div>
-		<div class="col">
-			<label>{{"Provider"|i18n}}</label><span>Albert Dupont</span>
+		
+		<div class="row h1">
+			<div class="col05"></div>
+			<div class="col" style="width:200px">
+				<label>{{"Detail of the service"|i18n}}</label>
+			</div>
 		</div>
-	</div>
-	
-	<div class="row h1">
-		<div class="col05"></div>
-		<div class="col" style="width:200px">
-			<label>{{"Detail of the service"|i18n}}</label>
-		</div>
-	</div>
-	<div class="row h1">
-		<div class="col05"></div>
-		<div class="col">
+		<div class="row h1">
+			<div class="col05"></div>
+			<div class="col">
 			<textarea rows="5" cols="60" wrap="hard">detail of the service
 Max 5 lines of 60 characters</textarea>
+			</div>
 		</div>
-	</div>
-	
-	<div class="row h1">
-		<div class="col05"></div>
-		<div class="col">
-			<label>{{"Start date"|i18n}}</label><span>data.startDate</span>
+		
+		<div class="row h1">
+			<div class="col05"></div>
+			<div class="col">
+				<label>{{"Start date"|i18n}}</label><span>data.startDate</span>
+			</div>
+			<div class="col">
+				<label>{{"End date"|i18n}}</label><span>data.endDate</span>
+			</div>
 		</div>
-		<div class="col">
-			<label>{{"End date"|i18n}}</label><span>data.endDate</span>
+		
+		<div class="row h1">
+			<div class="col05"></div>
+			<div class="col">
+				<label>{{"Start at"|i18n}}</label><span>10:00</span>
+			</div>
+			<div class="col">
+				<label>{{"Time of service"|i18n}}</label><span>02:00</span>
+			</div>
 		</div>
-	</div>
-	
-	<div class="row h1">
-		<div class="col05"></div>
-		<div class="col">
-			<label>{{"Start at"|i18n}}</label><span>10:00</span>
+		
+		<div class="row h1">
+			<div class="col05"></div>
+			<div class="col">
+				<label>{{"Frequency"|i18n}}</label><span>every day (except week-end)</span>
+			</div>
 		</div>
-		<div class="col">
-			<label>{{"Time of service"|i18n}}</label><span>02:00</span>
+		
+		<!--
+		<div class="row h1">
+			<div class="col05"></div>
+			<div class="col">
+				<ul>
+					<li class="day">Monday {{"at" | i18n}} 10:00</li>
+				</ul>
+			</div>
 		</div>
-	</div>
-	
-	<div class="row h1">
-		<div class="col05"></div>
-		<div class="col">
-			<label>{{"Frequency"|i18n}}</label><span>every day (except week-end)</span>
+		-->
+		
+		<div class="row h1 control">
+			<span class="spacer"></span>
+			<button type="button" class="small red">{{"Delete"|i18n}}</button>
+			<button type="button" class="small green">{{"Edit"|i18n}}</button>
 		</div>
-	</div>
-	
-	<!--
-	<div class="row h1">
-		<div class="col05"></div>
-		<div class="col">
-			<ul>
-				<li class="day">Monday {{"at" | i18n}} 10:00</li>
-			</ul>
-		</div>
-	</div>
-	-->
-	
-	<div class="row h1 control">
-		<span class="spacer"></span>
-		<button type="button" class="small red">{{"Delete"|i18n}}</button>
-		<button type="button" class="small green">{{"Edit"|i18n}}</button>
 	</div>
 </div>
-
+<!--------------------------------------------------------------------->
 <div class="service">
-	<div class="row h1">
-		<div class="bold data-text">Titre de la prestation : ponctual</div>
+	<div class="row title2" onclick="expand(this)">
+		<core-icon icon="expand-less"></core-icon><span>Titre de la prestation : ponctual</span>
 	</div>
 	
-	<div class="row h1">
-		<div class="col05"></div>
-		<div class="col">
-			<label>{{"Prescriber"|i18n}}</label><span>Claire Archer</span>
+	<div class="content hidden">
+		<div class="row h1">
+			<div class="col05"></div>
+			<div class="col">
+				<label>{{"Prescriber"|i18n}}</label><span>Claire Archer</span>
+			</div>
+			<div class="col">
+				<label>{{"Provider"|i18n}}</label><span>Albert Dupont</span>
+			</div>
 		</div>
-		<div class="col">
-			<label>{{"Provider"|i18n}}</label><span>Albert Dupont</span>
+		
+		<div class="row h1">
+			<div class="col05"></div>
+			<div class="col" style="width:200px">
+				<label>{{"Detail of the service"|i18n}}</label>
+			</div>
 		</div>
-	</div>
-	
-	<div class="row h1">
-		<div class="col05"></div>
-		<div class="col" style="width:200px">
-			<label>{{"Detail of the service"|i18n}}</label>
-		</div>
-	</div>
-	<div class="row h1">
-		<div class="col05"></div>
-		<div class="col">
+		<div class="row h1">
+			<div class="col05"></div>
+			<div class="col">
 			<textarea rows="5" cols="60" wrap="hard">detail of the service
 Max 5 lines of 60 characters</textarea>
+			</div>
 		</div>
-	</div>
-	
-	<div class="row h1">
-		<div class="col05"></div>
-		<div class="col">
-			<label>{{"Start date"|i18n}}</label><span>data.startDate</span>
+		
+		<div class="row h1">
+			<div class="col05"></div>
+			<div class="col">
+				<label>{{"Start date"|i18n}}</label><span>data.startDate</span>
+			</div>
+			<div class="col">
+				<label>{{"End date"|i18n}}</label><span>data.endDate</span>
+			</div>
 		</div>
-		<div class="col">
-			<label>{{"End date"|i18n}}</label><span>data.endDate</span>
+		
+		<div class="row h1">
+			<div class="col05"></div>
+			<div class="col">
+				<label>{{"Start at"|i18n}}</label><span>10:00</span>
+			</div>
+			<div class="col">
+				<label>{{"Time of service"|i18n}}</label><span>02:00</span>
+			</div>
 		</div>
-	</div>
-	
-	<div class="row h1">
-		<div class="col05"></div>
-		<div class="col">
-			<label>{{"Start at"|i18n}}</label><span>10:00</span>
+		
+		<!--
+		<div class="row h1">
+			<div class="col05"></div>
+			<div class="col">
+				<label>{{"Frequency"|i18n}}</label><span>every month</span>
+			</div>
 		</div>
-		<div class="col">
-			<label>{{"Time of service"|i18n}}</label><span>02:00</span>
+		-->
+		
+		<div class="row h1">
+			<div class="col05"></div>
+			<div class="col">
+				<ul>
+					<li class="day">Thursday 3 september 2015 {{"at" | i18n}} 10:00</li>
+				</ul>
+			</div>
 		</div>
-	</div>
-	
-	<!--
-	<div class="row h1">
-		<div class="col05"></div>
-		<div class="col">
-			<label>{{"Frequency"|i18n}}</label><span>every month</span>
+		
+		
+		<div class="row h1 control">
+			<span class="spacer"></span>
+			<button type="button" class="small red">{{"Delete"|i18n}}</button>
+			<button type="button" class="small green">{{"Edit"|i18n}}</button>
 		</div>
-	</div>
-	-->
-	
-	<div class="row h1">
-		<div class="col05"></div>
-		<div class="col">
-			<ul>
-				<li class="day">Thursday 3 september 2015 {{"at" | i18n}} 10:00</li>
-			</ul>
-		</div>
-	</div>
-	
-	
-	<div class="row h1 control">
-		<span class="spacer"></span>
-		<button type="button" class="small red">{{"Delete"|i18n}}</button>
-		<button type="button" class="small green">{{"Edit"|i18n}}</button>
 	</div>
 </div>
 
@@ -347,7 +410,28 @@ Max 5 lines of 60 characters</textarea>
 	<button type="button" class="blue" onclick="showForm()">{{"Add a new service"|i18n}}</button>
 </div>
 
+<zdk-modal id="form" closebutton="false">
+	<div class="content">
+		{% include "./healthServiceCreate.htm" %}
+	</div>
+</zdk-modal>
+
 <script>
+	function expand(obj) {
+		var parent = obj.parentNode;
+		if(parent.querySelector(".content").classList.contains("hidden")) {
+			parent.querySelector("core-icon").setAttribute("icon", "expand-more");
+		} else {
+			parent.querySelector("core-icon").setAttribute("icon", "expand-less");
+		}
+		parent.querySelector(".content").classList.toggle("hidden");
+	}
+	
+	function showForm() {
+		var modal = document.querySelector("zdk-modal#form");
+		modal.show();
+	}
+	
 	var text = document.querySelector("textarea");
 	
 	function doGetCaretPosition(ctrl) {

@@ -24,6 +24,7 @@ var RSVP = require("rsvp"),
 	dbPromise = require("./database"),
 	Queue = require("./queue.js"),
 	Symptoms = require("./symptoms.js"),
+	Services = require("./services.js"),
 	moment = require("moment"),
 	md5 = require('MD5'),
 	soap = require("soap"),
@@ -1710,6 +1711,13 @@ function Beneficiary() {
 		return dataProg.remove(dataProgItemID);
 	};
 
+	this.getServices = function( category ) {
+		logger.trace("getServices ", category);
+		console.log( Services );
+		var services = new Services( this._id );
+		return services.getServices( category );
+	};
+	
 	this.questionnairePlan = function () {
 		logger.trace("questionnairePlan", this._id);
 		return new QuestionnairePlan(this._id);
