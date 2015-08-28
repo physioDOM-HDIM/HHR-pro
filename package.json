@@ -12,14 +12,10 @@
   "description": "A web portal for professionnal",
   "scripts": {
     "postinstall": "bower --allow-root install",
-    "start": "supervisor -w package.json,locales/en.json,locales/nl.json,locales/es.json,locales/fr.json,config.json,server/ -- server/server.js -c config.json 2>&1 > log/app.log",
+    "start": "supervisor -w package.json,/config/config.json,server/ -- server/server.js -c /config/config.json 2>&1 > /logs/app.log",
     "test": "node ./test/index.js"
   },
   "main": "./server/server.js",
-  "bin": {
-    "restoreDB": "./bin/restoreDB",
-    "backupDB": "./bin/backupDB"
-  },
   "repository": {
     "type": "git",
     "url": "http://git.telecomsante.com/physiodom-hdim/physiodom"
