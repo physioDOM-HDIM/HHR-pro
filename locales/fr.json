@@ -405,5 +405,11 @@
   "Warning status":"Statut d'alerte",
   "Source":"Source",
   "Date":"Date",
-  "Are you sure to disable the warning status ?":"Êtes-vous sûr de désactiver l'état d'alerte ?"
+  "Are you sure to disable the warning status ?":"Êtes-vous sûr de désactiver l'état d'alerte ?",
+  "Deactivate":"Dasactiver",
+  "Time of service":"Durée du service",
+  "Prescriber":"Prescripteur",
+  "Provider":"Fournisseur",
+  "Detail of the service":"Detail du service",
+  "Label of the service":"Label du service"
 }
