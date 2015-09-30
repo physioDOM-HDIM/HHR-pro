@@ -71,6 +71,10 @@ document.addEventListener('polymer-ready', function() {
 					},
 				];
 				break;
+			case 4:
+				service.detail = 'Description of the care to make';
+				service.frequency = 'daily';
+				break;
 		}
 
 		service.isDaily = service.frequency === 'daily';
