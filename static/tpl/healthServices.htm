@@ -4,61 +4,12 @@
 
 {% block head %}
 {% parent %}
+<script src="/scripts/utils.js"></script>
 <script src="/bower_components/zdk-calendar/form2js.js"></script>
 <link rel="import" href="/bower_components/zdk-agenda/zdk-agenda.html">
 <link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
 <link rel="import" href="/bower_components/zdk-calendar/custom-icons.html">
-<style>
-	div.col05 {
-		width: 130px;
-	}
-	
-	div.service {
-		border: 1px solid lightgray;
-		margin-bottom: 10px;
-	}
-	
-	div.control button {
-		margin-left: 10px;
-	}
-	
-	div.service label {
-		font-weight: bold;
-	}
-	
-	div.row.h1 {
-		line-height: 25px;
-	}
-	
-	div.row.h2 {
-		line-height: 35px;
-	}
-	
-	div.row.title2 {
-		height: 40px;
-		background: #DFDFDF;
-		color:black;
-		padding: 0px 10px;
-		-webkit-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-		user-select: none;
-	}
-	
-	div.content {
-		padding-top: 5px;
-		border-bottom: 2px solid black;
-	}
-	
-	zdk-modal div.content {
-		background: white;
-		padding: 20px;
-		border: none;
-	}
-	button.calendar-button {
-		min-width: 30px;
-	}
-</style>
+<link rel="stylesheet" href="/styles/services.css">
 <style shim-shadowdom >
 	zdk-input-date #divcalendar {
 		left:none !important;
@@ -100,6 +51,110 @@
 	<span class="spacer"></span>
 	<button type="button" class="blue" onclick="showForm()">{{"Add a new service"|i18n}}</button>
 </div>
+
+<template id="services" repeat="{%raw%}{{ service in services }}{%endraw%}" is="auto-binding">
+	<div class="service">
+		<div class="row title2" onclick="expand(this)">
+			<core-icon icon="expand-less"></core-icon><span>{%raw%}{{ service.refLabel.en }}{%endraw%}</span>
+		</div>
+		
+		<div class="content hidden">
+			<div class="row h1">
+				<div class="col05"></div>
+				<div class="col">
+					<label>{{"Prescriber"|i18n}}</label><span>{%raw%}{{ service.sourceName.given}} {{ service.sourceName.family}}{%endraw%}</span>
+				</div>
+				<div class="col">
+					<label>{{"Provider"|i18n}}</label><span>{%raw%}{{ service.providerName.given}} {{ service.providerName.family}}{%endraw%}</span>
+				</div>
+			</div>
+			
+			<div class="row h1">
+				<div class="col05"></div>
+				<div class="col" style="width:200px">
+					<label>{{"Detail of the service"|i18n}}</label>
+				</div>
+			</div>
+			<div class="row h1">
+				<div class="col05"></div>
+				<div class="col">
+			<textarea rows="5" cols="60" wrap="hard">{%raw%}{{service.detail}}{%endraw%}</textarea>
+				</div>
+			</div>
+			
+			<div class="row h1">
+				<div class="col05"></div>
+				<div class="col">
+					<label>{{"Start date"|i18n}}</label><span>{%raw%}{{service.startDate}}{%endraw%}</span>
+				</div>
+				<div class="col">
+					<label>{{"End date"|i18n}}</label><span>{%raw%}{{service.endDate}}{%endraw%}</span>
+				</div>
+			</div>
+			
+			<div class="row h1">
+				<div class="col05"></div>
+				<div class="col">
+					<template if="{%raw%}{{ service.frequency !== 'weekly' }}{%endraw%}">
+						<label>{{"Start at"|i18n}}</label><span>{%raw%}{{ service.time }}{%endraw%}</span>
+					</template>
+				</div>
+				<div class="col">
+					<label>{{"Time of service"|i18n}}</label><span>{%raw%}{{ service.duration }}{%endraw%}</span>
+				</div>
+			</div>
+			<template if="{%raw%}{{ service.frequency !== 'ponctual' }}{%endraw%}">
+				<div class="row h1">
+					<div class="col05"></div>
+					<div class="col">
+						<label>{{"Frequency"|i18n}}</label><span>{{"every"|i18n}} {%raw%}{{service.repeat}} {{service.frequency}}{%endraw%}</span>
+					</div>
+				</div>
+			</template>
+			
+			<template if="{%raw%}{{ service.frequency === 'monthly' }}{%endraw%}">
+				<div class="row h1">
+					<div class="col05"></div>
+					<div class="col">
+						<ul>
+							<template repeat="{%raw%}{{ date in service.when }}{%endraw%}">
+								<template if="{%raw%}{{ date === 1 }}{%endraw%}">
+									<li class="day">{%raw%}{{date}}{%endraw%}st of month</li>
+								</template>
+								<template if="{%raw%}{{ date === 2 }}{%endraw%}">
+									<li class="day">{%raw%}{{date}}{%endraw%}nd of month</li>
+								</template>
+								<template if="{%raw%}{{ date.day !== 1 && date.day !==2 }}{%endraw%}">
+									<li class="day">{%raw%}{{date}}{%endraw%}th of month</li>
+								</template>
+							
+							</template>
+						</ul>
+					</div>
+				</div>
+			</template>
+			
+			<template if="{%raw%}{{ service.frequency === 'weekly' }}{%endraw%}">
+				<div class="row h1">
+					<div class="col05"></div>
+					<div class="col">
+						<ul>
+							<template repeat="{%raw%}{{ date in service.when }}{%endraw%}">
+								<li class="day">{%raw%}{{date.day}}{%endraw%} {{"at"|i18n}} {%raw%}{{date.time}}{%endraw%}</li>
+							</template>
+						</ul>
+					</div>
+				</div>
+			</template>
+			
+			<div class="row h1 control">
+				<span class="spacer"></span>
+				<button type="button" class="small red">{{"Deactivate"|i18n}}</button>
+				<button type="button" class="small green">{{"Edit"|i18n}}</button>
+			</div>
+		</div>
+	</div>
+</template>
 
 <div class="service">
 	<div class="row title2" onclick="expand(this)">
@@ -399,7 +454,7 @@ Max 5 lines of 60 characters</textarea>
 		
 		<div class="row h1 control">
 			<span class="spacer"></span>
-			<button type="button" class="small red">{{"Delete"|i18n}}</button>
+			<button type="button" class="small red">{{"Deactivate"|i18n}}</button>
 			<button type="button" class="small green">{{"Edit"|i18n}}</button>
 		</div>
 	</div>
@@ -417,84 +472,23 @@ Max 5 lines of 60 characters</textarea>
 </zdk-modal>
 
 <script>
-	function expand(obj) {
-		var parent = obj.parentNode;
-		if(parent.querySelector(".content").classList.contains("hidden")) {
-			parent.querySelector("core-icon").setAttribute("icon", "expand-more");
-		} else {
-			parent.querySelector("core-icon").setAttribute("icon", "expand-less");
-		}
-		parent.querySelector(".content").classList.toggle("hidden");
+	function init() {
+		var tpl = document.querySelector("#services");
+		
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", "/api/beneficiary/services?category=health", true);
+		xhr.addEventListener("load", function () {
+			var data = {
+				lang    : 'en',
+				services: JSON.parse(xhr.responseText)
+			};
+			console.log(data);
+			tpl.model = data;
+		}, false);
+		xhr.send();
 	}
-	
-	function showForm() {
-		var modal = document.querySelector("zdk-modal#form");
-		modal.show();
-	}
-	
-	var text = document.querySelector("textarea");
-	
-	function doGetCaretPosition(ctrl) {
-		var CaretPos = 0;	// IE Support
-		if (document.selection) {
-			ctrl.focus();
-			var Sel = document.selection.createRange();
-			Sel.moveStart('character', -ctrl.value.length);
-			CaretPos = Sel.text.length;
-		}
-		// Firefox support
-		else if (ctrl.selectionStart || ctrl.selectionStart == '0')
-			CaretPos = ctrl.selectionStart;
-		return (CaretPos);
-	}
-	
-	function setCaretPosition(ctrl, pos) {
-		if (ctrl.setSelectionRange) {
-			ctrl.focus();
-			ctrl.setSelectionRange(pos, pos);
-		}
-		else if (ctrl.createTextRange) {
-			var range = ctrl.createTextRange();
-			range.collapse(true);
-			range.moveEnd('character', pos);
-			range.moveStart('character', pos);
-			range.select();
-		}
-	}
-	
-	text.addEventListener("keyup", function () {
-		// 60 caractères par lignes
-		var val = this.value;
-		var lines = val.split("\n");
-		var line, count = 0;
-		var pos = doGetCaretPosition(this);
-		var nb = 0;
-		cut = 0;
-		do {
-			if (lines[count].length > 60) {
-				line = lines[count].slice(60);
-				lines[count] = lines[count].slice(0, 60);
-				// console.log( "("+count+") line : " + line );
-				// console.log(lines[count] +" - "+ line);
-				if (!cut) {
-					cut = nb + 60;
-				}
-				if (lines[count + 1]) {
-					lines[count + 1] = line + lines[count + 1]
-				} else {
-					lines.push(line);
-				}
-			} else if (!cut) {
-				nb += lines[count].length + (count + 1 < lines.length ? 1 : 0);
-			}
-		} while (lines[++count]);
-		this.value = "";
-		for (i = 0, l = lines.length; i < l; i++) {
-			this.value += (i !== 0 ? "\n" : "") + lines[i];
-		}
-		// console.log( "pos ",pos, nb, cut );
-		setCaretPosition(this, pos + (cut && pos > cut ? 1 : 0));
-	}, false);
+	window.addEventListener("polymer-ready", init, false);
 </script>
+<script src="/tpl/healthServices.js"></script>
 {% include "./modal.htm" %}
 {% endblock %}
