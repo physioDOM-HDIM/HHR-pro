@@ -28,6 +28,7 @@ var RSVP = require("rsvp"),
 	moment = require("moment"),
 	md5 = require('MD5'),
 	soap = require("soap"),
+	Services = require("./services"),
 	Cookies = require("cookies");
 
 var logger = new Logger("Beneficiary");
@@ -88,6 +89,10 @@ function Beneficiary() {
 		});
 	};
 
+	this.services = function() {
+		return new Services( this );
+	};
+	
 	/**
 	 * Get a beneficiary known by its ID : `beneficiaryID`
 	 *
@@ -1713,8 +1718,7 @@ function Beneficiary() {
 
 	this.getServices = function( category ) {
 		logger.trace("getServices ", category);
-		console.log( Services );
-		var services = new Services( this._id );
+		var services = new Services( this );
 		return services.getServices( category );
 	};
 	

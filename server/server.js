@@ -24,6 +24,7 @@ var IDirectory = require('./lib/http/IDirectory'),
 	IMenu = require("./lib/http/IMenu"),
 	IQueue = require("./lib/http/IQueue"),
 	ILogIDS = require("./lib/http/ILogIDS.js"),
+	IServices = require("./lib/http/IServices"),
 	configSchema = require("./lib/schema/configSchema.js");
 
 var pkg     = require('../package.json');
@@ -496,6 +497,11 @@ server.del( '/api/beneficiary/questprog/:ref', IBeneficiary.delQuestProg );
 server.del( '/api/beneficiaries/:entryID/questprog/:ref', IBeneficiary.delQuestProg );
 server.put( '/api/beneficiary/questprog', IBeneficiary.setQuestProg );
 server.put( '/api/beneficiaries/:entryID/questprog', IBeneficiary.setQuestProg );
+
+server.get( '/api/beneficiary/services', IServices.getServices );
+server.get( '/api/beneficiary/services/:serviceID', IServices.getServiceByID );
+server.put( '/api/beneficiary/services', IServices.putService );
+server.del( '/api/beneficiary/services/:serviceID', IServices.removeService );
 
 // server.get( '/api/beneficiary/questprog/:quest', IBeneficiary.getDataProgCategory );
 
