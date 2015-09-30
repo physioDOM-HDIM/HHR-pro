@@ -141,6 +141,12 @@ function onBtnCalMonthClick() {
 	agenda.events = events;
 }
 
+function checkServiceForm() {
+	var form = document.querySelector("#form-add-service");
+	
+	console.log( form2js( form ) );
+}
+
 document.addEventListener('DOMContentLoaded', function() {
 	var respForm = form2js(document.querySelector("form[name='form']"));
 	setFrequency(respForm.frequency);
@@ -149,6 +155,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	promiseXHR('GET', '/api/lists/healthServices', 200)
 	.then(function(response) {
 			services = JSON.parse(response).items;
+			console.log( "services ",services );
 		},
 		function(error) {
 			console.log(error);
