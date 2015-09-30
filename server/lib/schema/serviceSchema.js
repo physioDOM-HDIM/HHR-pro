@@ -13,6 +13,15 @@ var dailyServiceSchema = {
 	properties: {
 		"category" : {type: "string", enum: ["HEALTH", "SOCIAL", "ASSIST"] , required: true },
 		"ref"      : {type: "string" , required: true },
+		"label"    : { type:"string" },
+		"active"   : { type: "boolean", required:true },
+		"deactivate" : {
+			type: "object",
+			properties : {
+				"source": {type: "object", description: "professional ID", required: true},
+				"date": {type: "string", format: "date", required: true}
+			}
+		},
 		"frequency": {type: "string", enum: ["weekly"], required: true},
 		"repeat"   : {type: "integer", default: 1},
 		"startDate": {type: "string", format: "date", required: true},
@@ -32,6 +41,15 @@ var weeklyServiceSchema = {
 	properties: {
 		"category" : {type: "string", enum: ["HEALTH", "SOCIAL", "ASSIST"] , required: true },
 		"ref"      : {type: "string" , required: true },
+		"label"    : { type:"string" },
+		"active"   : { type: "boolean", required:true },
+		"deactivate" : {
+			type: "object",
+			properties : {
+				"source": {type: "object", description: "professional ID", required: true},
+				"date": {type: "string", format: "date", required: true}
+			}
+		},
 		"frequency": {type: "string", enum: ["weekly"], required: true},
 		"repeat"   : {type: "integer", default: 1},
 		"startDate": {type: "string", format: "date", required: true},
@@ -59,6 +77,15 @@ var monthlyServiceSchema = {
 	properties: {
 		"category" : {type: "string", enum: ["HEALTH", "SOCIAL", "ASSIST"] , required: true },
 		"ref"      : {type: "string" , required: true },
+		"label"    : { type:"string" },
+		"active"   : { type: "boolean", required:true },
+		"deactivate" : {
+			type: "object",
+			properties : {
+				"source": {type: "object", description: "professional ID", required: true},
+				"date": {type: "string", format: "date", required: true}
+			}
+		},
 		"frequency": {type: "string", enum: ["monthly"], required: true},
 		"repeat"   : {type: "integer", default: 1},
 		"startDate": {type: "string", format: "date", required: true},
