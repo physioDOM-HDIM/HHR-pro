@@ -1,5 +1,5 @@
 
-Services
+# Services
 
 Le but est de pouvoir programmer des services de trois types :
 
@@ -34,6 +34,123 @@ La prescription d'un service :
     - Time of the service ( durée de la prestation )
     - start date & end date
     - Frequence 
+
+A daily service :
+
+```
+{
+	"subject" : ObjectId("559a3edde137390900e529b0"),
+	"category" : "HEALTH",
+	"source" : ObjectId("56092ce10c83d2c2036363be"),
+	"provider" : ObjectId("56092ce10c83d2c2036363be"),
+	"ref" : "NURSING",
+	"frequency" : "daily",
+	"repeat" : 1,
+	"startDate" : "2015-09-28",
+	"duration":"00:30",
+	"time": "10:00"
+}
+```
+
+> __Nota :__ ponctual services have the same structure as daily services, with :
+> 
+>   - repeat = 0
+>   - endDate = startDate
+>   - frequency = "punctual"
+>
+
+A Weekly service
+
+```
+{
+	"subject" : ObjectId("559a3edde137390900e529b0"),
+	"category" : "HEALTH",
+	"source" : ObjectId("56092ce10c83d2c2036363be"),
+	"provider" : ObjectId("56092ce10c83d2c2036363be"),
+	"ref" : "NURSING",
+	"frequency" : "weekly",
+	"repeat" : 1,
+	"startDate" : "2015-09-28",
+	"duration":"01:00"
+	"when": [
+	    { "day":"tuesday",  "time":"10:00" },
+	    { "day":"thursday", "time":"10:00" },
+	]
+}
+```
+
+> __Nota :__ for weekly event, day is the day of the week.
+
+A monthly service
+
+```
+{
+    _id: "560a5ca2b1d142313d1a2414",
+    subject: "559a3edde137390900e529b0",
+    category: "HEALTH",
+    source: "56092ce10c83d2c2036363be",
+    provider: "56092ce10c83d2c2036363be",
+    ref: "NURSING",
+    frequency: "monthly",
+    repeat: 1,
+    startDate: "2015-09-28",
+    endDate: "2015-12-31",
+    time : "16:00",
+    when: [ 1, 15, 28 ],
+    detail: "Test de service\nToutes les instances d'un service mensuel ont tous la même heure",
+    duration: "00:30"
+}
+```
+
+> __Nota :__  for monthly event, day is the day of the month.
+
+Un service ne peut pas être supprimé afin de garder l'historique des prescription pour le patient. 
+Il peut être désactivé :
+
+  - ajouter une propriété `active`
+  - ajouter une objet `deactivate` avec 
+    - date
+    - source : id du professionel qui desactive le service
+
+> __Nota :__ prevoir peut être un droit spécifique pour désactiver les services.
+
+Afin de faciliter la compréhesion de l'affichage il serait bien d'ajouter un titre ( label ) en option pour un service.
+
+
+get a service by its ID :
+  - request : /api/beneficiary/services/560a5ca2b1d142313d1a2414
+  - result
+  ~~~
+  {
+      _id: "560a5ca2b1d142313d1a2414",
+      subject: "559a3edde137390900e529b0",
+      category: "SOCIAL",
+      source: "56092ce10c83d2c2036363be",
+      provider: "56092ce10c83d2c2036363be",
+      ref: "SHOPHELP",
+      frequency: "monthly",
+      repeat: 1,
+      startDate: "2015-09-28",
+      time: "16:00",
+      when: [  1, 15, 28 ],
+      detail: "Test de service Toutes les instances d'un service mensuel ont tous la mÃªme heure",
+      duration: 30,
+      providerName: {
+          family: "Admin",
+          given: "System"
+      },
+      sourceName: {
+          family: "Admin",
+          given: "System"
+      },
+      refLabel: {
+          en: "Help with shopping",
+          nl: "Hulp bij boodschappen",
+          es: "Ayuda a compra",
+          fr: "Aide pour les courses"
+      }
+  }
+  ~~~
 
 La programmation d'un service est équivalent en terme d'affichage à la programmation d'une mesure.
 
