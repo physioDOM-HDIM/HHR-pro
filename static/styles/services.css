@@ -1,0 +1,49 @@
+div.col05 {
+	width: 130px;
+}
+
+div.service {
+	border: 1px solid lightgray;
+	margin-bottom: 10px;
+}
+
+div.control button {
+	margin-left: 10px;
+}
+
+div.service label {
+	font-weight: bold;
+}
+
+div.row.h1 {
+	line-height: 25px;
+}
+
+div.row.h2 {
+	line-height: 35px;
+}
+
+div.row.title2 {
+	height: 40px;
+	background: #DFDFDF;
+	color:black;
+	padding: 0px 10px;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+div.content {
+	padding-top: 5px;
+	border-bottom: 2px solid black;
+}
+
+zdk-modal div.content {
+	background: white;
+	padding: 20px;
+	border: none;
+}
+button.calendar-button {
+	min-width: 30px;
+}
