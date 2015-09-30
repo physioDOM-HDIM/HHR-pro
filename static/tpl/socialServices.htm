@@ -9,57 +9,8 @@
 <link rel="import" href="/bower_components/zdk-agenda/zdk-agenda.html">
 <link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
 <link rel="import" href="/bower_components/zdk-calendar/custom-icons.html">
-<style>
-	div.col05 {
-		width: 130px;
-	}
-	
-	div.service {
-		border: 1px solid lightgray;
-		margin-bottom: 10px;
-	}
-	
-	div.control button {
-		margin-left: 10px;
-	}
-	
-	div.service label {
-		font-weight: bold;
-	}
-	
-	div.row.h1 {
-		line-height: 25px;
-	}
-	
-	div.row.h2 {
-		line-height: 35px;
-	}
-	
-	div.row.title2 {
-		height: 40px;
-		background: #DFDFDF;
-		color:black;
-		padding: 0px 10px;
-		-webkit-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-		user-select: none;
-	}
-	
-	div.content {
-		padding-top: 5px;
-		border-bottom: 2px solid black;
-	}
-	
-	zdk-modal div.content {
-		background: white;
-		padding: 20px;
-		border: none;
-	}
-	button.calendar-button {
-		min-width: 30px;
-	}
-</style>
+
+<link rel="stylesheet" href="/styles/services.css">
 <style shim-shadowdom >
 	zdk-input-date #divcalendar {
 		left:none !important;
@@ -104,9 +55,15 @@
 
 <template id="services" repeat="{%raw%}{{ service in services }}{%endraw%}" is="auto-binding">
 	<div class="service">
+		{%raw%}
 		<div class="row title2" onclick="expand(this)">
-			<core-icon icon="expand-less"></core-icon><span>{%raw%}{{ service.refLabel.en }}{%endraw%}</span>
+			<core-icon icon="expand-less"></core-icon>
+			<span>{{ service.refLabel[ lang ] }}</span>
+			<template if="{{ service.label }}">
+				<span>&nbsp;: {{ service.label }}</span>
+			</template>
 		</div>
+		{%endraw%}
 		
 		<div class="content hidden">
 			<div class="row h1">
@@ -145,342 +102,66 @@
 			<div class="row h1">
 				<div class="col05"></div>
 				<div class="col">
-					<label>{{"Start at"|i18n}}</label><span>10:00</span>
+					<template if="{%raw%}{{ service.frequency !== 'weekly' }}{%endraw%}">
+						<label>{{"Start at"|i18n}}</label><span>{%raw%}{{ service.time }}{%endraw%}</span>
+					</template>
 				</div>
 				<div class="col">
-					<label>{{"Time of service"|i18n}}</label><span>02:00</span>
+					<label>{{"Time of service"|i18n}}</label><span>{%raw%}{{ service.duration }}{%endraw%}</span>
 				</div>
 			</div>
-			
+			<template if="{%raw%}{{ service.frequency !== 'ponctual' }}{%endraw%}">
 			<div class="row h1">
 				<div class="col05"></div>
 				<div class="col">
-					<label>{{"Frequency"|i18n}}</label><span>every month</span>
+					<label>{{"Frequency"|i18n}}</label><span>{%raw%}{{service.frequency}}{%endraw%}</span>
 				</div>
 			</div>
+			</template>
 			
-			<div class="row h1">
-				<div class="col05"></div>
-				<div class="col">
-					<ul>
-						<li class="day">9th of month</li>
-						<li class="day">24th of month</li>
-					</ul>
-				</div>
+			<template if="{%raw%}{{ service.frequency === 'monthly' }}{%endraw%}">
+				<div class="row h1">
+					<div class="col05"></div>
+					<div class="col">
+						<ul>
+							<template repeat="{%raw%}{{ date in service.when }}{%endraw%}">
+								<template if="{%raw%}{{ date === 1 }}{%endraw%}">
+									<li class="day">{%raw%}{{date}}{%endraw%}st of month</li>
+								</template>
+								<template if="{%raw%}{{ date === 2 }}{%endraw%}">
+									<li class="day">{%raw%}{{date}}{%endraw%}nd of month</li>
+								</template>
+								<template if="{%raw%}{{ date !== 1 && date !==2 }}{%endraw%}">
+									<li class="day">{%raw%}{{date}}{%endraw%}th of month</li>
+								</template>
+							
+							</template>
+						</ul>
+					</div>
 			</div>
+			</template>
+			
+			<template if="{%raw%}{{ service.frequency === 'weekly' }}{%endraw%}">
+				<div class="row h1">
+					<div class="col05"></div>
+					<div class="col">
+						<ul>
+							<template repeat="{%raw%}{{ date in service.when }}{%endraw%}">
+								<li class="day">{%raw%}{{date.day}}{%endraw%} {{"at"|i18n}} {%raw%}{{date.time}}{%endraw%}</li>
+							</template>
+						</ul>
+					</div>
+				</div>
+			</template>
 			
 			<div class="row h1 control">
 				<span class="spacer"></span>
-				<button type="button" class="small red">{{"Delete"|i18n}}</button>
-				<button type="button" class="small green">{{"Edit"|i18n}}</button>
+				<button type="button" class="small red">{{"Deactivate"|i18n}}</button>
+				<button type="button" class="small green" onclick="showForm('{%raw%}{{service._id}}{%endraw%}')">{{"Edit"|i18n}}</button>
 			</div>
 		</div>
 	</div>
 </template>
-
-<div class="service">
-	<div class="row title2" onclick="expand(this)">
-		<core-icon icon="expand-less"></core-icon><span>Titre de la prestation : month</span>
-	</div>
-	
-	<div class="content hidden">
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col">
-				<label>{{"Prescriber"|i18n}}</label><span>Claire Archer</span>
-			</div>
-			<div class="col">
-				<label>{{"Provider"|i18n}}</label><span>Albert Dupont</span>
-			</div>
-		</div>
-		
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col" style="width:200px">
-				<label>{{"Detail of the service"|i18n}}</label>
-			</div>
-		</div>
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col">
-			<textarea rows="5" cols="60" wrap="hard">detail of the service
-Max 5 lines of 60 characters</textarea>
-			</div>
-		</div>
-		
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col">
-				<label>{{"Start date"|i18n}}</label><span>data.startDate</span>
-			</div>
-			<div class="col">
-				<label>{{"End date"|i18n}}</label><span>data.endDate</span>
-			</div>
-		</div>
-		
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col">
-				<label>{{"Start at"|i18n}}</label><span>10:00</span>
-			</div>
-			<div class="col">
-				<label>{{"Time of service"|i18n}}</label><span>02:00</span>
-			</div>
-		</div>
-		
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col">
-				<label>{{"Frequency"|i18n}}</label><span>every month</span>
-			</div>
-		</div>
-		
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col">
-				<ul>
-					<li class="day">9th of month</li>
-					<li class="day">24th of month</li>
-				</ul>
-			</div>
-		</div>
-		
-		<div class="row h1 control">
-			<span class="spacer"></span>
-			<button type="button" class="small red">{{"Delete"|i18n}}</button>
-			<button type="button" class="small green">{{"Edit"|i18n}}</button>
-		</div>
-	</div>
-</div>
-<!--------------------------------------------------------------------->
-<div class="service">
-	<div class="row title2" onclick="expand(this)">
-		<core-icon icon="expand-less"></core-icon><span>Titre de la prestation : semaine</span>
-	</div>
-	
-	<div class="content hidden">
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col">
-				<label>{{"Prescriber"|i18n}}</label><span>Claire Archer</span>
-			</div>
-			<div class="col">
-				<label>{{"Provider"|i18n}}</label><span>Albert Dupont</span>
-			</div>
-		</div>
-		
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col" style="width:200px">
-				<label>{{"Detail of the service"|i18n}}</label>
-			</div>
-		</div>
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col">
-			<textarea rows="5" cols="60" wrap="hard">detail of the service
-Max 5 lines of 60 characters</textarea>
-			</div>
-		</div>
-		
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col">
-				<label>{{"Start date"|i18n}}</label><span>data.startDate</span>
-			</div>
-			<div class="col">
-				<label>{{"End date"|i18n}}</label><span>data.endDate</span>
-			</div>
-		</div>
-		
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col">
-				<!-- <label>{{"Start at"|i18n}}</label><span>10:00</span> -->
-			</div>
-			<div class="col">
-				<label>{{"Time of service"|i18n}}</label><span>02:00</span>
-			</div>
-		</div>
-		
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col">
-				<label>{{"Frequency"|i18n}}</label><span>every X week</span>
-			</div>
-		</div>
-		
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col">
-				<ul>
-					<li class="day">Monday {{"at" | i18n}} 10:00</li>
-					<li class="day">Thursday {{"at" | i18n}} 11:00</li>
-					<li class="day">Saturday {{"at" | i18n}} 15:00</li>
-				</ul>
-			</div>
-		</div>
-		
-		<div class="row h1 control">
-			<span class="spacer"></span>
-			<button type="button" class="small red">{{"Delete"|i18n}}</button>
-			<button type="button" class="small green">{{"Edit"|i18n}}</button>
-		</div>
-	</div>
-</div>
-<!--------------------------------------------------------------------->
-<div class="service">
-	<div class="row title2" onclick="expand(this)">
-		<core-icon icon="expand-less"></core-icon><span>Titre de la prestation : daily</span>
-	</div>
-	
-	<div class="content hidden">
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col">
-				<label>{{"Prescriber"|i18n}}</label><span>Claire Archer</span>
-			</div>
-			<div class="col">
-				<label>{{"Provider"|i18n}}</label><span>Albert Dupont</span>
-			</div>
-		</div>
-		
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col" style="width:200px">
-				<label>{{"Detail of the service"|i18n}}</label>
-			</div>
-		</div>
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col">
-			<textarea rows="5" cols="60" wrap="hard">detail of the service
-Max 5 lines of 60 characters</textarea>
-			</div>
-		</div>
-		
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col">
-				<label>{{"Start date"|i18n}}</label><span>data.startDate</span>
-			</div>
-			<div class="col">
-				<label>{{"End date"|i18n}}</label><span>data.endDate</span>
-			</div>
-		</div>
-		
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col">
-				<label>{{"Start at"|i18n}}</label><span>10:00</span>
-			</div>
-			<div class="col">
-				<label>{{"Time of service"|i18n}}</label><span>02:00</span>
-			</div>
-		</div>
-		
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col">
-				<label>{{"Frequency"|i18n}}</label><span>every day (except week-end)</span>
-			</div>
-		</div>
-		
-		<!--
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col">
-				<ul>
-					<li class="day">Monday {{"at" | i18n}} 10:00</li>
-				</ul>
-			</div>
-		</div>
-		-->
-		
-		<div class="row h1 control">
-			<span class="spacer"></span>
-			<button type="button" class="small red">{{"Delete"|i18n}}</button>
-			<button type="button" class="small green">{{"Edit"|i18n}}</button>
-		</div>
-	</div>
-</div>
-<!--------------------------------------------------------------------->
-<div class="service">
-	<div class="row title2" onclick="expand(this)">
-		<core-icon icon="expand-less"></core-icon><span>Titre de la prestation : ponctual</span>
-	</div>
-	
-	<div class="content hidden">
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col">
-				<label>{{"Prescriber"|i18n}}</label><span>Claire Archer</span>
-			</div>
-			<div class="col">
-				<label>{{"Provider"|i18n}}</label><span>Albert Dupont</span>
-			</div>
-		</div>
-		
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col" style="width:200px">
-				<label>{{"Detail of the service"|i18n}}</label>
-			</div>
-		</div>
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col">
-			<textarea rows="5" cols="60" wrap="hard">detail of the service
-Max 5 lines of 60 characters</textarea>
-			</div>
-		</div>
-		
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col">
-				<label>{{"Start date"|i18n}}</label><span>data.startDate</span>
-			</div>
-			<div class="col">
-				<label>{{"End date"|i18n}}</label><span>data.endDate</span>
-			</div>
-		</div>
-		
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col">
-				<label>{{"Start at"|i18n}}</label><span>10:00</span>
-			</div>
-			<div class="col">
-				<label>{{"Time of service"|i18n}}</label><span>02:00</span>
-			</div>
-		</div>
-		
-		<!--
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col">
-				<label>{{"Frequency"|i18n}}</label><span>every month</span>
-			</div>
-		</div>
-		-->
-		
-		<div class="row h1">
-			<div class="col05"></div>
-			<div class="col">
-				<ul>
-					<li class="day">Thursday 3 september 2015 {{"at" | i18n}} 10:00</li>
-				</ul>
-			</div>
-		</div>
-		
-		
-		<div class="row h1 control">
-			<span class="spacer"></span>
-			<button type="button" class="small red">{{"Delete"|i18n}}</button>
-			<button type="button" class="small green">{{"Edit"|i18n}}</button>
-		</div>
-	</div>
-</div>
 
 <div class="row control">
 	<span class="spacer"></span>
@@ -489,28 +170,136 @@ Max 5 lines of 60 characters</textarea>
 
 <zdk-modal id="form" closebutton="false">
 	<div class="content">
-		{% include "./healthServiceCreate.htm" %}
+	{% include "./serviceCreate.html" %}
 	</div>
 </zdk-modal>
 
 <script>
+	var hours  = [ 
+		"07:00", "07:30", "08:00", "08:30", "09:00", "09:00",
+	    "10:00", "10:30", "11:00", "11:30", "12:00", "12:30",
+	    "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", 
+	    "16:00", "16:30", "17:00", "17:30", "18:00", "18:30",
+		"19:00", "19:30", "20:00", "20:30", "21:00", "21:30"
+	];
+	var data = { lang    : 'fr' , services: [] };
+	var editedService;
+	var frequency;
+	
 	function init() {
 		var tpl = document.querySelector("#services");
 		
 		var xhr = new XMLHttpRequest();
-		xhr.open("GET", "/api/beneficiary/services?category=health", true);
+		xhr.open("GET", "/api/beneficiary/services?category=social", true);
 		xhr.addEventListener("load", function () {
-			var data = {
-				lang    : 'en',
-				services: JSON.parse(xhr.responseText)
-			};
+			data.services = JSON.parse(xhr.responseText);
 			console.log(data);
 			tpl.model = data;
 		}, false);
 		xhr.send();
 	}
 	window.addEventListener("polymer-ready", init, false);
+
+	function expand(obj) {
+		var parent = obj.parentNode;
+		if(parent.querySelector(".content").classList.contains("hidden")) {
+			parent.querySelector("core-icon").setAttribute("icon", "expand-more");
+		} else {
+			parent.querySelector("core-icon").setAttribute("icon", "expand-less");
+		}
+		parent.querySelector(".content").classList.toggle("hidden");
+	}
+	
+	function showForm( serviceID) {
+		var modal = document.querySelector("zdk-modal#form");
+		var tpl = document.querySelector("#formTpl");
+		modal.show();
+		
+		if( !serviceID ) {
+			editedService = {
+				title    : '',
+				detail   : '',
+				startDate: '',
+				endDate  : '',
+				frequency: 'daily',
+				repeat   : 1,
+				duration: "01:00",
+				time: "10:00"
+			};
+			tpl.model = {
+				hours : hours,
+				service: editedService
+			};
+		} else {
+			data.services.forEach( function(item) {
+				if( item._id === serviceID ) {
+					editedService = item;
+				}
+			});
+			tpl.model = {
+				hours  : hours,
+				service: editedService
+			};
+		}
+	}
+	
+	function cancelForm() {
+		/*
+		 var form = document.querySelector("form");
+		 console.log(form);
+		 document.querySelector("form").reset();
+		 document.querySelector("zdk-input-date#input-start").value = null;
+		 document.querySelector("zdk-input-date#input-end").value = null;
+		 */
+		document.querySelector("zdk-modal#form").hide();
+	}
+	
+	function frequencyChange(evt) {
+		var tpl = document.querySelector("#formTpl");
+		if( tpl.model.service.frequency === evt.target.value ) { return; }
+		
+		setFrequency(evt.target.value);
+	}
+	
+	function setFrequency( _frequency ) {
+		var tpl = document.querySelector("#formTpl");
+		tpl.model.service.frequency = _frequency;
+		
+		switch (frequency) {
+			case 'punctual':
+				tpl.model.service.duration = "01:00";
+				tpl.model.service.time = "10:00";
+				break;
+			case 'daily':
+				tpl.model.service.time = "10:00";
+				break;
+			case 'weekly':
+				tpl.model.service.duration = "01:00";
+				break;
+			case 'monthly':
+				tpl.model.service.duration = "01:00";
+				tpl.model.service.time = "10:00";
+				break
+		}
+	}
+	
+	document.getElementById('btn-warning-cancel').addEventListener('click', function() {
+		document.getElementById('dialog-warning-frequency').hide();
+		var tpl = document.querySelector("#formTpl");
+		
+		tpl.model.service.frequency = editedService.frequency;
+		tpl.model.service.duration = editedService.duration;
+		tpl.model.service.time = editedService.time;
+	});
+	
+	document.getElementById('btn-warning-confirm').addEventListener('click', function() {
+		document.getElementById('dialog-warning-frequency').hide();
+		//setFrequency(document.form.frequency.value);
+		//days = [];
+		var tpl = document.querySelector("#formTpl");
+		setFrequency(frequency);
+	});
 </script>
-<script src="/tpl/healthServices.js"></script>
+
 {% include "./modal.htm" %}
 {% endblock %}
