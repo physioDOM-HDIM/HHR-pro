@@ -26,20 +26,14 @@ function getServiceDetail( service ) {
 		
 		physioDOM.Directory()
 			.then(function (Directory) {
-				var promises = [service.provider, service.source].map(function (professionalID) {
+				var promises = [ service.source ].map(function (professionalID) {
 					return Directory.getEntryByID(professionalID);
 				});
 
 				return Promise.all(promises);
 			})
 			.then(function (professionals) {
-				service.providerName = professionals[0].name;
-				service.sourceName = professionals[1].name;
-				var listName = service.category.toLowerCase() + "Services";
-				return physioDOM.Lists.getListArray(listName);
-			})
-			.then(function (listServices) {
-				service.refLabel = listServices.items[service.ref];
+				service.sourceName = professionals[0].name;
 				resolve( service );
 			})
 			.catch( function(err) {
