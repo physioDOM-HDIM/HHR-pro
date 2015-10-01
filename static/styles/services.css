@@ -44,6 +44,14 @@ zdk-modal div.content {
 	padding: 20px;
 	border: none;
 }
+
 button.calendar-button {
 	min-width: 30px;
+}
+
+zdk-agenda {
+	-webkit-user-select: none;
+	-moz-user-select:none;
+	-ms-user-select:none;
+	user-select:none;
 }
