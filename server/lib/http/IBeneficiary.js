@@ -143,10 +143,11 @@ var IBeneficiary = {
 					req.session.save();
 				}
 				*/
+
 				if( req.session.role === "beneficiary") {
 					return beneficiaries.getHHR(req.session.beneficiary );
 				} else {
-					return beneficiaries.getBeneficiaryByID(req.session, new ObjectID(req.params.entryID) || req.session.beneficiary  );
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary  );
 				}
 			})
 			.then( function(beneficiary) {
