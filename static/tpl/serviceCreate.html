@@ -206,6 +206,23 @@
 			
 			console.log(agenda.events);
 		});
+		
+		document.querySelector("#putService")
+			.addEventListener("core-response", function(evt) {
+				if(editedService._id) {
+					// update
+					for (var i = 0, l = tplServices.model.services.length; i < l; i++) {
+						var item = tplServices.model.services[i];
+						if (tplServices.model.services[i]._id === editedService._id) {
+							tplServices.model.services[i] = JSON.parse(JSON.stringify(evt.detail.response));
+							break;
+						}
+					}
+				} else {
+					// create
+					tplServices.model.services.push( JSON.parse(JSON.stringify(evt.detail.response)) );
+				}
+			})
 	});
 	
 	function showForm( serviceID) {
@@ -314,31 +331,25 @@
 		editedService.provider = obj.provider;
 		editedService.duration = parseInt(obj.duration,10);
 		editedService.time = obj.time;
-		editedService.repeat = parseInt(obj.repeat,10);
+		editedService.repeat = parseInt(obj.repeat,10) || 0;
+		editedService.detail = obj.detail;
+		delete editedService.sourceName;
 		
-		if(editedService._id) {
-			// update 
-			tplServices.model.serviceID = editedService._id;
-			for (var i = 0, l = tplServices.model.services.length; i < l; i++) {
-				var item = tplServices.model.services[i];
-				if (tplServices.model.services[i]._id === editedService._id) {
-					tplServices.model.services[i] = JSON.parse(JSON.stringify(editedService));
-					break;
-				}
-			}
-		} else {
+		if(!editedService._id) {
 			// create
 			editedService.ref = obj.ref;
-			editedService.detail = obj.detail;
 			if( editedService.frequency === "punctual" ) {
 				editedService.endDate = editedService.startDate;
 				editedService.repeat = 0;
 			}
-			tplServices.model.services.push( JSON.parse(JSON.stringify(editedService)) );
+			// tplServices.model.services.push( JSON.parse(JSON.stringify(editedService)) );
 			
 		}
 		
-		console.log( "save", editedService);
+		var ajax = document.querySelector("#putService");
+		ajax.body = JSON.stringify(editedService);
+		ajax.go();
+		
 		document.querySelector("zdk-modal#form").hide();
 	}
 	
