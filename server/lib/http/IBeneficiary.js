@@ -663,19 +663,24 @@ var IBeneficiary = {
 				return beneficiary.deleteDataRecordByID(req.params.dataRecordID);
 			})
 			.then(function( nb ) {
-				var log = {
-					subject   : beneficiary._id,
-					datetime  : moment().toISOString(),
-					source    : req.session.person.id,
-					collection: "dataRecords",
-					action    : "delete",
-					what      : {}
-				};
-				logPromise(log)
-					.then( function() {
-						res.send(200, {code: 200, message: "Datarecord removed"});
-						next();
-					});
+				if( nb) {
+					var log = {
+						subject   : beneficiary._id,
+						datetime: moment().toISOString(),
+						source  : req.session.person.id,
+						collection: "dataRecords",
+						action    : "delete",
+						what      : {}
+					};
+					logPromise(log)
+						.then(function () {
+							res.send(200, {code: 200, message: "Datarecord removed"});
+							next();
+						});
+				} else {
+					res.send(404, {code: 404, message: "Datarecord not found"});
+					next();
+				}
 			})
 			.catch( function(err) {
 				res.send(err.code || 400, err);
