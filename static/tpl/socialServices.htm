@@ -1,6 +1,6 @@
 {% extends './page.htm' %}
 
-{% block title %}{{ "Basic health services" | i18n }}{% endblock %}
+{% block title %}{{ "Basic social services" | i18n }}{% endblock %}
 
 {% block head %}
 {% parent %}
@@ -9,6 +9,7 @@
 <link rel="import" href="/bower_components/zdk-agenda/zdk-agenda.html">
 <link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
 <link rel="import" href="/bower_components/zdk-calendar/custom-icons.html">
+<link rel="import" href="/bower_components/core-ajax/core-ajax.html">
 
 <link rel="stylesheet" href="/styles/services.css">
 <style shim-shadowdom >
@@ -45,7 +46,7 @@
 
 {% block content %}
 <div class="row title">
-	<label class="title">Basic health services</label>
+	<label class="title">{{"Basic social services" | i18n }}</label>
 </div>
 
 <div class="row control" style="margin-bottom:20px">
@@ -54,25 +55,29 @@
 </div>
 
 <template id="services" repeat="{%raw%}{{ service in services }}{%endraw%}" is="auto-binding">
-	<div class="service">
+	<div class="service" id="{{ service._id }}">
 		{%raw%}
+		<input type="hidden" name="category" value="{{service.category}}">
 		<div class="row title2" onclick="expand(this)">
-			<core-icon icon="expand-less"></core-icon>
-			<span>{{ service.refLabel[ lang ] }}</span>
+			<core-icon icon="{{ service._id === serviceID?'expand-more':'expand-less' }}"></core-icon>
+			<span>{{ refServices[service.ref].label[ lang ] }}</span>
 			<template if="{{ service.label }}">
 				<span>&nbsp;: {{ service.label }}</span>
 			</template>
 		</div>
 		{%endraw%}
 		
-		<div class="content hidden">
+		<div class="content {%raw%}{{ service._id === serviceID?'':'hidden' }}{%endraw%}">
 			<div class="row h1">
 				<div class="col05"></div>
 				<div class="col">
-					<label>{{"Prescriber"|i18n}}</label><span>{%raw%}{{ service.sourceName.given}} {{ service.sourceName.family}}{%endraw%}</span>
+					<label>{{"Prescriber"|i18n}}</label><span>{%raw%}{{ service.sourceName.family }} {{ service.sourceName.given}}{%endraw%}</span>
 				</div>
+			</div>
+			<div class="row h1">
+				<div class="col05"></div>
 				<div class="col">
-					<label>{{"Provider"|i18n}}</label><span>{%raw%}{{ service.providerName.given}} {{ service.providerName.family}}{%endraw%}</span>
+					<label>{{"Provider"|i18n}}</label><span>{%raw%}{{ providers[service.provider].name.family }} {{ providers[service.provider].name.given}}{%endraw%}</span>
 				</div>
 			</div>
 			
@@ -107,7 +112,7 @@
 					</template>
 				</div>
 				<div class="col">
-					<label>{{"Time of service"|i18n}}</label><span>{%raw%}{{ service.duration }}{%endraw%}</span>
+					<label>{{"Time of service"|i18n}}</label><span>{%raw%}{{ service.duration | time }}{%endraw%}</span>
 				</div>
 			</div>
 			<template if="{%raw%}{{ service.frequency !== 'ponctual' }}{%endraw%}">
@@ -174,6 +179,23 @@
 	</div>
 </zdk-modal>
 
+<core-ajax id="ajaxProfessionals"
+           auto
+           url="/api/beneficiary/professionals"
+           handleAs="json"></core-ajax>
+<core-ajax id="ajaxJobs"
+           auto
+           url="/api/lists/job/array"
+           handleAs="json"></core-ajax>
+<core-ajax id="ajaxServices"
+           auto
+           url="/api/lists/socialServices"
+           handleAs="json"></core-ajax>
+<core-ajax id="ajaxPrescribedServices"
+           auto
+           url="/api/beneficiary/services?category=social&active=true"
+           handleAs="json"></core-ajax>
+
 <script>
 	var hours  = [ 
 		"07:00", "07:30", "08:00", "08:30", "09:00", "09:00",
@@ -182,22 +204,66 @@
 	    "16:00", "16:30", "17:00", "17:30", "18:00", "18:30",
 		"19:00", "19:30", "20:00", "20:30", "21:00", "21:30"
 	];
-	var data = { lang    : 'fr' , services: [] };
+	var durations = [ 
+		{value:30, label:'00:30'}, {value:60, label:'01:00'}, {value:90, label:'01:30'}, {value:120, label:'02:00'},
+		{value:150, label:'02:30'}, {value:180, label:'03:00'}, {value:210, label:'03:30'}, {value:240, label:'04:00'},
+	];
+	var data = { lang    : 'fr', serviceID:'' };
 	var editedService;
 	var frequency;
+	var tplServices;
+	var professionals;
+	var jobs;
+	var refServices;
+	 
+	PolymerExpressions.prototype.time = function(value) {
+		if( value ) return moment("2015-01-01").add(moment.duration( { "minutes": value }) ).format("HH:mm");
+	}
 	
 	function init() {
-		var tpl = document.querySelector("#services");
+		tplServices = document.querySelector("#services");
 		
-		var xhr = new XMLHttpRequest();
-		xhr.open("GET", "/api/beneficiary/services?category=social", true);
-		xhr.addEventListener("load", function () {
-			data.services = JSON.parse(xhr.responseText);
-			console.log(data);
-			tpl.model = data;
-		}, false);
-		xhr.send();
+		tplServices = document.querySelector("#services");
+		document.querySelector("#ajaxProfessionals")
+			.addEventListener("core-response", function(evt) {
+				professionals = evt.detail.response;
+				
+				var tmp = {};
+				professionals.forEach( function(item) {
+					tmp[item._id] = item;
+				});
+				data.providers = tmp;
+				renderTpl();
+			});
+		document.querySelector("#ajaxJobs")
+			.addEventListener("core-response", function(evt) {
+				jobs = evt.detail.response.items;
+				data.jobs = jobs;
+				renderTpl();
+			});
+		document.querySelector("#ajaxServices")
+			.addEventListener("core-response", function(evt) {
+				refServices = evt.detail.response.items;
+				var tmp = {};
+				refServices.forEach( function(item) {
+					tmp[item.ref] = item;
+				});
+				data.refServices = tmp;
+				renderTpl();
+			});
+		document.querySelector("#ajaxPrescribedServices")
+			.addEventListener("core-response", function(evt) {
+				data.services = evt.detail.response;
+				renderTpl();
+			});
 	}
+	
+	function renderTpl() {
+		if( data.providers && data.jobs && data.refServices && data.services ) {
+			tplServices.model = data;
+		}
+	}
+	
 	window.addEventListener("polymer-ready", init, false);
 
 	function expand(obj) {
@@ -210,95 +276,6 @@
 		parent.querySelector(".content").classList.toggle("hidden");
 	}
 	
-	function showForm( serviceID) {
-		var modal = document.querySelector("zdk-modal#form");
-		var tpl = document.querySelector("#formTpl");
-		modal.show();
-		
-		if( !serviceID ) {
-			editedService = {
-				title    : '',
-				detail   : '',
-				startDate: '',
-				endDate  : '',
-				frequency: 'daily',
-				repeat   : 1,
-				duration: "01:00",
-				time: "10:00"
-			};
-			tpl.model = {
-				hours : hours,
-				service: editedService
-			};
-		} else {
-			data.services.forEach( function(item) {
-				if( item._id === serviceID ) {
-					editedService = item;
-				}
-			});
-			tpl.model = {
-				hours  : hours,
-				service: editedService
-			};
-		}
-	}
-	
-	function cancelForm() {
-		/*
-		 var form = document.querySelector("form");
-		 console.log(form);
-		 document.querySelector("form").reset();
-		 document.querySelector("zdk-input-date#input-start").value = null;
-		 document.querySelector("zdk-input-date#input-end").value = null;
-		 */
-		document.querySelector("zdk-modal#form").hide();
-	}
-	
-	function frequencyChange(evt) {
-		var tpl = document.querySelector("#formTpl");
-		if( tpl.model.service.frequency === evt.target.value ) { return; }
-		
-		setFrequency(evt.target.value);
-	}
-	
-	function setFrequency( _frequency ) {
-		var tpl = document.querySelector("#formTpl");
-		tpl.model.service.frequency = _frequency;
-		
-		switch (frequency) {
-			case 'punctual':
-				tpl.model.service.duration = "01:00";
-				tpl.model.service.time = "10:00";
-				break;
-			case 'daily':
-				tpl.model.service.time = "10:00";
-				break;
-			case 'weekly':
-				tpl.model.service.duration = "01:00";
-				break;
-			case 'monthly':
-				tpl.model.service.duration = "01:00";
-				tpl.model.service.time = "10:00";
-				break
-		}
-	}
-	
-	document.getElementById('btn-warning-cancel').addEventListener('click', function() {
-		document.getElementById('dialog-warning-frequency').hide();
-		var tpl = document.querySelector("#formTpl");
-		
-		tpl.model.service.frequency = editedService.frequency;
-		tpl.model.service.duration = editedService.duration;
-		tpl.model.service.time = editedService.time;
-	});
-	
-	document.getElementById('btn-warning-confirm').addEventListener('click', function() {
-		document.getElementById('dialog-warning-frequency').hide();
-		//setFrequency(document.form.frequency.value);
-		//days = [];
-		var tpl = document.querySelector("#formTpl");
-		setFrequency(frequency);
-	});
 </script>
 
 {% include "./modal.htm" %}

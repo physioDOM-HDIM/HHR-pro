@@ -1473,6 +1473,43 @@ function IPage() {
 		render('/static/tpl/healthServiceCreate.old.htm' , data, res, next);
 	};
 
+	/**
+	 * Basic health services Overview
+	 *
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	this.basicSocialServices = function(req, res, next) {
+		logger.trace('basicHealthServices');
+
+		init(req);
+		var data = {
+			admin: ['COORD', 'ADMIN'].indexOf(req.session.roleClass) !== -1 ? true : false,
+			rights: { read:true, write:true, url: '/socialServices' }
+		};
+
+		render('/static/tpl/socialServices.htm' , data, res, next);
+	};
+	
+	/**
+	 * Basic health services creation page
+	 *
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	this.basicSocialServiceCreate = function(req, res, next) {
+		logger.trace('basicSocialServiceCreate');
+
+		init(req);
+		var data = {
+			admin: ['COORD', 'ADMIN'].indexOf(req.session.roleClass) !== -1 ? true : false,
+			rights: { read:true, write:true, url: '/healthServices' }
+		};
+
+		render('/static/tpl/healthServiceCreate.old.htm' , data, res, next);
+	};
 
 	this.physiologicalData = function(req, res, next) {
 		logger.trace("PhysiologicalData");
