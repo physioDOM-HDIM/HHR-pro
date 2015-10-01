@@ -1406,8 +1406,20 @@ function IPage() {
 			"job",
 			"role"
 		].map(promiseListArray);
-		
-		
+
+		/**
+		 * Calculate the data object to pass to swig
+		 * 
+		 * the object is of the form
+		 * 
+		 *     {
+		 *        admin : boolean
+		 *        rights: object
+		 *        services : array of service labels
+		 *        providers: array of professional object
+		 *        items : Array of prescribed services
+		 *     }
+		 */
 		Promise.all( promises )
 			.then( function( _lists ) {
 				lists.job = _lists[0].jobArray.items;
@@ -1438,11 +1450,8 @@ function IPage() {
 				return beneficiary.getServices("HEALTH");
 			})
 			.then( function ( services ) {
-				data.services = services.items;
-				data.services.forEach( function (service) {
-					
-				});
-				console.log(data);
+				// data.services = services;
+				data.items = services;
 				render('/static/tpl/healthServices.htm' , data, res, next);
 			})
 			.catch( function(err) {
