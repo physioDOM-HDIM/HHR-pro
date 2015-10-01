@@ -17,7 +17,7 @@ var Promise = require("rsvp").Promise,
 var logger = new Logger("Services");
 
 function Services( beneficiary ) {
-	this.beneficiaryID = beneficiary._id;
+	this.subject = beneficiary._id;
 }
 
 function getServiceDetail( service ) {
@@ -54,7 +54,7 @@ Services.prototype.getServices = function( category ) {
 			throw { code: 405, message: "bad category name"};
 		}
 		var search = {
-			subject : that.beneficiaryID
+			subject : that.subject
 		};
 	
 		if( category ) {
@@ -112,7 +112,7 @@ Services.prototype.getServicesItems = function( startDate, nbDays, lang ) {
 		var endDate = moment(startDate).add(nbDays,'d').format("YYYY-MM-DD");
 		var item;
 		var search = {
-			subject: that.beneficiaryID,
+			subject: that.subject,
 			startDate: { '$lte' : endDate },
 			endDate: { '$gte' : startDate }
 		};
@@ -157,7 +157,7 @@ Services.prototype.getServiceByID = function( serviceID ) {
 		}
 		
 		var search = {
-			subject : that.beneficiaryID,
+			subject : that.subject,
 			_id: new ObjectID(serviceID) || null
 		};
 		
@@ -233,7 +233,7 @@ Services.prototype.remove = function( serviceID ) {
 		logger.trace("remove", serviceID);
 		var search = {
 			_id: new ObjectID(serviceID),
-			subject: that.beneficiaryID
+			subject: that.subject
 		};
 		physioDOM.db.collection("services").remove( search, function( err, nb) {
 			resolve( nb?true:false );
