@@ -44,9 +44,16 @@ function getServiceDetail( service ) {
 	});
 }
 
-Services.prototype.getServices = function( category ) {
-	logger.trace("getServices", category);
-	
+/**
+ * Get the list of services for a beneficiary
+ * 
+ * @param category : HEALTH or SOCIAL
+ * @param active   : if true only active services else all services 
+ * @returns {*}
+ */
+Services.prototype.getServices = function( category, active ) {
+	logger.trace("getServices", category + " " + (active===true?"active":"all"));
+	logger.trace("getServices active ",active );
 	var that = this;
 	
 	return new Promise( function(resolve, reject) {
@@ -60,8 +67,11 @@ Services.prototype.getServices = function( category ) {
 		if( category ) {
 			search.category = category.toUpperCase();
 		}
+		if( active ) {
+			search.active = true;
+		}
 		
-		var cursor = physioDOM.db.collection("services").find(search);
+		var cursor = physioDOM.db.collection("services").find(search).sort({ active: 1 });
 		dbPromise.getList(cursor, 1, 1000)
 			.then( function( services ) {
 				var promises = services.items.map( function(service) {
