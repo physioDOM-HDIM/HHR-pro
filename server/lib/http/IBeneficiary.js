@@ -5,16 +5,22 @@
 
 /* jslint node:true */
 /* global physioDOM */
+/* global -Promise */
 "use strict";
 
 var Logger = require("logger"),
 	ObjectID = require("mongodb").ObjectID,
-	DataRecords = require("../class/dataRecords"),
-	RSVP = require("rsvp"),
-	promise = require("rsvp").Promise,
+	Promise = require("rsvp").Promise,
 	moment = require('moment');
-var CurrentStatus = require('../class/currentStatus');
 var logger = new Logger("IBeneficiary");
+
+function logPromise(log) {
+	return new Promise(function (resolve) {
+		physioDOM.db.collection("journal").save(log, function () {
+			resolve(log);
+		});
+	});
+}
 
 /**
  * IBeneficiaries
