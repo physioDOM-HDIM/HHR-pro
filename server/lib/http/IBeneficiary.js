@@ -1637,12 +1637,4 @@ var IBeneficiary = {
 	}
 };
 
-function logPromise(log) {
-	return new promise(function (resolve, reject) {
-		physioDOM.db.collection("journal").save(log, function (err) {
-			resolve(log);
-		});
-	});
-}
-
 module.exports = IBeneficiary;
