@@ -2,49 +2,49 @@
 	
 	<form name="form" id="form-add-service" autocomplete="off" onsubmit="checkServiceForm(); return false;">
 		<!--<input type="hidden" name="_id" value="{{beneficiary._id.toString()}}">-->
-		<input type="hidden" name="serviceID" value="{{service._id}}">
-		
+		{%raw%}
+		<input type="hidden" name="_id" value="{{service._id}}">
+		<input type="hidden" name="category" value="{{service.category}}">
+		{%endraw%}
 		<div class="row h2">
 			<div class="col">
-				<label for="input-type">{{"Type of service" | i18n}}</label>
-				<select id="input-type" name="type">
-					{% raw %}
-					<template repeat="{{ serviceRef in refServices}}">
-						<template if="{{ service.ref === serviceRef.ref}}">
-							<option value="{{ serviceRef.ref }}" checked>{{serviceRef.label.en}}</option>
-						</template>
-						<template if=" {{ service.ref !== serviceRef.ref}}">
-							<option value="{{ serviceRef.ref }}">{{serviceRef.label.en}}</option>
-						</template>
+				<label for="inputRef">{{"Type of service" | i18n}}</label>
+				{% raw %}
+				<select id="inputRef" name="ref" disabled?="{{ service._id }}" required>
+					<template if="{{ !service._id }}">
+						<option ></option>
 					</template>
-					{% endraw %}
+					<template repeat="{{ serviceRef in refServices}}">
+						<option value="{{ serviceRef.ref }}" 
+						        checked?="{{ serviceRef.ref === service.ref }}">
+							{{ serviceRef.label[lang] }}
+						</option>
+					</template>
 				</select>
+				{% endraw %}
 			</div>
 		</div>
 		
 		<div class="row h2">
 			<div class="col">
-				<label for="input-type">{{"Label of the service" | i18n}}</label>
-				<input type="text" value="{%raw%}{{ service.label }}{%endraw%}" name="service.title">
+				<label for="inputLabel">{{"Label of the service" | i18n}}</label>
+				<input type="text" value="{%raw%}{{ service.label }}{%endraw%}" name="label" id="inputLabel">
 			</div>
 		</div>
 		
 		<div class="row h2">
 			<div class="col">
-				<label for="input-provider">{{"Provider" | i18n}}</label>
-				<select id="input-provider" name="provider">
+				<label for="inputProvider">{{"Provider" | i18n}}</label>
+				<select id="inputProvider" name="provider">
 					{% raw %}
+					<template if="{{ !service._id }}">
+						<option ></option>
+					</template>
 					<template repeat="{{ provider in providers}}">
-						<template if="{{ provider._id === service.provide}}">
-							<option value="{{ provider._id }}" checked>{provider.name.family}} {{provider.name.given}} (
-								{{provider.job}} )
-							</option>
-						</template>
-						<template if="{{ provider._id === service.provide}}">
-							<option value="{{ provider._id }}">{provider.name.family}} {{provider.name.given}} (
-								{{provider.job}} )
-							</option>
-						</template>
+						<option value="{{ provider._id }}" 
+						        checked?="{{ provider._id === service.provider}}">
+							{{provider.name.family}} {{provider.name.given}} ( {{ jobs[provider.job][lang] }} )
+						</option>
 					</template>
 					{% endraw %}
 				</select>
@@ -55,13 +55,22 @@
 			<textarea rows="5" cols="60" wrap="hard" name="detail">{%raw%}{{service.detail}}{%endraw%}</textarea>
 		</div>
 		
-		<div class="row h2" id="dates-block">
-			<label for="input-start">{{"Start date" | i18n}}</label>
-			<zdk-input-date id="input-start" name="startDate" staticpos="true"
-			                value="{%raw%}{{service.startDate}}{%endraw%}"></zdk-input-date>
-			<label for="input-end" style="padding-left:5px">{{"End date" | i18n}}</label>
-			<zdk-input-date id="input-end" name="endDate" staticpos="true"
-			                value="{%raw%}{{service.endDate}}{%endraw%}"></zdk-input-date>
+		<div class="row h2">
+			<label>{{"Start date" | i18n}}</label>
+			{%raw%}
+			<template if="{{ service._id }}">
+				<span id="startDate"><b>{{service.startDate}}</b></span>
+			</template>
+			<template if="{{ !service._id }}">
+				<zdk-input-date name="startDate" id="startDate" staticpos="true"
+			                value="{{service.startDate}}" required></zdk-input-date>
+			</template>
+			{%endraw%}
+			<template if="{%raw%}{{ service.frequency !== 'punctual' }}{%endraw%}">
+				<label style="padding-left:5px">{{"End date" | i18n}}</label>
+				<zdk-input-date name="endDate" id="endDate" staticpos="true"
+				                value="{%raw%}{{service.endDate}}{%endraw%}" required></zdk-input-date>
+			</template>
 		</div>
 		
 		<div class="row h2" id="frequency">
@@ -89,21 +98,23 @@
 				<template if="{%raw%}{{ service.frequency == 'daily' }}{%endraw%}">
 					<div id="repeat-group" class="col">
 						<label for="input-repeat" style="width:auto">{{"Every" | i18n}}</label>
-						<input type="number" id="input-repeat" name="repeat" value="1" style="width: 50px;margin:0px 5px">&nbsp;
+						<input type="number" id="input-repeat" name="repeat" 
+						       value="{%raw%}{{ service.repeat}}{%endraw%}" 
+						       style="width: 50px;margin:0px 5px" required min="1" step="1" >&nbsp;
 						<span id="repeat-label">{% raw %}{{ service.frequency }}{% endraw %}</span>
 					</div>
 				</template>
 				
 				<div class="col" style="align-items: center;">
-					<label for="input-duration" style="width:auto">{{"Duration" | i18n}}</label>
-					{%raw%}
-					<select id="input-duration" name="duration" style="min-width: 100px;margin: 0px 5px;">
-						<option value="30"  selected?="{{ service.duration=='00:30' }}">00:30</option>
-						<option value="60"  selected?="{{ service.duration=='01:00' }}">01:00</option>
-						<option value="90"  selected?="{{ service.duration=='01:30' }}">01:30</option>
-						<option value="120" selected?="{{ service.duration=='02:00' }}">02:00</option>
+					<label for="inputDuration" style="width:auto">{{"Duration" | i18n}}</label>
+					<select id="inputDuration" name="duration" style="min-width: 100px;margin: 0px 5px;" required>
+						{% raw %}
+						<template repeat="{{ duration in durations }}">
+							<option value="{{duration.value}}" 
+							        selected?="{{ service.duration == duration.value }}">{{duration.label}}</option>
+						</template>
+						{% endraw %}
 					</select>
-					{%endraw%}
 					<label style="width:auto">{{"hour(s)" | i18n}}</label>
 				</div>
 				
@@ -122,8 +133,8 @@
 		
 			<template if="{%raw%}{{ service.frequency !== 'weekly' }}{%endraw%}">
 				<div class="row h2">
-					<label for="input-start-time">{{"Start at" | i18n}}</label>
-					<select id="input-start-time" name="start-time">
+					<label for="inputStartTime">{{"Start at" | i18n}}</label>
+					<select id="inputStartTime" name="time" required>
 						{% raw %}
 						<template repeat="{{ hour in hours }}">
 							<option value="{{hour}}" selected?="{{ service.time == hour }}">{{hour}}</option>
@@ -135,7 +146,7 @@
 			
 			<template if="{%raw%}{{ service.frequency == 'monthly' }}{%endraw%}">
 				<div id="days-month">
-					<template repeat="{%raw%}{{ day in when }}{%endraw%}">
+					<template repeat="{%raw%}{{ day in service.when }}{%endraw%}">
 						<li class="day">{% raw %}{{day}}{% endraw %} {{" of the month" | i18n}}</li>
 					</template>
 				</div>
@@ -153,47 +164,326 @@
 		<div class="row control">
 			<span class="spacer"></span>
 			<button type="button" class="red" onclick="cancelForm()">{{"Cancel"|i18n}}</button>
-			<button class="green">{{"Save"|i18n}}</button>
+			<button type="button" class="green" onclick="saveForm()">{{"Save"|i18n}}</button>
+			<button id="submitBtn" class="hidden"></button>
 		</div>
 	</form>
 
 </template>
 
-<zdk-modal id="dialog-warning-frequency" closebutton="false">
-	<div class="modalContainer">
-		<div class="modalTitleContainer">{{"Warning"|i18n}}</div>
-		<div class="modalContentContainer">
-			<p>
-				<strong>Nota:</strong> {{"Changing the frequency will delete all occurrences already programmed"|i18n}}
-			</p>
-		</div>
-		<div class="modalButtonContainer">
-			<button id="btn-warning-cancel" class="red">{{"Cancel"|i18n}}</button>
-			<button id="btn-warning-confirm" class="blue">{{"Confirm"|i18n}}</button>
-		</div>
-	</div>
-</zdk-modal>
-
 <zdk-modal id="dialog-agenda" closebutton="false">
 	<div class="modalContainer" fit>
 		<div class="modalButtonContainer top">
-			<button id="btn-cal-add" class="green">{{"Add"|i18n}}</button>
+			<button id="btn-cal-add" class="green" onclick="calAdd()">{{"Add"|i18n}}</button>
 		</div>
 		<div class="modalContentContainer" fit>
 			<zdk-agenda id="agenda" lang="en-gb" hourHeight="40" hourShow="8" view="week" deleteButtons="true"
 			            fit></zdk-agenda>
 		</div>
 		<div class="modalButtonContainer bottom">
-			<button id="btn-cal-cancel" class="red">{{"Cancel"|i18n}}</button>
-			<button id="btn-cal-confirm" class="blue">{{"Save"|i18n}}</button>
+			<button id="btn-cal-cancel" class="red" onclick="closeAgenda()">{{"Cancel"|i18n}}</button>
+			<button id="btn-cal-confirm" class="blue" onclick="calMonthSave()">{{"Save"|i18n}}</button>
 		</div>
 	</div>
 
 </zdk-modal>
 
-<script>
+<core-ajax id="putService"
+           method="PUT"
+           url="/api/beneficiary/services?category=social"
+           handleAs="json"></core-ajax>
 
-</script>
 <script src="/bower_components/momentjs/min/moment.min.js"></script>
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
-<!--<script src="/tpl/healthServiceCreate.js"></script>-->
+
+<script>
+	document.addEventListener('polymer-ready', function() {
+		agenda = document.getElementById('agenda');
+		
+		agenda.addEventListener('zdk-event-close', function(e) {
+			console.log(e.detail.event);
+			agenda.events.splice(e.detail.event.num, 1);
+			
+			console.log(agenda.events);
+		});
+	});
+	
+	function showForm( serviceID) {
+		var modal = document.querySelector("zdk-modal#form");
+		var tpl = document.querySelector("#formTpl");
+		modal.show();
+		
+		if( !serviceID ) {
+			editedService = {
+				category : 'SOCIAL',
+				label    : '',
+				detail   : '',
+				startDate: '',
+				endDate  : '',
+				frequency: 'daily',
+				repeat   : 1,
+				duration: 60,
+				time: "10:00",
+				provider:'',
+				ref:'',
+				when:[]
+			};
+		} else {
+			data.services.forEach(function (item) {
+				if (item._id === serviceID) {
+					editedService = JSON.parse(JSON.stringify(item));
+				}
+			});
+		}
+		
+		tpl.model = {
+			lang : "fr",
+			jobs : jobs,
+			providers : professionals,
+			hours  : hours,
+			durations: durations,
+			refServices : refServices,
+			service: editedService
+		};
+	}
+	
+	function frequencyChange(evt) {
+		var tpl = document.querySelector("#formTpl");
+		if( tpl.model.service.frequency === evt.target.value ) { return; }
+		
+		setFrequency(evt.target.value);
+	}
+	
+	function setFrequency( _frequency ) {
+		var tpl = document.querySelector("#formTpl");
+		tpl.model.service.frequency = _frequency;
+		
+		switch (frequency) {
+			case 'punctual':
+				tpl.model.service.duration = "01:00";
+				tpl.model.service.time = "10:00";
+				break;
+			case 'daily':
+				tpl.model.service.time = "10:00";
+				break;
+			case 'weekly':
+				tpl.model.service.duration = "01:00";
+				break;
+			case 'monthly':
+				tpl.model.service.duration = "01:00";
+				tpl.model.service.time = "10:00";
+				break
+		}
+	}
+	
+	function cancelForm() {
+		editedService = {};
+		document.querySelector("zdk-modal#form").hide();
+	}
+	
+	function saveForm() {
+		var form = document.querySelector("#form-add-service");
+		
+		if (!form.checkValidity()) {
+			invalid = true;
+			btn = document.querySelector("#submitBtn");
+			if (btn) {
+				btn.click();
+				return false;
+			}
+		}
+		
+		if( !editedService.startDate ) {
+			document.querySelector("#startDate").classList.add('invalid-form');
+			return false;
+		} else {
+			document.querySelector("#startDate").classList.remove('invalid-form');
+		}
+		if( document.querySelector("#endDate") ) {
+			if (!editedService.endDate) {
+				document.querySelector("#endDate").classList.add('invalid-form');
+				return false;
+			} else {
+				document.querySelector("#endDate").classList.remove('invalid-form');
+			}
+		}
+		
+		var obj = form2js( form );
+		console.log( obj, editedService );
+		
+		editedService.provider = obj.provider;
+		editedService.duration = parseInt(obj.duration,10);
+		editedService.time = obj.time;
+		editedService.repeat = parseInt(obj.repeat,10);
+		
+		if(editedService._id) {
+			// update 
+			tplServices.model.serviceID = editedService._id;
+			for (var i = 0, l = tplServices.model.services.length; i < l; i++) {
+				var item = tplServices.model.services[i];
+				if (tplServices.model.services[i]._id === editedService._id) {
+					tplServices.model.services[i] = JSON.parse(JSON.stringify(editedService));
+					break;
+				}
+			}
+		} else {
+			// create
+			editedService.ref = obj.ref;
+			editedService.detail = obj.detail;
+			if( editedService.frequency === "punctual" ) {
+				editedService.endDate = editedService.startDate;
+				editedService.repeat = 0;
+			}
+			tplServices.model.services.push( JSON.parse(JSON.stringify(editedService)) );
+			
+		}
+		
+		console.log( "save", editedService);
+		document.querySelector("zdk-modal#form").hide();
+	}
+	
+	function onBtnCalMonthClick() {
+		agenda.view = 'month';
+		
+		agenda.today();
+		agenda.next();
+		document.getElementById('dialog-agenda').show();
+		agenda.drawBG();
+		
+		// Load events
+		var events = [];
+		for (var i = 0, length = editedService.when.length; i < length; i++) {
+			var time = moment(editedService.time, 'HH:mm');
+			var day = moment(agenda.day).startOf('month');
+			day.add(editedService.when[i] - 1, 'days');
+			day.hour(time.hour());
+			day.minute(time.minute());
+			
+			events.push({
+				className: 'event1',
+				label: '',
+				start: day.toISOString(),
+				end: moment(day).add(editedService.duration, 'minutes').toISOString()
+			});
+		}
+		
+		agenda.events = events;
+	}
+	
+	function onBtnCalWeekClick() {
+		agenda.view = 'week';
+		
+		agenda.today();
+		agenda.next();
+		document.getElementById('dialog-agenda').show();
+		agenda.drawBG();
+		agenda.setTime();
+		agenda.drawEvents();
+		
+		// Load events
+		var events = [];
+		for (var i = 0, length = editedService.when.length; i < length; i++) {
+			var time = moment(editedService.time, 'HH:mm');
+			var day = moment(agenda.day).startOf('week');
+			day.add(editedService.when[i] - 1, 'days');
+			day.hour(time.hour());
+			day.minute(time.minute());
+			
+			events.push({
+				className: 'event2',
+				label: '',
+				start: day.toISOString(),
+				end: moment(day).add(editedService.duration, 'minutes').toISOString()
+			});
+		}
+		
+		agenda.events = events;
+	}
+	
+	function calAdd() {
+		if (!agenda) { return; }
+		
+		var time, day;
+		switch (agenda.view) {
+			case 'month':
+				time = moment(editedService.time, 'HH:mm');
+				day = moment(agenda.day).startOf('month');
+				day.hour(time.hour());
+				day.minute(time.minute());
+				var month = day.month();
+				
+				while (hasEvent(day.format('YYYY-MM-DD')) && day.month() === month) {
+					day.add(1, 'day');
+				}
+				
+				if (day.month() === month) {
+					// Add an event
+					agenda.events.push({
+						className: 'event1',
+						label: '',
+						start: day.toISOString(),
+						end: moment(day).add(editedService.duration.value, 'minutes').toISOString()
+					});
+				}
+				break;
+			
+			case 'week':
+				time = moment(agenda.hourShow, 'HH:mm');
+				day =  moment(agenda.day).startOf('week');
+				day.hour(time.hour());
+				day.minute(time.minute());
+				var week = day.week();
+				
+				while (hasEvent(day.format('YYYY-MM-DD')) && day.week() === week) {
+					day.add(1, 'day');
+				}
+				
+				if (day.week() === week) {
+					// Add an event
+					agenda.events.push({
+						className: 'event1',
+						label: '',
+						start: day.toISOString(),
+						end: moment(day).add(editedService.duration, 'minutes').toISOString()
+					});
+				}
+				break;
+		}
+	}
+	
+	function hasEvent(day) {
+		for (var i = 0, length = agenda.events.length; i < length; i++) {
+			if (moment(agenda.events[i].start, moment.ISO_8601).format('YYYY-MM-DD') === day) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	function calMonthSave() {
+		var day, i, length, stringDays;
+		
+		var days = [];
+		day = moment(agenda.day).startOf('month');
+		var month = day.month();
+		
+		while (day.month() === month) {
+			if (hasEvent(day.format('YYYY-MM-DD'))) {
+				days.push(day.date());
+			}
+			day.add(1, 'day');
+		}
+		
+		editedService.when = days;
+		document.getElementById('dialog-agenda').hide();
+	}
+	
+	function closeAgenda() {
+		// Hide the agenda dialog
+		document.getElementById('dialog-agenda').hide();
+		
+		if (agenda) {
+			agenda.events = [];
+		}
+	}
+</script>
