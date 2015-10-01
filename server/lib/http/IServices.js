@@ -44,7 +44,8 @@ var IServices = {
 		logger.trace("getServices");
 		
 		var category = req.params.category || null;
-
+		var active = req.params.active==="true"?true:false;
+		
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
 				if (req.session.role === "beneficiary") {
@@ -54,7 +55,7 @@ var IServices = {
 				}
 			})
 			.then( function(_beneficiary) {
-				return _beneficiary.services().getServices(category);
+				return _beneficiary.services().getServices(category, active);
 			})
 			.then( function(services) {
 				res.send(services);
@@ -112,10 +113,13 @@ var IServices = {
 	
 	putService: function(req, res, next) {
 		logger.trace("putService");
-		var beneficiary;
+		
+		var beneficiary, serviceObj, service;
 		try {
-			var serviceObj = JSON.parse(req.body);
-
+			serviceObj = JSON.parse(req.body);
+			
+			console.log( serviceObj );
+			
 			physioDOM.Beneficiaries()
 				.then(function (beneficiaries) {
 					if (req.session.role === "beneficiary") {
@@ -126,9 +130,10 @@ var IServices = {
 				})
 				.then( function(_beneficiary) {
 					beneficiary = _beneficiary;
-					return _beneficiary.services().putService(serviceObj);
+					return _beneficiary.services().putService(serviceObj, req.session.person.id);
 				})
 				.then( function( obj ) {
+					service = obj.service;
 					var log = {
 						subject: beneficiary._id,
 						datetime: moment().toISOString(),
@@ -137,10 +142,21 @@ var IServices = {
 						action: obj.create?"create":"update",
 						what: obj.service
 					};
-					physioDOM.db.collection("journal").save( log, function() {
-						res.send( obj.service );
-						next();
+					physioDOM.db.collection("journal").save( log, function( err ) { 
+						if(err) {
+							logger.warning( "error when writing to journal ", err );
+						}
 					});
+
+					return physioDOM.Directory();
+				})
+				.then( function(Directory) {
+					return Directory.getEntryByID( service.source );
+				})
+				.then( function(professional) {
+					service.sourceName = professional.name;
+					res.send( service );
+					next();
 				})
 				.catch( function(err) {
 					if( err.stack ) { console.log( err.stack ); }

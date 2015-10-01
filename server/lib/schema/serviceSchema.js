@@ -11,9 +11,11 @@ var dailyServiceSchema = {
 	id        : "/dailyService",
 	type      : "object",
 	properties: {
+		"_id"      : {type: "object", description: "ID of the service if exists"},
 		"category" : {type: "string", enum: ["HEALTH", "SOCIAL", "ASSIST"] , required: true },
 		"ref"      : {type: "string" , required: true },
 		"label"    : { type:"string" },
+		"detail"   : { type:"string" },
 		"active"   : { type: "boolean", required:true },
 		"deactivate" : {
 			type: "object",
@@ -39,9 +41,11 @@ var weeklyServiceSchema = {
 	id        : "/weeklyService",
 	type      : "object",
 	properties: {
+		"_id"      : {type: "object", description: "ID of the service if exists"},
 		"category" : {type: "string", enum: ["HEALTH", "SOCIAL", "ASSIST"] , required: true },
 		"ref"      : {type: "string" , required: true },
 		"label"    : { type:"string" },
+		"detail"   : { type:"string" },
 		"active"   : { type: "boolean", required:true },
 		"deactivate" : {
 			type: "object",
@@ -75,9 +79,11 @@ var monthlyServiceSchema = {
 	id        : "/monthlyService",
 	type      : "object",
 	properties: {
+		"_id"      : {type: "object", description: "ID of the service if exists"},
 		"category" : {type: "string", enum: ["HEALTH", "SOCIAL", "ASSIST"] , required: true },
 		"ref"      : {type: "string" , required: true },
 		"label"    : { type:"string" },
+		"detail"   : { type:"string" },
 		"active"   : { type: "boolean", required:true },
 		"deactivate" : {
 			type: "object",
@@ -90,6 +96,7 @@ var monthlyServiceSchema = {
 		"repeat"   : {type: "integer", default: 1},
 		"startDate": {type: "string", format: "date", required: true},
 		"endDate"  : {type: "string", format: "date"},
+		"time": { type:"string", pattern:"^[0-2][0-9]:[0-5][0-9]$"},
 		"duration" : {type: "integer", default: 60 },
 		"meal": { type:"array", items:{ type: "string" } },
 		"subject"  : {type: "object", description: "beneficiary ID"},

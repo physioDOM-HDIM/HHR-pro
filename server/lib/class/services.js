@@ -191,8 +191,8 @@ Services.prototype.getServiceByID = function( serviceID ) {
 function checkSchema( entry ) {
 	return new Promise( function(resolve, reject) {
 		logger.trace("checkSchema");
-		var obj = JSON.parse( entry );
-		var check = serviceSchema.validator.validate( entry, { "$ref":"/"+obj.frequency+"Service"} );
+		
+		var check = serviceSchema.validator.validate( entry, { "$ref":"/"+entry.frequency+"Service"} );
 		if( check.errors.length ) {
 			return reject( {error:"bad format", detail: check.errors} );
 		} else {
@@ -204,17 +204,42 @@ function checkSchema( entry ) {
 /**
  * create a new Service for the current beneficiary
  * 
+ * resolve with an object :
+ * 
+ *       {
+ *            service : service,
+ *            create : true | false
+ *       }
+ * 
+ * The create property is needed to create the entry in the journal ( cf Iservices.putService )
+ * 
  * @param serviceObj object from a form ( form2js )
+ * @param source     id of the user that create or modify the service.
  * @returns {*}
  */
-Services.prototype.putService = function( serviceObj ) {
+Services.prototype.putService = function( serviceObj, source ) {
 	var that = this;
 	return new Promise( function(resolve, reject) {
 		logger.trace("putService");
 		
-		checkSchema(serviceObj)
-			.then( that.save ) 
-			.then(resolve)
+		if( serviceObj.subject !== that.subject+"" ) {
+			throw { code: 403, message : "can't edit another beneficiary"};
+		}
+		serviceObj.subject = that.subject;
+		serviceObj.provider = serviceObj.provider?new ObjectID(serviceObj.provider):null;
+		serviceObj.source = source;
+		if( serviceObj._id ) { serviceObj._id = new ObjectID(serviceObj._id) }
+		
+		checkSchema( serviceObj )
+			.then( function(entry) {
+				for (var key in entry) {
+					if (entry.hasOwnProperty(key)) {
+						that[key] = entry[key];
+					}
+				}
+				return that.save();
+			}) 
+			.then( resolve )
 			.catch(reject);
 	});
 };
