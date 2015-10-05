@@ -412,5 +412,18 @@
   "Provider":"Fournisseur",
   "Detail of the service":"Detail du service",
   "Label of the service":"Label du service",
-  "Basic social services":"Services sociaux de base"
+  "Basic social services":"Services sociaux de base",
+  "at(time)":"à",
+  "Punctual":"Ponctuel",
+  "Start at(time)":"Démarre à",
+  "hour(s)":"heure(s)",
+  "hours":"heures",
+  "on the ${nb} ${day} of the month":"le ${nb} ${day} du mois",
+  "first|second|third|fourth|fifth":"premier|deuxième|troisième|quatrième|cinquième",
+  "weekly":"Hebdomadaire",
+  "monthly":"Mensuel",
+  "daily":"Quotidien",
+  "punctual":"Ponctuel",
+  "Start":"Début",
+  "End":"Fin"
 }
