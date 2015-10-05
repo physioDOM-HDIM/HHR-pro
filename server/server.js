@@ -499,6 +499,7 @@ server.put( '/api/beneficiary/questprog', IBeneficiary.setQuestProg );
 server.put( '/api/beneficiaries/:entryID/questprog', IBeneficiary.setQuestProg );
 
 server.get( '/api/beneficiary/services', IServices.getServices );
+server.get( '/api/beneficiary/services/items', IServices.getServicesItems )
 server.get( '/api/beneficiary/services/:serviceID', IServices.getServiceByID );
 server.put( '/api/beneficiary/services', IServices.putService );
 server.del( '/api/beneficiary/services/:serviceID', IServices.removeService );
