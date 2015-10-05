@@ -1,0 +1,42 @@
+{
+  "name": "zdk-agenda",
+  "version": "0.1.3-pre",
+  "authors": [
+    "Fabrice Le Coz <fabrice.lecoz@zedesk.net>",
+    "Jérémie Ledentu <jledentu@gmail.com>"
+  ],
+  "description": "A calendar/agenda component",
+  "main": "zdk-agenda.html",
+  "keywords": [
+    "agenda",
+    "calendar",
+    "polymer",
+    "component",
+    "web-components",
+    "web-component"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/zedesk/zdk-agenda",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "../",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "momentjs": "~2.8.4",
+    "polymer": "Polymer/polymer#~0.5.5",
+    "core-style": "Polymer/core-style#~0.5.5",
+    "core-toolbar": "Polymer/core-toolbar#~0.5.5",
+    "core-icons": "Polymer/core-icons#~0.5.5",
+    "core-item": "Polymer/core-item#~0.5.5",
+    "core-menu": "Polymer/core-menu#~0.5.5",
+    "paper-icon-button": "Polymer/paper-icon-button#~0.5.5",
+    "paper-button": "Polymer/paper-button#~0.5.5",
+    "paper-item": "Polymer/paper-item#~0.5.5",
+    "paper-menu-button": "Polymer/paper-menu-button#~0.5.5",
+    "paper-dropdown": "Polymer/paper-dropdown#~0.5.5"
+  }
+}
