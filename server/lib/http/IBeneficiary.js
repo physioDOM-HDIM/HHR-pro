@@ -5,16 +5,22 @@
 
 /* jslint node:true */
 /* global physioDOM */
+/* global -Promise */
 "use strict";
 
 var Logger = require("logger"),
 	ObjectID = require("mongodb").ObjectID,
-	DataRecords = require("../class/dataRecords"),
-	RSVP = require("rsvp"),
-	promise = require("rsvp").Promise,
+	Promise = require("rsvp").Promise,
 	moment = require('moment');
-var CurrentStatus = require('../class/currentStatus');
 var logger = new Logger("IBeneficiary");
+
+function logPromise(log) {
+	return new Promise(function (resolve) {
+		physioDOM.db.collection("journal").save(log, function () {
+			resolve(log);
+		});
+	});
+}
 
 /**
  * IBeneficiaries
@@ -137,10 +143,11 @@ var IBeneficiary = {
 					req.session.save();
 				}
 				*/
+
 				if( req.session.role === "beneficiary") {
 					return beneficiaries.getHHR(req.session.beneficiary );
 				} else {
-					return beneficiaries.getBeneficiaryByID(req.session, new ObjectID(req.params.entryID) || req.session.beneficiary  );
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary  );
 				}
 			})
 			.then( function(beneficiary) {
@@ -657,19 +664,24 @@ var IBeneficiary = {
 				return beneficiary.deleteDataRecordByID(req.params.dataRecordID);
 			})
 			.then(function( nb ) {
-				var log = {
-					subject   : beneficiary._id,
-					datetime  : moment().toISOString(),
-					source    : req.session.person.id,
-					collection: "dataRecords",
-					action    : "delete",
-					what      : {}
-				};
-				logPromise(log)
-					.then( function() {
-						res.send(200, {code: 200, message: "Datarecord removed"});
-						next();
-					});
+				if( nb) {
+					var log = {
+						subject   : beneficiary._id,
+						datetime: moment().toISOString(),
+						source  : req.session.person.id,
+						collection: "dataRecords",
+						action    : "delete",
+						what      : {}
+					};
+					logPromise(log)
+						.then(function () {
+							res.send(200, {code: 200, message: "Datarecord removed"});
+							next();
+						});
+				} else {
+					res.send(404, {code: 404, message: "Datarecord not found"});
+					next();
+				}
 			})
 			.catch( function(err) {
 				res.send(err.code || 400, err);
@@ -1630,13 +1642,5 @@ var IBeneficiary = {
 			});
 	}
 };
-
-function logPromise(log) {
-	return new promise(function (resolve, reject) {
-		physioDOM.db.collection("journal").save(log, function (err) {
-			resolve(log);
-		});
-	});
-}
 
 module.exports = IBeneficiary;

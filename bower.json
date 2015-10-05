@@ -19,19 +19,21 @@
     "core-input": "Polymer/core-input#~0.5.1",
     "zdk-panel": "~0.3.0",
     "zdk-modal": "~0.3.0",
-    "zdk-calendar": "~0.2.13",
     "mustache": "~0.8.2",
     "rsvp": "~3.0.13",
     "form2js": "*",
     "core-drawer-panel": "Polymer/core-drawer-panel#~0.5.1",
-    "core-toolbar": "Polymer/core-toolbar#~0.5.1",
     "paper-elements": "Polymer/paper-elements#~0.5.1",
     "zdk-agenda": "~0.1.0",
     "momentjs": "~2.8.4",
     "highcharts-release": "~4.0.4",
     "cookies-js": "~1.1.0",
     "tsante-pager": "./install/tsante-pager-v0.2.2.tar.gz",
-    "tsante-listpager": "./install/tsante-listpager-v0.3.1.tar.gz"
+    "tsante-listpager": "./install/tsante-listpager-v0.3.1.tar.gz",
+    "core-style": "Polymer/core-style#~0.5.5",
+    "core-toolbar": "Polymer/core-toolbar#~0.5.5",
+    "core-item": "Polymer/core-item#~0.5.5",
+    "core-menu": "Polymer/core-menu#~0.5.5"
   },
   "resolutions": {
     "webcomponentsjs": "~0.6.3"

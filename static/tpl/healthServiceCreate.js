@@ -5,6 +5,7 @@
 var frequency = 'daily';
 var days = [];
 var agenda = null;
+var services = null; // list of services
 
 var promiseXHR = function(method, url, statusOK, data) {
 	var promise = new RSVP.Promise(function(resolve, reject) {
@@ -140,13 +141,21 @@ function onBtnCalMonthClick() {
 	agenda.events = events;
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+function checkServiceForm() {
+	var form = document.querySelector("#form-add-service");
+	
+	console.log( form2js( form ) );
+}
 
-	setFrequency('daily');
+document.addEventListener('DOMContentLoaded', function() {
+	var respForm = form2js(document.querySelector("form[name='form']"));
+	setFrequency(respForm.frequency);
 
 	// Load types of services
-	promiseXHR('GET', '', 200)
+	promiseXHR('GET', '/api/lists/healthServices', 200)
 	.then(function(response) {
+			services = JSON.parse(response).items;
+			console.log( "services ",services );
 		},
 		function(error) {
 			console.log(error);

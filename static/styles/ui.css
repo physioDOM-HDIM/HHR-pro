@@ -142,6 +142,10 @@ ul { overflow: auto; }
 ul.tree {
 	list-style-type: none;
 	padding: 0px 0px 10px 10px;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 ul.tree > ul {

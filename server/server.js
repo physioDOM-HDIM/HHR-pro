@@ -24,6 +24,7 @@ var IDirectory = require('./lib/http/IDirectory'),
 	IMenu = require("./lib/http/IMenu"),
 	IQueue = require("./lib/http/IQueue"),
 	ILogIDS = require("./lib/http/ILogIDS.js"),
+	IServices = require("./lib/http/IServices"),
 	configSchema = require("./lib/schema/configSchema.js");
 
 var pkg     = require('../package.json');
@@ -497,6 +498,12 @@ server.del( '/api/beneficiaries/:entryID/questprog/:ref', IBeneficiary.delQuestP
 server.put( '/api/beneficiary/questprog', IBeneficiary.setQuestProg );
 server.put( '/api/beneficiaries/:entryID/questprog', IBeneficiary.setQuestProg );
 
+server.get( '/api/beneficiary/services', IServices.getServices );
+server.get( '/api/beneficiary/services/items', IServices.getServicesItems )
+server.get( '/api/beneficiary/services/:serviceID', IServices.getServiceByID );
+server.put( '/api/beneficiary/services', IServices.putService );
+server.del( '/api/beneficiary/services/:serviceID', IServices.removeService );
+
 // server.get( '/api/beneficiary/questprog/:quest', IBeneficiary.getDataProgCategory );
 
 //DEV ONLY for creation & update
@@ -606,6 +613,7 @@ server.get( '/message/create', IPage.messageCreate);
 // Services
 server.get( '/services/health', IPage.basicHealthServices);
 server.get( '/services/health/create', IPage.basicHealthServiceCreate);
+server.get( '/services/social', IPage.basicSocialServices);
 
 // Current (initial) health status
 server.get( '/current/:name', IPage.currentHealthStatus);

@@ -75,7 +75,12 @@
 		background: LightSkyBlue;
 		font-weight:700;
 	}
-	
+	div.service {
+		padding:5px 0px;
+	}
+	div.service:nth-child(odd) {
+		background:#DFDFDF;
+	}
 </style>
 
 {% if !beneficiary.active %}
@@ -277,8 +282,26 @@
 {% endif %}
 
 
-<zdk-panel heading="{{ 'Active services'|i18n }}" collapsable="true" collapsed="true">
-	<div>{{"Not yet implemented"|i18n}}</div>
+<zdk-panel heading="{{ 'Active services'|i18n }}" collapsable="true" collapsed="false">
+	<div  layout horizontal style="line-height:30px;font-weight: bold;text-align:center">
+		<div flex>{{"Service"|i18n}}</div>
+		<div style="width:100px">{{"Frequency" | i18n}}</div>
+		<div style="width:150px;">{{"Dates" |i18n}}</div>
+		<div flex>{{"Provider"|i18n}}</div>
+	</div>
+	{% for service in beneficiary.services %}
+	<div layout horizontal class="service">
+		<div flex style="line-height:35px;padding-left:5px"><b>{{service.refName}}</b></div>
+		<div style="width:100px;line-height:35px;">{{service.frequency}}</div>
+		<div layout vertical style="width:150px;" >
+			<div><span style="width: 50px;">{{"Start" | i18n}} :</span> {{service.startDate | date}}</div>
+			<div><span style="width: 50px;">{{"End" | i18n}} :</span> {{service.endDate | date}}</div>
+		</div>
+		<div flex>
+			{{service.providerName.family}} {{service.providerName.given}}
+		</div>
+	</div>
+	{% endfor %}
 </zdk-panel>
 
 <zdk-panel heading="{{ 'Professional contacts'|i18n }}" collapsable="true" collapsed="false">
