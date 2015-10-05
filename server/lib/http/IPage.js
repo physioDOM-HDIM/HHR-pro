@@ -651,7 +651,9 @@ function IPage() {
 			"nutritionalStatus",
 			"generalStatus",
 			"job",
-			"exitStatus"
+			"exitStatus",
+			"socialServices",
+			"healthServices"
 		].map( promiseListArray);
 
 		new Menu().rights( req.session.role, data.rights.url )
@@ -696,12 +698,20 @@ function IPage() {
 					data.beneficiary.warning = { status: false, source: null, date: null };
 				}
 				return data.beneficiary._id ? data.beneficiary.getProfessionals() : null;
-			}).then(function(professionals){
-				if( professionals ){
-					professionals.forEach( function(professional) {
+			}).then(function(professionals) {
+				if (professionals) {
+					professionals.forEach(function (professional) {
 						professional.job = data.jobArray.items[professional.job];
 					});
 					data.beneficiary.professionals = professionals;
+				}
+				return data.beneficiary._id ? data.beneficiary.services().getServices("all", true) : null;
+			}).then( function( services ) {
+				if( services ) {
+					services.forEach(function (service) {
+						service.refName = data.socialServicesArray.items[service.ref] || data.healthServicesArray.items[service.ref];
+					});
+					data.beneficiary.services = services;
 				}
 				render('/static/tpl/beneficiaryOverview.htm', data, res, next);
 			})
@@ -1393,74 +1403,27 @@ function IPage() {
 	 */
 	this.basicHealthServices = function(req, res, next) {
 		logger.trace('basicHealthServices');
-		var lists = {};
-		var beneficiary;
 
 		init(req);
 		var data = {
 			admin: ['COORD', 'ADMIN'].indexOf(req.session.roleClass) !== -1 ? true : false,
-			rights: { read:true, write:true, url: '/healthServices' }
+			rights: { read:false, write:false, url: '/services/health' },
+			category: 'health'
 		};
 		
-		var promises = [
-			"job",
-			"role"
-		].map(promiseListArray);
+		new Menu().rights( req.session.role, data.rights.url )
+			.then( function( _rights ) {
+				data.rights = _rights;
+				data.lang = lang;
 
-		/**
-		 * Calculate the data object to pass to swig
-		 * 
-		 * the object is of the form
-		 * 
-		 *     {
-		 *        admin : boolean
-		 *        rights: object
-		 *        services : array of service labels
-		 *        providers: array of professional object
-		 *        items : Array of prescribed services
-		 *     }
-		 */
-		Promise.all( promises )
-			.then( function( _lists ) {
-				lists.job = _lists[0].jobArray.items;
-				lists.role = _lists[1].roleArray.items;
-				return physioDOM.Lists.getList('healthServices');
+				render('/static/tpl/services.htm', data, res, next);
 			})
-			.then( function(services) {
-				data.services = services.items;
-				return physioDOM.Beneficiaries();
-			})
-			.then(function(beneficiaries) {
-				if( req.session.role === "beneficiary") {
-					return beneficiaries.getHHR(req.session.beneficiary );
-				} else {
-					return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
-				}
-			})
-			.then(function(_beneficiary) {
-				beneficiary = _beneficiary;
-				return _beneficiary.getProfessionals();
-			})
-			.then( function(professionals) {
-				professionals.forEach(function (professional) {
-					professional.role = lists.role[professional.role];
-					professional.job = lists.job[professional.job];
-				});
-				data.providers = professionals;
-				return beneficiary.getServices("HEALTH");
-			})
-			.then( function ( services ) {
-				// data.services = services;
-				data.items = services;
-				render('/static/tpl/healthServices.htm' , data, res, next);
-			})
-			.catch( function(err) {
-				logger.error( "basicHealthServices error", err);
-				if(err.stack) { 
-					console.log(err.stack);
-				}
+			.catch(function (err) {
+				logger.error(err);
+				res.write(err);
+				res.end();
+				next();
 			});
-		
 	};
 
 	/**
@@ -1490,15 +1453,28 @@ function IPage() {
 	 * @param next
 	 */
 	this.basicSocialServices = function(req, res, next) {
-		logger.trace('basicHealthServices');
+		logger.trace('basicSocialServices');
 
 		init(req);
 		var data = {
 			admin: ['COORD', 'ADMIN'].indexOf(req.session.roleClass) !== -1 ? true : false,
-			rights: { read:true, write:true, url: '/socialServices' }
+			rights: { read:true, write:true, url: '/services/social' },
+			category: 'social'
 		};
 
-		render('/static/tpl/socialServices.htm' , data, res, next);
+		new Menu().rights( req.session.role, data.rights.url )
+			.then( function( _rights ) {
+				data.rights = _rights;
+				data.lang = lang;
+
+				render('/static/tpl/services.htm', data, res, next);
+			})
+			.catch(function (err) {
+				logger.error(err);
+				res.write(err);
+				res.end();
+				next();
+			});
 	};
 	
 	/**
@@ -1879,9 +1855,10 @@ function IPage() {
 		var data = {
 			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1?true:false,
 			rights: { read:false, write:false, url: '/agenda' },
-			lang : lang
+			lang : lang,
+			i18n : lang==="en"?"en-gb":lang
 		};
-
+		
 		new Menu().rights( req.session.role, data.rights.url )
 			.then( function( _rights ) {
 				data.rights = _rights;
