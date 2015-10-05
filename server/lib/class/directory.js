@@ -5,9 +5,10 @@
 
 /* jslint node:true */
 /* global physioDOM */
+/* global -Promise */
 "use strict";
 
-var promise = require("rsvp").Promise,
+var Promise = require("rsvp").Promise,
 	dbPromise = require("./database.js"),
 	Logger = require("logger"),
 	ObjectID = require("mongodb").ObjectID,
@@ -30,7 +31,7 @@ function Directory( ) {
 	 * @returns {Promise}
 	 */
 	this.createEntry = function( newEntry, professionalID ) {
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("createEntry", newEntry);
 			if( newEntry ) {
 				var entry = new Professional( );
@@ -103,7 +104,7 @@ function Directory( ) {
 
 	this.getList = function() {
 		logger.trace("getList");
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			physioDOM.db.collection("professionals").find({}).sort({ "name.family":1}).toArray(function(err, list) {
 				resolve(list);
 			});
@@ -118,8 +119,16 @@ function Directory( ) {
 	 */
 	this.getEntryByID = function( entryID ) {
 		logger.trace("getEntryByID", entryID);
-		var professionalID = new ObjectID(entryID);
-		return (new Professional()).getById(professionalID);
+		return new Promise( function(resolve, reject) {
+			if( !entryID ) {
+				reject();
+			} else {
+				var professionalID = new ObjectID(entryID);
+				(new Professional()).getById(professionalID)
+					.then(resolve)
+					.catch(reject);
+			}
+		});
 	};
 
 	/**
@@ -138,10 +147,10 @@ function Directory( ) {
 	 * update an entry with the `updatedItem` object
 	 *
 	 * @param updatedItem
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.updateEntry = function( updatedItem ) {
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("updateEntry", updatedItem);
 			if (updatedItem) {
 				var entry = new Professional();
@@ -163,11 +172,11 @@ function Directory( ) {
 	 * @todo remove also session of the account
 	 * 
 	 * @param entryID
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.deleteEntry = function(entryID) {
 		function deleteProfessional( professionalID) {
-			return new promise( function(resolve, reject) {
+			return new Promise( function(resolve, reject) {
 
 				physioDOM.db.collection("beneficiaries").update( { 'professionals.professionalID': professionalID.toString() }, { '$pull': { professionals : { professionalID: professionalID.toString() } } }, { multi:true }, function(err) {
 					if(err) {
@@ -182,13 +191,12 @@ function Directory( ) {
 							}
 						});
 					}
-				})
-
+				});
 			});
 		}
 
 		function deleteAccount( professionalID ) {
-			return new promise( function(resolve, reject) {
+			return new Promise( function(resolve, reject) {
 				physioDOM.db.collection("account").remove({ "person.id": professionalID}, function (err, nb) {
 					if(err) {
 						console.log(err);
@@ -200,7 +208,7 @@ function Directory( ) {
 			});
 		}
 		
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("deleteEntry", entryID);
 			var professionalID = new ObjectID(entryID);
 			var professional = new Professional();
