@@ -64,10 +64,33 @@ var IServices = {
 			.catch( function(err) { console.log("err!"); errHandler(err, res, next); } );
 	},
 	
-	getServiceByID: function(req, res, next) {
-		logger.trace("getServiceByID");
+	getServicesItems: function( req, res, next ) {
+		logger.trace("getServicesItems");
+		
+		var startDate = req.params.startDate || moment().format("YYYY-MM-DD");
 
-		var serviceID = req.params.serviceID || null;
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				if (req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary);
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+				}
+			})
+			.then( function(_beneficiary) {
+				return _beneficiary.services().getServicesItems( startDate, 40, "fr" );
+			})
+			.then( function(services) {
+				res.send(services);
+				next();
+			})
+			.catch( function(err) { errHandler(err, res, next); });
+	},
+	
+	getServiceByID: function(req, res, next) {
+		logger.trace("getServiceByID", req.params.serviceID);
+
+		var serviceID = new ObjectID(req.params.serviceID);
 		var beneficiary, service;
 		
 		if( !serviceID ) {
@@ -88,18 +111,6 @@ var IServices = {
 			})
 			.then( function(_service) {
 				service = _service;
-				return physioDOM.Directory();
-			})
-			.then( function(Directory) {
-				var promises = [service.provider, service.source].map(function (professionalID) {
-					return Directory.getEntryByID(professionalID);
-				});
-				
-				return Promise.all(promises);
-			})
-			.then( function( professionals ) {
-				service.providerName = professionals[0].name;
-				service.sourceName = professionals[1].name;
 				var listName = service.category.toLowerCase() + "Services";
 				return physioDOM.Lists.getListArray(listName);
 			})
@@ -118,8 +129,6 @@ var IServices = {
 		try {
 			serviceObj = JSON.parse(req.body);
 			
-			console.log( serviceObj );
-			
 			physioDOM.Beneficiaries()
 				.then(function (beneficiaries) {
 					if (req.session.role === "beneficiary") {
@@ -133,28 +142,24 @@ var IServices = {
 					return _beneficiary.services().putService(serviceObj, req.session.person.id);
 				})
 				.then( function( obj ) {
-					service = obj.service;
+					console.log("service put ", obj);
+
 					var log = {
-						subject: beneficiary._id,
+						subject   : beneficiary._id,
 						datetime: moment().toISOString(),
-						source: req.session.person.id,
+						source  : req.session.person.id,
 						collection: "services",
-						action: obj.create?"create":"update",
-						what: obj.service
+						action    : obj.create ? "create" : "update",
+						what      : obj
 					};
-					physioDOM.db.collection("journal").save( log, function( err ) { 
-						if(err) {
-							logger.warning( "error when writing to journal ", err );
+					physioDOM.db.collection("journal").save(log, function (err) {
+						if (err) {
+							logger.warning("error when writing to journal ", err);
 						}
 					});
-
-					return physioDOM.Directory();
+					return obj.getDetail();
 				})
-				.then( function(Directory) {
-					return Directory.getEntryByID( service.source );
-				})
-				.then( function(professional) {
-					service.sourceName = professional.name;
+				.then( function(service) {
 					res.send( service );
 					next();
 				})
@@ -178,7 +183,7 @@ var IServices = {
 	 * @param next
 	 */
 	removeService: function(req, res, next) {
-		logger.trace("removeServiceD");
+		logger.trace("removeServiceD", req.params.serviceID);
 		var beneficiary;
 		var serviceID = req.params.serviceID;
 		
@@ -192,26 +197,22 @@ var IServices = {
 			})
 			.then( function(_beneficiary) {
 				beneficiary = _beneficiary;
-				return _beneficiary.services().removeService(serviceID);
+				return _beneficiary.services().deactivate( new ObjectID(serviceID), req.session.person.id);
 			})
-			.then( function( done ) {
-				if( done ) {
-					var log = {
-						subject   : beneficiary._id,
-						datetime: moment().toISOString(),
-						source  : req.session.person.id,
-						collection: "services",
-						action    : "delete",
-						what      : {_id: new ObjectID(req.params.serviceID)}
-					};
-					physioDOM.db.collection("journal").save(log, function () {
-						res.send(200, {code: 200, message: "service successfully deleted"});
-						next();
-					});
-				} else {
-					res.send(404, {code: 404, message: "service not found"});
+			.then( function( service ) {
+				var log = {
+					subject   : beneficiary._id,
+					datetime: moment().toISOString(),
+					source  : req.session.person.id,
+					collection: "services",
+					action    : "delete",
+					what      : {_id: new ObjectID(req.params.serviceID)}
+				};
+				physioDOM.db.collection("journal").save(log, function () {
+					// res.send(200, {code: 200, message: "service successfully deactivated"});
+					res.send( service );
 					next();
-				}
+				});
 			})
 			.catch( function(err) {
 				res.send(err.code || 400, err);
