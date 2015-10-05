@@ -25,13 +25,18 @@ div.row.h2 {
 
 div.row.title2 {
 	height: 40px;
-	background: #DFDFDF;
-	color:black;
+	background: #8E8E8E;
+	color: white;
 	padding: 0px 10px;
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+}
+
+.deactivate {
+	background: #DFDFDF !important;
+	color: black !important;
 }
 
 div.content {
@@ -54,4 +59,23 @@ zdk-agenda {
 	-moz-user-select:none;
 	-ms-user-select:none;
 	user-select:none;
+}
+
+select.time {
+	min-width: 100px;
+	max-width:100px;
+	margin: 0px 5px;
+}
+
+ul.day {
+	-webkit-column-count: 2;
+	-webkit-column-gap: 10px;
+	-moz-column-count: 2;
+	-moz-column-gap: 10px;
+	-column-count: 2;
+	-column-gap: 10px;
+}
+
+ul.day > li {
+	width: 250px
 }
