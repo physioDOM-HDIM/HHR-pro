@@ -24,7 +24,7 @@
     "form2js": "*",
     "core-drawer-panel": "Polymer/core-drawer-panel#~0.5.1",
     "paper-elements": "Polymer/paper-elements#~0.5.1",
-    "zdk-agenda": "~0.1.0",
+    "zdk-calendar": "~0.2.13",
     "momentjs": "~2.8.4",
     "highcharts-release": "~4.0.4",
     "cookies-js": "~1.1.0",
