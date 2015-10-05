@@ -6,7 +6,6 @@
 {% parent %}
 <script src="/scripts/utils.js"></script>
 <script src="/bower_components/zdk-calendar/form2js.js"></script>
-<link rel="import" href="/bower_components/zdk-agenda/zdk-agenda.html">
 <link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
 <link rel="import" href="/bower_components/zdk-calendar/custom-icons.html">
 <link rel="import" href="/bower_components/core-ajax/core-ajax.html">
@@ -49,10 +48,12 @@
 	<label class="title">{{"Basic social services" | i18n }}</label>
 </div>
 
+{% if rights.write %}
 <div class="row control" style="margin-bottom:20px">
 	<span class="spacer"></span>
 	<button type="button" class="blue" onclick="showForm()">{{"Add a new service"|i18n}}</button>
 </div>
+{% endif %}
 
 <template id="services" repeat="{%raw%}{{ service in services }}{%endraw%}" is="auto-binding">
 	<div class="service" id="{%raw%}{{ service._id }}{%endraw%}">
@@ -111,7 +112,9 @@
 					<label>{{"Start date"|i18n}}</label><span>{%raw%}{{service.startDate}}{%endraw%}</span>
 				</div>
 				<div class="col">
-					<label>{{"End date"|i18n}}</label><span>{%raw%}{{service.endDate}}{%endraw%}</span>
+					<template if="{%raw%}{{ service.frequency !== 'punctual' }}{%endraw%}">
+						<label>{{"End date"|i18n}}</label><span>{%raw%}{{service.endDate}}{%endraw%}</span>
+					</template>
 				</div>
 			</div>
 			
@@ -124,14 +127,13 @@
 					<label>{{"Time of service"|i18n}}</label><span>{%raw%}{{ service.duration | time }}{%endraw%}</span>
 				</div>
 			</div>
-			<template if="{%raw%}{{ service.frequency !== 'ponctual' }}{%endraw%}">
+			
 			<div class="row h1">
 				<div class="col05"></div>
 				<div class="col">
 					<label>{{"Frequency"|i18n}}</label><span>{%raw%}{{service.frequency}}{%endraw%}</span>
 				</div>
 			</div>
-			</template>
 			
 			<template if="{%raw%}{{ service.frequency === 'monthly' }}{%endraw%}">
 				<div class="row h1">
@@ -172,16 +174,20 @@
 	</div>
 </template>
 
+{% if rights.write %}
 <div class="row control">
 	<span class="spacer"></span>
 	<button type="button" class="blue" onclick="showForm()">{{"Add a new service"|i18n}}</button>
 </div>
+{% endif %}
 
+{% if rights.write %}
 <zdk-modal id="form" closebutton="false">
 	<div class="content">
 	{% include "./serviceCreate.html" %}
 	</div>
 </zdk-modal>
+{% endif %}
 
 <div class="hidden monthDay">{{ "on the ${nb} ${day} of the month" | i18n}}</div>
 <div class="hidden WeekNb">{{ "first|second|third|fourth|fifth" | i18n}}</div>
@@ -202,10 +208,12 @@
            auto
            url="/api/beneficiary/services?category={{category}}&active=false"
            handleAs="json"></core-ajax>
+{% if rights.write %}
 <core-ajax id="deactivateService"
            method="DELETE"
            url="/api/beneficiary/services/"
            handleAs="json"></core-ajax>
+{% endif %}
 
 <script>
 	var hours  = [ 
@@ -273,7 +281,6 @@
 	function init() {
 		tplServices = document.querySelector("#services");
 		
-		tplServices = document.querySelector("#services");
 		document.querySelector("#ajaxProfessionals")
 			.addEventListener("core-response", function(evt) {
 				professionals = evt.detail.response;
@@ -304,16 +311,16 @@
 		document.querySelector("#ajaxPrescribedServices")
 			.addEventListener("core-response", function(evt) {
 				data.services = evt.detail.response;
-				console.log( data.services );
 				renderTpl();
 			});
-		document.querySelector("#deactivateService")
-			.addEventListener("core-response", function(evt) {
-				console.log( "deactivate service", evt.detail.response );
-				document.querySelector("#ajaxServices").go();
-			});
+		if( document.querySelector("#deactivateService") ) {
+			document.querySelector("#deactivateService")
+				.addEventListener("core-response", function (evt) {
+					console.log("deactivate service", evt.detail.response);
+					document.querySelector("#ajaxPrescribedServices").go();
+				});
+		}
 	}
-	
 	function renderTpl() {
 		if( data.providers && data.jobs && data.refServices && data.services ) {
 			tplServices.model = data;
