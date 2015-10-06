@@ -1,1 +1,518 @@
-[{ "_id" : { "$oid" : "54c0b586dc60e44688bff03f" }, "rights" : { "administrator" : 2, "coordinator" : 2, "socialworker" : 1, "physician" : 1, "beneficiary" : 1, "nurse" : 1 }, "disabled" : false, "index" : 0, "label" : "Select beneficiary", "link" : "/beneficiaries", "parent" : null, "type" : "item" },{ "_id" : { "$oid" : "54c0b5eedc60e44688bff040" }, "rights" : { "administrator" : 2, "coordinator" : 2, "socialworker" : 1, "physician" : 1, "beneficiary" : 1, "nurse" : 1 }, "disabled" : true, "index" : 1, "label" : "Beneficiary overview", "link" : "/beneficiary/overview", "parent" : null, "type" : "item" },{ "_id" : { "$oid" : "54c0b60cdc60e44688bff041" }, "rights" : { "administrator" : 2, "coordinator" : 2, "socialworker" : 2, "physician" : 2, "beneficiary" : 1, "nurse" : 2 }, "disabled" : true, "index" : 2, "label" : "Quick look on HHR", "parent" : null, "type" : "submenu" },{ "_id" : { "$oid" : "54c0b6fadc60e44688bff042" }, "rights" : { "administrator" : 2, "coordinator" : 2, "socialworker" : 2, "physician" : 2, "beneficiary" : 1, "nurse" : 2 }, "disabled" : true, "index" : 1, "label" : "Messages to Home", "link" : "/message", "parent" : { "$oid" : "54c0b60cdc60e44688bff041" }, "type" : "item" },{ "_id" : { "$oid" : "54c0b70bdc60e44688bff043" }, "rights" : { "administrator" : 0, "coordinator" : 0, "socialworker" : 0, "physician" : 0, "beneficiary" : 0, "nurse" : 0 }, "disabled" : true, "index" : 2, "label" : "Agenda", "link" : "/agenda", "parent" : { "$oid" : "54c0b60cdc60e44688bff041" }, "type" : "item" },{ "_id" : { "$oid" : "54c0b71cdc60e44688bff044" }, "rights" : { "administrator" : 2, "coordinator" : 2, "socialworker" : 1, "physician" : 2, "beneficiary" : 1, "nurse" : 2 }, "disabled" : true, "index" : 3, "label" : "Data curves", "link" : "/physiological-data", "parent" : { "$oid" : "54c0b60cdc60e44688bff041" }, "type" : "item" },{ "_id" : { "$oid" : "54c136c1dc60e44688bff045" }, "rights" : { "coordinator" : 2, "administrator" : 2, "socialworker" : 0, "physician" : 2, "beneficiary" : 0, "nurse" : 1 }, "disabled" : true, "index" : 3, "label" : "Current health status", "parent" : null, "type" : "submenu" },{ "_id" : { "$oid" : "54c136d1dc60e44688bff046" }, "rights" : { "coordinator" : 2, "administrator" : 2, "socialworker" : 1, "physician" : 2, "beneficiary" : 1, "nurse" : 1 }, "disabled" : true, "index" : 4, "label" : "Dietary & Physical activity", "parent" : null, "type" : "submenu" },{ "_id" : { "$oid" : "54c136e7dc60e44688bff047" }, "rights" : { "coordinator" : 2, "administrator" : 2, "socialworker" : 1, "physician" : 2, "beneficiary" : 1, "nurse" : 2 }, "disabled" : true, "index" : 5, "label" : "Data section", "parent" : null, "type" : "submenu" },{ "_id" : { "$oid" : "54c136f6dc60e44688bff048" }, "rights" : { "coordinator" : 2, "administrator" : 2, "socialworker" : 1, "physician" : 1, "beneficiary" : 0, "nurse" : 1 }, "disabled" : false, "index" : 7, "label" : "Directory", "link" : "/directory", "parent" : null, "type" : "item" },{ "_id" : { "$oid" : "54c137b4dc60e44688bff049" }, "rights" : { "administrator" : 0, "coordinator" : 0, "socialworker" : 0, "physician" : 0, "beneficiary" : 0, "nurse" : 0 }, "disabled" : true, "index" : 1, "label" : "Well being", "link" : "/current/well", "parent" : { "$oid" : "54c136c1dc60e44688bff045" }, "type" : "item" },{ "_id" : { "$oid" : "54c137c4dc60e44688bff04a" }, "rights" : { "administrator" : 2, "coordinator" : 2, "socialworker" : 0, "physician" : 2, "beneficiary" : 0, "nurse" : 1 }, "disabled" : true, "index" : 2, "label" : "Nutritional status", "link" : "/current/nutrition", "parent" : { "$oid" : "54c136c1dc60e44688bff045" }, "type" : "item" },{ "_id" : { "$oid" : "54c137d4dc60e44688bff04b" }, "rights" : { "administrator" : 2, "coordinator" : 2, "socialworker" : 0, "physician" : 2, "beneficiary" : 0, "nurse" : 1 }, "disabled" : true, "index" : 3, "label" : "Activity/Motricity status", "link" : "/current/activity", "parent" : { "$oid" : "54c136c1dc60e44688bff045" }, "type" : "item" },{ "_id" : { "$oid" : "54c137ebdc60e44688bff04c" }, "rights" : { "administrator" : 2, "coordinator" : 2, "socialworker" : 0, "physician" : 2, "beneficiary" : 0, "nurse" : 1 }, "disabled" : true, "index" : 4, "label" : "Frailty status", "link" : "/current/frailty", "parent" : { "$oid" : "54c136c1dc60e44688bff045" }, "type" : "item" },{ "_id" : { "$oid" : "54c1383ddc60e44688bff04d" }, "rights" : { "administrator" : 2, "coordinator" : 2, "socialworker" : 1, "physician" : 2, "beneficiary" : 1, "nurse" : 1 }, "disabled" : true, "index" : 1, "label" : "Dietary Plan", "link" : "/dietary-plan", "parent" : { "$oid" : "54c136d1dc60e44688bff046" }, "type" : "item" },{ "_id" : { "$oid" : "54c1384fdc60e44688bff04e" }, "rights" : { "administrator" : 2, "coordinator" : 2, "socialworker" : 1, "physician" : 2, "beneficiary" : 1, "nurse" : 1 }, "disabled" : true, "index" : 2, "label" : "Physical Plan", "link" : "/physical-plan", "parent" : { "$oid" : "54c136d1dc60e44688bff046" }, "type" : "item" },{ "_id" : { "$oid" : "54c13863dc60e44688bff04f" }, "rights" : { "administrator" : 2, "coordinator" : 2, "socialworker" : 1, "physician" : 2, "beneficiary" : 1, "nurse" : 1 }, "disabled" : true, "index" : 1, "label" : "Prescription of data monitoring", "parent" : { "$oid" : "54c136e7dc60e44688bff047" }, "type" : "submenu" },{ "_id" : { "$oid" : "54c13883dc60e44688bff050" }, "rights" : { "coordinator" : 2, "administrator" : 2, "socialworker" : 0, "physician" : 1, "beneficiary" : 1, "nurse" : 1 }, "disabled" : true, "index" : 2, "label" : "Results from Data Recording", "link" : "/datarecord", "parent" : { "$oid" : "54c136e7dc60e44688bff047" }, "type" : "item" },{ "_id" : { "$oid" : "54c1389ddc60e44688bff051" }, "rights" : { "coordinator" : 2, "administrator" : 2, "socialworker" : 0, "physician" : 2, "beneficiary" : 0, "nurse" : 2 }, "disabled" : true, "index" : 3, "label" : "Data Recording", "link" : "/datarecord/create", "parent" : { "$oid" : "54c136e7dc60e44688bff047" }, "type" : "item" },{ "_id" : { "$oid" : "54c138fbdc60e44688bff052" }, "rights" : { "administrator" : 2, "coordinator" : 2, "socialworker" : 1, "physician" : 2, "beneficiary" : 1, "nurse" : 1 }, "disabled" : true, "index" : 1, "label" : "General physiological data", "link" : "/prescription/general", "parent" : { "$oid" : "54c13863dc60e44688bff04f" }, "type" : "item" },{ "_id" : { "$oid" : "54c13910dc60e44688bff053" }, "rights" : { "administrator" : 2, "coordinator" : 2, "socialworker" : 1, "physician" : 2, "beneficiary" : 1, "nurse" : 1 }, "disabled" : true, "index" : 2, "label" : "HDIM Data", "link" : "/prescription/hdim", "parent" : { "$oid" : "54c13863dc60e44688bff04f" }, "type" : "item" },{ "_id" : { "$oid" : "54c13920dc60e44688bff054" }, "rights" : { "coordinator" : 2, "administrator" : 2, "socialworker" : 1, "physician" : 2, "beneficiary" : 1, "nurse" : 1 }, "disabled" : true, "index" : 3, "label" : "Symptom assessments", "link" : "/prescription/symptom", "parent" : { "$oid" : "54c13863dc60e44688bff04f" }, "type" : "item" },{ "_id" : { "$oid" : "54c13930dc60e44688bff055" }, "rights" : { "coordinator" : 2, "administrator" : 2, "social" : 1, "physician" : 2, "beneficiary" : 1, "nurse" : 1, "socialworker" : 1 }, "disabled" : true, "index" : 4, "label" : "Questionnaires", "link" : "/prescription/questionnaire", "parent" : { "$oid" : "54c13863dc60e44688bff04f" }, "type" : "item" },{ "_id" : { "$oid" : "54c214fc3118fa08e7df7a9c" }, "rights" : { "coordinator" : 2, "administrator" : 2, "physician" : 2, "socialworker" : 0, "beneficiary" : 1, "nurse" : 1 }, "type" : "item", "label" : "Result Synthesis", "link" : "/datarecord/synthesis", "disabled" : true, "index" : 6, "parent" : null }]
+[
+  {
+    "_id": {
+      "$oid": "54c0b586dc60e44688bff03f"
+    },
+    "rights": {
+      "administrator": 2,
+      "coordinator": 2,
+      "socialworker": 1,
+      "physician": 1,
+      "beneficiary": 1,
+      "nurse": 1
+    },
+    "disabled": false,
+    "index": 0,
+    "label": "Select beneficiary",
+    "link": "/beneficiaries",
+    "parent": null,
+    "type": "item"
+  },
+  {
+    "_id": {
+      "$oid": "54c0b5eedc60e44688bff040"
+    },
+    "rights": {
+      "administrator": 2,
+      "coordinator": 2,
+      "socialworker": 1,
+      "physician": 1,
+      "beneficiary": 1,
+      "nurse": 1
+    },
+    "disabled": true,
+    "index": 1,
+    "label": "Beneficiary overview",
+    "link": "/beneficiary/overview",
+    "parent": null,
+    "type": "item"
+  },
+  {
+    "_id": {
+      "$oid": "54c0b60cdc60e44688bff041"
+    },
+    "rights": {
+      "administrator": 2,
+      "coordinator": 2,
+      "socialworker": 2,
+      "physician": 2,
+      "beneficiary": 1,
+      "nurse": 2
+    },
+    "disabled": true,
+    "index": 2,
+    "label": "Quick look on HHR",
+    "parent": null,
+    "type": "submenu"
+  },
+  {
+    "_id": {
+      "$oid": "54c0b6fadc60e44688bff042"
+    },
+    "rights": {
+      "administrator": 2,
+      "coordinator": 2,
+      "socialworker": 2,
+      "physician": 2,
+      "beneficiary": 1,
+      "nurse": 2
+    },
+    "disabled": true,
+    "index": 1,
+    "label": "Messages to Home",
+    "link": "/message",
+    "parent": {
+      "$oid": "54c0b60cdc60e44688bff041"
+    },
+    "type": "item"
+  },
+  {
+    "_id": {
+      "$oid": "54c0b70bdc60e44688bff043"
+    },
+    "rights": {
+      "administrator": 0,
+      "coordinator": 0,
+      "socialworker": 0,
+      "physician": 0,
+      "beneficiary": 0,
+      "nurse": 0
+    },
+    "disabled": true,
+    "index": 2,
+    "label": "Agenda",
+    "link": "/agenda",
+    "parent": {
+      "$oid": "54c0b60cdc60e44688bff041"
+    },
+    "type": "item"
+  },
+  {
+    "_id": {
+      "$oid": "54c0b71cdc60e44688bff044"
+    },
+    "rights": {
+      "administrator": 2,
+      "coordinator": 2,
+      "socialworker": 1,
+      "physician": 2,
+      "beneficiary": 1,
+      "nurse": 2
+    },
+    "disabled": true,
+    "index": 3,
+    "label": "Data curves",
+    "link": "/physiological-data",
+    "parent": {
+      "$oid": "54c0b60cdc60e44688bff041"
+    },
+    "type": "item"
+  },
+  {
+    "_id": {
+      "$oid": "54c136c1dc60e44688bff045"
+    },
+    "rights": {
+      "coordinator": 2,
+      "administrator": 2,
+      "socialworker": 0,
+      "physician": 2,
+      "beneficiary": 0,
+      "nurse": 1
+    },
+    "disabled": true,
+    "index": 3,
+    "label": "Current health status",
+    "parent": null,
+    "type": "submenu"
+  },
+  {
+    "_id": {
+      "$oid": "54c136d1dc60e44688bff046"
+    },
+    "rights": {
+      "coordinator": 2,
+      "administrator": 2,
+      "socialworker": 1,
+      "physician": 2,
+      "beneficiary": 1,
+      "nurse": 1
+    },
+    "disabled": true,
+    "index": 4,
+    "label": "Dietary & Physical activity",
+    "parent": null,
+    "type": "submenu"
+  },
+  {
+    "_id": {
+      "$oid": "54c136e7dc60e44688bff047"
+    },
+    "rights": {
+      "coordinator": 2,
+      "administrator": 2,
+      "socialworker": 1,
+      "physician": 2,
+      "beneficiary": 1,
+      "nurse": 2
+    },
+    "disabled": true,
+    "index": 5,
+    "label": "Data section",
+    "parent": null,
+    "type": "submenu"
+  },
+  {
+    "_id": {
+      "$oid": "54c136f6dc60e44688bff048"
+    },
+    "rights": {
+      "coordinator": 2,
+      "administrator": 2,
+      "socialworker": 1,
+      "physician": 1,
+      "beneficiary": 0,
+      "nurse": 1
+    },
+    "disabled": false,
+    "index": 9,
+    "label": "Directory",
+    "link": "/directory",
+    "parent": null,
+    "type": "item"
+  },
+  {
+    "_id": {
+      "$oid": "54c137b4dc60e44688bff049"
+    },
+    "rights": {
+      "administrator": 0,
+      "coordinator": 0,
+      "socialworker": 0,
+      "physician": 0,
+      "beneficiary": 0,
+      "nurse": 0
+    },
+    "disabled": true,
+    "index": 1,
+    "label": "Well being",
+    "link": "/current/well",
+    "parent": {
+      "$oid": "54c136c1dc60e44688bff045"
+    },
+    "type": "item"
+  },
+  {
+    "_id": {
+      "$oid": "54c137c4dc60e44688bff04a"
+    },
+    "rights": {
+      "administrator": 2,
+      "coordinator": 2,
+      "socialworker": 0,
+      "physician": 2,
+      "beneficiary": 0,
+      "nurse": 1
+    },
+    "disabled": true,
+    "index": 2,
+    "label": "Nutritional status",
+    "link": "/current/nutrition",
+    "parent": {
+      "$oid": "54c136c1dc60e44688bff045"
+    },
+    "type": "item"
+  },
+  {
+    "_id": {
+      "$oid": "54c137d4dc60e44688bff04b"
+    },
+    "rights": {
+      "administrator": 2,
+      "coordinator": 2,
+      "socialworker": 0,
+      "physician": 2,
+      "beneficiary": 0,
+      "nurse": 1
+    },
+    "disabled": true,
+    "index": 3,
+    "label": "Activity/Motricity status",
+    "link": "/current/activity",
+    "parent": {
+      "$oid": "54c136c1dc60e44688bff045"
+    },
+    "type": "item"
+  },
+  {
+    "_id": {
+      "$oid": "54c137ebdc60e44688bff04c"
+    },
+    "rights": {
+      "administrator": 2,
+      "coordinator": 2,
+      "socialworker": 0,
+      "physician": 2,
+      "beneficiary": 0,
+      "nurse": 1
+    },
+    "disabled": true,
+    "index": 4,
+    "label": "Frailty status",
+    "link": "/current/frailty",
+    "parent": {
+      "$oid": "54c136c1dc60e44688bff045"
+    },
+    "type": "item"
+  },
+  {
+    "_id": {
+      "$oid": "54c1383ddc60e44688bff04d"
+    },
+    "rights": {
+      "administrator": 2,
+      "coordinator": 2,
+      "socialworker": 1,
+      "physician": 2,
+      "beneficiary": 1,
+      "nurse": 1
+    },
+    "disabled": true,
+    "index": 1,
+    "label": "Dietary Plan",
+    "link": "/dietary-plan",
+    "parent": {
+      "$oid": "54c136d1dc60e44688bff046"
+    },
+    "type": "item"
+  },
+  {
+    "_id": {
+      "$oid": "54c1384fdc60e44688bff04e"
+    },
+    "rights": {
+      "administrator": 2,
+      "coordinator": 2,
+      "socialworker": 1,
+      "physician": 2,
+      "beneficiary": 1,
+      "nurse": 1
+    },
+    "disabled": true,
+    "index": 2,
+    "label": "Physical Plan",
+    "link": "/physical-plan",
+    "parent": {
+      "$oid": "54c136d1dc60e44688bff046"
+    },
+    "type": "item"
+  },
+  {
+    "_id": {
+      "$oid": "54c13863dc60e44688bff04f"
+    },
+    "rights": {
+      "administrator": 2,
+      "coordinator": 2,
+      "socialworker": 1,
+      "physician": 2,
+      "beneficiary": 1,
+      "nurse": 1
+    },
+    "disabled": true,
+    "index": 1,
+    "label": "Prescription of data monitoring",
+    "parent": {
+      "$oid": "54c136e7dc60e44688bff047"
+    },
+    "type": "submenu"
+  },
+  {
+    "_id": {
+      "$oid": "54c13883dc60e44688bff050"
+    },
+    "rights": {
+      "coordinator": 2,
+      "administrator": 2,
+      "socialworker": 0,
+      "physician": 1,
+      "beneficiary": 1,
+      "nurse": 1
+    },
+    "disabled": true,
+    "index": 2,
+    "label": "Results from Data Recording",
+    "link": "/datarecord",
+    "parent": {
+      "$oid": "54c136e7dc60e44688bff047"
+    },
+    "type": "item"
+  },
+  {
+    "_id": {
+      "$oid": "54c1389ddc60e44688bff051"
+    },
+    "rights": {
+      "coordinator": 2,
+      "administrator": 2,
+      "socialworker": 0,
+      "physician": 2,
+      "beneficiary": 0,
+      "nurse": 2
+    },
+    "disabled": true,
+    "index": 3,
+    "label": "Data Recording",
+    "link": "/datarecord/create",
+    "parent": {
+      "$oid": "54c136e7dc60e44688bff047"
+    },
+    "type": "item"
+  },
+  {
+    "_id": {
+      "$oid": "54c138fbdc60e44688bff052"
+    },
+    "rights": {
+      "administrator": 2,
+      "coordinator": 2,
+      "socialworker": 1,
+      "physician": 2,
+      "beneficiary": 1,
+      "nurse": 1
+    },
+    "disabled": true,
+    "index": 1,
+    "label": "General physiological data",
+    "link": "/prescription/general",
+    "parent": {
+      "$oid": "54c13863dc60e44688bff04f"
+    },
+    "type": "item"
+  },
+  {
+    "_id": {
+      "$oid": "54c13910dc60e44688bff053"
+    },
+    "rights": {
+      "administrator": 2,
+      "coordinator": 2,
+      "socialworker": 1,
+      "physician": 2,
+      "beneficiary": 1,
+      "nurse": 1
+    },
+    "disabled": true,
+    "index": 2,
+    "label": "HDIM Data",
+    "link": "/prescription/hdim",
+    "parent": {
+      "$oid": "54c13863dc60e44688bff04f"
+    },
+    "type": "item"
+  },
+  {
+    "_id": {
+      "$oid": "54c13920dc60e44688bff054"
+    },
+    "rights": {
+      "coordinator": 2,
+      "administrator": 2,
+      "socialworker": 1,
+      "physician": 2,
+      "beneficiary": 1,
+      "nurse": 1
+    },
+    "disabled": true,
+    "index": 3,
+    "label": "Symptom assessments",
+    "link": "/prescription/symptom",
+    "parent": {
+      "$oid": "54c13863dc60e44688bff04f"
+    },
+    "type": "item"
+  },
+  {
+    "_id": {
+      "$oid": "54c13930dc60e44688bff055"
+    },
+    "rights": {
+      "coordinator": 2,
+      "administrator": 2,
+      "social": 1,
+      "physician": 2,
+      "beneficiary": 1,
+      "nurse": 1,
+      "socialworker": 1
+    },
+    "disabled": true,
+    "index": 4,
+    "label": "Questionnaires",
+    "link": "/prescription/questionnaire",
+    "parent": {
+      "$oid": "54c13863dc60e44688bff04f"
+    },
+    "type": "item"
+  },
+  {
+    "_id": {
+      "$oid": "54c214fc3118fa08e7df7a9c"
+    },
+    "rights": {
+      "coordinator": 2,
+      "administrator": 2,
+      "physician": 2,
+      "socialworker": 0,
+      "beneficiary": 1,
+      "nurse": 1
+    },
+    "type": "item",
+    "label": "Result Synthesis",
+    "link": "/datarecord/synthesis",
+    "disabled": true,
+    "index": 8,
+    "parent": null
+  },
+  {
+    "rights": {
+      "coordinator": 2,
+      "administrator": 2,
+      "physician": 2,
+      "socialworker": 0,
+      "beneficiary": 1,
+      "nurse": 1
+    },
+    "type": "item",
+    "label": "Health services",
+    "link": "/services/health",
+    "disabled": true,
+    "index": 6,
+    "parent": null
+  },
+  {
+    "rights" : {
+      "administrator" : 2,
+      "coordinator" : 2,
+      "socialworker" : 1,
+      "physician" : 1,
+      "beneficiary" : 1,
+      "nurse" : 1
+    },
+    "disabled" : true,
+    "index" : 7,
+    "label" : "Social services",
+    "link" : "/services/social",
+    "parent" : null,
+    "type" : "item"
+  }
+]
