@@ -121,7 +121,7 @@ Service.prototype.getDetail = function() {
 									resolve( prof.name );
 								})
 								.catch( function() {
-									console.log("could not find professional", professionalID );
+									logger.warning("getServiceDetail : could not find professional", profID );
 									resolve( );
 								});
 						}
