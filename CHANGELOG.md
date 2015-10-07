@@ -1,4 +1,18 @@
 
+__v1.1.1__
+
+  - Push service plan to queue
+  - Fix Bug 544 : Erreur dans la liste des horaires des services
+  - Bug 543 : Titre du menu Health Service
+  - Bug 542 : confirm deactivation
+  - Bug 534 : Gestion d'affichage de services aux mêmes horaires
+  
+    
+__v1.1.0__
+
+  - Services social & health care
+
+- - -
 
 __v1.0.8__
 
