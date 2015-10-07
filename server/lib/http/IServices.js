@@ -63,7 +63,31 @@ var IServices = {
 			})
 			.catch( function(err) { console.log("err!"); errHandler(err, res, next); } );
 	},
-	
+
+	/**
+	 * send back a list of service items for agenda
+	 * 
+	 * The list is calculate for the next 40 days and start at the current date if no
+	 * date is given by get parameters.
+	 *
+	 * a item of the list looks like :
+	 * 
+	 *       { 
+	 *          serviceID: "56115e61ac182a071a26d404",
+	 *          label: "SHOPHELP",
+	 *          className: "event3",
+	 *          start: "2015-10-15T11:00",
+	 *          end: "2015-10-15T12:00",
+	 *          provider: {
+	 *              family: "",
+	 *              given: ""
+	 *          }
+	 *      }
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
 	getServicesItems: function( req, res, next ) {
 		logger.trace("getServicesItems");
 		
@@ -79,6 +103,29 @@ var IServices = {
 			})
 			.then( function(_beneficiary) {
 				return _beneficiary.services().getServicesItems( startDate, 40, "fr" );
+			})
+			.then( function(services) {
+				res.send(services);
+				next();
+			})
+			.catch( function(err) { errHandler(err, res, next); });
+	},
+
+	getServicesQueueItems: function( req, res, next ) {
+		logger.trace("getServicesQueueItems");
+
+		var startDate = moment().add(1,'d').format("YYYY-MM-DD");
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				if (req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary);
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+				}
+			})
+			.then( function(_beneficiary) {
+				return _beneficiary.services().getServicesQueueItems( startDate, 31, physioDOM.lang );
 			})
 			.then( function(services) {
 				res.send(services);

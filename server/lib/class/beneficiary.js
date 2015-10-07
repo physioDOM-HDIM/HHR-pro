@@ -5,6 +5,7 @@
 
 /* jslint node:true */
 /* global physioDOM */
+/* global -Promise */
 "use strict";
 
 var RSVP = require("rsvp"),
@@ -13,7 +14,6 @@ var RSVP = require("rsvp"),
 	ObjectID = require("mongodb").ObjectID,
 	beneficiarySchema = require("./../schema/beneficiarySchema"),
 	DataRecord = require("./dataRecord"),
-	DataRecords = require("./dataRecords"),
 	Messages = require("./messages"),
 	DataProg = require("./dataProg"),
 	DataProgItem = require("./dataProgItem"),
@@ -24,7 +24,6 @@ var RSVP = require("rsvp"),
 	dbPromise = require("./database"),
 	Queue = require("./queue.js"),
 	Symptoms = require("./symptoms.js"),
-	Services = require("./services.js"),
 	moment = require("moment"),
 	md5 = require('MD5'),
 	soap = require("soap"),

@@ -9,9 +9,10 @@
 
 var Promise = require("rsvp").Promise,
 	ObjectID = require("mongodb").ObjectID,
+	Hash = require('object-hash'),
 	dbPromise = require("./database.js"),
-	serviceSchema = require("./../schema/serviceSchema"),
 	Service = require("./service.js"),
+	Queue = require("./queue.js"),
 	moment = require("moment"),
 	Logger = require("logger");
 
@@ -73,6 +74,152 @@ Services.prototype.getServices = function( category, active ) {
 	});
 };
 
+function _getItem( service, startDate, endDate ) {
+	var styles = {
+		"HEALTH": "event6",
+		"SOCIAL": "event4",
+		"ASSIST": "event2",
+		"QUEST" : "event3"
+	};
+
+	moment.locale(physioDOM.lang === "en" ? "en-gb" : physioDOM.lang);
+	
+	return new Promise( function(resolve, reject) {
+		var item;
+		var servDate, closeDate, start, end;
+		var serviceItems = [];
+
+		switch( service.frequency ) {
+			case 'punctual':
+				servDate = moment(service.startDate);
+				if( servDate.format("YYYY-MM-DD") >= moment(startDate).format("YYYY-MM-DD") && servDate.format("YYYY-MM-DD") <= endDate ) {
+					start = moment(servDate).format("YYYY-MM-DD") + "T" + service.time;
+					start = moment(start).format("YYYY-MM-DDTHH:mm");
+					end = moment(start).add(service.duration, "m").format("YYYY-MM-DDTHH:mm");
+					item = {
+						serviceID: service._id,
+						label    : service.ref,
+						className: styles[service.category],
+						start    : start,
+						end      : end,
+						provider : service.providerName,
+						category: service.category,
+						title: service.label,
+						frequency : service.frequency
+					};
+					serviceItems.push(item);
+				}
+				break;
+			case 'daily':
+				// calculate the first available date
+				servDate = moment(service.startDate);
+				closeDate = service.endDate < endDate?service.endDate:endDate;
+				while( servDate.format("YYYY-MM-DD") < startDate ) {
+					servDate.add( service.repeat,'d');
+				}
+				do {
+					start = moment(servDate).format("YYYY-MM-DD")+"T"+service.time;
+					start = moment(start).format("YYYY-MM-DDTHH:mm");
+					end = moment(start).add( service.duration, "m").format("YYYY-MM-DDTHH:mm");
+					item = {
+						serviceID : service._id,
+						label : service.ref,
+						className : styles[service.category],
+						start: start,
+						end: end,
+						provider: service.providerName,
+						category: service.category,
+						title: service.label,
+						frequency : service.frequency,
+						detail: service.detail
+					};
+					serviceItems.push(item);
+					servDate.add( service.repeat,'d');
+				} while( servDate.format("YYYY-MM-DD") <= closeDate );
+				break;
+			case 'weekly':
+				servDate = moment(service.startDate);
+				closeDate = service.endDate < moment(endDate).format("YYYY-MM-DD")?service.endDate:moment(endDate).format("YYYY-MM-DD");
+				startDate = moment(startDate).subtract(service.repeat, 'w');
+				while( servDate.format("YYYY-MM-DD") < startDate ) {
+					servDate.add( service.repeat,'w');
+				}
+				do {
+					start = moment(servDate).format("YYYY-MM-DD")+"T"+service.time;
+					start = moment(start).format("YYYY-MM-DDTHH:mm");
+					end = moment(start).add( service.duration, "m").format("YYYY-MM-DDTHH:mm");
+					service.when.forEach( function(when) {
+						start = moment(start).day(when).format("YYYY-MM-DDTHH:mm");
+						end = moment(end).day(when).format("YYYY-MM-DDTHH:mm");
+						item = {
+							serviceID : service._id,
+							label : service.ref,
+							start: start,
+							end: end,
+							className: "event1",
+							provider: service.providerName,
+							category: service.category,
+							title: service.label,
+							frequency : service.frequency,
+							detail: service.detail
+						};
+						serviceItems.push(item);
+					});
+					servDate.add( service.repeat,'w');
+				} while( servDate.format("YYYY-MM-DD") <= closeDate );
+				break;
+			case 'monthly':
+				servDate = moment(service.startDate);
+				closeDate = service.endDate < moment(endDate).format("YYYY-MM-DD")?service.endDate:moment(endDate).format("YYYY-MM-DD");
+				startDate = moment(startDate).subtract(service.repeat, 'M');
+				while( servDate.format("YYYY-MM-DD") < startDate ) {
+					servDate.add( service.repeat,'M');
+				}
+
+				var whenDays = [];
+				var month = moment(servDate).startOf("month");
+				do {
+					for( var i=0;i<service.when.length;i++) {
+						var when = service.when[i];
+						var fd = moment(month).startOf("month");
+						// premier lundi du mois 
+						fd.add( (fd.day() === 1 ? 0:8-fd.day()?fd.day():7),"d");
+						fd.day(when % 10);
+						if (fd.month() !== month.month()) {
+							fd = fd.add(7, "d");
+						}
+						fd.add(parseInt(when / 10, 10) - 1, "w");
+						if (fd.month() === month.month() && fd.format("YYYY-MM-DD") <= service.endDate ) {
+							whenDays.push(fd.format("YYYY-MM-DD"));
+						}
+					}
+					month = month.add(1,"M");
+				} while( month.format("YYYY-MM-DD") < closeDate );
+
+				whenDays.forEach( function( day ) {
+					start = moment(day).format("YYYY-MM-DD")+"T"+service.time;
+					start = moment(start).format("YYYY-MM-DDTHH:mm");
+					end = moment(start).add( service.duration, "m").format("YYYY-MM-DDTHH:mm");
+					item = {
+						serviceID : service._id,
+						label    : service.ref,
+						className: "event3",
+						start    : start,
+						end      : end,
+						provider: service.providerName,
+						category: service.category,
+						title: service.label,
+						frequency : service.frequency,
+						detail: service.detail
+					};
+					serviceItems.push(item);
+				});
+				break;
+		}
+		resolve( serviceItems );
+	});
+}
+
 /**
  * Get services items to display them on the agenda
  * 
@@ -94,138 +241,8 @@ Services.prototype.getServices = function( category, active ) {
 Services.prototype.getServicesItems = function( startDate, nbDays, lang ) {
 	logger.trace("getServicesItems", startDate, nbDays, lang);
 	var that = this;
-	
-	var styles = {
-		"HEALTH": "event6",
-		"SOCIAL": "event4",
-		"ASSIST": "event2",
-		"QUEST" : "event3"
-	};
 	var endDate = moment(startDate).add(nbDays, 'd').format("YYYY-MM-DD");
 	
-	moment.locale(physioDOM.lang === "en" ? "en-gb" : physioDOM.lang);
-	
-	function _getItem( service ) {
-		return new Promise( function(resolve, reject) {
-			var item;
-			var servDate, closeDate, start, end;
-			var serviceItems = [];
-			
-			switch( service.frequency ) {
-				case 'punctual':
-					servDate = moment(service.startDate);
-					if( servDate.format("YYYY-MM-DD") >= moment(startDate).format("YYYY-MM-DD") && servDate.format("YYYY-MM-DD") <= endDate ) {
-						start = moment(servDate).format("YYYY-MM-DD") + "T" + service.time;
-						start = moment(start).format("YYYY-MM-DDTHH:mm");
-						end = moment(start).add(service.duration, "m").format("YYYY-MM-DDTHH:mm");
-						item = {
-							serviceID: service._id,
-							label    : service.ref,
-							className: styles[service.category],
-							start    : start,
-							end      : end,
-							provider : service.providerName
-						};
-						serviceItems.push(item);
-					}
-					break;
-				case 'daily':
-					// calculate the first available date
-					servDate = moment(service.startDate);
-					closeDate = service.endDate < endDate?service.endDate:endDate;
-					while( servDate.format("YYYY-MM-DD") < startDate ) {
-						servDate.add( service.repeat,'d');
-					}
-					do {
-						start = moment(servDate).format("YYYY-MM-DD")+"T"+service.time;
-						start = moment(start).format("YYYY-MM-DDTHH:mm");
-						end = moment(start).add( service.duration, "m").format("YYYY-MM-DDTHH:mm");
-						item = {
-							serviceID : service._id,
-							label : service.ref,
-							className : styles[service.category],
-							start: start,
-							end: end,
-							provider: service.providerName
-						};
-						serviceItems.push(item);
-						servDate.add( service.repeat,'d');
-					} while( servDate.format("YYYY-MM-DD") <= closeDate );
-					break;
-				case 'weekly':
-					servDate = moment(service.startDate);
-					closeDate = service.endDate < moment(endDate).format("YYYY-MM-DD")?service.endDate:moment(endDate).format("YYYY-MM-DD");
-					startDate = moment(startDate).subtract(service.repeat, 'w');
-					while( servDate.format("YYYY-MM-DD") < startDate ) {
-						servDate.add( service.repeat,'w');
-					}
-					do {
-						start = moment(servDate).format("YYYY-MM-DD")+"T"+service.time;
-						start = moment(start).format("YYYY-MM-DDTHH:mm");
-						end = moment(start).add( service.duration, "m").format("YYYY-MM-DDTHH:mm");
-						service.when.forEach( function(when) {
-							start = moment(start).day(when).format("YYYY-MM-DDTHH:mm");
-							end = moment(end).day(when).format("YYYY-MM-DDTHH:mm");
-							item = {
-								serviceID : service._id,
-								label : service.ref,
-								start: start,
-								end: end,
-								className: "event1",
-								provider: service.providerName
-							};
-							serviceItems.push(item);
-						});
-						servDate.add( service.repeat,'w');
-					} while( servDate.format("YYYY-MM-DD") <= closeDate );
-					break;
-				case 'monthly':
-					servDate = moment(service.startDate);
-					closeDate = service.endDate < moment(endDate).format("YYYY-MM-DD")?service.endDate:moment(endDate).format("YYYY-MM-DD");
-					startDate = moment(startDate).subtract(service.repeat, 'M');
-					while( servDate.format("YYYY-MM-DD") < startDate ) {
-						servDate.add( service.repeat,'M');
-					}
-
-					var whenDays = [];
-					var month = moment(servDate).startOf("month");
-					do {
-						for( var i=0;i<service.when.length;i++) {
-							var when = service.when[i];
-							var fd = moment(month).startOf("month");
-							// premier lundi du mois 
-							fd.add( (fd.day() === 1 ? 0:8-fd.day()?fd.day():7),"d");
-							fd.day(when % 10);
-							if (fd.month() !== month.month()) {
-								fd = fd.add(7, "d");
-							}
-							fd.add(parseInt(when / 10, 10) - 1, "w");
-							if (fd.month() === month.month() && fd.format("YYYY-MM-DD") <= service.endDate ) {
-								whenDays.push(fd.format("YYYY-MM-DD"));
-							}
-						}
-						month = month.add(1,"M");
-					} while( month.format("YYYY-MM-DD") < closeDate );
-
-					whenDays.forEach( function( day ) {
-						start = moment(day).format("YYYY-MM-DD")+"T"+service.time;
-						start = moment(start).format("YYYY-MM-DDTHH:mm");
-						end = moment(start).add( service.duration, "m").format("YYYY-MM-DDTHH:mm");
-						item = {
-							serviceID : service._id,
-							label    : service.ref,
-							className: "event3",
-							start    : start,
-							end      : end,
-							provider: service.providerName
-						};
-						serviceItems.push(item);
-					});
-					break;
-			}
-			resolve( serviceItems );
-		});
-	}
 	return new Promise( function(resolve, reject) {
 		var servicesItems = [];
 
@@ -238,7 +255,6 @@ Services.prototype.getServicesItems = function( startDate, nbDays, lang ) {
 
 		physioDOM.db.collection("services").find(search).toArray(function (err, res) {
 			var promises = res.map(function (_service) {
-				console.log( _service.ref, _service.frequency );
 				return new Promise(function (resolve, reject) {
 					var service = new Service();
 					service.getByID(_service._id)
@@ -246,7 +262,7 @@ Services.prototype.getServicesItems = function( startDate, nbDays, lang ) {
 							return service.getDetail();
 						})
 						.then(function (service) {
-							return _getItem(service);
+							return _getItem(service, startDate, endDate );
 						})
 						.then(function(items) {
 							resolve(items);
@@ -274,8 +290,258 @@ Services.prototype.getServicesItems = function( startDate, nbDays, lang ) {
 	});
 };
 
-Services.prototype.pushToQueue = function( ) {
+Services.prototype.getServicesQueueItems = function( startDate, nbDays, lang ) {
+	logger.trace("getServicesItems", startDate, nbDays, lang);
+	var that = this;
+	var endDate = moment(startDate).add(nbDays, 'd').format("YYYY-MM-DD");
+	var refServices = {};
 	
+	function _getQueueItems() {
+		return new Promise(function (resolve, reject) {
+			var servicesItems = [];
+
+			var search = {
+				subject  : that.subject,
+				startDate: {'$lte': endDate},
+				endDate  : {'$gte': startDate},
+				active   : true
+			};
+
+			physioDOM.db.collection("services").find(search).toArray(function (err, res) {
+				var promises = res.map(function (_service) {
+					return new Promise(function (resolve, reject) {
+						var service = new Service();
+						service.getByID(_service._id)
+							.then(function (service) {
+								return service.getDetail();
+							})
+							.then(function (service) {
+								return _getItem(service, startDate, endDate);
+							})
+							.then(function (items) {
+								resolve(items);
+							})
+							.catch(function (err) {
+								if (err.stack) {
+									console.log(err.stack);
+								} else {
+									console.log(err);
+								}
+								reject(err);
+							});
+					});
+				});
+
+				Promise.all(promises)
+					.then(function (_servicesItems) {
+						_servicesItems.forEach(function (items) {
+							servicesItems = servicesItems.concat(items);
+						});
+						resolve(servicesItems);
+					});
+
+			});
+		});
+	}
+
+	var refPromises = ["socialServices","healthServices"].map( function(listName) {
+		return new Promise( function(resolve) {
+			physioDOM.Lists.getListArray( listName )
+				.then( function(list) {
+					resolve(list.items);
+				})
+				.catch( function(err) {
+					if(err.stack) { 
+						console.log(err.stack);
+					} else {
+						console.log(err);
+					}
+					resolve( {} );
+				});
+		});
+	});
+
+	return new Promise( function(resolve, reject) {
+		Promise.all(refPromises)
+			.then(function (refLists) {
+				Object.keys(refLists[0]).forEach( function(key) {
+					refServices[key] = refLists[0][key];
+				});
+				Object.keys(refLists[1]).forEach( function(key) {
+					refServices[key] = refLists[1][key];
+				});
+				return _getQueueItems();
+			})
+			.then(function(items) {
+				items.forEach( function(item) {
+					item.serviceID = item.serviceID.toString();
+					item.label = refServices[item.label][lang];
+					item.hash = Hash.sha1(item);
+					item.subject = that.subject;
+				});
+				return that.pushToQueue(items);
+			})
+			.then( resolve )
+			.catch( function(err) {
+				if(err.stack) { console.log(err.stack); }
+				reject(err);
+			});
+	});
+};
+
+Services.prototype.pushToQueue = function( items ) {
+	var queue = new Queue(this.subject);
+	var that = this;
+	var msgs = [];
+	
+	function _markDelete() {
+		// console.log("mark all records with a delete flag");
+		return new Promise( function(resolve, reject) {
+			var search = {subject: that.subject};
+			physioDOM.db.collection("servicesPlan").update(search, {$set: {del: true}}, {multi: true}, function (err, nb) {
+				if (err) {
+					logger.alert(err);
+					reject(err);
+				} else {
+					// console.log( nb+" records marked");
+					resolve();
+				}
+			});
+		});
+	}
+	
+	var promises = items.map(function (item) {
+		return new Promise(function (resolve, reject) {
+			var search = {
+				subject: that.subject,
+				hash   : item.hash
+			};
+			
+			physioDOM.db.collection("servicesPlan").findOne(search, function (err, doc) {
+				if (doc) {
+					physioDOM.db.collection("servicesPlan").update(doc, {$unset: {del: 1}, $set: { new:false }}, function (err, nb) {
+						resolve();
+					});
+				} else {
+					item.new = true;
+					physioDOM.db.collection("servicesPlan").insert(item, function (err, obj) {
+						resolve();
+					});
+				}
+			});
+		});
+	});
+	
+	function _delMsgs() {
+		return new Promise( function(resolve, reject) {
+			// console.log( "create del message for the queue" );
+			var search = {
+				subject: that.subject,
+				del   : { $exists : 1 }
+			};
+			// remove records with del field
+			physioDOM.db.collection("servicesPlan").find( search ).toArray( function( err, res ) {
+				// console.log( res.length + " records to delete");
+				res.forEach( function(item) {
+					// create del message for res
+					// console.log("     del "+item._id);
+					var msg = [];
+					var category = item.category === "HEALTH"?"healthcare":"social";
+					var leaf = "hhr[" + that.subject + "]."+ category+"[" + item._id + "].";
+					queue.delMsg([{branch: leaf}])
+					
+					msgs.push(msg);
+					physioDOM.db.collection("servicesPlan").remove( item , function() {} );
+				});
+				resolve();
+			});
+		});
+	}
+	
+	function _addMsgs() {
+		return new Promise( function(resolve, reject) {
+			// console.log("create add message for the queue");
+			var search = {
+				subject: that.subject,
+				del    : {$exists: 0}
+			};
+
+			moment.locale(physioDOM.lang === "en" ? "en-gb" : physioDOM.lang);
+			
+			physioDOM.db.collection("servicesPlan").find(search).toArray(function (err, res) {
+				// console.log( res.length + " messages to add");
+				res.forEach(function (item) {
+					// create add message for the queue
+					var msg = [];
+					var category = item.category === "HEALTH"?"healthcare":"social";
+					var leaf = "hhr[" + that.subject + "]."+ category+"[" + item._id + "].";
+					msg.push({
+						name : leaf+"label",
+						value: item.label,
+						type : "string"
+					});
+					msg.push({
+						name : leaf+"proLastName",
+						value: item.provider.family,
+						type : "string"
+					});
+					msg.push({
+						name : leaf+"proFirstName",
+						value: item.provider.given,
+						type : "string"
+					});
+					msg.push({
+						name : leaf+"frequency",
+						value: item.frequency,
+						type : "string"
+					});
+					msg.push({
+						name : leaf+"description",
+						value: item.detail,
+						type : "string"
+					});
+					msg.push({
+						name : leaf+"startDatetime",
+						value: moment(item.start).unix(),
+						type : "integer"
+					});
+					msg.push({
+						name : leaf+"endDatetime",
+						value: moment(item.end).unix(),
+						type : "integer"
+					});
+					msg.push({
+						name : leaf+"new",
+						value: item.new?1:0,
+						type : "integer"
+					});
+
+					queue.postMsg(msg);
+					msgs.push(msg);
+					// console.log("     add " + item._id + " ("+item.new+")" );
+				});
+				resolve( msgs );
+			});
+		});
+	}
+	
+	return new Promise( function(resolve, reject) {
+		_markDelete()
+			.then(function () {
+				// console.log("update and create record in database");
+				// update and create records
+				return Promise.all(promises);
+			})
+			.then( _delMsgs )
+			.then( _addMsgs )
+			.then( resolve )
+			.catch(function (err) {
+				if (err.stack) {
+					console.log(err.stack);
+				}
+				resolve([]);
+			});
+	});
 };
 
 /**

@@ -1,6 +1,7 @@
 /* jslint node:true */
 
 "use strict";
+/* global -Promise */
 
 var restify = require("restify"),
 	fs      = require('fs'),
@@ -10,8 +11,9 @@ var restify = require("restify"),
 	Logger  = require("logger"),
 	I18n    = require("i18n-2"),
 	Agenda = require("agenda"),
+	moment = require("moment"),
 	RSVP = require("rsvp"),
-	promise = require("rsvp").Promise,
+	Promise = require("rsvp").Promise,
 	PhysioDOM = require("./lib/class/physiodom");
 
 var IDirectory = require('./lib/http/IDirectory'),
@@ -140,7 +142,7 @@ server.use( function(req, res, next) {
 	req.cookies = {};
 	
 	function readCookies( cb ) {
-		return new promise( function(resolve,reject) {
+		return new Promise( function(resolve,reject) {
 			logger.trace("read cookies");
 			if( req.headers.cookie ) {
 				var cookies = req.headers.cookie.split(';');
@@ -160,7 +162,7 @@ server.use( function(req, res, next) {
 	}
 
 	function getSession( cb ) {
-		return new promise( function(resolve,reject) {
+		return new Promise( function(resolve,reject) {
 			logger.trace("getSessionAccount");
 			if (req.cookies && req.cookies.sessionID) {
 				physioDOM.getSession(req.cookies.sessionID)
@@ -499,7 +501,8 @@ server.put( '/api/beneficiary/questprog', IBeneficiary.setQuestProg );
 server.put( '/api/beneficiaries/:entryID/questprog', IBeneficiary.setQuestProg );
 
 server.get( '/api/beneficiary/services', IServices.getServices );
-server.get( '/api/beneficiary/services/items', IServices.getServicesItems )
+server.get( '/api/beneficiary/services/items', IServices.getServicesItems );
+server.get( '/api/beneficiary/services/queueitems', IServices.getServicesQueueItems );
 server.get( '/api/beneficiary/services/:serviceID', IServices.getServiceByID );
 server.put( '/api/beneficiary/services', IServices.putService );
 server.del( '/api/beneficiary/services/:serviceID', IServices.removeService );
@@ -544,6 +547,7 @@ server.get( '/api/queue/symptomPlan',            IQueue.symptomPlan);
 server.get( '/api/queue/physicalPlan',           IQueue.physicalPlan);
 server.get( '/api/queue/dietaryPlan',            IQueue.dietaryPlan);
 server.get( '/api/queue/symptomsSelf',           IQueue.symptomsSelf);
+server.get( '/api/queue/servicesPlan',           IQueue.servicesPlan);
 server.post('/api/queue/received',               IQueue.receivedMsg);
 
 server.get( '/api/queue/:hhr/init',              IQueue.init );
@@ -696,12 +700,16 @@ physioDOM.connect()
 						})
 						.then(function (activeBeneficiaries) {
 							var promises = activeBeneficiaries.map(function (beneficiary) {
-								return new promise(function (resolve, reject) {
+								return new Promise(function (resolve, reject) {
 									beneficiaries.getHHR(beneficiary._id)
 										.then(function (beneficiary) {
 											beneficiary.getSymptomsPlan(false)
 												.then(function () {
 													return beneficiary.getMeasurePlan(false);
+												})
+												.then(function() {
+													var startDate = moment().add(1,'d').format("YYYY-MM-DD");
+													return beneficiary.services().getServicesQueueItems( startDate, 31, physioDOM.lang );
 												})
 												.then(resolve);
 										});

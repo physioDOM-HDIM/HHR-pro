@@ -1,10 +1,11 @@
 {% extends './page.htm' %}
 
-{% block title %}{{ "Basic social services" | i18n }}{% endblock %}
+{% block title %}{{ title | i18n }}{% endblock %}
 
 {% block head %}
 {% parent %}
 <script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
 <script src="/bower_components/zdk-calendar/form2js.js"></script>
 <link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
 <link rel="import" href="/bower_components/zdk-calendar/custom-icons.html">
@@ -44,16 +45,16 @@
 {% endblock %}
 
 {% block content %}
+
 <div class="row title">
-	<label class="title">{{"Basic social services" | i18n }}</label>
+	<label class="title">{{ title | i18n }}</label>
 </div>
 
 {% if rights.write %}
 <div class="row control" style="margin-bottom:20px">
 	<span class="spacer"></span>
 	<button type="button" class="blue" onclick="showForm()">{{"Add a new service"|i18n}}</button>
-</div>
-{% endif %}
+</div>{% endif %}
 
 <template id="services" repeat="{%raw%}{{ service in services }}{%endraw%}" is="auto-binding">
 	<div class="service" id="{%raw%}{{ service._id }}{%endraw%}">
@@ -217,7 +218,7 @@
 
 <script>
 	var hours  = [ 
-		"07:00", "07:30", "08:00", "08:30", "09:00", "09:00", 
+		"07:00", "07:30", "08:00", "08:30", "09:00", "09:30", 
 		"10:00", "10:30", "11:00", "11:30", "12:00", "12:30", 
 		"13:00", "13:30", "14:00", "14:30", "15:00", "15:30", 
 		"16:00", "16:30", "17:00", "17:30", "18:00", "18:30",
@@ -339,9 +340,11 @@
 	}
 	
 	function deactivate( serviceID ) {
-		var ajax = document.querySelector("#deactivateService");
-		ajax.url = "/api/beneficiary/services/"+serviceID;
-		ajax.go();
+		new Modal('confirmDeactiveService', function() {
+			var ajax = document.querySelector("#deactivateService");
+			ajax.url = "/api/beneficiary/services/" + serviceID;
+			ajax.go();
+		});
 	}
 </script>
 

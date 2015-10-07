@@ -508,6 +508,26 @@ function Modal (type, callback, log) {
 		]
     };
 
+	content.confirmDeactiveService = {
+		title  : "trad_deactivate",
+		content: "trad_confirm_deactivate",
+		buttons: [
+			{
+				id: "trad_no",
+				action: function() {
+					self.closeModal();
+				}
+			},
+			{
+				id: "trad_yes",
+				action: function() {
+					callback();
+					self.closeModal();
+				}
+			}
+		]
+	};
+
 	content.disableWarningStatus = {
 		title  : "trad_WarningStatus",
 		content: "trad_confirm_disable",
