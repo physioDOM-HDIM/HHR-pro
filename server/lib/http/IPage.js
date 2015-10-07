@@ -1408,7 +1408,8 @@ function IPage() {
 		var data = {
 			admin: ['COORD', 'ADMIN'].indexOf(req.session.roleClass) !== -1 ? true : false,
 			rights: { read:false, write:false, url: '/services/health' },
-			category: 'health'
+			category: 'health',
+			title: "Basic health services"
 		};
 		
 		new Menu().rights( req.session.role, data.rights.url )
@@ -1459,7 +1460,8 @@ function IPage() {
 		var data = {
 			admin: ['COORD', 'ADMIN'].indexOf(req.session.roleClass) !== -1 ? true : false,
 			rights: { read:true, write:true, url: '/services/social' },
-			category: 'social'
+			category: 'social',
+			title: "Basic social services"
 		};
 
 		new Menu().rights( req.session.role, data.rights.url )

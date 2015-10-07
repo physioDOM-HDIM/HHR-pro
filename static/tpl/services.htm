@@ -1,6 +1,6 @@
 {% extends './page.htm' %}
 
-{% block title %}{{ "Basic social services" | i18n }}{% endblock %}
+{% block title %}{{ title | i18n }}{% endblock %}
 
 {% block head %}
 {% parent %}
@@ -44,16 +44,16 @@
 {% endblock %}
 
 {% block content %}
+
 <div class="row title">
-	<label class="title">{{"Basic social services" | i18n }}</label>
+	<label class="title">{{ title | i18n }}</label>
 </div>
 
 {% if rights.write %}
 <div class="row control" style="margin-bottom:20px">
 	<span class="spacer"></span>
 	<button type="button" class="blue" onclick="showForm()">{{"Add a new service"|i18n}}</button>
-</div>
-{% endif %}
+</div>{% endif %}
 
 <template id="services" repeat="{%raw%}{{ service in services }}{%endraw%}" is="auto-binding">
 	<div class="service" id="{%raw%}{{ service._id }}{%endraw%}">
