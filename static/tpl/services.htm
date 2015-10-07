@@ -5,6 +5,7 @@
 {% block head %}
 {% parent %}
 <script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
 <script src="/bower_components/zdk-calendar/form2js.js"></script>
 <link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
 <link rel="import" href="/bower_components/zdk-calendar/custom-icons.html">
@@ -339,9 +340,11 @@
 	}
 	
 	function deactivate( serviceID ) {
-		var ajax = document.querySelector("#deactivateService");
-		ajax.url = "/api/beneficiary/services/"+serviceID;
-		ajax.go();
+		new Modal('confirmDeactiveService', function() {
+			var ajax = document.querySelector("#deactivateService");
+			ajax.url = "/api/beneficiary/services/" + serviceID;
+			ajax.go();
+		});
 	}
 </script>
 

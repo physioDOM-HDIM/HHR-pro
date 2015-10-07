@@ -427,5 +427,7 @@
   "Start":"Début",
   "End":"Fin",
   "Health services":"Services de santé",
-  "Social services":"Service sociaux"
+  "Social services":"Service sociaux",
+  "Are you sure you want to deactivate this service ?":"Etes vous certain de désactiver ce service ?",
+  "Deactivation":"Désactivation"
 }
