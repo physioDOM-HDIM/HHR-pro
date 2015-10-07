@@ -9,7 +9,8 @@
 
 var Logger = require("logger"),
 	ObjectID = require("mongodb").ObjectID,
-	Queue = require("../class/queue.js");
+	Queue = require("../class/queue.js"),
+	moment = require("moment");
 var logger = new Logger("IQueue");
 
 /**
@@ -266,6 +267,51 @@ var IQueue = {
 				})
 				.then(function (result) {
 					logger.debug("end measure plan");
+					if (result) {
+						res.send(result);
+					} else {
+						res.send({code: 200, message: "biomaster not initialized"});
+					}
+					next();
+				})
+				.catch( function(err) {
+					console.log("measurePlan error", err);
+					console.log(err.stack);
+					throw err;
+				});
+		}
+	},
+
+	servicesPlan: function( req, res, next ) {
+		var hhr = req.params.hhr?new ObjectID(req.params.hhr):null || req.session.beneficiary;
+		
+		logger.trace("servicesPlan", hhr);
+
+		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
+			logger.warning("you have no right to access this request");
+			res.send(403, { code:403, message:"you have no right to access this request"});
+			return next(false);
+		}
+
+		if(!hhr) {
+			logger.warning("no hhr given");
+			res.send(404, { code:404, message:"empty hhr"});
+			return next();
+		} else {
+			physioDOM.Beneficiaries()
+				.then(function (beneficiaries) {
+					return beneficiaries.getHHR(hhr);
+				})
+				.then(function (beneficiary) {
+					if (beneficiary.biomasterStatus === true) {
+						var startDate = moment().add(1,'d').format("YYYY-MM-DD");
+						return beneficiary.services().getServicesQueueItems( startDate, 31, physioDOM.lang );
+					} else {
+						return false;
+					}
+				})
+				.then(function (result) {
+					logger.debug("end service plan");
 					if (result) {
 						res.send(result);
 					} else {
