@@ -763,9 +763,15 @@ html /deep/ paper-dropdown div.eventMonth span.title {
 			orderEvents: function( events ) {
 				// orders the event by date and time
 				events.sort( function(a, b) {
-					var timeA = moment(a.start, moment.ISO_8601).valueOf();
-					var timeB = moment(b.start, moment.ISO_8601).valueOf();
-					return timeA - timeB;
+					var timeStartA = moment(a.start, moment.ISO_8601).valueOf();
+					var timeStartB = moment(b.start, moment.ISO_8601).valueOf();
+					var timeEndA = moment(a.end, moment.ISO_8601).valueOf();
+					var timeEndB = moment(b.end, moment.ISO_8601).valueOf();
+					if( timeStartA != timeStartB) {
+						return timeStartA - timeStartB;
+					} else {
+						return timeEndA - timeEndB;
+					}
 				});
 			},
 
