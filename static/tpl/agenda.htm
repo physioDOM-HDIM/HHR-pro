@@ -186,7 +186,7 @@
 	
 	PolymerExpressions.prototype.date = function(value) {
 		if( value ) {
-			console.log( value );
+			// console.log( value );
 			moment.locale(lang);
 			return moment(value).format("LL");
 		}
@@ -214,7 +214,7 @@
 	
 	PolymerExpressions.prototype.fulldate = function(value) {
 		if( value ) {
-			console.log( value );
+			// console.log( value );
 			moment.locale(lang);
 			return moment(value).format("LLL");
 		}
@@ -279,7 +279,7 @@
 			});
 		document.querySelector("#ajaxServiceItem")
 			.addEventListener("core-response", function(evt) {
-				console.log( evt.detail.response );
+				// console.log( evt.detail.response );
 				document.querySelector("#dialog-event").show();
 				var tpl = document.querySelector("#service");
 				tpl.model = {
@@ -290,7 +290,7 @@
 			});
 		document.getElementById('agenda')
 			.addEventListener('zdk-event-click',function(evt) {
-				console.log( evt.detail );
+				// console.log( evt.detail );
 				var ajaxItem = document.querySelector("#ajaxServiceItem");
 				ajaxItem.url = "/api/beneficiary/services/"+ evt.detail.event.serviceID;
 				ajaxItem.go();
@@ -313,7 +313,7 @@
 	function renderTpl() {
 		if( data.providers && data.jobs && refHealthServices && refSocialServices && data.services ) {
 			data.services.forEach( function(service) {
-				console.log( service );
+				// console.log( service );
 				service.label = data.refServices[service.label].label[data.lang];
 			});
 			agenda.events = data.services;
