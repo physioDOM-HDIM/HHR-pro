@@ -234,7 +234,7 @@ var IQueue = {
 					console.log("dhdffq error", err);
 					console.log(err.stack);
 					throw err;
-				});;
+				});
 		}
 	},
 	
@@ -282,6 +282,66 @@ var IQueue = {
 		}
 	},
 
+	/**
+	 * Send the services lists by category to HHR-Home
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	services: function( req, res, next) {
+		var hhr = req.params.hhr?new ObjectID(req.params.hhr):null || req.session.beneficiary;
+		var queue;
+		logger.trace("servicesPlan", hhr);
+
+		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
+			logger.warning("you have no right to access this request");
+			res.send(403, { code:403, message:"you have no right to access this request"});
+			return next(false);
+		}
+		
+		if(!hhr) {
+			logger.warning("no hhr given");
+			res.send(404, { code:404, message:"empty hhr"});
+			return next();
+		} else {
+			physioDOM.Beneficiaries()
+				.then(function (beneficiaries) {
+					return beneficiaries.getHHR(hhr);
+				})
+				.then( function(beneficiary) {
+					if (beneficiary.biomasterStatus === true) {
+						queue = new Queue(beneficiary._id);
+						return beneficiary.services().pushServicesToQueue();
+					} else {
+						return false;
+					}
+				})
+				.then(function (result) {
+					logger.debug("end service lists");
+					res.send(result);
+					next();
+				})
+				.catch( function(err) {
+					if(err.stack) {
+						console.log(err.stack);
+					} else {
+						console.log(err);
+					}
+					res.send({ code:500, message:"error when pushing services to queue"});
+					next();
+				});
+		}
+	},
+
+	/**
+	 * Send the agenda to HHR-Home
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 * @returns {*}
+	 */
 	servicesPlan: function( req, res, next ) {
 		var hhr = req.params.hhr?new ObjectID(req.params.hhr):null || req.session.beneficiary;
 		
@@ -311,7 +371,7 @@ var IQueue = {
 					}
 				})
 				.then(function (result) {
-					logger.debug("end service plan");
+					logger.debug("end service agenda");
 					if (result) {
 						res.send(result);
 					} else {
@@ -320,7 +380,7 @@ var IQueue = {
 					next();
 				})
 				.catch( function(err) {
-					console.log("measurePlan error", err);
+					console.log("servicesPlan error", err);
 					console.log(err.stack);
 					throw err;
 				});

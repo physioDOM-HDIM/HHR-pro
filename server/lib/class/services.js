@@ -74,6 +74,172 @@ Services.prototype.getServices = function( category, active ) {
 	});
 };
 
+Services.prototype.pushServicesToQueue = function() {
+	var queue = new Queue(this.subject);
+	var that = this;
+	var msgs = [];
+
+	function _markDelete() {
+		// console.log("mark all records with a delete flag");
+		return new Promise( function(resolve, reject) {
+			var search = {subject: that.subject};
+			physioDOM.db.collection("servicesQueue").update(search, {$set: {del: true}}, {multi: true}, function (err, nb) {
+				if (err) {
+					logger.alert(err);
+					reject(err);
+				} else {
+					resolve(nb);
+				}
+			});
+		});
+	}
+
+	function register(item) {
+		return new Promise(function (resolve ) {
+			var search = {
+				subject: that.subject,
+				hash   : item.hash
+			};
+
+			physioDOM.db.collection("servicesQueue").findOne(search, function (err, doc) {
+				if (doc) {
+					physioDOM.db.collection("servicesQueue").update(doc, {
+						$unset: {del: 1},
+						$set  : {new: false}
+					}, function () {
+						resolve();
+					});
+				} else {
+					item.new = true;
+					physioDOM.db.collection("servicesQueue").insert(item, function () {
+						resolve();
+					});
+				}
+			});
+		});
+	}
+
+	return new Promise( function( resolve ) {
+		_markDelete()
+			.then(function () {
+				return that.getServices("all", true);
+			})
+			.then(function (services) {
+				services.forEach(function (service) {
+					service._id = service._id.toString();
+					service.subject = service.subject.toString();
+					service.source = service.source.toString();
+					service.provider = service.provider?service.provider.toString():"";
+
+					service.hash = Hash.sha1(service);
+				});
+				
+				var promises = services.map(function (service) {
+					register(service);
+				});
+				return Promise.all(promises);
+			})
+			.then(function () {
+				return new Promise(function (resolve) {
+					// create del message for the queue
+					var search = {
+						subject: that.subject,
+						del    : {$exists: 1}
+					};
+					physioDOM.db.collection("servicesQueue").find(search).toArray(function (err, res) {
+						res.forEach(function (item) {
+							var msg = [];
+							var category = item.category === "HEALTH" ? "healthcare" : "social";
+							var leaf = "hhr[" + that.subject + "]." + category + "[" + item._id + "].";
+							queue.delMsg([{branch: leaf}]);
+							msgs.push(msg);
+							physioDOM.db.collection("servicesQueue").remove(item, function () {});
+						});
+						resolve();
+					});
+				});
+			})
+			.then(function () {
+				return new Promise(function (resolve) {
+					// create add message for the queue
+					var search = {
+						subject: that.subject.toString(),
+						del    : {$exists: 0}
+					};
+
+					moment.locale(physioDOM.lang === "en" ? "en-gb" : physioDOM.lang);
+
+					physioDOM.db.collection("servicesQueue").find(search).toArray(function (err, res) {
+						console.log( res.length + " messages to add");
+						res.forEach(function (item) {
+							// create add message for the queue
+							var msg = [];
+							var category = item.category === "HEALTH" ? "healthcare" : "social";
+							var leaf = "hhr[" + that.subject + "]." + category + "[" + item._id + "].";
+							msg.push({
+								name : leaf + "new",
+								value: item.new ? 1 : 0,
+								type : "integer"
+							});
+							msg.push({
+								name : leaf + "label",
+								value: item.label,
+								type : "string"
+							});
+							msg.push({
+								name : leaf + "proLastName",
+								value: item.provider.family,
+								type : "string"
+							});
+							msg.push({
+								name : leaf + "proFirstName",
+								value: item.provider.given,
+								type : "string"
+							});
+							msg.push({
+								name : leaf + "frequency",
+								value: item.frequency,
+								type : "string"
+							});
+							msg.push({
+								name : leaf + "description",
+								value: item.detail,
+								type : "string"
+							});
+							msg.push({
+								name : leaf + "startDatetime",
+								value: moment(item.startDate + "T" + item.time).unix(),
+								type : "integer"
+							});
+							msg.push({
+								name : leaf + "endDatetime",
+								value: moment(item.endDate + "T" + item.time).add(item.duration, "m").unix(),
+								type : "integer"
+							});
+							msg.push({
+								name : leaf + "new",
+								value: item.new ? 1 : 0,
+								type : "integer"
+							});
+
+							queue.postMsg(msg);
+							msgs.push(msg);
+						});
+						console.log(msgs);
+						resolve(msgs);
+					});
+				});
+			})
+			.then( resolve )
+			.catch(function (err) {
+				if (err.stack) {
+					console.log(err.stack);
+				}
+				resolve([]);
+			});
+	});
+};
+
 function _getItem( service, startDate, endDate ) {
 	var styles = {
 		"HEALTH": "event6",
@@ -84,7 +250,7 @@ function _getItem( service, startDate, endDate ) {
 
 	moment.locale(physioDOM.lang === "en" ? "en-gb" : physioDOM.lang);
 	
-	return new Promise( function(resolve, reject) {
+	return new Promise( function(resolve) {
 		var item;
 		var servDate, closeDate, start, end;
 		var serviceItems = [];
@@ -144,27 +310,30 @@ function _getItem( service, startDate, endDate ) {
 				while( servDate.format("YYYY-MM-DD") < startDate ) {
 					servDate.add( service.repeat,'w');
 				}
+				
+				var pushToServiceItems = function(when) {
+					start = moment(start).day(when).format("YYYY-MM-DDTHH:mm");
+					end = moment(end).day(when).format("YYYY-MM-DDTHH:mm");
+					item = {
+						serviceID : service._id,
+						label : service.ref,
+						start: start,
+						end: end,
+						className: "event1",
+						provider: service.providerName,
+						category: service.category,
+						title: service.label,
+						frequency : service.frequency,
+						detail: service.detail
+					};
+					serviceItems.push(item);
+				};
+				
 				do {
 					start = moment(servDate).format("YYYY-MM-DD")+"T"+service.time;
 					start = moment(start).format("YYYY-MM-DDTHH:mm");
 					end = moment(start).add( service.duration, "m").format("YYYY-MM-DDTHH:mm");
-					service.when.forEach( function(when) {
-						start = moment(start).day(when).format("YYYY-MM-DDTHH:mm");
-						end = moment(end).day(when).format("YYYY-MM-DDTHH:mm");
-						item = {
-							serviceID : service._id,
-							label : service.ref,
-							start: start,
-							end: end,
-							className: "event1",
-							provider: service.providerName,
-							category: service.category,
-							title: service.label,
-							frequency : service.frequency,
-							detail: service.detail
-						};
-						serviceItems.push(item);
-					});
+					service.when.forEach( pushToServiceItems );
 					servDate.add( service.repeat,'w');
 				} while( servDate.format("YYYY-MM-DD") <= closeDate );
 				break;
@@ -243,7 +412,7 @@ Services.prototype.getServicesItems = function( startDate, nbDays, lang ) {
 	var that = this;
 	var endDate = moment(startDate).add(nbDays, 'd').format("YYYY-MM-DD");
 	
-	return new Promise( function(resolve, reject) {
+	return new Promise( function(resolve) {
 		var servicesItems = [];
 
 		var search = {
@@ -297,7 +466,7 @@ Services.prototype.getServicesQueueItems = function( startDate, nbDays, lang ) {
 	var refServices = {};
 	
 	function _getQueueItems() {
-		return new Promise(function (resolve, reject) {
+		return new Promise(function (resolve) {
 			var servicesItems = [];
 
 			var search = {
@@ -379,7 +548,7 @@ Services.prototype.getServicesQueueItems = function( startDate, nbDays, lang ) {
 					item.hash = Hash.sha1(item);
 					item.subject = that.subject;
 				});
-				return that.pushToQueue(items);
+				return that.pushAgendaToQueue(items);
 			})
 			.then( resolve )
 			.catch( function(err) {
@@ -389,7 +558,13 @@ Services.prototype.getServicesQueueItems = function( startDate, nbDays, lang ) {
 	});
 };
 
-Services.prototype.pushToQueue = function( items ) {
+/**
+ * Push agenda events to queue
+ * 
+ * @param items
+ * @returns {*}
+ */
+Services.prototype.pushAgendaToQueue = function( items ) {
 	var queue = new Queue(this.subject);
 	var that = this;
 	var msgs = [];
@@ -403,15 +578,14 @@ Services.prototype.pushToQueue = function( items ) {
 					logger.alert(err);
 					reject(err);
 				} else {
-					// console.log( nb+" records marked");
-					resolve();
+					resolve(nb);
 				}
 			});
 		});
 	}
 	
 	var promises = items.map(function (item) {
-		return new Promise(function (resolve, reject) {
+		return new Promise(function (resolve ) {
 			var search = {
 				subject: that.subject,
 				hash   : item.hash
@@ -419,12 +593,12 @@ Services.prototype.pushToQueue = function( items ) {
 			
 			physioDOM.db.collection("servicesPlan").findOne(search, function (err, doc) {
 				if (doc) {
-					physioDOM.db.collection("servicesPlan").update(doc, {$unset: {del: 1}, $set: { new:false }}, function (err, nb) {
+					physioDOM.db.collection("servicesPlan").update(doc, {$unset: {del: 1}, $set: { new:false }}, function () {
 						resolve();
 					});
 				} else {
 					item.new = true;
-					physioDOM.db.collection("servicesPlan").insert(item, function (err, obj) {
+					physioDOM.db.collection("servicesPlan").insert(item, function () {
 						resolve();
 					});
 				}
@@ -433,22 +607,18 @@ Services.prototype.pushToQueue = function( items ) {
 	});
 	
 	function _delMsgs() {
-		return new Promise( function(resolve, reject) {
-			// console.log( "create del message for the queue" );
+		return new Promise( function(resolve) {
+			// create del message for the queue
 			var search = {
 				subject: that.subject,
 				del   : { $exists : 1 }
 			};
 			// remove records with del field
 			physioDOM.db.collection("servicesPlan").find( search ).toArray( function( err, res ) {
-				// console.log( res.length + " records to delete");
 				res.forEach( function(item) {
-					// create del message for res
-					// console.log("     del "+item._id);
 					var msg = [];
-					var category = item.category === "HEALTH"?"healthcare":"social";
-					var leaf = "hhr[" + that.subject + "]."+ category+"[" + item._id + "].";
-					queue.delMsg([{branch: leaf}])
+					var leaf = "hhr[" + that.subject + "].agenda[" + item._id + "].";
+					queue.delMsg([{branch: leaf}]);
 					
 					msgs.push(msg);
 					physioDOM.db.collection("servicesPlan").remove( item , function() {} );
@@ -459,8 +629,8 @@ Services.prototype.pushToQueue = function( items ) {
 	}
 	
 	function _addMsgs() {
-		return new Promise( function(resolve, reject) {
-			// console.log("create add message for the queue");
+		return new Promise( function(resolve) {
+			// create add message for the queue
 			var search = {
 				subject: that.subject,
 				del    : {$exists: 0}
@@ -473,11 +643,25 @@ Services.prototype.pushToQueue = function( items ) {
 				res.forEach(function (item) {
 					// create add message for the queue
 					var msg = [];
-					var category = item.category === "HEALTH"?"healthcare":"social";
-					var leaf = "hhr[" + that.subject + "]."+ category+"[" + item._id + "].";
+					var leaf = "hhr[" + that.subject + "].agenda[" + item._id + "].";
+					msg.push({
+						name : leaf+"new",
+						value: item.new?1:0,
+						type : "integer"
+					});
+					msg.push({
+						name : leaf+"datetime",
+						value: moment(item.start).unix(),
+						type : "integer"
+					});
 					msg.push({
 						name : leaf+"label",
 						value: item.label,
+						type : "string"
+					});
+					msg.push({
+						name : leaf+"description",
+						value: item.detail,
 						type : "string"
 					});
 					msg.push({
@@ -490,31 +674,6 @@ Services.prototype.pushToQueue = function( items ) {
 						value: item.provider.given,
 						type : "string"
 					});
-					msg.push({
-						name : leaf+"frequency",
-						value: item.frequency,
-						type : "string"
-					});
-					msg.push({
-						name : leaf+"description",
-						value: item.detail,
-						type : "string"
-					});
-					msg.push({
-						name : leaf+"startDatetime",
-						value: moment(item.start).unix(),
-						type : "integer"
-					});
-					msg.push({
-						name : leaf+"endDatetime",
-						value: moment(item.end).unix(),
-						type : "integer"
-					});
-					msg.push({
-						name : leaf+"new",
-						value: item.new?1:0,
-						type : "integer"
-					});
 
 					queue.postMsg(msg);
 					msgs.push(msg);
@@ -525,10 +684,9 @@ Services.prototype.pushToQueue = function( items ) {
 		});
 	}
 	
-	return new Promise( function(resolve, reject) {
+	return new Promise( function(resolve) {
 		_markDelete()
 			.then(function () {
-				// console.log("update and create record in database");
 				// update and create records
 				return Promise.all(promises);
 			})
@@ -604,7 +762,7 @@ Services.prototype.putService = function( serviceObj, source ) {
 		serviceObj.subject = that.subject;
 		serviceObj.provider = serviceObj.provider?new ObjectID(serviceObj.provider):null;
 		serviceObj.source = source;
-		if( serviceObj._id ) { serviceObj._id = new ObjectID(serviceObj._id) }
+		if( serviceObj._id ) { serviceObj._id = new ObjectID(serviceObj._id); }
 		
 		var service = new Service();
 		if ( serviceObj._id) {
