@@ -1,4 +1,9 @@
 
+__v1.1.2__
+
+  - Fix : Push service plan to queue
+  - Push services list to queue
+
 __v1.1.1__
 
   - Push service plan to queue
