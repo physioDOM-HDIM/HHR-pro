@@ -501,7 +501,9 @@ server.put( '/api/beneficiary/questprog', IBeneficiary.setQuestProg );
 server.put( '/api/beneficiaries/:entryID/questprog', IBeneficiary.setQuestProg );
 
 server.get( '/api/beneficiary/services', IServices.getServices );
-server.get( '/api/beneficiary/services/items', IServices.getServicesItems );
+// for agenda display
+server.get( '/api/beneficiary/services/items', IServices.getServicesItems ); 
+// for agenda on HHR-Home
 server.get( '/api/beneficiary/services/queueitems', IServices.getServicesQueueItems );
 server.get( '/api/beneficiary/services/:serviceID', IServices.getServiceByID );
 server.put( '/api/beneficiary/services', IServices.putService );
@@ -547,6 +549,7 @@ server.get( '/api/queue/symptomPlan',            IQueue.symptomPlan);
 server.get( '/api/queue/physicalPlan',           IQueue.physicalPlan);
 server.get( '/api/queue/dietaryPlan',            IQueue.dietaryPlan);
 server.get( '/api/queue/symptomsSelf',           IQueue.symptomsSelf);
+server.get( '/api/queue/services',               IQueue.services);
 server.get( '/api/queue/servicesPlan',           IQueue.servicesPlan);
 server.post('/api/queue/received',               IQueue.receivedMsg);
 
@@ -711,6 +714,9 @@ physioDOM.connect()
 													var startDate = moment().add(1,'d').format("YYYY-MM-DD");
 													return beneficiary.services().getServicesQueueItems( startDate, 31, physioDOM.lang );
 												})
+												.then(function() {
+													return beneficiary.services().pushServicesToQueue( );
+												})
 												.then(resolve);
 										});
 								});
@@ -730,10 +736,10 @@ physioDOM.connect()
 		agenda.start();
 	})
 	.catch(function() {
-		logger.info('==================================================================');
+		logger.emergency('==================================================================');
 		logger.emergency("connection to database failed");
 		logger.emergency("HHR-Pro instance not started");
-		logger.info('==================================================================');
+		logger.emergency('==================================================================');
 		process.exit(1);
 	});
 
