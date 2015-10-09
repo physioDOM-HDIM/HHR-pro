@@ -250,7 +250,7 @@ function _getItem( service, startDate, endDate ) {
 
 	moment.locale(physioDOM.lang === "en" ? "en-gb" : physioDOM.lang);
 	
-	return new Promise( function(resolve, reject) {
+	return new Promise( function(resolve) {
 		var item;
 		var servDate, closeDate, start, end;
 		var serviceItems = [];
@@ -310,27 +310,30 @@ function _getItem( service, startDate, endDate ) {
 				while( servDate.format("YYYY-MM-DD") < startDate ) {
 					servDate.add( service.repeat,'w');
 				}
+				
+				var pushToServiceItems = function(when) {
+					start = moment(start).day(when).format("YYYY-MM-DDTHH:mm");
+					end = moment(end).day(when).format("YYYY-MM-DDTHH:mm");
+					item = {
+						serviceID : service._id,
+						label : service.ref,
+						start: start,
+						end: end,
+						className: "event1",
+						provider: service.providerName,
+						category: service.category,
+						title: service.label,
+						frequency : service.frequency,
+						detail: service.detail
+					};
+					serviceItems.push(item);
+				};
+				
 				do {
 					start = moment(servDate).format("YYYY-MM-DD")+"T"+service.time;
 					start = moment(start).format("YYYY-MM-DDTHH:mm");
 					end = moment(start).add( service.duration, "m").format("YYYY-MM-DDTHH:mm");
-					service.when.forEach( function(when) {
-						start = moment(start).day(when).format("YYYY-MM-DDTHH:mm");
-						end = moment(end).day(when).format("YYYY-MM-DDTHH:mm");
-						item = {
-							serviceID : service._id,
-							label : service.ref,
-							start: start,
-							end: end,
-							className: "event1",
-							provider: service.providerName,
-							category: service.category,
-							title: service.label,
-							frequency : service.frequency,
-							detail: service.detail
-						};
-						serviceItems.push(item);
-					});
+					service.when.forEach( pushToServiceItems );
 					servDate.add( service.repeat,'w');
 				} while( servDate.format("YYYY-MM-DD") <= closeDate );
 				break;
@@ -409,7 +412,7 @@ Services.prototype.getServicesItems = function( startDate, nbDays, lang ) {
 	var that = this;
 	var endDate = moment(startDate).add(nbDays, 'd').format("YYYY-MM-DD");
 	
-	return new Promise( function(resolve, reject) {
+	return new Promise( function(resolve) {
 		var servicesItems = [];
 
 		var search = {
@@ -463,7 +466,7 @@ Services.prototype.getServicesQueueItems = function( startDate, nbDays, lang ) {
 	var refServices = {};
 	
 	function _getQueueItems() {
-		return new Promise(function (resolve, reject) {
+		return new Promise(function (resolve) {
 			var servicesItems = [];
 
 			var search = {
@@ -575,15 +578,14 @@ Services.prototype.pushAgendaToQueue = function( items ) {
 					logger.alert(err);
 					reject(err);
 				} else {
-					// console.log( nb+" records marked");
-					resolve();
+					resolve(nb);
 				}
 			});
 		});
 	}
 	
 	var promises = items.map(function (item) {
-		return new Promise(function (resolve, reject) {
+		return new Promise(function (resolve ) {
 			var search = {
 				subject: that.subject,
 				hash   : item.hash
@@ -591,12 +593,12 @@ Services.prototype.pushAgendaToQueue = function( items ) {
 			
 			physioDOM.db.collection("servicesPlan").findOne(search, function (err, doc) {
 				if (doc) {
-					physioDOM.db.collection("servicesPlan").update(doc, {$unset: {del: 1}, $set: { new:false }}, function (err, nb) {
+					physioDOM.db.collection("servicesPlan").update(doc, {$unset: {del: 1}, $set: { new:false }}, function () {
 						resolve();
 					});
 				} else {
 					item.new = true;
-					physioDOM.db.collection("servicesPlan").insert(item, function (err, obj) {
+					physioDOM.db.collection("servicesPlan").insert(item, function () {
 						resolve();
 					});
 				}
@@ -605,8 +607,8 @@ Services.prototype.pushAgendaToQueue = function( items ) {
 	});
 	
 	function _delMsgs() {
-		return new Promise( function(resolve, reject) {
-			// console.log( "create del message for the queue" );
+		return new Promise( function(resolve) {
+			// create del message for the queue
 			var search = {
 				subject: that.subject,
 				del   : { $exists : 1 }
@@ -627,8 +629,8 @@ Services.prototype.pushAgendaToQueue = function( items ) {
 	}
 	
 	function _addMsgs() {
-		return new Promise( function(resolve, reject) {
-			// console.log("create add message for the queue");
+		return new Promise( function(resolve) {
+			// create add message for the queue
 			var search = {
 				subject: that.subject,
 				del    : {$exists: 0}
@@ -760,7 +762,7 @@ Services.prototype.putService = function( serviceObj, source ) {
 		serviceObj.subject = that.subject;
 		serviceObj.provider = serviceObj.provider?new ObjectID(serviceObj.provider):null;
 		serviceObj.source = source;
-		if( serviceObj._id ) { serviceObj._id = new ObjectID(serviceObj._id) }
+		if( serviceObj._id ) { serviceObj._id = new ObjectID(serviceObj._id); }
 		
 		var service = new Service();
 		if ( serviceObj._id) {
