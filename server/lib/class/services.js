@@ -545,7 +545,7 @@ Services.prototype.getServicesQueueItems = function( startDate, nbDays, lang ) {
 					item.hash = Hash.sha1(item);
 					item.subject = that.subject;
 				});
-				return that.pushToQueue(items);
+				return that.pushAgendaToQueue(items);
 			})
 			.then( resolve )
 			.catch( function(err) {
@@ -555,7 +555,13 @@ Services.prototype.getServicesQueueItems = function( startDate, nbDays, lang ) {
 	});
 };
 
-Services.prototype.pushToQueue = function( items ) {
+/**
+ * Push agenda events to queue
+ * 
+ * @param items
+ * @returns {*}
+ */
+Services.prototype.pushAgendaToQueue = function( items ) {
 	var queue = new Queue(this.subject);
 	var that = this;
 	var msgs = [];
@@ -607,14 +613,10 @@ Services.prototype.pushToQueue = function( items ) {
 			};
 			// remove records with del field
 			physioDOM.db.collection("servicesPlan").find( search ).toArray( function( err, res ) {
-				// console.log( res.length + " records to delete");
 				res.forEach( function(item) {
-					// create del message for res
-					// console.log("     del "+item._id);
 					var msg = [];
-					var category = item.category === "HEALTH"?"healthcare":"social";
-					var leaf = "hhr[" + that.subject + "]."+ category+"[" + item._id + "].";
-					queue.delMsg([{branch: leaf}])
+					var leaf = "hhr[" + that.subject + "].agenda[" + item._id + "].";
+					queue.delMsg([{branch: leaf}]);
 					
 					msgs.push(msg);
 					physioDOM.db.collection("servicesPlan").remove( item , function() {} );
@@ -639,11 +641,25 @@ Services.prototype.pushToQueue = function( items ) {
 				res.forEach(function (item) {
 					// create add message for the queue
 					var msg = [];
-					var category = item.category === "HEALTH"?"healthcare":"social";
-					var leaf = "hhr[" + that.subject + "]."+ category+"[" + item._id + "].";
+					var leaf = "hhr[" + that.subject + "].agenda[" + item._id + "].";
+					msg.push({
+						name : leaf+"new",
+						value: item.new?1:0,
+						type : "integer"
+					});
+					msg.push({
+						name : leaf+"datetime",
+						value: moment(item.start).unix(),
+						type : "integer"
+					});
 					msg.push({
 						name : leaf+"label",
 						value: item.label,
+						type : "string"
+					});
+					msg.push({
+						name : leaf+"description",
+						value: item.detail,
 						type : "string"
 					});
 					msg.push({
@@ -656,31 +672,6 @@ Services.prototype.pushToQueue = function( items ) {
 						value: item.provider.given,
 						type : "string"
 					});
-					msg.push({
-						name : leaf+"frequency",
-						value: item.frequency,
-						type : "string"
-					});
-					msg.push({
-						name : leaf+"description",
-						value: item.detail,
-						type : "string"
-					});
-					msg.push({
-						name : leaf+"startDatetime",
-						value: moment(item.start).unix(),
-						type : "integer"
-					});
-					msg.push({
-						name : leaf+"endDatetime",
-						value: moment(item.end).unix(),
-						type : "integer"
-					});
-					msg.push({
-						name : leaf+"new",
-						value: item.new?1:0,
-						type : "integer"
-					});
 
 					queue.postMsg(msg);
 					msgs.push(msg);
@@ -691,10 +682,9 @@ Services.prototype.pushToQueue = function( items ) {
 		});
 	}
 	
-	return new Promise( function(resolve, reject) {
+	return new Promise( function(resolve) {
 		_markDelete()
 			.then(function () {
-				// console.log("update and create record in database");
 				// update and create records
 				return Promise.all(promises);
 			})
