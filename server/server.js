@@ -711,8 +711,8 @@ physioDOM.connect()
 													return beneficiary.getMeasurePlan(false);
 												})
 												.then(function() {
-													var startDate = moment().add(1,'d').format("YYYY-MM-DD");
-													return beneficiary.services().getServicesQueueItems( startDate, 31, physioDOM.lang );
+													var startDate = moment().format("YYYY-MM-DD");
+													return beneficiary.services().getServicesQueueItems( startDate, 15, physioDOM.lang );
 												})
 												.then(function() {
 													return beneficiary.services().pushServicesToQueue( );

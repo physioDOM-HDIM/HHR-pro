@@ -114,7 +114,7 @@ var IServices = {
 	getServicesQueueItems: function( req, res, next ) {
 		logger.trace("getServicesQueueItems");
 
-		var startDate = moment().add(1,'d').format("YYYY-MM-DD");
+		var startDate = moment().format("YYYY-MM-DD");
 
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
@@ -125,7 +125,7 @@ var IServices = {
 				}
 			})
 			.then( function(_beneficiary) {
-				return _beneficiary.services().getServicesQueueItems( startDate, 31, physioDOM.lang );
+				return _beneficiary.services().getServicesQueueItems( startDate, 15, physioDOM.lang );
 			})
 			.then( function(services) {
 				res.send(services);
