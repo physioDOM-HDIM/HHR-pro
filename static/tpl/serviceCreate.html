@@ -427,7 +427,7 @@
 			editedService.ref = obj.ref;
 			editedService.active = true;
 			if( ['daily' ,'punctual'].indexOf( editedService.frequency ) !== -1 ) {
-				delete editedService.when;
+				editedService.when = null;
 			}
 			if( editedService.frequency === "punctual" ) {
 				editedService.endDate = editedService.startDate;
