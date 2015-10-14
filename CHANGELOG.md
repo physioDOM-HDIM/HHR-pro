@@ -1,3 +1,32 @@
+% CHANGELOG  
+% Fabrice Le Coz  
+% October, 2015
+
+__v1.1.3__
+
+  - Fix Bug 556 : \[Services\] Mauvaises "Key" pour l'envoi des Services
+  - FIx Bug 555 : \[Agenda\] Pas de new agenda
+  - Fix Bug 557 : \[Agenda\] Pas d'envoi de l'agenda du jour
+  - Fix Bug 554 : \[Agenda\] Mauvaise heure d'enregistrement
+  - Fix Bug 553 : Double enregistrement d'un service
+  
+> __Nota :__ Dans le fichier de configuration, il faut rajouter un paramètre définissant la Time Zone de l'instance, par exemple :
+>
+>      "timezone":"Europe/Paris"
+>
+>  - pour l'espagne : "Europe/Madrid"
+>  - pour la hollande : "Europe/Amsterdam"
+>  - pour l'angleterre : "Europe/London"
+>
+>
+>  Pour les tests il est recommandé de supprimer les collections : "services","servicesPlan" et "servicesQueue"
+>
+>      mongo hhrpro-test
+>      db.services.drop()
+>      db.servicesPlan.drop()
+>      db.servicesQueue.drop()
+>
+
 
 __v1.1.2__
 
