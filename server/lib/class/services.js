@@ -635,20 +635,18 @@ Services.prototype.pushAgendaToQueue = function( items ) {
 				subject: that.subject,
 				del    : {$exists: 0}
 			};
-
+			var newAgenda = false;
+			
 			moment.locale(physioDOM.lang === "en" ? "en-gb" : physioDOM.lang);
 			
 			physioDOM.db.collection("servicesPlan").find(search).toArray(function (err, res) {
-				// console.log( res.length + " messages to add");
 				res.forEach(function (item) {
 					// create add message for the queue
+					/* jslint bitwise: true */
 					var msg = [];
 					var leaf = "hhr[" + that.subject + "].agenda[" + item._id + "].";
-					msg.push({
-						name : leaf+"new",
-						value: item.new?1:0,
-						type : "integer"
-					});
+					newAgenda = newAgenda | item.new;
+					
 					msg.push({
 						name : leaf+"datetime",
 						value: moment(item.start).unix(),
@@ -677,8 +675,18 @@ Services.prototype.pushAgendaToQueue = function( items ) {
 
 					queue.postMsg(msg);
 					msgs.push(msg);
-					// console.log("     add " + item._id + " ("+item.new+")" );
 				});
+				
+				// agenda new is global for one beneficiary
+				var newMsg = [];
+				newMsg.push({
+					name : "hhr[" + that.subject + "].agenda.new",
+					value: newAgenda?1:0,
+					type : "integer"
+				});
+				queue.postMsg(newMsg);
+				msgs.push(newMsg);
+				
 				resolve( msgs );
 			});
 		});
