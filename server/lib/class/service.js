@@ -45,7 +45,13 @@ Service.prototype.setup = function( serviceObj ) {
 		logger.trace("setup", that._id, serviceObj._id);
 		checkSchema( serviceObj )
 			.then( function(entry) {
-				if (entry._id && that.frequency !== entry.frequency) {
+				if (entry._id && ( 
+						that.frequency !== entry.frequency || 
+						that.when !== entry.when || 
+						that.repeat !== entry.repeat ||
+						that.time !== entry.time ||
+						that.duration !== entry.duration
+					)) {
 					return that.deactivate(entry.source)
 						.then( function() {
 							logger.debug( "create a new service ");

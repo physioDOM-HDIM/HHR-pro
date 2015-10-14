@@ -17,7 +17,7 @@ var punctualServiceSchema = {
 		"label"    : { type:"string" },
 		"detail"   : { type:"string" },
 		"active"   : { type: "boolean", required:true },
-		"deactivate" : {
+		"deactivated" : {
 			type: "object",
 			properties : {
 				"source": {type: "object", description: "professional ID", required: true},
@@ -33,7 +33,8 @@ var punctualServiceSchema = {
 		"meal": { type:"array", items:{ type: "string" } },
 		"subject"  : {type: "object", description: "beneficiary ID"},
 		"source" : {type: "object", description: "professional ID of the prescriber"},
-		"provider"  : {type: ["object","null"], description: "professional ID of the provider"}
+		"provider"  : {type: ["object","null"], description: "professional ID of the provider"},
+		"when": { type: "null" }
 	},
 	"additionalProperties":false
 };
@@ -49,7 +50,7 @@ var dailyServiceSchema = {
 		"label"    : { type:"string" },
 		"detail"   : { type:"string" },
 		"active"   : { type: "boolean", required:true },
-		"deactivate" : {
+		"deactivated" : {
 			type: "object",
 			properties : {
 				"source": {type: "object", description: "professional ID", required: true},
@@ -65,7 +66,8 @@ var dailyServiceSchema = {
 		"meal": { type:"array", items:{ type: "string" } },
 		"subject"  : {type: "object", description: "beneficiary ID"},
 		"source" : {type: "object", description: "professional ID of the prescriber"},
-		"provider"  : {type: ["object","null"], description: "professional ID of the provider"}
+		"provider"  : {type: ["object","null"], description: "professional ID of the provider"},
+		"when": { type: "null" }
 	},
 	"additionalProperties":false
 };
@@ -81,7 +83,7 @@ var weeklyServiceSchema = {
 		"label"    : { type:"string" },
 		"detail"   : { type:"string" },
 		"active"   : { type: "boolean", required:true },
-		"deactivate" : {
+		"deactivated" : {
 			type: "object",
 			properties : {
 				"source": {type: "object", description: "professional ID", required: true},
@@ -102,50 +104,36 @@ var weeklyServiceSchema = {
 	},
 	"additionalProperties":false
 };
-/*
- "when": { 
- type:"array",
- items: {
- type: "object",
- properties: {
- "day" : {
- type: "integer", minimum: 0, maximum:6
- },
- "time": {type: "string", pattern: "^[0-2][0-9]:[0-5][0-9]$"}
- }
- },
- required:true
- }
- */
+
 var monthlyServiceSchema = {
 	id        : "/monthlyService",
 	type      : "object",
 	properties: {
-		"_id"      : {type: "object", description: "ID of the service if exists"},
-		"category" : {type: "string", enum: ["HEALTH", "SOCIAL", "ASSIST"] , required: true },
-		"ref"      : {type: "string" , required: true },
-		"create"      : { type: "boolean"},
-		"label"    : { type:"string" },
-		"detail"   : { type:"string" },
-		"active"   : { type: "boolean", required:true },
-		"deactivate" : {
+		"_id"        : { type: "object", description: "ID of the service if exists"},
+		"category"   : { type: "string", enum: ["HEALTH", "SOCIAL", "ASSIST"] , required: true },
+		"ref"        : { type: "string" , required: true },
+		"create"     : { type: "boolean"},
+		"label"      : { type:"string" },
+		"detail"     : { type:"string" },
+		"active"     : { type: "boolean", required:true },
+		"deactivated" : {
 			type: "object",
 			properties : {
 				"source": {type: "object", description: "professional ID", required: true},
-				"date": {type: "string", format: "date", required: true}
+				"date":   {type: "string", format: "date", required: true}
 			}
 		},
 		"frequency": {type: "string", enum: ["monthly"], required: true},
 		"repeat"   : {type: "integer", default: 1},
 		"startDate": {type: "string", format: "date", required: true},
 		"endDate"  : {type: "string", format: "date"},
-		"time": { type:"string", pattern:"^[0-2][0-9]:[0-5][0-9]$"},
+		"time"     : { type:"string", pattern:"^[0-2][0-9]:[0-5][0-9]$"},
 		"duration" : {type: "integer", default: 60 },
-		"meal": { type:"array", items:{ type: "string" } },
+		"meal"     : { type:"array", items:{ type: "string" } },
 		"subject"  : {type: "object", description: "beneficiary ID"},
-		"source" : {type: "object", description: "professional ID of the prescriber"},
-		"provider"  : {type: ["object","null"], description: "professional ID of the provider"},
-		"when": { type:"array", items: { type:"integer"}, required: true }
+		"source"   : {type: "object", description: "professional ID of the prescriber"},
+		"provider" : {type: ["object","null"], description: "professional ID of the provider"},
+		"when"     : { type:"array", items: { type:"integer"}, required: true }
 	},
 	"additionalProperties":false
 };

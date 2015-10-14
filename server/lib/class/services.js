@@ -252,13 +252,19 @@ function _getItem( service, startDate, endDate ) {
 	
 	return new Promise( function(resolve) {
 		var item;
-		var servDate, closeDate, start, end;
+		var servDate, closeDate, start, end, startTmp, _endDate;
 		var serviceItems = [];
 
 		switch( service.frequency ) {
 			case 'punctual':
 				servDate = moment(service.startDate);
-				if( servDate.format("YYYY-MM-DD") >= moment(startDate).format("YYYY-MM-DD") && servDate.format("YYYY-MM-DD") <= endDate ) {
+				_endDate = service.endDate;
+				if( service.deactivated ) {
+					_endDate = moment(service.deactivated.date).format("YYYY-MM-DD");
+				}
+				closeDate = _endDate < endDate?_endDate:endDate;
+				if( servDate.format("YYYY-MM-DD") >= moment(startDate).format("YYYY-MM-DD") && 
+					servDate.format("YYYY-MM-DD") < closeDate ) {
 					start = moment(servDate).format("YYYY-MM-DD") + "T" + service.time;
 					start = moment(start).format("YYYY-MM-DDTHH:mm");
 					end = moment(start).add(service.duration, "m").format("YYYY-MM-DDTHH:mm");
@@ -279,11 +285,15 @@ function _getItem( service, startDate, endDate ) {
 			case 'daily':
 				// calculate the first available date
 				servDate = moment(service.startDate);
-				closeDate = service.endDate < endDate?service.endDate:endDate;
+				_endDate = service.endDate;
+				if( service.deactivated ) {
+					_endDate = moment(service.deactivated.date).format("YYYY-MM-DD");
+				}
+				closeDate = _endDate < endDate?_endDate:endDate;
 				while( servDate.format("YYYY-MM-DD") < startDate ) {
 					servDate.add( service.repeat,'d');
 				}
-				do {
+				while( servDate.format("YYYY-MM-DD") < closeDate ) {
 					start = moment(servDate).format("YYYY-MM-DD")+"T"+service.time;
 					start = moment(start).format("YYYY-MM-DDTHH:mm");
 					end = moment(start).add( service.duration, "m").format("YYYY-MM-DDTHH:mm");
@@ -301,47 +311,64 @@ function _getItem( service, startDate, endDate ) {
 					};
 					serviceItems.push(item);
 					servDate.add( service.repeat,'d');
-				} while( servDate.format("YYYY-MM-DD") <= closeDate );
+				}
 				break;
 			case 'weekly':
 				servDate = moment(service.startDate);
-				closeDate = service.endDate < moment(endDate).format("YYYY-MM-DD")?service.endDate:moment(endDate).format("YYYY-MM-DD");
-				startDate = moment(startDate).subtract(service.repeat, 'w');
-				while( servDate.format("YYYY-MM-DD") < startDate ) {
+				_endDate = service.endDate;
+				if( service.deactivated ) {
+					_endDate = moment(service.deactivated.date).format("YYYY-MM-DD");
+				}
+				closeDate = _endDate < endDate?_endDate:endDate;
+				
+				startTmp = moment(startDate).subtract(service.repeat, 'w').format("YYYY-MM-DD");
+				while( servDate.format("YYYY-MM-DD") < startTmp ) {
 					servDate.add( service.repeat,'w');
 				}
 				
-				var pushToServiceItems = function(when) {
+				var pushToServiceItems = function(when, start, end) {
+					var item;
+					
 					start = moment(start).day(when).format("YYYY-MM-DDTHH:mm");
 					end = moment(end).day(when).format("YYYY-MM-DDTHH:mm");
-					item = {
-						serviceID : service._id,
-						label : service.ref,
-						start: start,
-						end: end,
-						className: "event1",
-						provider: service.providerName,
-						category: service.category,
-						title: service.label,
-						frequency : service.frequency,
-						detail: service.detail
-					};
-					serviceItems.push(item);
+					if( moment(start).format("YYYY-MM-DD") >= startDate && 
+						moment(start).format("YYYY-MM-DD") < closeDate ) {
+						item = {
+							serviceID: service._id,
+							label    : service.ref,
+							start    : start,
+							end      : end,
+							className: "event1",
+							provider : service.providerName,
+							category : service.category,
+							title    : service.label,
+							frequency: service.frequency,
+							detail   : service.detail
+						};
+						serviceItems.push(item);
+					}
 				};
 				
 				do {
 					start = moment(servDate).format("YYYY-MM-DD")+"T"+service.time;
 					start = moment(start).format("YYYY-MM-DDTHH:mm");
 					end = moment(start).add( service.duration, "m").format("YYYY-MM-DDTHH:mm");
-					service.when.forEach( pushToServiceItems );
+					service.when.forEach( function(when) {
+						pushToServiceItems( when, start, end );
+					});
 					servDate.add( service.repeat,'w');
 				} while( servDate.format("YYYY-MM-DD") <= closeDate );
 				break;
 			case 'monthly':
 				servDate = moment(service.startDate);
-				closeDate = service.endDate < moment(endDate).format("YYYY-MM-DD")?service.endDate:moment(endDate).format("YYYY-MM-DD");
-				startDate = moment(startDate).subtract(service.repeat, 'M');
-				while( servDate.format("YYYY-MM-DD") < startDate ) {
+				_endDate = service.endDate;
+				if( service.deactivated ) {
+					_endDate = moment(service.deactivated.date).format("YYYY-MM-DD");
+				}
+				closeDate = _endDate < endDate?_endDate:endDate;
+				
+				startTmp = moment(startDate).subtract(service.repeat, 'M').format("YYYY-MM-DD");
+				while( servDate.format("YYYY-MM-DD") < startTmp ) {
 					servDate.add( service.repeat,'M');
 				}
 
@@ -358,7 +385,7 @@ function _getItem( service, startDate, endDate ) {
 							fd = fd.add(7, "d");
 						}
 						fd.add(parseInt(when / 10, 10) - 1, "w");
-						if (fd.month() === month.month() && fd.format("YYYY-MM-DD") <= service.endDate ) {
+						if (fd.month() === month.month() && fd.format("YYYY-MM-DD") <= _endDate ) {
 							whenDays.push(fd.format("YYYY-MM-DD"));
 						}
 					}
@@ -369,19 +396,23 @@ function _getItem( service, startDate, endDate ) {
 					start = moment(day).format("YYYY-MM-DD")+"T"+service.time;
 					start = moment(start).format("YYYY-MM-DDTHH:mm");
 					end = moment(start).add( service.duration, "m").format("YYYY-MM-DDTHH:mm");
-					item = {
-						serviceID : service._id,
-						label    : service.ref,
-						className: "event3",
-						start    : start,
-						end      : end,
-						provider: service.providerName,
-						category: service.category,
-						title: service.label,
-						frequency : service.frequency,
-						detail: service.detail
-					};
-					serviceItems.push(item);
+					if( moment(start).format("YYYY-MM-DD") >= startDate &&
+						moment(start).format("YYYY-MM-DD") >= service.startDate &&
+						moment(start).format("YYYY-MM-DD") < closeDate ) {
+						item = {
+							serviceID: service._id,
+							label    : service.ref,
+							className: "event3",
+							start    : start,
+							end      : end,
+							provider : service.providerName,
+							category : service.category,
+							title    : service.label,
+							frequency: service.frequency,
+							detail   : service.detail
+						};
+						serviceItems.push(item);
+					}
 				});
 				break;
 		}
@@ -419,7 +450,6 @@ Services.prototype.getServicesItems = function( startDate, nbDays, lang ) {
 			subject  : that.subject,
 			startDate: {'$lte': endDate},
 			endDate  : {'$gte': startDate},
-			active   : true
 		};
 
 		physioDOM.db.collection("services").find(search).toArray(function (err, res) {
@@ -460,7 +490,7 @@ Services.prototype.getServicesItems = function( startDate, nbDays, lang ) {
 };
 
 Services.prototype.getServicesQueueItems = function( startDate, nbDays, lang ) {
-	logger.trace("getServicesItems", startDate, nbDays, lang);
+	logger.trace("getServicesQueueItems", startDate, nbDays, lang);
 	var that = this;
 	var endDate = moment(startDate).add(nbDays, 'd').format("YYYY-MM-DD");
 	var refServices = {};
@@ -488,6 +518,9 @@ Services.prototype.getServicesQueueItems = function( startDate, nbDays, lang ) {
 								return _getItem(service, startDate, endDate);
 							})
 							.then(function (items) {
+								items.forEach(function(item) {
+									console.log(item.start, item.label);
+								});
 								resolve(items);
 							})
 							.catch(function (err) {
@@ -513,6 +546,10 @@ Services.prototype.getServicesQueueItems = function( startDate, nbDays, lang ) {
 		});
 	}
 
+	/**
+	 * get Lists of services for labels
+	 * @type {Array}
+	 */
 	var refPromises = ["socialServices","healthServices"].map( function(listName) {
 		return new Promise( function(resolve) {
 			physioDOM.Lists.getListArray( listName )
