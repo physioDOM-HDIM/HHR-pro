@@ -449,7 +449,7 @@ Services.prototype.getServicesItems = function( startDate, nbDays, lang ) {
 		var search = {
 			subject  : that.subject,
 			startDate: {'$lte': endDate},
-			endDate  : {'$gte': startDate},
+			endDate  : {'$gte': startDate}
 		};
 
 		physioDOM.db.collection("services").find(search).toArray(function (err, res) {
