@@ -175,7 +175,7 @@ Services.prototype.pushServicesToQueue = function() {
 							// create add message for the queue
 							var msg = [];
 							var category = item.category === "HEALTH" ? "healthcare" : "social";
-							var leaf = "hhr[" + that.subject + "]." + category + "[" + item._id + "].";
+							var leaf = "hhr[" + that.subject + "]." + category + ".services[" + item._id + "].";
 							msg.push({
 								name : leaf + "new",
 								value: item.new ? 1 : 0,
