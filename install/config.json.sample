@@ -10,6 +10,7 @@
     "db":"physioDOM"
   },
   "Lang":"fr",
+  "timezone":"Europe/Paris",
   "languages": ["en","es","nl","fr"],
   "healthStatusValidation": [
     "well", 

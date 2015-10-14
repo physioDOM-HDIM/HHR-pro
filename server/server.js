@@ -69,6 +69,7 @@ if( program.config ) {
 		config.agenda = tmp.agenda;
 		config.healthStatusValidation = tmp.healthStatusValidation;
 		config.country = tmp.country || '';
+		config.timezone = tmp.timezone || 'Europe/Paris';
 		
 		if( tmp.queue ) {
 			config.queue = tmp.queue.protocol+"://"+tmp.queue.ip+":"+tmp.queue.port;

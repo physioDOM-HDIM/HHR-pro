@@ -13,7 +13,7 @@ var Promise = require("rsvp").Promise,
 	dbPromise = require("./database.js"),
 	Service = require("./service.js"),
 	Queue = require("./queue.js"),
-	moment = require("moment"),
+	moment = require("moment-timezone"),
 	Logger = require("logger");
 
 var logger = new Logger("Services");
@@ -208,12 +208,12 @@ Services.prototype.pushServicesToQueue = function() {
 							});
 							msg.push({
 								name : leaf + "startDatetime",
-								value: moment(item.startDate + "T" + item.time).unix(),
+								value: moment.tz(item.startDate + "T" + item.time,physioDOM.config.timezone).unix(),
 								type : "integer"
 							});
 							msg.push({
 								name : leaf + "endDatetime",
-								value: moment(item.endDate + "T" + item.time).add(item.duration, "m").unix(),
+								value: moment.tz(item.endDate + "T" + item.time,physioDOM.config.timezone).add(item.duration, "m").unix(),
 								type : "integer"
 							});
 							msg.push({
@@ -649,7 +649,7 @@ Services.prototype.pushAgendaToQueue = function( items ) {
 					
 					msg.push({
 						name : leaf+"datetime",
-						value: moment(item.start).unix(),
+						value: moment.tz(item.start,physioDOM.config.timezone).unix(),
 						type : "integer"
 					});
 					msg.push({
