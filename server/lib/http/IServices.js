@@ -81,7 +81,10 @@ var IServices = {
 	 *          provider: {
 	 *              family: "",
 	 *              given: ""
-	 *          }
+	 *          },
+	 *          category: "HEALTH",
+	 *          title: "",
+	 *          frequency: "weekly"
 	 *      }
 	 * 
 	 * @param req
@@ -102,7 +105,7 @@ var IServices = {
 				}
 			})
 			.then( function(_beneficiary) {
-				return _beneficiary.services().getServicesItems( startDate, 40, "fr" );
+				return _beneficiary.services().getServicesItems( startDate, 40, req.session.person.item.communication || physioDOM.lang );
 			})
 			.then( function(services) {
 				res.send(services);
