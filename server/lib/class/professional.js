@@ -14,7 +14,7 @@ var promise = require("rsvp").Promise,
 	soap = require("soap"),
 	Cookies = require("cookies"),
 	moment = require("moment"),
-	md5 = require('MD5');
+	md5 = require('md5');
 
 var logger = new Logger("Professional");
 

@@ -11,9 +11,8 @@
   ],
   "description": "A web portal for professionnal",
   "scripts": {
-    "preinstall": "npm install ./install/logger-v1.1.0.tar.gz",
-    "install": "bower install; node install/install.js",
-    "start": "supervisor -w package.json,locales/en.json,locales/nl.json,locales/es.json,locales/fr.json,config.json,server/ -- server/server.js -c config.json 2>&1 > log/app.log",
+    "postinstall": "bower --allow-root install",
+    "start": "supervisor -w package.json,/config/config.json,locales/,server/ -- server/server.js -c /config/config.json 2>&1 > /logs/app.log",
     "test": "node ./test/index.js"
   },
   "main": "./server/server.js",
@@ -26,16 +25,18 @@
     "url": "http://git.telecomsante.com/physiodom-hdim/physiodom"
   },
   "dependencies": {
-    "MD5": "~1.2.1",
+    "md5": "~2.0.0",
     "agenda": "^0.6.28",
     "commander": "~2.1.0",
     "cookies": "~0.5.0",
     "emailjs": "^0.3.16",
     "i18n-2": "~0.4.6",
     "jsonschema": "^1.0.0",
-    "logger": "1.1.0",
+    "logger": "file:install/logger-v1.1.0.tar.gz",
     "moment": "~2.8.4",
+    "moment-timezone": "^0.4.1",
     "mongodb": "~1.4.7",
+    "object-hash": "^0.9.1",
     "restify": "2.6.3",
     "rsvp": "~3.0.9",
     "soap": "^0.8.0",
