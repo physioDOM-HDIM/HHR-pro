@@ -367,7 +367,8 @@ var IQueue = {
 	physicalPlan: function( req, res, next) {
 		var hhr = req.params.hhr?new ObjectID(req.params.hhr):null || req.session.beneficiary;
 		logger.trace("physicalPlan", hhr);
-
+		var force = req.params.force==="true"?true:false;
+		
 		if( ["administrator","coordinator"].indexOf(req.session.role) === -1 ) {
 			res.send(403, { code:403, message:"you have no write to access this request"});
 			return next(false);
@@ -383,7 +384,7 @@ var IQueue = {
 				})
 				.then(function (beneficiary) {
 					if (beneficiary.biomasterStatus) {
-						return beneficiary.physicalPlanToQueue();
+						return beneficiary.physicalPlanToQueue( force );
 					} else {
 						return false;
 					}
