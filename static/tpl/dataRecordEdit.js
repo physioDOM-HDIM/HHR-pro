@@ -160,13 +160,11 @@ window.addEventListener("beforeunload", function (e) {
 	var confirmationMessage;
 	var xhr = new XMLHttpRequest();
 	
-	if( createdDataRecordID ) {
-		xhr.open("GET", "/api/beneficiary/datarecords/"+createdDataRecordID+"/warning", false);
-		xhr.send();
-		console.log( xhr.responseText );
-	}
-	
 	if( createdNew ) {
+		if( createdDataRecordID ) {
+			xhr.open("GET", "/api/beneficiary/datarecords/"+createdDataRecordID+"/warning", false);
+			xhr.send();
+		}
 		xhr.open("GET", "/api/queue/history", true);
 		xhr.send();
 	}
@@ -388,7 +386,7 @@ function update(dataRecordID, mode) {
 			.then(function (response) {
 				updateSuccess();
 				modified = false;
-				createdNew = true;
+				createdNew = document.getElementById("view").value === "create"?true:false;
 			}, function (error) {
 				errorOccured();
 				console.log("saveForm - error: ", error);
@@ -399,7 +397,7 @@ function update(dataRecordID, mode) {
 			utils.promiseXHR("DELETE", "/api/beneficiary/datarecords/" + dataRecordID, 200)
 				.then(function (response) {
 					modified = false;
-					createdNew = true;
+					createdNew = false;
 					window.location.href = "/datarecord";
 				}, function (error) {
 					errorOccured();
@@ -530,7 +528,6 @@ function getLists() {
 		}
 		setLang();
 		initParams();
-
 	});
 
 }

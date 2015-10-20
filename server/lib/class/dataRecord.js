@@ -429,6 +429,7 @@ function DataRecord( beneficiaryID ) {
 
 	/**
 	 * Check the datarecord and if needed set the beneficairy warning status
+	 * The status is raised only on the last datarecord
 	 * 
 	 * on fulfilled return if a warning should be raised ( boolean )
 	 */
