@@ -268,7 +268,7 @@
   "Active services": "Services actifs",
   "Professional contacts": "Contacts professionnels",
   "Box initialization": "Initialisation de la Box",
-  "The initialization of the box will reset all datas for the beneficiary.": "L'initialisation de la boîte réinitialise toutes les données pour le bénéficiaire.",
+  "The initialization of the box will update all data related to the beneficiary on the HHR-Home box": "L'initialisation de la boîte met à jour toutes les données relatives au bénéficiaire sur la boite HHR-Home.",
   "Decline": "Refuser",
   "Accept": "Accepter",
   "Data Recording": "Enregistrement de données",
