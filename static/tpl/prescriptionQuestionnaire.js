@@ -125,7 +125,24 @@ function addDate(elt, idx) {
 			idx        : idx,
 			dateIdx    : dateIdx
 		};
-		dateContainer.innerHTML += Mustache.render(dateAddedTpl.innerHTML, data);
+		var frag = document.createElement("template");
+		frag.innerHTML = Mustache.render(dateAddedTpl.innerHTML, data);
+		var li = frag.content.querySelector("li");
+		var lis =[].slice.call(dateContainer.querySelectorAll("li"));
+		
+		if( !lis.length ) { 
+			dateContainer.appendChild(li); 
+		} else {
+			for( i=0; i<lis.length; i++ ) {
+				if( lis[i].getAttribute("data-date") > dateValue ) { break; }
+			}
+			if( i === lis.length ) {
+				dateContainer.appendChild(li);
+			} else {
+				dateContainer.insertBefore(li, lis[i]);
+			}
+		}
+		
 		div.querySelector("zdk-input-date").value = "";
 		dateIdx++;
 		modified = true;

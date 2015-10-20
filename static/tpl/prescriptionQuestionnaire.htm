@@ -102,14 +102,14 @@
 </script>
 
 <script type="template" id="dateAddedTpl">
-	<li>
+	<li data-date="{% raw %}{{dateValue}}{% endraw %}">
 		{% if rights.write && beneficiary.active %}
 		<button type="button" class="btn btn-delete" onclick="removeDate(this)">
 			<i class="icon icon-delete-circle"></i>
 		</button>
 		{% endif %}
 		{% raw %}
-		{{dateDisplay}}
+		<span>{{dateDisplay}}</span>
 		<input type="hidden" class="date-added" name="questionnaire[{{idx}}].date[{{dateIdx}}]" value="{{dateValue}}">
 		{% endraw %}
 	</li>
