@@ -386,7 +386,7 @@ function update(dataRecordID, mode) {
 			.then(function (response) {
 				updateSuccess();
 				modified = false;
-				createdNew = false;
+				createdNew = document.getElementById("view").value === "create"?true:false;
 			}, function (error) {
 				errorOccured();
 				console.log("saveForm - error: ", error);
