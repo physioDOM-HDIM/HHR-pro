@@ -268,7 +268,7 @@
   "Active services": "Overzicht zorg",
   "Professional contacts": "Gegevens zorgprofessionals",
   "Box initialization": "Box initialisatie",
-  "The initialization of the box will reset all datas for the beneficiary.": "Initialisatie van de box zal alle data van de deelnemer resetten.",
+  "The initialization of the box will update all data related to the beneficiary on the HHR-Home box": "De initialisatie van de doos worden alle gegevens met betrekking tot de begunstigde op de HHR-home box actualiseren.",
   "Decline": "Achteruitgang",
   "Accept": "Accepteren",
   "Data Recording": "Data invoer",
