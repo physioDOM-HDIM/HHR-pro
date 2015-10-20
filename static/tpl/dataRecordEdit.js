@@ -47,20 +47,22 @@ window.addEventListener("DOMContentLoaded", function () {
 			xhrItems.open("GET", url, true);
 			xhrItems.onload = function (e) {
 				var list = JSON.parse(this.responseText);
-				if (filter.indx === 1) {
+				if (filter.indx > 1) {
 					[].slice.call(document.querySelectorAll("button.previous")).forEach(function (elt) {
-						elt.disabled = true;
+						elt.disabled = false;
+						prev = list.items[filter.indx - 2]._id;
 					});
 
 				} else {
-					prev = list.items[filter.indx - 2]._id;
+					//prev = list.items[filter.indx - 2]._id;
 				}
-				if (list.nb <= filter.indx) {
+				if (list.nb > filter.indx) {
 					[].slice.call(document.querySelectorAll("button.next")).forEach(function (elt) {
-						elt.disabled = true;
+						elt.disabled = false;
+						next = list.items[filter.indx]._id;
 					});
 				} else {
-					next = list.items[filter.indx]._id;
+					// next = list.items[filter.indx]._id;
 				}
 			};
 			xhrItems.send();
@@ -99,7 +101,17 @@ window.addEventListener("DOMContentLoaded", function () {
 
 }, false);
 
+function disableNav() {
+	[].slice.call(document.querySelectorAll("button.previous")).forEach(function (elt) {
+		elt.disabled = true;
+	});
+	[].slice.call(document.querySelectorAll("button.next")).forEach(function (elt) {
+		elt.disabled = true;
+	});
+}
+
 function previousItem() {
+	disableNav();
 	filter.indx--;
 	var tmp = "";
 	for( var prop in filter ) {
@@ -109,6 +121,7 @@ function previousItem() {
 }
 
 function nextItem() {
+	disableNav();
 	filter.indx++;
 	var tmp = "";
 	for( var prop in filter ) {
