@@ -9,7 +9,7 @@
 var dbPromise = require("./database"),
 	Promise = require("rsvp").Promise,
 	ObjectID = require("mongodb").ObjectID,
-	md5 = require('MD5'),
+	md5 = require('md5'),
 	Logger = require("logger");
 
 var logger = new Logger("PhysioDOM");
