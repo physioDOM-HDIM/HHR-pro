@@ -2918,65 +2918,15 @@ function Beneficiary() {
 	};
 
 	/**
-	 * Push a physical recommandation to the queue
-	 *
-	 * @param {physicalPlan} physicalPlan
-	 * @param {boolean} newFlag
-	 * @returns {$$rsvp$Promise$$default|RSVP.Promise|*|Dn}
-	 */
-	this.pushPhysicalPlanToQueue = function (physicalPlan, newFlag) {
-		logger.trace("pushPhysicalPlanToQueue");
-
-		var queue = new Queue(this._id);
-		var name = "hhr[" + this._id + "].physical";
-
-		return new Promise(function (resolve, reject) {
-			var msg = [];
-			if (newFlag) {
-				msg.push({
-					name : name + ".new",
-					value: 1,
-					type : "integer"
-				});
-			}
-			msg.push({
-				name : name + ".history[" + physicalPlan._id + "].datetime",
-				value: moment(physicalPlan.datetime).unix(),
-				type : "integer"
-			});
-			msg.push({
-				name : name + ".history[" + physicalPlan._id + "].description",
-				value: physicalPlan.content,
-				type : "string"
-			});
-			queue.postMsg(msg)
-				.then(function () {
-					resolve(msg);
-				});
-		});
-	};
-
-	/**
 	 * push the whole physical plan and history to the queue
 	 *
 	 * @returns {$$rsvp$Promise$$default|RSVP.Promise|*|Dn}
 	 */
-	this.physicalPlanToQueue = function () {
+	this.physicalPlanToQueue = function ( force ) {
 		var that = this;
-
-		return new Promise(function (resolve, reject) {
-			var physicalPlan = new PhysicalPlan(that._id);
-			physicalPlan.getItemsArray(1, 1000)
-				.then(function (results) {
-					var promises = results.map(function (physicalPlan) {
-						return that.pushPhysicalPlanToQueue(physicalPlan);
-					});
-					RSVP.all(promises)
-						.then(function (results) {
-							resolve([].concat(results));
-						});
-				});
-		});
+		
+		var physicalPlan = new PhysicalPlan(that._id);
+		return physicalPlan.pushPhysicalPlanToQueue(force);
 	};
 
 	/**
