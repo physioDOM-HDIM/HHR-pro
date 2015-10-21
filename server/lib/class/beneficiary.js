@@ -2866,7 +2866,10 @@ function Beneficiary() {
 					var QuestionnaireAnswer = require("./questionnaireAnswer.js");
 					var questionnaire = new Questionnaire();
 					var answer = new QuestionnaireAnswer();
-					questionnaire.getByRef("DHD-FFQ")
+					queue.delMsg([{ branch: leaf }])
+						.then( function() {
+							return questionnaire.getByRef("DHD-FFQ");
+						})
 						.then(function (questionnaire) {
 							answer.getById(new ObjectID(quests[0].ref))
 								.then(function (answer) {
@@ -2874,7 +2877,7 @@ function Beneficiary() {
 									 dhdffq.advice
 									 dhdffq.new
 									 dhdffq.subscores[id].label
-									 dhdffq.subscores[id].value%
+									 dhdffq.subscores[id].value
 									 */
 									var msg = [];
 
@@ -2885,7 +2888,7 @@ function Beneficiary() {
 									});
 									msg.push({
 										name : leaf + ".new",
-										value: newFlag ? 1 : 0,
+										value: quests[0].transmit ? 0 : 1,
 										type : "integer"
 									});
 									for (var i = 0, l = answer.questions.length; i < l; i++) {
@@ -2902,7 +2905,10 @@ function Beneficiary() {
 									}
 									queue.postMsg(msg)
 										.then(function () {
-											resolve(msg);
+											quests[0].transmit = moment().toISOString();
+											physioDOM.db.collection("dataRecordItems").save( quests[0], function() {
+												resolve(msg);
+											});
 										});
 								})
 								.catch(function (err) {

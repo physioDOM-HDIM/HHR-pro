@@ -155,7 +155,7 @@ function Queue ( beneficiaryID ) {
 		return new promise( function(resolve, reject) {
 			if( !physioDOM.config.queue ) {
 				logger.info("no queue is available");
-				resolve()
+				resolve();
 			}
 			logger.trace("receive status", msg);
 			
