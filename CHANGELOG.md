@@ -61,6 +61,20 @@ __v1.1.0__
 
 - - -
 
+__v1.0.9__
+
+  - Bug 522 : H&S HHR-Pro / request for measurement / listing of the dates
+  - Bug 533 : [WUR] alert status switched on automatically after reviewing results or adjust data prescription
+  - Bug 505 : [Init][v.1.0.8] PopUp lors de l'appui sur Init indique une erreur
+  - Bug 470 : [WUR] Copy/past into TV messages window PRO
+  - Bug 431 : [Result from Data Recording][v.1.0.5] Bug d'affichage
+  - Bug 449 : [Result from Data Recording][v.1.0.5] Bug d'affichage
+  - Bug 502 : Physical activity plan history lost
+  
+> __Nota :__ Bug 454 : eetscore menu, feedback posted.
+> the HHR-Pro will now send a delete message on the old dhdffq before sending the new one.  
+  
+
 __v1.0.8__
 
   - cosmetic : hide the button "Generate a new withdrawal code" when certificates has been revoked

@@ -1,5 +1,5 @@
 {
-    "directory":"static/bower_components",
-    "interactive":false,
-    "allow_root":true
+  "directory":"static/bower_components",
+  "interactive":false,
+  "allow_root":true
 }

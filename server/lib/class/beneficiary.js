@@ -2894,7 +2894,7 @@ function Beneficiary() {
 
 									msg.push({
 										name : leaf + ".advice",
-										value: quests[0].comment,
+										value: quests[0].comment?quests[0].comment:" ",
 										type : "string"
 									});
 									msg.push({
