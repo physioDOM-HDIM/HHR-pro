@@ -1,3 +1,8 @@
+__v1.0.10__
+
+  - Bug 504 : bad email on "generating new withdrawal code"
+  - Bug 502 : [Eetscore] Empty comments
+
 __v1.0.9__
 
   - Bug 522 : H&S HHR-Pro / request for measurement / listing of the dates
