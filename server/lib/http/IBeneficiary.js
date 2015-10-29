@@ -1568,9 +1568,6 @@ var IBeneficiary = {
 				return beneficiary.getAccount();
 			})
 			.then( function(account) {
-				if(account.OTP) {
-					logger.info("revoke cert first");
-				}
 				return beneficiary.createCert(req, res );
 			})
 			.then(function ( account ) {
@@ -1587,7 +1584,6 @@ var IBeneficiary = {
 				return account;
 			})
 			.then( function(account) {
-				logger.info("receive account", account );
 				res.send( account );
 				next();
 			})

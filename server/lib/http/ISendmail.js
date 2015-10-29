@@ -19,9 +19,6 @@ var logger = new Logger("ISendmail");
 var i18n;
 var transporter = null;
 
-var htmlTpl = path.join( DOCUMENTROOT , "static/tpl/mailtpl.htm");
-var textTpl = path.join( DOCUMENTROOT , "static/tpl/mailtpl.txt");
-
 if( physioDOM.config.smtp ) {
 	transporter = email.server.connect(physioDOM.config.smtp);
 }
@@ -84,6 +81,9 @@ var ISendmail  = {
 			} else {
 				init(data.lang);
 
+				var htmlTpl = path.join( DOCUMENTROOT , "static/tpl/mailtpl.htm");
+				var textTpl = path.join( DOCUMENTROOT , "static/tpl/mailtpl.txt");
+				
 				var promises = {
 					html: renderTpl(htmlTpl, data),
 					text: renderTpl(textTpl, data)
@@ -92,32 +92,34 @@ var ISendmail  = {
 				RSVP.hash(promises)
 					.then(function (tpl) {
 						transporter.send({
-							from      : "physiodom <no-reply@physiodom.eu>",
-							to        : data.account.email,
-							subject   : 'Physiodom account',
-							text      : tpl.text,
-							attachment: [
-								{
-									data: tpl.html,
-									alternative: true,
-									related: [
-										{
-											path : path.join(__dirname , "../../../static/img/physiodom_logo.png"),
-											type : "image/png",
-											name: "physiodom_logo.png",
-											headers: { "Content-ID":"<logo@physiodom.eu>" }
-										}
-									]
+								from      : "physiodom <no-reply@physiodom.eu>",
+								to        : data.account.email,
+								subject   : 'Physiodom account',
+								text      : tpl.text,
+								attachment: [
+									{
+										data: tpl.html,
+										alternative: true,
+										related: [
+											{
+												path : path.join(__dirname , "../../../static/img/physiodom_logo.png"),
+												type : "image/png",
+												name: "physiodom_logo.png",
+												headers: { "Content-ID":"<logo@physiodom.eu>" }
+											}
+										]
+									}
+								]
+							}, 
+							function(err, message) {
+								if(err) {
+									console.log("Error ",err);
+								} else {
+									console.log(message);
 								}
-							]
-						}, function(err, message) {
-							if(err) {
-								console.log("Error ",err);
-							} else {
-								console.log(message);
+								resolve();
 							}
-							resolve();
-						});
+						);
 					})
 					.catch(function (err) {
 						logger.warning(err);
@@ -148,6 +150,9 @@ var ISendmail  = {
 			} else {
 				init(data.lang);
 
+				var htmlTpl = path.join( DOCUMENTROOT , "static/tpl/mailtpl.htm");
+				var textTpl = path.join( DOCUMENTROOT , "static/tpl/mailtpl.txt");
+				
 				var promises = {
 					html: renderTpl(htmlTpl, data),
 					text: renderTpl(textTpl, data)
@@ -212,8 +217,8 @@ var ISendmail  = {
 			} else {
 				init(data.lang);
 
-				htmlTpl = path.join( DOCUMENTROOT , "static/tpl/mailRevoqTpl.htm");
-				textTpl = path.join( DOCUMENTROOT , "static/tpl/mailRevoqTpl.txt");
+				var htmlTpl = path.join( DOCUMENTROOT , "static/tpl/mailRevoqTpl.htm");
+				var textTpl = path.join( DOCUMENTROOT , "static/tpl/mailRevoqTpl.txt");
 				
 				var promises = {
 					html: renderTpl(htmlTpl, data),
