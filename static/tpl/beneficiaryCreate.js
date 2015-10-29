@@ -809,7 +809,7 @@ function createCert() {
 	var id = document.querySelector("form[name='beneficiary'] input[name='_id']").value;
 	Utils.promiseXHR("GET", "/api/beneficiaries/" + id+ "/cert", 200)
 		.then(function(response) {
-			console.log( "certCreate", response );
+			// console.log( "certCreate", response );
 			var account = JSON.parse( response );
 			var OTP = document.querySelector("span#OTP");
 			if( OTP ) {
