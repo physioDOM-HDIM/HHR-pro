@@ -8,9 +8,9 @@ window.addEventListener('DOMContentLoaded', function() {
 		console.log(evt);
 		var lines = contentField.value.split("\n");
 		for (var i = 0; i < lines.length; i++) {
-			lines[i] = lines[i].trim();
 			if (lines[i].length <= 60) { continue; }
 			var j = 0, space = 60;
+			lines[i] = lines[i].trim();
 			while (j++ <= 60) {
 				if (lines[i].charAt(j) === " ") { space = j; }
 			}
