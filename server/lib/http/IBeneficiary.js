@@ -484,6 +484,11 @@ var IBeneficiary = {
 			.then(function (beneficiaryRes) {
 				beneficiary = beneficiaryRes;
 				var dataRecord = JSON.parse( req.body );
+				dataRecord.items.forEach( function(item) {
+					if(!item.measureDate) {
+						item.measureDate = moment().unix();
+					}
+				});
 				return beneficiary.createDataRecord( dataRecord, req.session.person.id );
 			})
 			.then( function( result ) {

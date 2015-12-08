@@ -1649,9 +1649,10 @@ function Beneficiary() {
 							'$lte': graphData.stopDate.toISOString()
 						}
 					};
-					physioDOM.db.collection("dataRecordItems").find(search).sort({datetime: 1}).toArray(function (err, results) {
+					physioDOM.db.collection("dataRecordItems").find(search).sort({measureDate: 1}).toArray(function (err, results) {
 						results.forEach(function (result) {
-							graphData.data.push([moment(result.datetime).valueOf(), result.value]);
+							graphData.data.push([moment.unix(result.measureDate).valueOf(), result.value]);
+							// graphData.data.push([moment(result.datetime).valueOf(), result.value]);
 						});
 						resolve(graphData);
 					});
