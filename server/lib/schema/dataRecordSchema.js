@@ -39,6 +39,7 @@ var dataRecordItemSchema = {
 		ref: { type: "string", description:"the questionnaire answers identifier"},
 		comment: { type: "string", description: "comment for questionnaire"},
 		automatic: { type:"boolean", default:false },
+		measureDate: { type:"integer", description:"date when the value is filled"},
 		dataRecordID: { type:"string", description:"the identifier of the data record" }
 	},
 	"additionalProperties":false

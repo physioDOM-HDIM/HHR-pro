@@ -307,13 +307,14 @@ function Queue ( beneficiaryID ) {
 								newDataRecord.items.push( {
 									"text":item.id,
 									"value":item.value,
+									"measureDate": moment.unix(item.datetime).year() < 2000 ? moment().unix():item.datetime,
 									"category":"symptom"
 								});
 							});
 							beneficiary.createDataRecord( newDataRecord )
 								.then( function( _dataRecord ) {
 									dataRecord = _dataRecord;
-									// remove the measures
+									// remove the measures from SServer
 									return that.delMsg([ { branch : leaf + "." + msg.type + "["+ msg.message.id+"]"} ]);
 								})
 								.then( function() {
@@ -341,6 +342,7 @@ function Queue ( beneficiaryID ) {
 										newDataRecord.items.push({
 											"text": item.id,
 											"value": item.value,
+											"measureDate": moment.unix(item.datetime).year() < 2000 ? moment().unix():item.datetime,
 											"category": "measures",
 											"automatic": item.automatic && item.automatic === 1 ? true:false
 										});
@@ -361,7 +363,7 @@ function Queue ( beneficiaryID ) {
 											}
 										})
 										.then(function () {
-											// remove the measures
+											// remove the measures from SServer
 											return that.delMsg([{branch: leaf + ".measures[" + msg.message.id + "]"}]);
 										})
 										.then(function () {

@@ -6,6 +6,7 @@
 <script src="/bower_components/rsvp/rsvp.min.js"></script>
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
 <script src="/bower_components/zdk-calendar/form2js.js"></script>
+
 <script src="/scripts/utils.js"></script>
 <script src="/scripts/modal.js"></script>
 
@@ -96,7 +97,10 @@
 				<div class="col" vertical layout>
 					<div class="row">
 						{% raw %}{{#item}}{% endraw %}
-						<div class="col bold" style="min-width:220px;max-width:220px">{% raw %}{{ labelLang }}{% endraw %} {% if item.automatic %}({{"Auto"|i18n}}){% endif %}</div>
+						<div class="col" style="min-width:220px;max-width:220px;flex-direction: column;">
+							<div class="bold">{% raw %}{{ labelLang }}{% endraw %} {% if item.automatic %}({{"Auto"|i18n}}){% endif %}</div>
+							<div style="color:gray"><tsante-time datetime="{{ item.measureDate }}" format="LT"></tsante-time></div>
+						</div>
 						<div class="col item-value" style="max-width:150px">{{ item.value }}</div>
 						{% if cat !== 'questionnaire' %}
 						<div class="col" style="max-width:150px">{% raw %}{{ unitsLabel }}{% endraw %}</div>
@@ -173,7 +177,7 @@
 				{% else %}
 
 					{% raw %}{{#item}}{% endraw %}
-						<div class="col bold" style="min-width:220px;max-width:220px">{% raw %}{{ labelLang }}{% endraw %} {% if item.automatic %}({{"Auto"|i18n}}){% endif %}</div>
+						<div class="col bold" style="min-width:220px;max-width:220px">{% raw %}{{ labelLang }}{% endraw %} {% if item.automatic %}({{"Auto"|i18n}}){% endif %}{% raw %}{{ measureDate }}{% endraw %}</div>
 						<div class="col item-value" style="max-width:150px">{{ item.value }}</div>
 						<div class="col" style="max-width:150px">
 						<button type="button" class="blue small answer not-disabled" data-answer="{{item.ref}}" onclick="showAnswer('{{item.ref}}')">{{"Questionnaire"|i18n}}</button>
