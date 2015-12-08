@@ -151,6 +151,7 @@ function DataRecord( beneficiaryID ) {
 					obj.items = items;
 					
 					obj.items.items.forEach( function( item ) {
+						item.measureDate = moment.unix(item.measureDate).format();
 						if( parameters[item.text]) {
 							item.category = parameters[item.text].category;
 						}
@@ -327,6 +328,7 @@ function DataRecord( beneficiaryID ) {
 						delete item._id;
 						item.subject = that.subject;
 						item.datetime = that.datetime;
+						item.measureDate = moment().unix();
 						item.source = professionalID;
 						
 						dataRecordItem.setup( item )
@@ -388,6 +390,7 @@ function DataRecord( beneficiaryID ) {
 								items[modified].dataRecordID = new ObjectID( items[modified].dataRecordID );
 								items[modified].subject = that.subject;
 								items[modified].datetime = that.datetime;
+								items[modified].measureDate = moment().unix();
 								items[modified].source = professionalID;
 								
 								dataRecordItem.setup( items[modified] )

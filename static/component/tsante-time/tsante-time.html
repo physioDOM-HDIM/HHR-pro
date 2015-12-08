@@ -1,0 +1,37 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+
+<script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
+
+<polymer-element name="tsante-time" attributes="datetime lang format">
+	<template>
+		<style>
+			:host { display:inline-block; } 
+		</style>
+		<span>{{formatDate}}</span>
+	</template>
+	<script>
+		Polymer('tsante-time', {
+			lang:null,
+			format:"local-time",
+			ready: function() {
+				
+			},
+			_render: function() {
+				this.lang = this.lang ? this.lang: navigator.language || navigator.userLanguage;
+				moment.locale( this.lang );
+		
+				switch(this.format) {
+					case "time-ago":
+						this.formatDate = moment(this.datetime).from(moment());
+						break;
+					default:
+						this.formatDate = moment(this.datetime).format("L LT");
+						break;
+				}
+			},
+			datetimeChanged: function( newValue, oldValue ) {
+				this._render();
+			}
+		});
+	</script>
+</polymer-element> 
