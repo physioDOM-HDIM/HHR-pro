@@ -1,3 +1,20 @@
+
+__v1.0.11__
+
+  - Bug 559 : (CYB) Data recording leads to confusing graph
+  - Bug 590 : Spaces between words
+  - Bug 591 : [Viveris] Certificat for beneficiaries
+  
+> __Nota :__ For the bug fix 559, the database must be updated with the 'upgrade-1.0.11.js' script.
+>
+>      mongo physiodom-test upgrade-1.0.11.js
+>
+> The date of the data records "Results from Data Recording" is still the date when HHR-Pro have received the data.
+>
+> The date shown in the detail of the record for each parameters is the date when the parameter was filled ( send by HHR-Home ).
+> When editing a value the date for the parameter will change to the new date.
+>
+
 __v1.0.10__
 
   - Bug 504 : bad email on "generating new withdrawal code"
