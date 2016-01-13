@@ -427,7 +427,8 @@ function Professional() {
 						if( accountData.IDS==="true" ) {
 							err = { code:409, message:"email already used" };
 						}
-						reject(err);
+						logger.warning("error", err );
+						throw err;
 					} else {
 						return that.getAccount();
 					}

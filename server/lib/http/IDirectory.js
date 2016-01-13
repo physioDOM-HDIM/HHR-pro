@@ -264,7 +264,11 @@ var IDirectory = {
 				})
 				.catch(function (err) {
 					logger.error( err.stack );
-					res.send(400, { code:400, messages: err.error });
+					if( err.code ) {
+						res.send( err.code, err );
+					} else {
+						res.send(400, {code: 400, messages: err.error});
+					}
 					next(false);
 				});
 		}
