@@ -280,7 +280,7 @@ function Queue ( beneficiaryID ) {
 	 */
 	this.receivedMessages = function( msg ) {
 		logger.trace("receivedMessages");
-		console.log(msg);
+		// console.log(msg);
 		var that = this;
 		var leaf = "hhr["+ that.subject +"]";
 		var dataRecord;
