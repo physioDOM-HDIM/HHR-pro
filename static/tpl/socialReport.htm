@@ -1,0 +1,120 @@
+{% extends './page.htm' %}
+
+{% block title %}{{"Social report"|i18n}}{% endblock %}
+
+{% block head %}
+{% parent %}
+<script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
+<script src="/bower_components/zdk-calendar/form2js.js"></script>
+<link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
+<link rel="import" href="/bower_components/zdk-calendar/custom-icons.html">
+<link rel="import" href="/bower_components/core-ajax/core-ajax.html">
+
+<style>
+	.check {
+		width: 50px;
+		text-align: center;
+	}
+	
+	.row {
+		margin-bottom: 10px;
+	}
+	
+	.wrap {
+		display: flex;
+		flex-wrap: wrap;
+		flex: 1;
+	}
+	
+	.update {
+		color: #b0b0b0;
+		padding: 0 10px;
+		font-size: 16px;
+	}
+	
+	.label {
+		font-weight: bold;
+		min-width: 250px;
+		margin: auto;
+		min-height: 1.5em;
+		margin-left: 0;
+	}
+	
+	.col {
+		flex: 1 0 50%;
+	}
+	
+	.text {
+		min-width: 350px;
+	}
+	
+	.text textarea {
+		height:4em;
+	}
+	textarea:disabled {
+		background: white;
+		color: black;
+	}
+</style>
+
+{% block content %}
+<div class="row title">
+	<label class="title">{{"Social report"|i18n}}</label>
+</div>
+{% endblock %}
+
+<div class="row">
+	<div class="check"><input type="checkbox"></input></div>
+	<div class="wrap">
+		<div class="label">Weight scale</div>
+		<div class="col text">
+			<textarea disabled placeholder="Comment"></textarea>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="check"><input type="checkbox"></input></div>
+	<div class="wrap">
+		<div class="label">Weight scale</div>
+		<div class="col text">
+			<textarea placeholder="Comment">Mark</textarea>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="check"><input type="checkbox"></input></div>
+	<div class="wrap">
+		<div class="label">Weight scale</div>
+		<div class="col text">
+			<textarea placeholder="Comment">Mark</textarea>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="check"><input type="checkbox"></input></div>
+	<div class="wrap">
+		<div class="label">Weight scale</div>
+		<div class="col text">
+			<textarea placeholder="Comment">Mark</textarea>
+		</div>
+	</div>
+</div>
+
+{% if rights.write && beneficiary.active%}
+<div class="row control actions">
+	<div class="update">Last update : xxxxxxxx by xxxxx</div>
+	<span class="spacer"></span>
+	<div class="mode-update hidden">
+		<button type="button" class="red big">{{ "Cancel"|i18n }}</button>
+		<button type="button" id="saveBtn" class="green big">{{ "Save"|i18n }}</button>
+	</div>
+	
+	<div class="mode-read">
+		<button type="button" class="blue big" onclick="toggleMode()">{{ "Edit"|i18n }}</button>
+	</div>
+</div>
+{% endif %}
+
+{% include "./modal.htm" %}
+{% endblock %}
