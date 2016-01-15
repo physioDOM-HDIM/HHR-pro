@@ -403,10 +403,14 @@
   "New beneficiary": "Nieuwe deelnemer",
   "Remove": "Remove",
   "New Professional": "Nieuwe professional",
-  "Warning status":"Waarschuwingsstatus",
   "Source":"Bron",
-  "Date":"Datum",
   "Are you sure to disable the warning status ?":"Weet u zeker dat u de status waarschuwing uitschakelen?",
   "Social report":"Social report",
-  "Last update":"laatste update"
+  "Last update":"laatste update",
+  "Visit of Prof. at home":"Een bezoek aan een professionele thuis",
+  "Medical Examination":"Medisch onderzoek",
+  "Hospitalisation":"Ziekenhuisopname",
+  "Hospitalisation exit":"Ziekenhuisopname uitgang",
+  "Hospitalisation entry":"Ziekenhuisopname binnenkomst",
+  "In progress":"Lopende"
 }

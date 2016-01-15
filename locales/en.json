@@ -408,5 +408,11 @@
   "Deactivate":"Deactivate",
   "Time of service":"Time of service",
   "Social report":"Social report",
-  "Last update":"Last update"
+  "Last update":"Last update",
+  "Visit of Prof. at home":"Visit of Prof. at home",
+  "Medical Examination":"Medical Examination",
+  "Hospitalisation":"Hospitalisation",
+  "Hospitalisation exit":"Hospitalisation exit",
+  "Hospitalisation entry":"Hospitalisation entry",
+  "In progress":"In progress"
 }
