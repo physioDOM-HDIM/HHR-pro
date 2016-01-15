@@ -648,6 +648,7 @@ server.put( '/api/beneficiary/services', IServices.putService );
 server.del( '/api/beneficiary/services/:serviceID', IServices.removeService );
 
 server.get( '/api/beneficiary/socialReport', ISocialReport.getLastReport );
+server.put( '/api/beneficiary/socialReport', ISocialReport.setLastReport );
 // server.get( '/api/beneficiary/questprog/:quest', IBeneficiary.getDataProgCategory );
 
 //DEV ONLY for creation & update

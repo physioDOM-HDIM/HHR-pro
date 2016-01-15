@@ -27,8 +27,18 @@ function SocialReports( beneficiaryID ) {
 	 */
 	this.subject = beneficiaryID;
 	
-	this.create = function() {
+	this.setReport = function( obj, professional ) {
+		logger.trace('setReport');
+		var report = JSON.parse( obj );
+		report.source = professional;
+		report.subject = this.subject;
 		
+		return new promise( function(resolve) {
+			physioDOM.db.collection("socialReport").save( report, function( err, result ) {
+				if(err) { throw err; }
+				resolve( result );
+			});
+		});
 	};
 	
 	this.getLast = function() {
@@ -36,7 +46,7 @@ function SocialReports( beneficiaryID ) {
 		var search = { subject: this.subject };
 		
 		return new promise( function(resolve, reject) {
-			physioDOM.db.collection("socialReport").find(search).sort({datetime: -1}).limit(1).toArray(function (err, doc) {
+			physioDOM.db.collection("socialReport").find(search).sort({datetime: 1}).limit(1).toArray(function (err, doc) {
 				if (err) {
 					logger.alert("Error");
 					throw err;

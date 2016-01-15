@@ -52,6 +52,26 @@ var ISocialReport = {
 				next();
 			})
 			.catch( function(err) { errHandler(err, res, next); });
+	},
+	
+	setLastReport: function(req,res,next) {
+		logger.trace("setLastReport");
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				if (req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary);
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+				}
+			})
+			.then( function( beneficiary ) {
+				return (new SocialReport( beneficiary._id)).setReport( req.body,req.session.person.id );
+			})
+			.then( function( resp ) {
+				res.send(resp);
+				next();
+			})
+			.catch( function(err) { errHandler(err, res, next); });
 	}
 };
 
