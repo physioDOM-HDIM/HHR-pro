@@ -11,7 +11,6 @@ var RSVP = require("rsvp"),
 	promise = RSVP.Promise,
 	Logger = require("logger"),
 	ObjectID = require("mongodb").ObjectID,
-	messageSchema = require("./../schema/messageSchema"),
 	moment = require("moment");
 
 var logger = new Logger("socialReport");

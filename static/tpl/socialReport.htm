@@ -103,10 +103,6 @@
 	</div>
 </template>
 
-<zdk-modal id="dialogError" closebutton="false">
-	<div class="content">Server error when saving the form</div>
-</zdk-modal>
-
 <core-ajax id="ajaxCareEquipment"
            auto
            url="/api/lists/careEquipment"
@@ -209,7 +205,6 @@
 	}
 	
 	function saveForm() {
-		console.log("checkForm");
 		var form = document.querySelector("#form");
 		var obj = form2js( form );
 		var report;
