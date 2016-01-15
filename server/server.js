@@ -28,6 +28,7 @@ var IDirectory = require('./lib/http/IDirectory'),
 	ILogIDS = require("./lib/http/ILogIDS.js"),
 	IServices = require("./lib/http/IServices"),
 	ISocialReport = require("./lib/http/ISocialReport"),
+	ISpecificData = require("./lib/http/ISpecificData"),
 	configSchema = require("./lib/schema/configSchema.js");
 
 var pkg     = require('../package.json');
@@ -649,6 +650,10 @@ server.del( '/api/beneficiary/services/:serviceID', IServices.removeService );
 
 server.get( '/api/beneficiary/socialReport', ISocialReport.getLastReport );
 server.put( '/api/beneficiary/socialReport', ISocialReport.setLastReport );
+
+server.get( '/api/beneficiary/specificData/summary', ISpecificData.getDataSummary );
+server.get( '/api/beneficiary/specificData/events', ISpecificData.getDataEvents );
+server.put( '/api/beneficiary/specificData', ISpecificData.setDataEvent );
 // server.get( '/api/beneficiary/questprog/:quest', IBeneficiary.getDataProgCategory );
 
 //DEV ONLY for creation & update
@@ -752,6 +757,7 @@ server.get( '/datarecord/create', IPage.dataRecordCreate);
 server.get( '/datarecord/synthesis', IPage.dataRecordSynthesis);
 server.get( '/datarecord/:dataRecordID', IPage.dataRecordDetail);
 
+server.get( '/specificData', IPage.specificData);
 
 server.get( '/physiological-data', IPage.physiologicalData);
 server.get( '/message', IPage.messageList);

@@ -408,5 +408,11 @@
   "Date":"Fecha",
   "Are you sure to disable the warning status ?":"¿Seguro desactivar el estado de advertencia ?",
   "Social report":"Social report",
-  "Last update":"última actualización"
+  "Last update":"última actualización",
+  "Visit of Prof. at home":"Visita de un profesional en el hogar",
+  "Medical Examination":"Exámen médico",
+  "Hospitalisation":"Hospitalización",
+  "Hospitalisation exit":"salida de Hospitalización",
+  "Hospitalisation entry":"entrada Hospitalización",
+  "In progress":"En progreso"
 }

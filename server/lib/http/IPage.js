@@ -1237,6 +1237,31 @@ function IPage() {
 		}
 	};
 
+	this.specificData = function(req, res, next) {
+		logger.trace('specificData');
+
+		init(req);
+		var data = {
+			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1?true:false,
+			rights: { read:false, write:false }
+		};
+		new Menu().rights( req.session.role, '/specificData')
+			.then( function( _rights ) {
+				logger.info("rights", _rights);
+				data.rights = _rights;
+			})
+			.then(function() {
+				render('/static/tpl/specificData.htm' , data, res, next);
+			})
+			.catch(function(err) {
+				console.log( err.stack );
+				logger.error(err);
+				res.write(err);
+				res.end();
+				next();
+			});
+	};
+	
 	this.dataRecordSynthesis = function(req, res, next) {
 		logger.trace("dataRecordSynthesis");
 		var html;
@@ -1507,7 +1532,7 @@ function IPage() {
 			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1?true:false,
 			rights: { read:false, write:false }
 		};
-		new Menu().rights( req.session.role, '/services/social')
+		new Menu().rights( req.session.role, '/social/report')
 			.then( function( _rights ) {
 				data.rights = _rights;
 				return physioDOM.Beneficiaries();
@@ -1530,8 +1555,6 @@ function IPage() {
 				res.end();
 				next();
 			});
-		
-		
 	};
 	
 	this.physiologicalData = function(req, res, next) {
