@@ -406,5 +406,7 @@
   "Warning status":"Estado de advertencia",
   "Source":"Origen",
   "Date":"Fecha",
-  "Are you sure to disable the warning status ?":"¿Seguro desactivar el estado de advertencia ?"
+  "Are you sure to disable the warning status ?":"¿Seguro desactivar el estado de advertencia ?",
+  "Social report":"Social report",
+  "Last update":"última actualización"
 }

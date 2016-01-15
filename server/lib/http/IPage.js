@@ -1498,6 +1498,42 @@ function IPage() {
 		render('/static/tpl/healthServiceCreate.old.htm' , data, res, next);
 	};
 
+
+	this.socialReport = function(req, res, next) {
+		logger.trace('socialReport');
+
+		init(req);
+		var data = {
+			admin: ["COORD","ADMIN"].indexOf(req.session.roleClass) !== -1?true:false,
+			rights: { read:false, write:false }
+		};
+		new Menu().rights( req.session.role, '/services/social')
+			.then( function( _rights ) {
+				data.rights = _rights;
+				return physioDOM.Beneficiaries();
+			})
+			.then(function(beneficiaries) {
+				if( req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary );
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+				}
+			})
+			.then(function(beneficiary) {
+				data.beneficiary = beneficiary;
+				render('/static/tpl/socialReport.htm' , data, res, next);
+			})
+			.catch(function(err) {
+				console.log( err.stack );
+				logger.error(err);
+				res.write(err);
+				res.end();
+				next();
+			});
+		
+		
+	};
+	
 	this.physiologicalData = function(req, res, next) {
 		logger.trace("PhysiologicalData");
 		var html;

@@ -27,6 +27,7 @@ var IDirectory = require('./lib/http/IDirectory'),
 	IQueue = require("./lib/http/IQueue"),
 	ILogIDS = require("./lib/http/ILogIDS.js"),
 	IServices = require("./lib/http/IServices"),
+	ISocialReport = require("./lib/http/ISocialReport"),
 	configSchema = require("./lib/schema/configSchema.js");
 
 var pkg     = require('../package.json');
@@ -646,6 +647,8 @@ server.get( '/api/beneficiary/services/:serviceID', IServices.getServiceByID );
 server.put( '/api/beneficiary/services', IServices.putService );
 server.del( '/api/beneficiary/services/:serviceID', IServices.removeService );
 
+server.get( '/api/beneficiary/socialReport', ISocialReport.getLastReport );
+server.put( '/api/beneficiary/socialReport', ISocialReport.setLastReport );
 // server.get( '/api/beneficiary/questprog/:quest', IBeneficiary.getDataProgCategory );
 
 //DEV ONLY for creation & update
@@ -758,6 +761,8 @@ server.get( '/message/create', IPage.messageCreate);
 server.get( '/services/health', IPage.basicHealthServices);
 server.get( '/services/health/create', IPage.basicHealthServiceCreate);
 server.get( '/services/social', IPage.basicSocialServices);
+
+server.get( '/social/report', IPage.socialReport);
 
 // Current (initial) health status
 server.get( '/current/:name', IPage.currentHealthStatus);

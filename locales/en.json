@@ -403,13 +403,10 @@
   "New beneficiary":"New client",
   "Remove":"Remove",
   "New Professional":"New Professional",
-  "Warning status":"Warning status",
   "Source":"Source",
-  "Date":"Date",
   "Are you sure to disable the warning status ?":"Are you sure to disable the warning status ?",
   "Deactivate":"Deactivate",
   "Time of service":"Time of service",
-  "Prescriber":"Prescriber",
-  "Provider":"Provider",
-  "Detail of the service":"Detail of the service"
+  "Social report":"Social report",
+  "Last update":"Last update"
 }
