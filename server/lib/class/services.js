@@ -709,6 +709,11 @@ Services.prototype.pushAgendaToQueue = function( items ) {
 						value: item.provider.given,
 						type : "string"
 					});
+					msg.push({
+						name : leaf+"duration",
+						value: moment(item.end).diff(moment(item.start),"minutes"),
+						type : "integer"
+					});
 
 					queue.postMsg(msg);
 					msgs.push(msg);
