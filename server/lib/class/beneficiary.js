@@ -2941,6 +2941,7 @@ function Beneficiary() {
 	 * @returns {$$rsvp$Promise$$default|RSVP.Promise|*|Dn}
 	 */
 	this.physicalPlanToQueue = function ( force ) {
+		logger.trace("physicalPlanToQueue");
 		var that = this;
 		
 		var physicalPlan = new PhysicalPlan(that._id);
