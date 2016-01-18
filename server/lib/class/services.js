@@ -263,8 +263,9 @@ function _getItem( service, startDate, endDate ) {
 					_endDate = moment(service.deactivated.date).format("YYYY-MM-DD");
 				}
 				closeDate = _endDate < endDate?_endDate:endDate;
+				console.log( "closeDate : ", closeDate, endDate );
 				if( servDate.format("YYYY-MM-DD") >= moment(startDate).format("YYYY-MM-DD") && 
-					servDate.format("YYYY-MM-DD") < closeDate ) {
+					servDate.format("YYYY-MM-DD") <= closeDate ) {
 					start = moment(servDate).format("YYYY-MM-DD") + "T" + service.time;
 					start = moment(start).format("YYYY-MM-DDTHH:mm");
 					end = moment(start).add(service.duration, "m").format("YYYY-MM-DDTHH:mm");
@@ -293,7 +294,7 @@ function _getItem( service, startDate, endDate ) {
 				while( servDate.format("YYYY-MM-DD") < startDate ) {
 					servDate.add( service.repeat,'d');
 				}
-				while( servDate.format("YYYY-MM-DD") < closeDate ) {
+				while( servDate.format("YYYY-MM-DD") <= closeDate ) {
 					start = moment(servDate).format("YYYY-MM-DD")+"T"+service.time;
 					start = moment(start).format("YYYY-MM-DDTHH:mm");
 					end = moment(start).add( service.duration, "m").format("YYYY-MM-DDTHH:mm");
@@ -332,7 +333,7 @@ function _getItem( service, startDate, endDate ) {
 					start = moment(start).day(when).format("YYYY-MM-DDTHH:mm");
 					end = moment(end).day(when).format("YYYY-MM-DDTHH:mm");
 					if( moment(start).format("YYYY-MM-DD") >= startDate && 
-						moment(start).format("YYYY-MM-DD") < closeDate ) {
+						moment(start).format("YYYY-MM-DD") <= closeDate ) {
 						item = {
 							serviceID: service._id,
 							label    : service.ref,
@@ -398,7 +399,7 @@ function _getItem( service, startDate, endDate ) {
 					end = moment(start).add( service.duration, "m").format("YYYY-MM-DDTHH:mm");
 					if( moment(start).format("YYYY-MM-DD") >= startDate &&
 						moment(start).format("YYYY-MM-DD") >= service.startDate &&
-						moment(start).format("YYYY-MM-DD") < closeDate ) {
+						moment(start).format("YYYY-MM-DD") <= closeDate ) {
 						item = {
 							serviceID: service._id,
 							label    : service.ref,
