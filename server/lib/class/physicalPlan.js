@@ -205,36 +205,26 @@ PhysicalPlan.prototype.pushPhysicalPlanToQueue = function (force) {
 		var cursor = physioDOM.db.collection("physicalPlan").find(search);
 		cursor = cursor.sort({datetime: -1});
 
+		var newItem = false;
 		cursor.each(function (err, item) {
-			var newItem = false;
 			var msg = [];
-			var count = 0;
 			
 			if( err ) {
 				logger.alert("error reading database", err);
 				reject(err);
 			} else {
 				if (item === null) {
-					if( count ) {
-						if (newItem) {
-							msg.push({
-								name : name + ".new",
-								value: 1,
-								type : "integer"
-							});
-						} else {
-							msg.push({
-								name : name + ".new",
-								value: 0,
-								type : "integer"
-							});
-						}
+					if (newItem) {
+						msg.push({
+							name : name + ".new",
+							value: 1,
+							type : "integer"
+						});
 						queue.postMsg(msg);
 						msgs.push(msg);
 					}
 					resolve(msgs);
 				} else {
-					count++;
 					msg.push({
 						name : name + ".history[" + item._id + "].datetime",
 						value: moment.tz(item.datetime, physioDOM.config.timezone).unix(),
