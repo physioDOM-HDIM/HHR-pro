@@ -3014,17 +3014,22 @@ function Beneficiary() {
 
 	this.pushFirstName = function () {
 		var that = this;
-
 		var queue = new Queue(this._id);
-		var name = "hhr[" + this._id + "].firstName";
 		return new Promise(function (resolve, reject) {
 			logger.trace("pushFirstName ", that.name.given || that.name.family);
 			var msg = [];
 			msg.push({
-				name : name,
+				name : "hhr[" + that._id + "].firstName",
 				value: that.name.given || that.name.family,
 				type : "string"
 			});
+			if( that.size ) {
+				msg.push({
+					name : "hhr[" + that._id + "].height",
+					value: that.size * 100,
+					type : "integer"
+				});
+			}
 			queue.postMsg(msg)
 				.then(function () {
 					resolve(msg);
