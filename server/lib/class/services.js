@@ -80,10 +80,9 @@ Services.prototype.pushServicesToQueue = function() {
 	var msgs = [];
 
 	function _markDelete() {
-		// console.log("mark all records with a delete flag");
 		return new Promise( function(resolve, reject) {
 			var search = {subject: that.subject};
-			physioDOM.db.collection("servicesQueue").update(search, {$set: {del: true}}, {multi: true}, function (err, nb) {
+			physioDOM.db.collection("servicesQueue").update(search, {$set: {del: true, new: false}}, {multi: true}, function (err, nb) {
 				if (err) {
 					logger.alert(err);
 					reject(err);
@@ -100,42 +99,49 @@ Services.prototype.pushServicesToQueue = function() {
 				subject: that.subject,
 				hash   : item.hash
 			};
-
 			physioDOM.db.collection("servicesQueue").findOne(search, function (err, doc) {
 				if (doc) {
-					physioDOM.db.collection("servicesQueue").update(doc, {
-						$unset: {del: 1},
-						$set  : {new: false}
-					}, function () {
+					if( doc.endDate >= moment().format("YYYY-MM-DD")) {
+						doc.del = false;
+						physioDOM.db.collection("servicesQueue").save(doc, function (err, res) {
+							resolve();
+						});
+					} else {
 						resolve();
-					});
+					}
 				} else {
 					item.new = true;
-					physioDOM.db.collection("servicesQueue").insert(item, function () {
-						resolve();
-					});
+					if( item.endDate >= moment().format("YYYY-MM-DD")) {
+						physioDOM.db.collection("servicesQueue").insert(item, function () {
+							resolve();
+						});
+					} else {
+						resolve(); 
+					}
 				}
 			});
 		});
 	}
 
 	return new Promise( function( resolve ) {
+		logger.trace("pushServicesToQueue");
+		
 		_markDelete()
 			.then(function () {
 				return that.getServices("all", true);
 			})
 			.then(function (services) {
 				services.forEach(function (service) {
-					service._id = service._id.toString();
-					service.subject = service.subject.toString();
-					service.source = service.source.toString();
-					service.provider = service.provider?service.provider.toString():"";
-
-					service.hash = Hash.sha1(service);
+					var item = {
+						_id : service._id.toString(),
+						subject : service.subject.toString(),
+						source : service.source.toString(),
+						provider : service.provider?service.provider.toString():""
+					};
+					service.hash = Hash.sha1(item);
 				});
-				
 				var promises = services.map(function (service) {
-					register(service);
+					return register(service);
 				});
 				return Promise.all(promises);
 			})
@@ -144,14 +150,15 @@ Services.prototype.pushServicesToQueue = function() {
 					// create del message for the queue
 					var search = {
 						subject: that.subject,
-						del    : {$exists: 1}
+						del    : true
 					};
 					physioDOM.db.collection("servicesQueue").find(search).toArray(function (err, res) {
 						res.forEach(function (item) {
 							var msg = [];
 							var category = item.category === "HEALTH" ? "healthcare" : "social";
 							var leaf = "hhr[" + that.subject + "]." + category + "[" + item._id + "].";
-							queue.delMsg([{branch: leaf}]);
+							msg.push( {branch: leaf} );
+							queue.delMsg(msg);
 							msgs.push(msg);
 							physioDOM.db.collection("servicesQueue").remove(item, function () {});
 						});
@@ -163,14 +170,13 @@ Services.prototype.pushServicesToQueue = function() {
 				return new Promise(function (resolve) {
 					// create add message for the queue
 					var search = {
-						subject: that.subject.toString(),
-						del    : {$exists: 0}
+						subject: that.subject,
+						del    : false
 					};
 
 					moment.locale(physioDOM.lang === "en" ? "en-gb" : physioDOM.lang);
 
 					physioDOM.db.collection("servicesQueue").find(search).toArray(function (err, res) {
-						console.log( res.length + " messages to add");
 						res.forEach(function (item) {
 							// create add message for the queue
 							var msg = [];
@@ -188,12 +194,12 @@ Services.prototype.pushServicesToQueue = function() {
 							});
 							msg.push({
 								name : leaf + "proLastName",
-								value: item.provider.family,
+								value: item.providerName.family,
 								type : "string"
 							});
 							msg.push({
 								name : leaf + "proFirstName",
-								value: item.provider.given,
+								value: item.providerName.given,
 								type : "string"
 							});
 							msg.push({
@@ -216,16 +222,10 @@ Services.prototype.pushServicesToQueue = function() {
 								value: moment.tz(item.endDate + "T" + item.time,physioDOM.config.timezone).add(item.duration, "m").unix(),
 								type : "integer"
 							});
-							msg.push({
-								name : leaf + "new",
-								value: item.new ? 1 : 0,
-								type : "integer"
-							});
 
 							queue.postMsg(msg);
 							msgs.push(msg);
 						});
-						console.log(msgs);
 						resolve(msgs);
 					});
 				});
