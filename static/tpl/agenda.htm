@@ -118,12 +118,18 @@
 					<template if="{%raw%}{{ service.frequency === 'daily' }}{%endraw%}">
 						<div class="row h1">
 							<label>{{"Frequency" | i18n }} :</label> {{"daily"|i18n}}
+							<template if="{%raw%}{{ service.repeat > 1}}{%endraw%}">
+								{{"every"|i18n}} {%raw%}{{repeat}}{%endraw%} {{"days" | i18n}}
+							</template>
 						</div>
 					</template>
 					
 					<template if="{%raw%}{{ service.frequency === 'monthly' }}{%endraw%}">
 						<div class="row h1">
 							<label>{{"Frequency" | i18n }} :</label> {{"monthly"|i18n}}
+							<template if="{%raw%}{{ service.repeat > 1}}{%endraw%}">
+								{{"every"|i18n}} {%raw%}{{repeat}}{%endraw%} {{"months" | i18n}}
+							</template>
 						</div>
 						<div class="row h1">
 							<div class="col">
@@ -139,6 +145,9 @@
 					<template if="{%raw%}{{ service.frequency === 'weekly' }}{%endraw%}">
 						<div class="row h1">
 							<label>{{"Frequency" | i18n }} :</label> {{"weekly"|i18n}}
+							<template if="{%raw%}{{ service.repeat > 1}}{%endraw%}">
+								{{"every"|i18n}} {%raw%}{{service.repeat}}{%endraw%} {{"weeks" | i18n}}
+							</template>
 						</div>
 						<div class="row h1">
 							<div class="col05"></div>
