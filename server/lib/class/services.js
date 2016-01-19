@@ -339,7 +339,7 @@ function _getItem( service, startDate, endDate ) {
 							label    : service.ref,
 							start    : start,
 							end      : end,
-							className: "event1",
+							className: styles[service.category],
 							provider : service.providerName,
 							category : service.category,
 							title    : service.label,
@@ -403,7 +403,7 @@ function _getItem( service, startDate, endDate ) {
 						item = {
 							serviceID: service._id,
 							label    : service.ref,
-							className: "event3",
+							className: styles[service.category],
 							start    : start,
 							end      : end,
 							provider : service.providerName,
