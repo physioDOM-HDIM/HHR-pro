@@ -13,6 +13,7 @@ function checkForm() {
 			if (item.questions){
 				sum += compute(item.questions);
 				if (item.subscore){
+					console.log( item.subscore );
 					sum = eval(item.subscore);
 				}
 				tmp = parseFloat(sum);
@@ -34,7 +35,7 @@ function checkForm() {
 	};
 
 	var res = compute(obj.questions);
-	obj.score = parseFloat(res);
+	obj.score = parseFloat(res.toFixed(1));
 	//TODO : utiliser le parseFloat sur l'obj retourné par form2js, car se sont des strings
 	//Ajouter les propriétés necessaire et envoyer l'object au server pour sauvegarde dans la base
 

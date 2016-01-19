@@ -1,0 +1,268 @@
+{% extends './page.htm' %}
+
+{% block title %}{{"Social report"|i18n}}{% endblock %}
+
+{% block head %}
+{% parent %}
+<script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
+<script src="/bower_components/zdk-calendar/form2js.js"></script>
+<link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
+<link rel="import" href="/bower_components/zdk-calendar/custom-icons.html">
+<link rel="import" href="/bower_components/core-ajax/core-ajax.html">
+
+<style>
+	.check {
+		width: 50px;
+		text-align: center;
+	}
+	
+	.row {
+		margin-bottom: 10px;
+	}
+	
+	.wrap {
+		display: flex;
+		flex-wrap: wrap;
+		flex: 1;
+	}
+	
+	.update {
+		color: #b0b0b0;
+		padding: 0 10px;
+		font-size: 16px;
+	}
+	
+	.label {
+		font-weight: bold;
+		min-width: 250px;
+		margin: auto;
+		min-height: 1.5em;
+		margin-left: 0;
+	}
+	
+	.col {
+		flex: 1 0 50%;
+	}
+	
+	.text {
+		min-width: 350px;
+	}
+	
+	.text textarea {
+		height:4em;
+	}
+	textarea:disabled {
+		background: white;
+		color: black;
+	}
+</style>
+
+{% block content %}
+<div class="row title">
+	<label class="title">{{"Social report"|i18n}}</label>
+</div>
+{% endblock %}
+
+<template id="report" is="auto-binding">
+	<form name="form" id="form" autocomplete="off">
+	<template repeat="{%raw%}{{ item in reports }}{%endraw%}">
+		<div class="row">
+			<div class="check">
+				<input type="hidden"
+				       name="{%raw%}{{item.ref}}{%endraw%}.ref"
+				       value="{%raw%}{{item.ref}}{%endraw%}"></input>
+				<input type="checkbox" 
+				       name="{%raw%}{{item.ref}}{%endraw%}.checked"
+				       disabled 
+				       {%raw%}checked?="{{ item.checked }}"{%endraw%}></input>
+			</div>
+			<div class="wrap">
+				<div class="label">{%raw%}{{ item.label }}{%endraw%}</div>
+				<div class="col text">
+					<textarea disabled placeholder="Comment" name="{%raw%}{{item.ref}}{%endraw%}.comment">{%raw%}{{ item.comment }}{%endraw%}</textarea>
+				</div>
+			</div>
+		</div>
+	</template>
+	</form>
+	
+	<div class="row control actions">
+		<div class="update">{{"Last update" | i18n }} : {%raw%}{{datetime | fulldate }}{%endraw%} {{"by"|i18n}} {%raw%}{{source.given}} {{source.family}}{%endraw%}</div>
+		<span class="spacer"></span>
+		{% if rights.write && beneficiary.active%}
+		<div class="mode-update hidden">
+			<button type="button" class="red big" onclick="cancelForm()">{{ "Cancel"|i18n }}</button>
+			<button type="button" id="saveBtn" class="green big" onclick="saveForm()">{{ "Save"|i18n }}</button>
+		</div>
+		
+		<div class="mode-read">
+			<button type="button" class="blue big" onclick="toggleMode()">{{ "Edit"|i18n }}</button>
+		</div>
+		{% endif %}
+	</div>
+</template>
+
+<core-ajax id="ajaxCareEquipment"
+           auto
+           url="/api/lists/careEquipment"
+           handleAs="json"></core-ajax>
+<core-ajax id="ajaxLastSocialReport"
+           auto
+           url="/api/beneficiary/socialReport"
+           handleAs="json"></core-ajax>
+<core-ajax id="ajaxProfessional"
+           url="/api/directory/"
+           handleAs="json"></core-ajax>
+<core-ajax id="putReport"
+           method="PUT"
+           url="/api/beneficiary/socialReport"
+           onCoreError="putError"
+           handleAs="json"></core-ajax>
+
+<script src="/bower_components/momentjs/min/moment.min.js"></script>
+<script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
+
+<script>
+	var tplReport,
+		lang = Cookies.get("lang"),
+		equipments, report,
+		data;
+	
+	PolymerExpressions.prototype.fulldate = function(value) {
+		if( value ) {
+			console.log( value );
+			moment.locale(lang);
+			return moment(value).format("LLL");
+		}
+	};
+	
+	function init() {
+		tplReport = document.querySelector("#report");
+		
+		document.querySelector("#ajaxCareEquipment")
+			.addEventListener("core-response", function(evt) {
+				equipments = evt.detail.response.items;
+				renderTpl();
+			});
+		document.querySelector("#ajaxLastSocialReport")
+			.addEventListener("core-response", function(evt) {
+				report = evt.detail.response;
+				if( report.source ) {
+					var ajaxProfessional = document.querySelector("#ajaxProfessional");
+					ajaxProfessional.url = "/api/directory/" + report.source;
+					ajaxProfessional.go();
+				} else {
+					renderTpl();
+				}
+			});
+		document.querySelector("#ajaxProfessional")
+			.addEventListener("core-response", function(evt) {
+				report.source = evt.detail.response.name;
+				renderTpl();
+			});
+		document.querySelector("#putReport")
+			.addEventListener("core-response", function (evt) {
+				console.log("response", evt.detail.response);
+				closeForm();
+				document.querySelector("#ajaxLastSocialReport").go();
+			});
+	}
+	
+	function renderTpl() {
+		var tmp;
+		
+		data = {
+			lang : lang,
+			reportID:'',
+			datetime:'',
+			source:'',
+			subject:'',
+			reports:[]
+		};
+		
+		if( report && equipments ) {
+			data.reportID = report._id;
+			data.datetime = report.datetime;
+			data.source = report.source;
+			equipments.forEach( function( item ) {
+				if( report.reports[item.ref] ) {
+					tmp = JSON.parse(JSON.stringify(report.reports[item.ref]));
+					tmp.label = item.label[ lang ];
+					tmp.ref = item.ref;
+					data.reports.push(tmp);
+				} else if( item.active ) {
+					data.reports.push({
+						ref : item.ref,
+						checked : false,
+						comment : '',
+						label: item.label[ lang ]
+					});
+				}
+			});
+			tplReport.model = data;
+		}
+	}
+	
+	function saveForm() {
+		var form = document.querySelector("#form");
+		var obj = form2js( form );
+		var report;
+		console.log( obj );
+		var newReport = {
+			datetime: moment().toISOString(),
+			source: '',
+			reports: { }
+		};
+		for( item in obj ) {
+			report = obj[item];
+			report.checked = ( report.checked == "on" );
+			if( !report.comment ) {
+				report.comment = '';
+			}
+			newReport.reports[report.ref] = report;
+			delete newReport.reports[report.ref].ref;
+		}
+		
+		var ajax = document.querySelector("#putReport");
+		ajax.body = JSON.stringify(newReport);
+		ajax.addEventListener("core-error", putError, false);
+		ajax.go();
+	}
+	
+	function putError() {
+		new Modal('errorOccured');
+	}
+	
+	function toggleMode() {
+		var elts = document.querySelectorAll("*[disabled]");
+		[].slice.call(elts).forEach( function(elt) {
+			elt.disabled = false;
+		});
+		document.querySelector('.mode-read').classList.toggle('hidden');
+		// delay the display of edit button to prevent false click
+		setTimeout( function() {
+			document.querySelector('.mode-update').classList.toggle('hidden');
+		}, 500);
+	}
+	
+	function closeForm() {
+		var elts = document.querySelectorAll("*[disabled]");
+		[].slice.call(elts).forEach( function(elt) {
+			elt.disabled = false;
+		});
+		document.querySelector('.mode-update').classList.toggle('hidden');
+		document.querySelector('.mode-read').classList.toggle('hidden');
+	}
+	
+	function cancelForm() {
+		console.log("cancel form");
+		closeForm();
+		renderTpl();
+	}
+	
+	window.addEventListener("polymer-ready", init, false);
+	
+</script>
+{% include "./modal.htm" %}
+{% endblock %}

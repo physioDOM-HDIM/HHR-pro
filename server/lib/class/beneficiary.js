@@ -5,6 +5,7 @@
 
 /* jslint node:true */
 /* global physioDOM */
+/* global -Promise */
 "use strict";
 
 var RSVP = require("rsvp"),
@@ -13,7 +14,6 @@ var RSVP = require("rsvp"),
 	ObjectID = require("mongodb").ObjectID,
 	beneficiarySchema = require("./../schema/beneficiarySchema"),
 	DataRecord = require("./dataRecord"),
-	DataRecords = require("./dataRecords"),
 	Messages = require("./messages"),
 	DataProg = require("./dataProg"),
 	DataProgItem = require("./dataProgItem"),
@@ -27,6 +27,7 @@ var RSVP = require("rsvp"),
 	moment = require("moment"),
 	md5 = require('md5'),
 	soap = require("soap"),
+	Services = require("./services"),
 	Cookies = require("cookies");
 
 var logger = new Logger("Beneficiary");
@@ -87,6 +88,10 @@ function Beneficiary() {
 		});
 	};
 
+	this.services = function() {
+		return new Services( this );
+	};
+	
 	/**
 	 * Get a beneficiary known by its ID : `beneficiaryID`
 	 *
@@ -1711,6 +1716,12 @@ function Beneficiary() {
 		return dataProg.remove(dataProgItemID);
 	};
 
+	this.getServices = function( category ) {
+		logger.trace("getServices ", category);
+		var services = new Services( this );
+		return services.getServices( category );
+	};
+	
 	this.questionnairePlan = function () {
 		logger.trace("questionnairePlan", this._id);
 		return new QuestionnairePlan(this._id);
@@ -2930,6 +2941,7 @@ function Beneficiary() {
 	 * @returns {$$rsvp$Promise$$default|RSVP.Promise|*|Dn}
 	 */
 	this.physicalPlanToQueue = function ( force ) {
+		logger.trace("physicalPlanToQueue");
 		var that = this;
 		
 		var physicalPlan = new PhysicalPlan(that._id);
@@ -3002,17 +3014,22 @@ function Beneficiary() {
 
 	this.pushFirstName = function () {
 		var that = this;
-
 		var queue = new Queue(this._id);
-		var name = "hhr[" + this._id + "].firstName";
 		return new Promise(function (resolve, reject) {
 			logger.trace("pushFirstName ", that.name.given || that.name.family);
 			var msg = [];
 			msg.push({
-				name : name,
+				name : "hhr[" + that._id + "].firstName",
 				value: that.name.given || that.name.family,
 				type : "string"
 			});
+			if( that.size ) {
+				msg.push({
+					name : "hhr[" + that._id + "].height",
+					value: that.size * 100,
+					type : "integer"
+				});
+			}
 			queue.postMsg(msg)
 				.then(function () {
 					resolve(msg);

@@ -7,7 +7,7 @@
 "use strict";
 
 var dbPromise = require("./database"),
-	promise = require("rsvp").Promise,
+	Promise = require("rsvp").Promise,
 	ObjectID = require("mongodb").ObjectID,
 	md5 = require('md5'),
 	Logger = require("logger");
@@ -43,11 +43,11 @@ function PhysioDOM( config ) {
 	 * Connect to the database
 	 * 
 	 * @param uri
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.connect = function() {
 		var that = this;
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("connect to database",that.config.mongouri);
 			dbPromise.connect(that.config.mongouri)
 				.then( function(dbClient) {
@@ -69,74 +69,74 @@ function PhysioDOM( config ) {
 	};
 
 	/**
-	 * return a promise with the Beneficiaries Object
+	 * return a Promise with the Beneficiaries Object
 	 * 
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.Beneficiaries = function() {
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("Beneficiaries");
 			resolve( new Beneficiaries() );
 		});
 	};
 
 	/**
-	 * Return a promise with the CurrentStatus Object.
+	 * Return a Promise with the CurrentStatus Object.
 	 * 
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.CurrentStatus = function() {
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("CurrentStatus");
 			resolve(new CurrentStatus());
 		});
 	};
 
 	/**
-	 * return a promise with the Directory Object
+	 * return a Promise with the Directory Object
 	 * {@link module:Directory}
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.Directory = function() {
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("Directory");
 			resolve( new Directory() );
 		});
 	};
 	
 	/**
-	 * return a promise with the Questionnaires Object
+	 * return a Promise with the Questionnaires Object
 	 * {@link module:Questionnaires}
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.Questionnaires = function() {
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("Questionnaires");
 			resolve( new Questionnaires() );
 		});
 	};
 
 	/**
-	 * Return a promise with the QuestionnaireAnswer object.
+	 * Return a Promise with the QuestionnaireAnswer object.
 	 * {@link module:Questionnaires}
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.QuestionnaireAnswer = function() {
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("QuestionnaireAnswer");
 			resolve( new QuestionnaireAnswer() );
 		});
 	},
 
 	this.DataRecords = function( beneficiaryID ) {
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("DataRecords");
 			resolve( new DataRecords(beneficiaryID) );
 		});
 	};
 	
 	/**
-	 * return a promise with the Session Object
+	 * return a Promise with the Session Object
 	 */
 	this.Session = function() {
 		
@@ -146,7 +146,7 @@ function PhysioDOM( config ) {
 	 * 
 	 * @param login
 	 * @param passwd
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.getAccountByCredentials = function(login, passwd) {
 		logger.trace("getAccountByCredentials", login, passwd );
@@ -154,7 +154,7 @@ function PhysioDOM( config ) {
 		var loginRegex = new RegExp('^'+login+'$', 'i');
 		var search = { login:loginRegex, '$or' : [ { password:md5(passwd) }, { tmpPasswd:md5(passwd) } ] };
 		var that = this;
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			that.db.collection("account").findOne(search, function (err, record) {
 				if(err) { throw err; }
 				if(!record) { 
@@ -170,7 +170,7 @@ function PhysioDOM( config ) {
 	 *
 	 * @param login
 	 * @param passwd
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.getAccountByIDSCredentials = function(login, passwd) {
 		logger.trace("getAccountByIDSCredentials", login, passwd );
@@ -178,7 +178,7 @@ function PhysioDOM( config ) {
 		var email = login.slice(2);
 		var search = { email:email, '$or' : [ { password:md5(passwd) }, { tmpPasswd:md5(passwd) } ] };
 		var that = this;
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			that.db.collection("account").findOne(search, function (err, record) {
 				if(err) { throw err; }
 				if(!record) {
@@ -195,7 +195,7 @@ function PhysioDOM( config ) {
 		var email = IDSuser.slice(2);
 		var search = { email:email };
 		var that = this;
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			that.db.collection("account").findOne(search, function (err, record) {
 				if(err) { throw err; }
 				if(!record) {
@@ -210,11 +210,11 @@ function PhysioDOM( config ) {
 	/**
 	 * 
 	 * @param sessionID
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.getSession = function( sessionID ) {
 		var that = this;
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			logger.trace("getSession");
 			that.db.collection("session").findOne({ _id: new ObjectID(sessionID) }, function (err, record) {
 				if(!record ) {
@@ -229,11 +229,11 @@ function PhysioDOM( config ) {
 	/**
 	 * Delate a session given by its id ( cookie )
 	 * @param sessionID
-	 * @returns {promise}
+	 * @returns {Promise}
 	 */
 	this.deleteSession = function( sessionID ) {
 		var that = this;
-		return new promise( function(resolve, reject) {
+		return new Promise( function(resolve, reject) {
 			that.db.collection("session").remove({ _id: new ObjectID(sessionID) }, function (err, record) {
 				if(!record ) {
 					return reject({code: 404, message: "could not find session " + sessionID});

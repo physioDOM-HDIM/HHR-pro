@@ -1,6 +1,7 @@
 /* jslint node:true */
 
 "use strict";
+/* global -Promise */
 
 var restify = require("restify"),
 	fs      = require('fs'),
@@ -10,8 +11,9 @@ var restify = require("restify"),
 	Logger  = require("logger"),
 	I18n    = require("i18n-2"),
 	Agenda = require("agenda"),
+	moment = require("moment"),
 	RSVP = require("rsvp"),
-	promise = require("rsvp").Promise,
+	Promise = require("rsvp").Promise,
 	PhysioDOM = require("./lib/class/physiodom");
 
 var IDirectory = require('./lib/http/IDirectory'),
@@ -24,6 +26,9 @@ var IDirectory = require('./lib/http/IDirectory'),
 	IMenu = require("./lib/http/IMenu"),
 	IQueue = require("./lib/http/IQueue"),
 	ILogIDS = require("./lib/http/ILogIDS.js"),
+	IServices = require("./lib/http/IServices"),
+	ISocialReport = require("./lib/http/ISocialReport"),
+	ISpecificData = require("./lib/http/ISpecificData"),
 	configSchema = require("./lib/schema/configSchema.js");
 
 var pkg     = require('../package.json');
@@ -66,6 +71,7 @@ if( program.config ) {
 		config.agenda = tmp.agenda;
 		config.healthStatusValidation = tmp.healthStatusValidation;
 		config.country = tmp.country || '';
+		config.timezone = tmp.timezone || 'Europe/Paris';
 		
 		if( tmp.queue ) {
 			config.queue = tmp.queue.protocol+"://"+tmp.queue.ip+":"+tmp.queue.port;
@@ -91,6 +97,7 @@ if( program.config ) {
  * @param req
  * @param res
  */
+/*
 function requestLog(req, res) {
 	var ipAddress = req.headers['x-forwarded-for'] === undefined ? req.connection.remoteAddress : req.headers['x-forwarded-for'];
 	logger.info(ipAddress, req.method, req.url);
@@ -99,6 +106,7 @@ function requestLog(req, res) {
 	logger.debug(" ", "body : ", req.body ? req.body.toString() : "-");
 	return;
 }
+*/
 
 /**
  * message de log de la réponse
@@ -139,7 +147,7 @@ server.use( function(req, res, next) {
 	req.cookies = {};
 	
 	function readCookies( cb ) {
-		return new promise( function(resolve,reject) {
+		return new Promise( function(resolve,reject) {
 			logger.trace("read cookies");
 			if( req.headers.cookie ) {
 				var cookies = req.headers.cookie.split(';');
@@ -159,7 +167,7 @@ server.use( function(req, res, next) {
 	}
 
 	function getSession( cb ) {
-		return new promise( function(resolve,reject) {
+		return new Promise( function(resolve,reject) {
 			logger.trace("getSessionAccount");
 			if (req.cookies && req.cookies.sessionID) {
 				physioDOM.getSession(req.cookies.sessionID)
@@ -397,6 +405,140 @@ server.on("after",function(req,res) {
 	}
 });
 
+function logout(req, res, next ) {
+	var cookies = new Cookies(req, res);
+	logger.trace( "logout" );
+	physioDOM.deleteSession( cookies.get("sessionID") )
+		.catch( function(err) {
+			console.log("Error ",err);
+		}).finally( function() {
+		logger.info('unset cookies');
+		cookies.set('sessionID');
+		cookies.set('role');
+		cookies.set("lang");
+		if(req.url.match(/^\/api/)) {
+			// res.send(200);
+			res.send(403, { error:403, message:"no session"} );
+		} else {
+			logger.debug("redirect to /");
+			res.header('Location', '/');
+			res.send(302);
+		}
+		return next();
+	});
+}
+
+function getSessions( req, res, next ) {
+	logger.trace("getSessions");
+	var pg = parseInt(req.params.pg,10) || 1;
+	var offset = parseInt(req.params.offset,10) || 10;
+	var sort = req.params.sort;
+
+	physioDOM.getSessions(pg, offset, sort)
+		.then(function(list) {
+			res.send(list);
+			next();
+		});
+}
+
+var mimetypes = {
+	'atom':'application/atom+xml',
+	'avi':'video/x-msvideo',
+	'css':'text/css',
+	'gif':'image/gif',
+	'htm':'text/html',
+	'html':'text/html',
+	'ico':'image/x-icon',
+	'ics':'text/calendar',
+	'jpeg':'image/jpeg',
+	'jpg':'image/jpeg',
+	'js':'text/javascript',
+	'm3u':'audio/x-mpegurl',
+	'm4a':'audio/mp4a-latm',
+	'm4b':'audio/mp4a-latm',
+	'm4p':'audio/mp4a-latm',
+	'm4u':'video/vnd.mpegurl',
+	'm4v':'video/x-m4v',
+	'mov':'video/quicktime',
+	'mp2':'audio/mpeg',
+	'mp3':'audio/mpeg',
+	'mp4':'video/mp4',
+	'mpeg':'video/mpeg',
+	'mpg':'video/mpeg',
+	'mpga':'audio/mpeg',
+	'png':'image/png',
+	'svg':'image/svg+xml',
+	'swf':'application/x-shockwave-flash',
+	'txt':'text/plain',
+	'wav':'audio/x-wav',
+	'xht':'application/xhtml+xml',
+	'xhtml':'application/xhtml+xml',
+	'xml':'application/xml',
+	'xsl':'application/xml',
+	'xslt':'application/xslt+xml',
+	'xul':'application/vnd.mozilla.xul+xml',
+	'manifest':'text/cache-manifest',
+	'ttf':'font/ttf',
+	'woff':'application/font-woff',
+	'json':'application/json'
+};
+
+function readFile(filepath,req,res,next) {
+	logger.trace("readFile",filepath);
+	var mimetype = mimetypes[require('path').extname(filepath).substr(1)];
+	var stats = fs.statSync(filepath);
+
+	if(stats.isDirectory()) {
+		console.log("this is a directory");
+		res.send(405);
+		return next(false);
+	}
+	if(config.cache && req.headers['if-modified-since'] && (new Date(req.headers['if-modified-since'])).valueOf() === ( new Date(stats.mtime)).valueOf() ) {
+		res.statusCode = 304;
+		res.end();
+		return next();
+	} else {
+		var raw = fs.createReadStream(filepath);
+		raw.on("open",function(fd) {
+			res.set("Content-Type", mimetype);
+			res.set("Content-Length",stats.size);
+			res.set("Cache-Control","public");
+			res.set("Last-Modified",stats.mtime);
+			res.writeHead(200);
+			raw.pipe(res);
+
+			raw.once('end', function () {
+				next(false);
+			});
+		});
+	}
+}
+
+function send404(req,res,next) {
+	res.writeHead(404, {"Content-Type": "text/html"});
+	res.write("404 Not Found\n");
+	res.end();
+	return next();
+}
+
+function serveStatic(req,res,next) {
+	logger.trace("serveStatic");
+	var uri      = require('url').parse(req.url).pathname;
+	var filepath = decodeURIComponent((uri==="/")?path.join(DOCUMENT_ROOT, '/index.htm'):path.join(DOCUMENT_ROOT, uri));
+	if(!filepath) {
+		return next();
+	}
+
+	fs.exists(filepath, function(exists){
+		if(!exists){
+			logger.warning("error 404 : "+filepath);
+			send404(req,res,next);
+			return next();
+		}
+		readFile(filepath,req,res,next);
+	});
+}
+
 // ===================================================
 //               API requests
 
@@ -497,6 +639,21 @@ server.del( '/api/beneficiaries/:entryID/questprog/:ref', IBeneficiary.delQuestP
 server.put( '/api/beneficiary/questprog', IBeneficiary.setQuestProg );
 server.put( '/api/beneficiaries/:entryID/questprog', IBeneficiary.setQuestProg );
 
+server.get( '/api/beneficiary/services', IServices.getServices );
+// for agenda display
+server.get( '/api/beneficiary/services/items', IServices.getServicesItems ); 
+// for agenda on HHR-Home
+server.get( '/api/beneficiary/services/queueitems', IServices.getServicesQueueItems );
+server.get( '/api/beneficiary/services/:serviceID', IServices.getServiceByID );
+server.put( '/api/beneficiary/services', IServices.putService );
+server.del( '/api/beneficiary/services/:serviceID', IServices.removeService );
+
+server.get( '/api/beneficiary/socialReport', ISocialReport.getLastReport );
+server.put( '/api/beneficiary/socialReport', ISocialReport.setLastReport );
+
+server.get( '/api/beneficiary/specificData/summary', ISpecificData.getDataSummary );
+server.get( '/api/beneficiary/specificData/events', ISpecificData.getDataEvents );
+server.put( '/api/beneficiary/specificData', ISpecificData.setDataEvent );
 // server.get( '/api/beneficiary/questprog/:quest', IBeneficiary.getDataProgCategory );
 
 //DEV ONLY for creation & update
@@ -537,6 +694,8 @@ server.get( '/api/queue/symptomPlan',            IQueue.symptomPlan);
 server.get( '/api/queue/physicalPlan',           IQueue.physicalPlan);
 server.get( '/api/queue/dietaryPlan',            IQueue.dietaryPlan);
 server.get( '/api/queue/symptomsSelf',           IQueue.symptomsSelf);
+server.get( '/api/queue/services',               IQueue.services);
+server.get( '/api/queue/servicesPlan',           IQueue.servicesPlan);
 server.post('/api/queue/received',               IQueue.receivedMsg);
 
 server.get( '/api/queue/:hhr/init',              IQueue.init );
@@ -598,6 +757,7 @@ server.get( '/datarecord/create', IPage.dataRecordCreate);
 server.get( '/datarecord/synthesis', IPage.dataRecordSynthesis);
 server.get( '/datarecord/:dataRecordID', IPage.dataRecordDetail);
 
+server.get( '/specificData', IPage.specificData);
 
 server.get( '/physiological-data', IPage.physiologicalData);
 server.get( '/message', IPage.messageList);
@@ -606,6 +766,9 @@ server.get( '/message/create', IPage.messageCreate);
 // Services
 server.get( '/services/health', IPage.basicHealthServices);
 server.get( '/services/health/create', IPage.basicHealthServiceCreate);
+server.get( '/services/social', IPage.basicSocialServices);
+
+server.get( '/social/report', IPage.socialReport);
 
 // Current (initial) health status
 server.get( '/current/:name', IPage.currentHealthStatus);
@@ -688,12 +851,19 @@ physioDOM.connect()
 						})
 						.then(function (activeBeneficiaries) {
 							var promises = activeBeneficiaries.map(function (beneficiary) {
-								return new promise(function (resolve, reject) {
+								return new Promise(function (resolve, reject) {
 									beneficiaries.getHHR(beneficiary._id)
 										.then(function (beneficiary) {
 											beneficiary.getSymptomsPlan(false)
 												.then(function () {
 													return beneficiary.getMeasurePlan(false);
+												})
+												.then(function() {
+													var startDate = moment().format("YYYY-MM-DD");
+													return beneficiary.services().getServicesQueueItems( startDate, 15, physioDOM.lang );
+												})
+												.then(function() {
+													return beneficiary.services().pushServicesToQueue( );
 												})
 												.then(resolve);
 										});
@@ -714,143 +884,11 @@ physioDOM.connect()
 		agenda.start();
 	})
 	.catch(function() {
-		logger.info('==================================================================');
+		logger.emergency('==================================================================');
 		logger.emergency("connection to database failed");
 		logger.emergency("HHR-Pro instance not started");
-		logger.info('==================================================================');
+		logger.emergency('==================================================================');
 		process.exit(1);
 	});
 
-function logout(req, res, next ) {
-	var cookies = new Cookies(req, res);
-	logger.trace( "logout" );
-	physioDOM.deleteSession( cookies.get("sessionID") )
-		.catch( function(err) { 
-			console.log("Error ",err);
-		}).finally( function() {
-			logger.info('unset cookies');
-			cookies.set('sessionID');
-			cookies.set('role');
-			cookies.set("lang");
-			if(req.url.match(/^\/api/)) {
-				// res.send(200);
-				res.send(403, { error:403, message:"no session"} );
-			} else {
-				logger.debug("redirect to /");
-				res.header('Location', '/');
-				res.send(302);
-			}
-			return next();
-		});
-}
 
-function getSessions( req, res, next ) {
-	logger.trace("getSessions");
-	var pg = parseInt(req.params.pg,10) || 1;
-	var offset = parseInt(req.params.offset,10) || 10;
-	var sort = req.params.sort;
-
-	physioDOM.getSessions(pg, offset, sort)
-		.then(function(list) {
-			res.send(list);
-			next();
-		});
-}
-
-function serveStatic(req,res,next) {
-	logger.trace("serveStatic");
-	var uri      = require('url').parse(req.url).pathname;
-	var filepath = decodeURIComponent((uri==="/")?path.join(DOCUMENT_ROOT, '/index.htm'):path.join(DOCUMENT_ROOT, uri));
-	if(!filepath) {
-		return next();
-	}
-
-	fs.exists(filepath, function(exists){
-		if(!exists){
-			logger.warning("error 404 : "+filepath);
-			send404(req,res,next);
-			return next();
-		}
-		readFile(filepath,req,res,next);
-	});
-}
-
-var mimetypes = {
-	'atom':'application/atom+xml',
-	'avi':'video/x-msvideo',
-	'css':'text/css',
-	'gif':'image/gif',
-	'htm':'text/html',
-	'html':'text/html',
-	'ico':'image/x-icon',
-	'ics':'text/calendar',
-	'jpeg':'image/jpeg',
-	'jpg':'image/jpeg',
-	'js':'text/javascript',
-	'm3u':'audio/x-mpegurl',
-	'm4a':'audio/mp4a-latm',
-	'm4b':'audio/mp4a-latm',
-	'm4p':'audio/mp4a-latm',
-	'm4u':'video/vnd.mpegurl',
-	'm4v':'video/x-m4v',
-	'mov':'video/quicktime',
-	'mp2':'audio/mpeg',
-	'mp3':'audio/mpeg',
-	'mp4':'video/mp4',
-	'mpeg':'video/mpeg',
-	'mpg':'video/mpeg',
-	'mpga':'audio/mpeg',
-	'png':'image/png',
-	'svg':'image/svg+xml',
-	'swf':'application/x-shockwave-flash',
-	'txt':'text/plain',
-	'wav':'audio/x-wav',
-	'xht':'application/xhtml+xml',
-	'xhtml':'application/xhtml+xml',
-	'xml':'application/xml',
-	'xsl':'application/xml',
-	'xslt':'application/xslt+xml',
-	'xul':'application/vnd.mozilla.xul+xml',
-	'manifest':'text/cache-manifest',
-	'ttf':'font/ttf',
-	'woff':'application/font-woff',
-	'json':'application/json'
-};
-
-function readFile(filepath,req,res,next) {
-	logger.trace("readFile",filepath);
-	var mimetype = mimetypes[require('path').extname(filepath).substr(1)];
-	var stats = fs.statSync(filepath);
-	
-	if(stats.isDirectory()) {
-		console.log("this is a directory");
-		res.send(405);
-		return next(false);
-	}
-	if(config.cache && req.headers['if-modified-since'] && (new Date(req.headers['if-modified-since'])).valueOf() === ( new Date(stats.mtime)).valueOf() ) {
-		res.statusCode = 304;
-		res.end();
-		return next();
-	} else {
-		var raw = fs.createReadStream(filepath);
-		raw.on("open",function(fd) {
-			res.set("Content-Type", mimetype);
-			res.set("Content-Length",stats.size);
-			res.set("Cache-Control","public");
-			res.set("Last-Modified",stats.mtime);
-			res.writeHead(200);
-			raw.pipe(res);
-
-			raw.once('end', function () {
-				next(false);
-			});
-		});
-	}
-}
-
-function send404(req,res,next) {
-	res.writeHead(404, {"Content-Type": "text/html"});
-	res.write("404 Not Found\n");
-	res.end();
-	return next();
-}

@@ -8,13 +8,31 @@
 <script src="/scripts/utils.js"></script>
 
 <link rel="import" href="/bower_components/zdk-modal/zdk-modal.html">
-<link rel="import" href="/bower_components/zdk-agenda/zdk-agenda.html">
+<link rel="import" href="/bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="/component/zdk-agenda/zdk-agenda.html">
+<link rel="import" href="/component/zdk-agenda/zdk-event.html">
 
 <style type="text/css">
 	div.main {
 		margin: 0;
 		padding: 0;
 	}
+	div.modalContentContainer label {
+		font-weight: bold;
+	}
+	
+	div.row.h1 {
+		line-height: 25px;
+	}
+	
+	div.row.h2 {
+		line-height: 35px;
+	}
+	
+	div.col05 {
+		width: 130px;
+	}
+
 </style>
 
 <style shim-shadowdom>
@@ -33,45 +51,289 @@
 	zdk-agenda::shadow .day-button{
 		display: none;
 	}
+	
+	zdk-agenda::shadow .planning-button{
+		display: none;
+	}
 </style>
 
 {% endblock %}
 
 {% block content %}
 
-	{% raw %}
-	<zdk-agenda id="agenda" lang="{{lang}}" hourHeight="40" hourShow="8" view="week" editable="false"></zdk-agenda>
+	<core-ajax id="ajaxProfessionals"
+	           auto
+	           url="/api/beneficiary/professionals"
+	           handleAs="json"></core-ajax>
+	<core-ajax id="ajaxJobs"
+	           auto
+	           url="/api/lists/job/array"
+	           handleAs="json"></core-ajax>
+	<core-ajax id="ajaxSocialServices"
+	           auto
+	           url="/api/lists/socialServices"
+	           handleAs="json"></core-ajax>
+	<core-ajax id="ajaxHealthServices"
+           auto
+           url="/api/lists/healthServices"
+           handleAs="json"></core-ajax>
+	<core-ajax id="ajaxPrescribedServices"
+	           url="/api/beneficiary/services/items"
+	           handleAs="json"></core-ajax>
 
-	<zdk-modal id="dialog-event"></zdk-modal>
+	<core-ajax id="ajaxServiceItem"
+           url="/api/beneficiary/services/"
+           handleAs="json"></core-ajax>
 
-	<script id="dialog-event-template" type="x-tmpl-mustache">
-		<div class="modalContainer">
-			<div class="modalTitleContainer">{{service.ref}}</div>
-			<div class="modalContentContainer">
-				<div class="row">Provider: {{service.provider}}</div>
-				<div class="row">From {{service.startDate}} to {{service.endDate}}</div>
-				<div class="row">
-					<span class="frequency">{{service.frequency}}</span>
-					{{#service.isDaily}}
-						{{when.time}}
-					{{/service.isDaily}}
-					{{^service.isDaily}}
-					<ul>
-						{{#service.when}}
-						<li>{{day}} at {{time}}</li>
-						{{/service.when}}
-					</ul>
-					{{/service.isDaily}}
-					<span class="duration">Length: {{service.duration}}</span>
+	<zdk-agenda id="agenda" lang="{{i18n}}" hourHeight="40" hourShow="8" view="week" editable="false">
+	</zdk-agenda>
+
+	<zdk-modal id="dialog-event" closebutton="false">
+		<template id="service" is="auto-binding">
+			<div class="modalContainer">
+				<div class="modalTitleContainer">{% raw %}{{ service.refLabel[lang] }}{% endraw %}</div>
+				<div class="modalContentContainer">
+					<template if="{%raw%}{{service.label}}{%endraw%}">
+						<div class="row h2">
+							<div class="col05"></div>
+							<div class="col">{%raw%}{{service.label}}{%endraw%}</div>
+						</div>
+					</template>
+					<div class="row h2"><label>{{'Provider' | i18n}} :</label> {%raw%}{{service.providerName.family}} {{service.providerName.given}}{%endraw%}</div>
+					<div class="row h2">
+						<div class="col">
+							<label>{{"Start date"|i18n}}</label> {%raw%}{{service.startDate | date }}{%endraw%}
+						</div>
+						<div class="col">
+							<label>{{"End date" |i18n}}</label> {%raw%}{{service.endDate | date }}{%endraw%}
+						</div>
+					</div>
+					
+					<template if="{%raw%}{{ service.frequency === 'punctual' }}{%endraw%}">
+						<div class="row h1">
+							<label>{{"Frequency" | i18n }} :</label> {{"punctual"|i18n}}
+						</div>
+					</template>
+					
+					<template if="{%raw%}{{ service.frequency === 'daily' }}{%endraw%}">
+						<div class="row h1">
+							<label>{{"Frequency" | i18n }} :</label> {{"daily"|i18n}}
+							<template if="{%raw%}{{ service.repeat > 1}}{%endraw%}">
+								{{"every"|i18n}} {%raw%}{{repeat}}{%endraw%} {{"days" | i18n}}
+							</template>
+						</div>
+					</template>
+					
+					<template if="{%raw%}{{ service.frequency === 'monthly' }}{%endraw%}">
+						<div class="row h1">
+							<label>{{"Frequency" | i18n }} :</label> {{"monthly"|i18n}}
+							<template if="{%raw%}{{ service.repeat > 1}}{%endraw%}">
+								{{"every"|i18n}} {%raw%}{{repeat}}{%endraw%} {{"months" | i18n}}
+							</template>
+						</div>
+						<div class="row h1">
+							<div class="col">
+								<ul>
+									<template repeat="{%raw%}{{ day in service.when }}{%endraw%}">
+										<li class="day">{% raw %}{{day | monthDay}}{% endraw %}</li>
+									</template>
+								</ul>
+							</div>
+						</div>
+					</template>
+					
+					<template if="{%raw%}{{ service.frequency === 'weekly' }}{%endraw%}">
+						<div class="row h1">
+							<label>{{"Frequency" | i18n }} :</label> {{"weekly"|i18n}}
+							<template if="{%raw%}{{ service.repeat > 1}}{%endraw%}">
+								{{"every"|i18n}} {%raw%}{{service.repeat}}{%endraw%} {{"weeks" | i18n}}
+							</template>
+						</div>
+						<div class="row h1">
+							<div class="col05"></div>
+							<div class="col">
+								<ul class="day">
+									<template repeat="{%raw%}{{ day in service.when }}{%endraw%}">
+										<li>{%raw%}{{ day | weekday }}{%endraw%}</li>
+									</template>
+								</ul>
+							</div>
+						</div>
+					</template>
+					
+					<div class="row">
+						<div>{{"Detail of the service"| i18n }}</div>
+					</div>
+					<div class="row">
+						<div class="col05"></div>
+						<div>
+						<textarea rows="5" cols="60" wrap="hard" disabled>{%raw%}{{service.detail}}{%endraw%}</textarea>
+						</div>
+					</div>
 				</div>
-				<div class="row">
-					{{service.detail}}
+				<div class="modalButtonContainer">
+					<button id="btn-cal-cancel" class="blue" onclick="closeDialog()">{{"Ok"|i18n}}</button>
 				</div>
 			</div>
-			<div class="modalButtonContainer"></div>
-		</div>
-	</script>
-	{% endraw %}
-	<script src="/tpl/agenda.js"></script>
+		</template>
+	</zdk-modal>
+
+<div class="hidden monthDay">{{ "on the ${nb} ${day} of the month" | i18n}}</div>
+<div class="hidden WeekNb">{{ "first|second|third|fourth|fifth" | i18n}}</div>
+
+<script>
+	'use strict';
+	
+	var agenda,
+		startDate,
+		refHealthServices,
+		refSocialServices,
+		professionals,
+		jobs,
+		lang = Cookies.get("lang"),
+		data = { lang    : lang, serviceID:'',  refServices:[] };
+	
+	PolymerExpressions.prototype.date = function(value) {
+		if( value ) {
+			// console.log( value );
+			moment.locale(lang);
+			return moment(value).format("LL");
+		}
+	};
+	
+	PolymerExpressions.prototype.weekday = function(value) {
+		if( value !== undefined ) {
+			moment.locale( lang );
+			return moment.weekdays()[value];
+		}
+	};
+	
+	PolymerExpressions.prototype.monthDay = function(value) {
+		if( value ) {
+			moment.locale(lang);
+			var str = document.querySelector("div.monthDay").innerHTML;
+			var nb = document.querySelector("div.WeekNb").innerHTML.split("|");
+			var day = moment.weekdays()[value % 10];
+			var week = parseInt(value / 10, 10)-1;
+			str = str.replace("${nb}",nb[week]);
+			str = str.replace("${day}",day);
+			return str;
+		}
+	};
+	
+	PolymerExpressions.prototype.fulldate = function(value) {
+		if( value ) {
+			// console.log( value );
+			moment.locale(lang);
+			return moment(value).format("LLL");
+		}
+	};
+	
+	PolymerExpressions.prototype.weekdayShort = function(value) {
+		if( value !== undefined ) {
+			moment.locale( lang );
+			return moment.weekdaysShort()[value];
+		}
+	};
+	
+	PolymerExpressions.prototype.time = function(value) {
+		if( value ) return moment("2015-01-01").add(moment.duration( { "minutes": value }) ).format("HH:mm");
+	};
+	
+	function init() {
+		// tplAgenda = document.querySelector("#agendaTpl");
+		agenda = document.querySelector("#agenda");
+		var ajax = document.querySelector("#ajaxPrescribedServices");
+		startDate = moment().startOf("month").startOf("week").format("YYYY-MM-DD");
+		
+		document.querySelector("#ajaxProfessionals")
+			.addEventListener("core-response", function(evt) {
+				professionals = evt.detail.response;
+				
+				var tmp = {};
+				professionals.forEach( function(item) {
+					tmp[item._id] = item;
+				});
+				data.providers = tmp;
+				renderTpl();
+			});
+		document.querySelector("#ajaxJobs")
+			.addEventListener("core-response", function(evt) {
+				jobs = evt.detail.response.items;
+				data.jobs = jobs;
+				renderTpl();
+			});
+		document.querySelector("#ajaxSocialServices")
+			.addEventListener("core-response", function(evt) {
+				refSocialServices = evt.detail.response.items;
+				var tmp = {};
+				refSocialServices.forEach( function(item) {
+					data.refServices[item.ref] = item;
+				});
+				renderTpl();
+			});
+		document.querySelector("#ajaxHealthServices")
+			.addEventListener("core-response", function(evt) {
+				refHealthServices = evt.detail.response.items;
+				var tmp = {};
+				refHealthServices.forEach( function(item) {
+					data.refServices[item.ref] = item;
+				});
+				renderTpl();
+			});
+		document.querySelector("#ajaxPrescribedServices")
+			.addEventListener("core-response", function(evt) {
+				data.services = evt.detail.response;
+				renderTpl();
+			});
+		document.querySelector("#ajaxServiceItem")
+			.addEventListener("core-response", function(evt) {
+				// console.log( evt.detail.response );
+				document.querySelector("#dialog-event").show();
+				var tpl = document.querySelector("#service");
+				tpl.model = {
+					lang: lang,
+					service: evt.detail.response
+				};
+				
+			});
+		document.getElementById('agenda')
+			.addEventListener('zdk-event-click',function(evt) {
+				// console.log( evt.detail );
+				var ajaxItem = document.querySelector("#ajaxServiceItem");
+				ajaxItem.url = "/api/beneficiary/services/"+ evt.detail.event.serviceID;
+				ajaxItem.go();
+			});
+		document.getElementById('agenda')
+			.addEventListener('zdk-date-change',function(evt) {
+				var nextDate = moment(evt.detail.day).startOf("month").startOf('week').format("YYYY-MM-DD");
+				if( nextDate !== startDate ) {
+					startDate = nextDate;
+					ajax.url = "/api/beneficiary/services/items?startDate=" + startDate;
+					ajax.go();
+				}
+			});
+		
+		
+		ajax.url = "/api/beneficiary/services/items?startDate="+ startDate;
+		ajax.go();
+	}
+	
+	function renderTpl() {
+		if( data.providers && data.jobs && refHealthServices && refSocialServices && data.services ) {
+			data.services.forEach( function(service) {
+				// console.log( service );
+				service.label = data.refServices[service.label].label[data.lang];
+			});
+			agenda.events = data.services;
+		}
+	}
+	
+	function closeDialog() {
+		document.querySelector("#dialog-event").hide();
+	}
+	
+	window.addEventListener("polymer-ready", init, false);
+</script>
 
 {% endblock %}

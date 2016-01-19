@@ -403,8 +403,19 @@
   "New beneficiary":"New client",
   "Remove":"Remove",
   "New Professional":"New Professional",
-  "Warning status":"Warning status",
   "Source":"Source",
-  "Date":"Date",
-  "Are you sure to disable the warning status ?":"Are you sure to disable the warning status ?"
+  "Are you sure to disable the warning status ?":"Are you sure to disable the warning status ?",
+  "Deactivate":"Deactivate",
+  "Time of service":"Time of service",
+  "Social report":"Social report",
+  "Specific data for evaluation":"Specific data for evaluation",
+  "Last update":"Last update",
+  "Visit of Prof. at home":"Visit of Prof. at home",
+  "Medical Examination":"Medical Examination",
+  "Hospitalisation":"Hospitalisation",
+  "Hospitalisation exit":"Hospitalisation exit",
+  "Hospitalisation entry":"Hospitalisation entry",
+  "In progress":"In progress",
+  "first|second|third|fourth|fifth":"first|second|third|fourth|fifth",
+  "on the ${nb} ${day} of the month":"on the ${nb} ${day} of the month"
 }

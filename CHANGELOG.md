@@ -1,19 +1,144 @@
+% CHANGELOG  
+% Fabrice Le Coz  
+% January, 2016
 
-__v1.0.11__
+__v1.1.5__
 
-  - Bug 559 : (CYB) Data recording leads to confusing graph
-  - Bug 590 : Spaces between words
-  - Bug 591 : [Viveris] Certificat for beneficiaries
+New features :
+
+  - Social report
+  - Specific data for evaluation
+
+Bugs fixe :
+
+  - Bug 586 : \[Agenda\] Fréquence des services 
+  - Bug 588 : \[Agenda + Services\] La désactivation d'un service n'est pas effective dans HHR-Home 
+  - Bug 572 : \[Agenda\] End Date d'un service 
+  - Bug 574 : \[Agenda\] Période de visualisation des services 
+  - Bug 576 - \[Agenda\] Durée des services 
+  - EETscore value are decimal 
+  - Send height with the firstname 
+  - Bug 596 :  \[Physical Plan\] Aucune notification d'un Physical Plan 
+  - Bug 571 : \[Services\] Reactivation de la notification des service
+  - Bug 578 : \[Messages\] Reactivation de la notification des messages
   
-> __Nota :__ For the bug fix 559, the database must be updated with the 'upgrade-1.0.11.js' script.
+not reproduced in tests :
+
+  - Bug 585	: [Agenda] Même rendez-vous envoyé plusieurs fois
+  - Bug 589 : [Agenda] Services oubliés pour certain jours de l'Agenda
+
+> __Nota :__ For decimal values in the Eetscore questionnaire, the questionnaire must be edited and the "Choice System"
+> property of each items must be change from "integer" to "decimal". ( done by the ugrade script ).
+
+New menu entries :
+
+~~~
+var features = [
+    {
+        "rights" : {
+            "administrator" : 2,
+            "coordinator" : 2,
+            "socialworker" : 1,
+            "physician" : 1,
+            "beneficiary" : 1,
+            "nurse" : 1
+        },
+        "disabled" : false,
+        "index" : 4,
+        "label" : "Specific data for evaluation",
+        "link" : "/specificData",
+        "parent" : ObjectId("54c136e7dc60e44688bff047"),
+        "type" : "item"
+    },{
+        "rights" : {
+            "administrator" : 2,
+            "coordinator" : 2,
+            "socialworker" : 1,
+            "physician" : 1,
+            "beneficiary" : 1,
+            "nurse" : 1
+        },
+        "disabled" : false,
+        "index" : 7,
+        "label" : "Social report",
+        "link" : "/social/report",
+        "parent" : null,
+        "type" : "item"
+    }
+];
+
+features.forEach( function( item ) { db.menus.save( item ); } )
+
+var eetscore = db.questionnaires.findOne( { "name" : "DHD-FFQ" } );
+eetscore.questions.forEach( function(question) { question.choice[0].system="decimal"; } );
+db.questionnaires.save( eetscore );
+~~~
+
+to apply the changes to the database :
+
+~~~
+mongo physiodom-test upgrade-1.1.5.js~
+~~~
+
+  
+__v1.1.4__
+  
+  - Bug 522 : H&S HHR-Pro / request for measurement / listing of the dates
+  - Bug 533 : [WUR] alert status switched on automatically after reviewing results or adjust data prescription
+  - Bug 505 : [Init][v.1.0.8] PopUp lors de l'appui sur Init indique une erreur
+  - Bug 470 : [WUR] Copy/past into TV messages window PRO
+  - Bug 431 : [Result from Data Recording][v.1.0.5] Bug d'affichage
+  - Bug 449 : [Result from Data Recording][v.1.0.5] Bug d'affichage
+  - Bug 502 : Physical activity plan history lost
+  
+> __Nota :__ Bug 454 : eetscore menu, feedback posted.
+>  the HHR-Pro will now send a delete message on the old dhdffq before sending the new one.  
+  
+__v1.1.3__
+
+  - Fix Bug 556 : \[Services\] Mauvaises "Key" pour l'envoi des Services
+  - FIx Bug 555 : \[Agenda\] Pas de new agenda
+  - Fix Bug 557 : \[Agenda\] Pas d'envoi de l'agenda du jour
+  - Fix Bug 554 : \[Agenda\] Mauvaise heure d'enregistrement
+  - Fix Bug 553 : Double enregistrement d'un service
+  
+> __Nota :__ Dans le fichier de configuration, il faut rajouter un paramètre définissant la Time Zone de l'instance, par exemple :
 >
->      mongo physiodom-test upgrade-1.0.11.js
+>      "timezone":"Europe/Paris"
 >
-> The date of the data records "Results from Data Recording" is still the date when HHR-Pro have received the data.
+>  - pour l'espagne : "Europe/Madrid"
+>  - pour la hollande : "Europe/Amsterdam"
+>  - pour l'angleterre : "Europe/London"
 >
-> The date shown in the detail of the record for each parameters is the date when the parameter was filled ( send by HHR-Home ).
-> When editing a value the date for the parameter will change to the new date.
 >
+>  Pour les tests il est recommandé de supprimer les collections : "services","servicesPlan" et "servicesQueue"
+>
+>      mongo hhrpro-test
+>      db.services.drop()
+>      db.servicesPlan.drop()
+>      db.servicesQueue.drop()
+>
+
+
+__v1.1.2__
+
+  - Fix : Push service plan to queue
+  - Push services list to queue
+
+__v1.1.1__
+
+  - Push service plan to queue
+  - Fix Bug 544 : Erreur dans la liste des horaires des services
+  - Bug 543 : Titre du menu Health Service
+  - Bug 542 : confirm deactivation
+  - Bug 534 : Gestion d'affichage de services aux mêmes horaires
+  
+    
+__v1.1.0__
+
+  - Services social & health care
+
+- - -
 
 __v1.0.10__
 
@@ -33,6 +158,7 @@ __v1.0.9__
 > __Nota :__ Bug 454 : eetscore menu, feedback posted.
 > the HHR-Pro will now send a delete message on the old dhdffq before sending the new one.  
   
+
 __v1.0.8__
 
   - cosmetic : hide the button "Generate a new withdrawal code" when certificates has been revoked

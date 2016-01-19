@@ -1,7 +1,0 @@
-{
-	"serverName":"physiodom.telecomsante.loc",
-	"rootDir":"{{HOME}}/Sites/PhysioDOM/static",
-	"sslDir":"{{HOME}}/Sites/PhysioDOM/keys",
-	"logDir":"{{HOME}}/Sites/PhysioDOM/log",
-	"appPort":8001
-}
