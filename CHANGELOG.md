@@ -1,7 +1,86 @@
 % CHANGELOG  
 % Fabrice Le Coz  
-% October, 2015
+% January, 2016
 
+__v1.1.5__
+
+New features :
+
+  - Social report
+  - Specific data for evaluation
+
+Bugs fixe :
+
+  - Bug 586 : \[Agenda\] Fréquence des services 
+  - Bug 588 : \[Agenda + Services\] La désactivation d'un service n'est pas effective dans HHR-Home 
+  - Bug 572 : \[Agenda\] End Date d'un service 
+  - Bug 574 : \[Agenda\] Période de visualisation des services 
+  - Bug 576 - \[Agenda\] Durée des services 
+  - EETscore value are decimal 
+  - Send height with the firstname 
+  - Bug 596 :  \[Physical Plan\] Aucune notification d'un Physical Plan 
+  - Bug 571 : \[Services\] Reactivation de la notification des service
+  - Bug 578 : \[Messages\] Reactivation de la notification des messages
+  
+not reproduced in tests :
+
+  - Bug 585	: [Agenda] Même rendez-vous envoyé plusieurs fois
+  - Bug 589 : [Agenda] Services oubliés pour certain jours de l'Agenda
+
+> __Nota :__ For decimal values in the Eetscore questionnaire, the questionnaire must be edited and the "Choice System"
+> property of each items must be change from "integer" to "decimal". ( done by the ugrade script ).
+
+New menu entries :
+
+~~~
+var features = [
+    {
+        "rights" : {
+            "administrator" : 2,
+            "coordinator" : 2,
+            "socialworker" : 1,
+            "physician" : 1,
+            "beneficiary" : 1,
+            "nurse" : 1
+        },
+        "disabled" : false,
+        "index" : 4,
+        "label" : "Specific data for evaluation",
+        "link" : "/specificData",
+        "parent" : ObjectId("54c136e7dc60e44688bff047"),
+        "type" : "item"
+    },{
+        "rights" : {
+            "administrator" : 2,
+            "coordinator" : 2,
+            "socialworker" : 1,
+            "physician" : 1,
+            "beneficiary" : 1,
+            "nurse" : 1
+        },
+        "disabled" : false,
+        "index" : 7,
+        "label" : "Social report",
+        "link" : "/social/report",
+        "parent" : null,
+        "type" : "item"
+    }
+];
+
+features.forEach( function( item ) { db.menus.save( item ); } )
+
+var eetscore = db.questionnaires.findOne( { "name" : "DHD-FFQ" } );
+eetscore.questions.forEach( function(question) { question.choice[0].system="decimal"; } );
+db.questionnaires.save( eetscore );
+~~~
+
+to apply the changes to the database :
+
+~~~
+mongo physiodom-test upgrade-1.1.5.js~
+~~~
+
+  
 __v1.1.4__
   
   - Bug 522 : H&S HHR-Pro / request for measurement / listing of the dates
