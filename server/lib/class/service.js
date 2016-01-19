@@ -64,7 +64,6 @@ Service.prototype.setup = function( serviceObj ) {
 							return service.setup( entry );
 						});
 				} else {
-					// console.log( "--> here");
 					for (var key in entry) {
 						if (entry.hasOwnProperty(key)) {
 							that[key] = entry[key];
@@ -74,7 +73,6 @@ Service.prototype.setup = function( serviceObj ) {
 				}
 			})
 			.then( function( service ) {
-				// console.log( "back", service );
 				resolve( service );
 			})
 			.catch( reject );
@@ -176,6 +174,7 @@ Service.prototype.save = function( ) {
 };
 
 Service.prototype.pushToQueue = function() {
+	logger.trace("pushToQueue");
 	var queue = new Queue(this.subject);
 
 	var leaf = "hhr[" + this._id + "]";
@@ -193,12 +192,14 @@ Service.prototype.pushToQueue = function() {
 	
 	function _pushService() {
 		return new Promise(function (resolve, reject) {
-			console.log( that );
 			moment.locale(physioDOM.lang === "en" ? "en-gb" : physioDOM.lang);
 			
 			if( that.active === false ) {
-				queue.delMsg([{branch: leaf}])
-					.then( resolve )
+				msg.push( {branch: leaf} );
+				queue.delMsg(msg)
+					.then( function() {
+						resolve(msg);
+					})
 					.catch( reject );
 			} else {
 				msg.push({

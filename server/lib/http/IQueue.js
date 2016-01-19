@@ -152,7 +152,7 @@ var IQueue = {
 					console.log("messages error", err);
 					console.log(err.stack);
 					throw err;
-				});;
+				});
 		}
 	},
 	
