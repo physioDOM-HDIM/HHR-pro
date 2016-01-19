@@ -708,10 +708,13 @@ function IPage() {
 				return data.beneficiary._id ? data.beneficiary.services().getServices("all", true) : null;
 			}).then( function( services ) {
 				if( services ) {
+					var activeServices = [];
 					services.forEach(function (service) {
+						if( service.endDate < moment().format("YYYY-MM-DD")) { return; }
 						service.refName = data.socialServicesArray.items[service.ref] || data.healthServicesArray.items[service.ref];
+						activeServices.push( service );
 					});
-					data.beneficiary.services = services;
+					data.beneficiary.services = activeServices;
 				}
 				render('/static/tpl/beneficiaryOverview.htm', data, res, next);
 			})
@@ -989,6 +992,7 @@ function IPage() {
 				return questionnaires.getQuestionnaireByName(req.params.questionnaireName);
 			})
 			.then( function(questionnaire) {
+				logger.debug(questionnaire);
 				data.questionnaire = questionnaire;
 				data.lang = lang;
 				//logger.debug("DATA", data);
