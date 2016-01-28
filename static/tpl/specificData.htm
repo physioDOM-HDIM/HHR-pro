@@ -234,6 +234,7 @@
 		}
 		tplEvents.model.options = options;
 		tplEvents.model.today = moment().format("YYYY-MM-DD");
+		document.querySelector("form textarea").value = null;
 		document.querySelector("zdk-input-date").value = null;
 		document.querySelector("zdk-input-date").classList.remove('invalid');
 		document.querySelector("#newEvtBtn").classList.toggle('hidden');
