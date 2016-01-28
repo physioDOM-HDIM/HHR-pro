@@ -403,6 +403,7 @@ div[drawer] {
 	-webkit-flex-direction: column;
 	-ms-flex-direction: column;
 	flex-direction: column;
+	height: inherit;
 }
 
 div[drawer] ul.menu {
