@@ -133,6 +133,19 @@
 				<div class="col05"></div>
 				<div class="col">
 					<label>{{"Frequency"|i18n}}</label><span>{%raw%}{{service.frequency}}{%endraw%}</span>
+					<template if="{%raw%}{{ service.repeat > 1}}{%endraw%}">
+						&nbsp;{{"every"|i18n}} {%raw%}{{service.repeat}}{%endraw%}
+						<template if="{%raw%}{{ service.frequency === 'daily' }}{%endraw%}">
+							<span>&nbsp;{{"days" | i18n}}</span>
+						</template>
+						<template if="{%raw%}{{ service.frequency === 'weekly' }}{%endraw%}">
+							<span>&nbsp;{{"weeks" | i18n}}</span>
+						</template>
+						<template if="{%raw%}{{ service.frequency === 'monthly' }}{%endraw%}">
+							<span>&nbsp;{{"months" | i18n}}</span>
+						</template>
+					</template>
+					
 				</div>
 			</div>
 			

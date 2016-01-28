@@ -58,7 +58,7 @@ Service.prototype.setup = function( serviceObj ) {
 							delete entry._id;
 							delete that._id;
 							if( that.startDate <= moment().format("YYYY-MM-DD") ) {
-								entry.startDate = moment().format("YYYY-MM-DD");
+								entry.startDate = moment().add(1,"d").format("YYYY-MM-DD");
 							}
 							var service = new Service();
 							return service.setup( entry );

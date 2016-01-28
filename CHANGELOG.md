@@ -2,6 +2,19 @@
 % Fabrice Le Coz  
 % January, 2016
 
+__v1.1.6__
+
+Bugs fix :
+
+  - Bug 597 : [v.1.1.5][Specific data] Nombre de jours d'hospitalisation
+  - Bug 599 : [v.1.1.5][Specific data] Titre de la page
+  - Bug 600 - [v.1.1.5][Specific data] Affichage du nombre total d'event
+  - Bug 601 : [v.1.1.5][Social Report] Bug affichage
+  - Bug 602 - [v.1.1.5][Social Report] Pas de sauvegarde
+  - Bug 603 : [v.1.1.5][Specific data] Anciens "comments" conservées
+  - Bug 604 - [v.1.1.5][Calendar] Fréquence des services journaliers
+  - Bug 605 - [v.1.1.5][Services] Fréquence des services journaliers
+
 __v1.1.5__
 
 New features :

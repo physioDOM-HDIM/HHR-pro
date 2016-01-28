@@ -12,7 +12,7 @@
 				{% raw %}
 				<select id="inputRef" name="ref" disabled?="{{ service._id }}" required>
 					<template if="{{ !service._id }}">
-						<option ></option>
+						<option></option>
 					</template>
 					<template repeat="{{ serviceRef in refServices}}">
 						<option value="{{ serviceRef.ref }}"
@@ -35,11 +35,11 @@
 		<div class="row h2">
 			<div class="col">
 				<label for="inputProvider" style="min-width: 150px;">{{"Provider" | i18n}}</label>
-				<select id="inputProvider" name="provider" style="width:100%" >
+				<select id="inputProvider" name="provider" style="width:100%">
 					{% raw %}
 					<option></option>
 					<template repeat="{{ provider in providers}}">
-						<option value="{{ provider._id }}" 
+						<option value="{{ provider._id }}"
 						        selected?="{{ provider._id === service.provider }}">
 							{{provider.name.family}} {{provider.name.given}} ( {{ jobs[provider.job][lang] }} )
 						</option>
@@ -61,8 +61,8 @@
 				<span id="startDate"><b>{{service.startDate}}</b></span>
 			</template>
 			<template if="{{ !service._id }}">
-			<zdk-input-date name="startDate" id="startDate" staticpos="true"
-			                value="{{service.startDate}}" required></zdk-input-date>
+				<zdk-input-date name="startDate" id="startDate" staticpos="true"
+				                value="{{service.startDate}}" onchange="changeStart()" required></zdk-input-date>
 			</template>
 			{%endraw%}
 			<template if="{%raw%}{{ service.frequency !== 'punctual' }}{%endraw%}">
@@ -79,12 +79,13 @@
 		
 		<div class="row h2">
 			<div class="col" style="align-items: center;">
-				<label for="inputDuration" >{{"Duration" | i18n}}</label>
+				<label for="inputDuration">{{"Duration" | i18n}}</label>
 				<select id="inputDuration" name="duration" class="time" style="min-width: 100px;margin:0 5px" required>
 					{% raw %}
 					<template repeat="{{ duration in durations }}">
 						<option value="{{duration.value}}"
-						        selected?="{{ service.duration == duration.value }}">{{duration.label}}</option>
+						        selected?="{{ service.duration == duration.value }}">{{duration.label}}
+						</option>
 					</template>
 					{% endraw %}
 				</select>
@@ -94,54 +95,54 @@
 		
 		<div class="row h2" id="frequency">
 			<label>{{"Frequency" | i18n}} ({%raw%}{{ service.frequency }}{%endraw%})</label>
-			<input type="radio" name="frequency" 
+			<input type="radio" name="frequency"
 			       value="monthly"
-			       onclick = "frequencyChange(event)"
-			       {%raw%}checked?="{{ service.frequency == 'monthly' }}"{%endraw%}> {{"Monthly" | i18n}}
-			<input type="radio" name="frequency" 
+			       onclick="frequencyChange(event)"
+			       {%raw%}checked?="{{ service.frequency == 'monthly' }}" {%endraw%}> {{"Monthly" | i18n}}
+			<input type="radio" name="frequency"
 			       value="weekly"
-			       onclick = "frequencyChange(event)"
-			       {%raw%}checked?="{{ service.frequency == 'weekly' }}"{%endraw%}> {{"Weekly" | i18n}}
-			<input type="radio" name="frequency" 
+			       onclick="frequencyChange(event)"
+			       {%raw%}checked?="{{ service.frequency == 'weekly' }}" {%endraw%}> {{"Weekly" | i18n}}
+			<input type="radio" name="frequency"
 			       value="daily"
-			       onclick = "frequencyChange(event)"
-			       {%raw%}checked?="{{ service.frequency == 'daily' }}"{%endraw%}> {{"Daily" | i18n}}
-			<input type="radio" name="frequency" 
-			       value="punctual" 
-			       onclick = "frequencyChange(event)"
-			       {%raw%}checked?="{{ service.frequency == 'punctual' }}"{%endraw%}> {{"Punctual" | i18n}}
+			       onclick="frequencyChange(event)"
+			       {%raw%}checked?="{{ service.frequency == 'daily' }}" {%endraw%}> {{"Daily" | i18n}}
+			<input type="radio" name="frequency"
+			       value="punctual"
+			       onclick="frequencyChange(event)"
+			       {%raw%}checked?="{{ service.frequency == 'punctual' }}" {%endraw%}> {{"Punctual" | i18n}}
 		</div>
 		
 		<div id="special-inputs">
 			<div class="row h2">
 				<!--<template if="{%raw%}{{ service.frequency !== 'weekly' }}{%endraw%}">-->
-					<div class="row h2">
-						<label for="inputStartTime">{{"Start at(time)" | i18n}}</label>
-						<select id="inputStartTime" class="time" name="time" style="min-width: 100px;margin:0 5px" required>
-							{% raw %}
-							<template repeat="{{ hour in hours }}">
-								<option value="{{hour}}" selected?="{{ service.time == hour }}">{{hour}}</option>
-							</template>
-							{% endraw %}
-						</select>
-						<span>{{"hours"|i18n}}</span>
-					</div>
+				<div class="row h2">
+					<label for="inputStartTime">{{"Start at(time)" | i18n}}</label>
+					<select id="inputStartTime" class="time" name="time" style="min-width: 100px;margin:0 5px" required>
+						{% raw %}
+						<template repeat="{{ hour in hours }}">
+							<option value="{{hour}}" selected?="{{ service.time == hour }}">{{hour}}</option>
+						</template>
+						{% endraw %}
+					</select>
+					<span>{{"hours"|i18n}}</span>
+				</div>
 				<!--</template>-->
 				
 				<template if="{%raw%}{{ service.frequency !== 'punctual' }}{%endraw%}">
 					<div id="repeat-group" class="col" style="margin-left:20px">
 						<label for="input-repeat" style="width:auto">{{"Every" | i18n}}</label>
-						<input type="number" id="input-repeat" name="repeat" 
-						       value="{%raw%}{{ service.repeat}}{%endraw%}" 
-						       style="width: 50px;margin:0px 5px" required min="1" step="1" >&nbsp;
+						<input type="number" id="input-repeat" name="repeat"
+						       value="{%raw%}{{ service.repeat}}{%endraw%}"
+						       style="width: 50px;margin:0px 5px" required min="1" step="1">&nbsp;
 						<template if="{%raw%}{{ service.frequency == 'daily' }}{%endraw%}">
-							<span >{{ "days" | i18n }}</span>
+							<span>{{ "days" | i18n }}</span>
 						</template>
 						<template if="{%raw%}{{ service.frequency == 'weekly' }}{%endraw%}">
-							<span >{{ "weeks" | i18n }}</span>
+							<span>{{ "weeks" | i18n }}</span>
 						</template>
 						<template if="{%raw%}{{ service.frequency == 'monthly' }}{%endraw%}">
-							<span >{{ "months" | i18n }}</span>
+							<span>{{ "months" | i18n }}</span>
 						</template>
 					</div>
 				</template>
@@ -152,37 +153,38 @@
 				<div class="row h2" id="weekly" style="margin-top:10px">
 					<div class="col05"></div>
 					<div layout horizontal>
-					<template repeat="{{ day in [1,2,3,4,5,6,0] }}">
-						<div flex style="line-height: normal;">
-							<input id="weekdays{{day}}" 
-							       type="checkbox" 
-							       name="when[]" 
-							       value="{{day}}" 
-							       checked?="{{ day | isInWhen }}">
-							<label for="weekdays{{day}}" style="width:40px">{{day | weekdayShort}}</label>
-						</div>
-					</template>
+						<template repeat="{{ day in [1,2,3,4,5,6,0] }}">
+							<div flex style="line-height: normal;">
+								<input id="weekdays{{day}}"
+								       type="checkbox"
+								       name="when[]"
+								       value="{{day}}"
+								       checked?="{{ day | isInWhen }}">
+								<label for="weekdays{{day}}" style="width:40px">{{day | weekdayShort}}</label>
+							</div>
+						</template>
 					</div>
 				</div>
 			</template>
 			{%endraw%}
 			
 			<template if="{%raw%}{{ service.frequency == 'monthly' }}{%endraw%}">
-			<div class="row">
-				<div style="width: 75%;">
-				<ul style="padding-left:100px">
-					<template repeat="{%raw%}{{ day in service.when }}{%endraw%}">
-						<li class="day">{% raw %}{{day | monthDay}}{% endraw %}</li>
-					</template>
-				</ul>
-				</div>
-				<div>
-					<button id="btn-cal-month" class="blue calendar-button" type="button" onclick="onBtnCalMonthClick()">
-						<core-icon icon="today"></core-icon>
-					</button>
-				</div>
+				<div class="row">
+					<div style="width: 75%;">
+						<ul style="padding-left:100px">
+							<template repeat="{%raw%}{{ day in service.when }}{%endraw%}">
+								<li class="day">{% raw %}{{day | monthDay}}{% endraw %}</li>
+							</template>
+						</ul>
+					</div>
+					<div>
+						<button id="btn-cal-month" class="blue calendar-button" type="button"
+						        onclick="onBtnCalMonthClick()">
+							<core-icon icon="today"></core-icon>
+						</button>
+					</div>
 				
-			</div>
+				</div>
 			</template>
 		</div>
 		
@@ -193,68 +195,73 @@
 			<button id="submitBtn" class="hidden"></button>
 		</div>
 	</form>
-
-<style>
-	div.week {
-		display:flex;
-	}
-	div.week > div {
-		flex:1;
-		height:50px;
-		border:1px solid black;
-		line-height:50px;
-		text-align: center;
-	}
-	div.day:hover {
-		background: dodgerblue;
-	}
-	div.day.selected {
-		background: tomato;
-	}
-</style>
-<zdk-modal id="dialog-agenda" closebutton="false">
-	<div class="content">
-	<div class="agenda">
-		{%raw%}
-		<div class="week">
-			<div></div>
-			<template repeat="{{ day in [1,2,3,4,5,6,0] }}">
-				<div>{{ day | weekdayShort }}</div>
-			</template>
-		</div>
-		{%endraw%}
-		<template repeat="{%raw%}{{ week in [1,2,3,4,5] }}{%endraw%}">
-			<div class="week">
-				<div>{{"week"|i18n}} {%raw%}{{week}}{%endraw%}</div>
-				{%raw%}
-				<template repeat="{{ day in [1,2,3,4,5,6,0]}}">
-					<div class="day" data-day="{{week}}{{day}}"></div>
-				</template>
-				{%endraw%}
-			</div>
-		</template>
-		</div>
-		<div class="modalButtonContainer">
-			<button id="btn-cal-cancel" class="red" onclick="closeAgenda()">{{"Cancel"|i18n}}</button>
-			<button id="btn-cal-confirm" class="blue" onclick="getSelectedDays(); closeAgenda();/*callAddEvents()*/">{{"Save"|i18n}}</button>
-		</div>
-		</div>
-	</div>
-	<script>
-		document.querySelector("div.agenda").addEventListener("click", function(evt) {
-			evt.target.classList.toggle("selected");
-		}, true);
-		
-		function getSelectedDays() {
-			var days = [];
-			var sels = document.querySelectorAll(".agenda .selected");
-			[].slice.call(sels).forEach( function(selected) {
-				days.push(parseInt(selected.getAttribute("data-day"),10));
-			});
-			editedService.when = days;
+	
+	<style>
+		div.week {
+			display: flex;
 		}
-	</script>
-</zdk-modal>
+		
+		div.week > div {
+			flex: 1;
+			height: 50px;
+			border: 1px solid black;
+			line-height: 50px;
+			text-align: center;
+		}
+		
+		div.day:hover {
+			background: dodgerblue;
+		}
+		
+		div.day.selected {
+			background: tomato;
+		}
+	</style>
+	<zdk-modal id="dialog-agenda" closebutton="false">
+		<div class="content">
+			<div class="agenda">
+				{%raw%}
+				<div class="week">
+					<div></div>
+					<template repeat="{{ day in [1,2,3,4,5,6,0] }}">
+						<div>{{ day | weekdayShort }}</div>
+					</template>
+				</div>
+				{%endraw%}
+				<template repeat="{%raw%}{{ week in [1,2,3,4,5] }}{%endraw%}">
+					<div class="week">
+						<div>{{"week"|i18n}} {%raw%}{{week}}{%endraw%}</div>
+						{%raw%}
+						<template repeat="{{ day in [1,2,3,4,5,6,0]}}">
+							<div class="day" data-day="{{week}}{{day}}"></div>
+						</template>
+						{%endraw%}
+					</div>
+				</template>
+			</div>
+			<div class="modalButtonContainer">
+				<button id="btn-cal-cancel" class="red" onclick="closeAgenda()">{{"Cancel"|i18n}}</button>
+				<button id="btn-cal-confirm" class="blue"
+				        onclick="getSelectedDays(); closeAgenda();/*callAddEvents()*/">{{"Save"|i18n}}
+				</button>
+			</div>
+		</div>
+		</div>
+		<script>
+			document.querySelector("div.agenda").addEventListener("click", function (evt) {
+				evt.target.classList.toggle("selected");
+			}, true);
+			
+			function getSelectedDays() {
+				var days = [];
+				var sels = document.querySelectorAll(".agenda .selected");
+				[].slice.call(sels).forEach(function (selected) {
+					days.push(parseInt(selected.getAttribute("data-day"), 10));
+				});
+				editedService.when = days;
+			}
+		</script>
+	</zdk-modal>
 
 </template>
 
@@ -268,7 +275,7 @@
 <script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
 
 <script>
-	document.addEventListener('polymer-ready', function() {
+	document.addEventListener('polymer-ready', function () {
 		document.querySelector("#putService")
 			.addEventListener("core-response", function (evt) {
 				console.log("response", evt.detail.response);
@@ -276,18 +283,26 @@
 			});
 	});
 	
-	PolymerExpressions.prototype.isInWhen = function(value) {
-		if(value !== undefined) {
+	PolymerExpressions.prototype.isInWhen = function (value) {
+		if (value !== undefined) {
 			return editedService.when.indexOf(value) !== -1
 		}
 	};
-		
-	function showForm( serviceID) {
+	
+	function changeStart() {
+		var endDate = document.querySelector("zdk-input-date[name=endDate]");
+		var startDate = document.querySelector("zdk-input-date[name=startDate]");
+		if (endDate) {
+			endDate.start = moment(startDate.value).add(1, "d").format("YYYY-MM-DD");
+		}
+	}
+	
+	function showForm(serviceID) {
 		var modal = document.querySelector("zdk-modal#form");
 		var tpl = document.querySelector("#formTpl");
 		modal.show();
 		
-		if( !serviceID ) {
+		if (!serviceID) {
 			editedService = {
 				category : '{{ category.toUpperCase()}}',
 				label    : '',
@@ -296,39 +311,45 @@
 				endDate  : '',
 				frequency: 'daily',
 				repeat   : 1,
-				duration: 60,
-				time: "10:00",
-				provider:'',
-				ref:'',
-				when:[]
+				duration : 60,
+				time     : "10:00",
+				provider : '',
+				ref      : '',
+				when     : []
 			};
 		} else {
 			data.services.forEach(function (item) {
 				if (item._id === serviceID) {
 					editedService = JSON.parse(JSON.stringify(item));
+					if (editedService.startDate <= moment().format("YYYY-MM-DD")) {
+						editedService.startDate = moment().add(1, "d").format("YYYY-MM-DD");
+					}
 				}
 			});
 		}
 		
 		tpl.model = {
-			lang : lang,
-			jobs : jobs,
-			providers : professionals,
-			hours  : hours,
-			durations: durations,
-			refServices : refServices,
-			service: editedService
+			lang       : lang,
+			jobs       : jobs,
+			providers  : professionals,
+			hours      : hours,
+			durations  : durations,
+			refServices: refServices,
+			service    : editedService
 		};
+		
 	}
 	
 	function frequencyChange(evt) {
 		var tpl = document.querySelector("#formTpl");
-		if( tpl.model.service.frequency === evt.target.value ) { return; }
+		if (tpl.model.service.frequency === evt.target.value) {
+			return;
+		}
 		
 		setFrequency(evt.target.value);
 	}
 	
-	function setFrequency( _frequency ) {
+	function setFrequency(_frequency) {
 		var tpl = document.querySelector("#formTpl");
 		tpl.model.service.frequency = _frequency;
 		
@@ -369,67 +390,72 @@
 			}
 		}
 		
-		if( !editedService.startDate ) {
+		if (!editedService.startDate) {
 			document.querySelector("#startDate").classList.add('invalid-form');
 			return false;
 		} else {
 			document.querySelector("#startDate").classList.remove('invalid-form');
 		}
-		if( document.querySelector("#endDate") ) {
+		if (document.querySelector("#endDate")) {
 			if (!editedService.endDate) {
 				document.querySelector("#endDate").classList.add('invalid-form');
 				return false;
 			} else {
-				document.querySelector("#endDate").classList.remove('invalid-form');
+				if(editedService.endDate <= editedService.startDate ) {
+					document.querySelector("#endDate").classList.add('invalid-form');
+					return false;
+				} else {
+					document.querySelector("#endDate").classList.remove('invalid-form');
+				}
 			}
 		}
 		
-		var obj = form2js( form );
+		var obj = form2js(form);
 		
-		if( editedService.frequency === 'weekly' && !(obj.when && obj.when.length )) {
+		if (editedService.frequency === 'weekly' && !(obj.when && obj.when.length )) {
 			document.querySelector("#weekly").classList.add('invalid-form');
 			return false;
 		} else {
-			if( document.querySelector("#weekly") ) {
+			if (document.querySelector("#weekly")) {
 				document.querySelector("#weekly").classList.remove('invalid-form');
 			}
 		}
 		
-		if( editedService.frequency === 'monthly' && !(editedService.when && editedService.when.length )) {
+		if (editedService.frequency === 'monthly' && !(editedService.when && editedService.when.length )) {
 			document.querySelector("#btn-cal-month").classList.add('invalid-form');
 			return false;
 		} else {
-			if( document.querySelector("#monthly") ) {
+			if (document.querySelector("#monthly")) {
 				document.querySelector("#btn-cal-month").classList.remove('invalid-form');
 			}
 		}
 		
 		
-		editedService.provider = obj.provider?obj.provider:null;
+		editedService.provider = obj.provider ? obj.provider : null;
 		delete editedService.providerName;
-		editedService.duration = parseInt(obj.duration,10);
+		editedService.duration = parseInt(obj.duration, 10);
 		editedService.time = obj.time;
-		editedService.repeat = parseInt(obj.repeat,10) || 0;
+		editedService.repeat = parseInt(obj.repeat, 10) || 0;
 		editedService.detail = obj.detail;
-		if( editedService.frequency === 'weekly' ) {
+		if (editedService.frequency === 'weekly') {
 			editedService.when = [];
-			obj.when.forEach( function(day) {
-				editedService.when.push( parseInt(day,10) );
+			obj.when.forEach(function (day) {
+				editedService.when.push(parseInt(day, 10));
 			})
 		}
 		delete editedService.sourceName;
-		if( editedService.frequency === "punctual") {
+		if (editedService.frequency === "punctual") {
 			editedService.endDate = editedService.startDate;
 		}
 		
-		if(!editedService._id) {
+		if (!editedService._id) {
 			// create
 			editedService.ref = obj.ref;
 			editedService.active = true;
-			if( ['daily' ,'punctual'].indexOf( editedService.frequency ) !== -1 ) {
+			if (['daily', 'punctual'].indexOf(editedService.frequency) !== -1) {
 				editedService.when = null;
 			}
-			if( editedService.frequency === "punctual" ) {
+			if (editedService.frequency === "punctual") {
 				editedService.endDate = editedService.startDate;
 				editedService.repeat = 0;
 			}
@@ -437,7 +463,7 @@
 		
 		var ajax = document.querySelector("#putService");
 		ajax.body = JSON.stringify(editedService);
-		ajax.addEventListener("core-response", function() {
+		ajax.addEventListener("core-response", function () {
 			document.querySelector("#ajaxPrescribedServices").go();
 		});
 		ajax.go();
@@ -447,9 +473,9 @@
 	
 	function onBtnCalMonthClick() {
 		document.getElementById('dialog-agenda').show();
-		editedService.when.forEach( function( day ) {
-			var dayDiv = document.querySelector(".agenda [data-day='"+day+"']");
-			if(!dayDiv.classList.contains("selected")) {
+		editedService.when.forEach(function (day) {
+			var dayDiv = document.querySelector(".agenda [data-day='" + day + "']");
+			if (!dayDiv.classList.contains("selected")) {
 				dayDiv.classList.add("selected");
 			}
 		})
@@ -476,9 +502,9 @@
 			
 			events.push({
 				className: 'event2',
-				label: '',
-				start: day.toISOString(),
-				end: moment(day).add(editedService.duration, 'minutes').toISOString()
+				label    : '',
+				start    : day.toISOString(),
+				end      : moment(day).add(editedService.duration, 'minutes').toISOString()
 			});
 		}
 		
@@ -486,7 +512,9 @@
 	}
 	
 	function calAdd() {
-		if (!agenda) { return; }
+		if (!agenda) {
+			return;
+		}
 		
 		var time, day;
 		switch (agenda.view) {
@@ -505,16 +533,16 @@
 					// Add an event
 					agenda.events.push({
 						className: 'event1',
-						label: '',
-						start: day.toISOString(),
-						end: moment(day).add(editedService.duration.value, 'minutes').toISOString()
+						label    : '',
+						start    : day.toISOString(),
+						end      : moment(day).add(editedService.duration.value, 'minutes').toISOString()
 					});
 				}
 				break;
 			
 			case 'week':
 				time = moment(agenda.hourShow, 'HH:mm');
-				day =  moment(agenda.day).startOf('week');
+				day = moment(agenda.day).startOf('week');
 				day.hour(time.hour());
 				day.minute(time.minute());
 				var week = day.week();
@@ -527,9 +555,9 @@
 					// Add an event
 					agenda.events.push({
 						className: 'event1',
-						label: '',
-						start: day.toISOString(),
-						end: moment(day).add(editedService.duration, 'minutes').toISOString()
+						label    : '',
+						start    : day.toISOString(),
+						end      : moment(day).add(editedService.duration, 'minutes').toISOString()
 					});
 				}
 				break;
@@ -546,7 +574,7 @@
 	}
 	
 	function callAddEvents() {
-		switch(agenda.view) {
+		switch (agenda.view) {
 			case 'month':
 				calMonthSave();
 				break;
@@ -582,7 +610,7 @@
 		
 		for (i = 0, length = agenda.events.length; i < length; i++) {
 			days.push({
-				day: moment(agenda.events[i].start, moment.ISO_8601).day(),
+				day : moment(agenda.events[i].start, moment.ISO_8601).day(),
 				time: moment(agenda.events[i].start, moment.ISO_8601).format('HH:mm')
 			});
 		}

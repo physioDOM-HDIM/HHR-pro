@@ -40,12 +40,12 @@ function SpecificData(beneficiaryID) {
 	};
 
 	this.getCounts = function () {
-		logger.trace('getCounts');
+		logger.trace('getCounts', this.subject);
 		var that = this;
 		return new promise(function (resolve) {
 			physioDOM.db.collection("specificData").group(
-				{'event.type': 1, subject: that.subject},
-				{'event.type': {$ne: 'HOSP_EXIT'}},
+				{'event.type': 1},
+				{'event.type': {$ne: 'HOSP_EXIT'}, subject: that.subject},
 				{total: 0},
 				"function ( curr, result ) { result.total++; }",
 				function (err, results) {
