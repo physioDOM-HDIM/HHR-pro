@@ -43,6 +43,7 @@ function SocialReports( beneficiaryID ) {
 	this.getLast = function() {
 		logger.trace('getLast');
 		var search = { subject: this.subject };
+		var that = this;
 		
 		return new promise( function(resolve, reject) {
 			physioDOM.db.collection("socialReport").find(search).sort({datetime: 1}).limit(1).toArray(function (err, doc) {
@@ -52,7 +53,11 @@ function SocialReports( beneficiaryID ) {
 				}
 				logger.debug( doc.length );
 				if ( !doc[0]) {
-					reject({code: 404, error: "not found"});
+					var report = {
+						reports: {},
+						subject: that.subject 
+					};
+					resolve(report);
 				} else {
 					resolve(doc[0]);
 				}
