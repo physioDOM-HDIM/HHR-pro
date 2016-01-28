@@ -63,11 +63,11 @@
 			{%endraw%}
 			<div class="col">
 				<template if="{%raw%}{{ type.ref === 'HOSP'}}{%endraw%}">
-					<span>{{"days"|i18n}} : {%raw%}{{days}}{%endraw%}</span>
+					<span>{{"days"|i18n}} : {%raw%}{{type.days}}{%endraw%}</span>
 				</template>
 			</div>
 			<div class="col">
-				<template if="{%raw%}{{ type.ref === 'HOSP' && pending }}{%endraw%}">
+				<template if="{%raw%}{{ type.ref === 'HOSP' && type.pending }}{%endraw%}">
 					<span>{{"In progress" | i18n}}</span>
 				</template>
 			</div>
@@ -95,7 +95,7 @@
 				<span class="spacer"></span>
 				<label>Date</label>
 				<div class="col">
-					<zdk-input-date name="date" staticpos="true" ></zdk-input-date>
+					<zdk-input-date name="date" staticpos="true" stop="{%raw%}{{today}}{%endraw%}"></zdk-input-date>
 				</div>
 				<span class="spacer"></span>
 			</div>
@@ -202,6 +202,10 @@
 						label: summaryLabels[item],
 						value: evt.detail.response.total[item]
 					};
+					if( item === "HOSP" ) {
+						tmp.days =  evt.detail.response.days || 0;
+						tmp.pending = evt.detail.response.pending;
+					}
 					summary.total.push(tmp);
 				}
 				tplSummary.model = summary;
@@ -229,6 +233,7 @@
 			options.push({value: option, label: eventLabels[option]})
 		}
 		tplEvents.model.options = options;
+		tplEvents.model.today = moment().format("YYYY-MM-DD");
 		document.querySelector("zdk-input-date").value = null;
 		document.querySelector("zdk-input-date").classList.remove('invalid');
 		document.querySelector("#newEvtBtn").classList.toggle('hidden');
