@@ -46,7 +46,7 @@ function SocialReports( beneficiaryID ) {
 		var that = this;
 		
 		return new promise( function(resolve, reject) {
-			physioDOM.db.collection("socialReport").find(search).sort({datetime: 1}).limit(1).toArray(function (err, doc) {
+			physioDOM.db.collection("socialReport").find(search).sort({datetime: -1}).limit(1).toArray(function (err, doc) {
 				if (err) {
 					logger.alert("Error");
 					throw err;
