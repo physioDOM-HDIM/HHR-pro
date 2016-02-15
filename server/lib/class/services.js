@@ -721,15 +721,16 @@ Services.prototype.pushAgendaToQueue = function( items ) {
 				});
 				
 				// agenda new is global for one beneficiary
-				var newMsg = [];
-				newMsg.push({
-					name : "hhr[" + that.subject + "].agenda.new",
-					value: newAgenda?1:0,
-					type : "integer"
-				});
-				queue.postMsg(newMsg);
-				msgs.push(newMsg);
-				
+				if(newAgenda) {
+					var newMsg = [];
+					newMsg.push({
+						name : "hhr[" + that.subject + "].agenda.new",
+						value: newAgenda ? 1 : 0,
+						type : "integer"
+					});
+					queue.postMsg(newMsg);
+					msgs.push(newMsg);
+				}
 				resolve( msgs );
 			});
 		});
