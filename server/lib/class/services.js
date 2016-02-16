@@ -657,13 +657,14 @@ Services.prototype.pushAgendaToQueue = function( items ) {
 			physioDOM.db.collection("servicesPlan").find( search ).toArray( function( err, res ) {
 				res.forEach( function(item) {
 					var msg = [];
-					var leaf = "hhr[" + that.subject + "].agenda[" + item._id + "].";
-					queue.delMsg([{branch: leaf}]);
+					var leaf = "hhr[" + that.subject + "].agenda[" + item._id + "]";
+					msg.push({branch: leaf});
+					queue.delMsg(msg);
 					
 					msgs.push(msg);
 					physioDOM.db.collection("servicesPlan").remove( item , function() {} );
 				});
-				resolve();
+				resolve(msgs);
 			});
 		});
 	}
