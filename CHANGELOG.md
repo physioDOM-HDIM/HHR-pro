@@ -2,18 +2,31 @@
 % Fabrice Le Coz  
 % January, 2016
 
+__v1.1.7__
+
+Bugs fix :
+
+  - Bug 577 & 607 : \[v.1.1.6\]\[Services\] Pas de notifications
+  - Bug 588 : \[Agenda + Services\] La désactivation d'un service n'est pas effective dans HHR-Home
+  - Bug 585 : \[Agenda\] Même rendez-vous envoyé plusieurs fois
+
+not reproduced
+
+  - Bug 611 : [v.1.1.6][Titres] Bug affichage
+  - Bug 610 : [v.1.1.6][Calendrier] Bug d'affichage sur Chrome Android
+
 __v1.1.6__
 
 Bugs fix :
 
-  - Bug 597 : [v.1.1.5][Specific data] Nombre de jours d'hospitalisation
-  - Bug 599 : [v.1.1.5][Specific data] Titre de la page
-  - Bug 600 - [v.1.1.5][Specific data] Affichage du nombre total d'event
-  - Bug 601 : [v.1.1.5][Social Report] Bug affichage
-  - Bug 602 - [v.1.1.5][Social Report] Pas de sauvegarde
-  - Bug 603 : [v.1.1.5][Specific data] Anciens "comments" conservées
-  - Bug 604 - [v.1.1.5][Calendar] Fréquence des services journaliers
-  - Bug 605 - [v.1.1.5][Services] Fréquence des services journaliers
+  - Bug 597 : \[v.1.1.5\]\[Specific data\] Nombre de jours d'hospitalisation
+  - Bug 599 : \[v.1.1.5\]\[Specific data\] Titre de la page
+  - Bug 600 - \[v.1.1.5\]\[Specific data\] Affichage du nombre total d'event
+  - Bug 601 : \[v.1.1.5\]\[Social Report\] Bug affichage
+  - Bug 602 - \[v.1.1.5\]\[Social Report\] Pas de sauvegarde
+  - Bug 603 : \[v.1.1.5\]\[Specific data\] Anciens "comments" conservées
+  - Bug 604 - \[v.1.1.5\]\[Calendar\] Fréquence des services journaliers
+  - Bug 605 - \[v.1.1.5\]\[Services\] Fréquence des services journaliers
 
 __v1.1.5__
 
@@ -37,8 +50,8 @@ Bugs fixe :
   
 not reproduced in tests :
 
-  - Bug 585	: [Agenda] Même rendez-vous envoyé plusieurs fois
-  - Bug 589 : [Agenda] Services oubliés pour certain jours de l'Agenda
+  - Bug 585	: \[Agenda\\] Même rendez-vous envoyé plusieurs fois
+  - Bug 589 : \[Agenda\] Services oubliés pour certain jours de l'Agenda
 
 > __Nota :__ For decimal values in the Eetscore questionnaire, the questionnaire must be edited and the "Choice System"
 > property of each items must be change from "integer" to "decimal". ( done by the ugrade script ).
@@ -97,11 +110,11 @@ mongo physiodom-test upgrade-1.1.5.js~
 __v1.1.4__
   
   - Bug 522 : H&S HHR-Pro / request for measurement / listing of the dates
-  - Bug 533 : [WUR] alert status switched on automatically after reviewing results or adjust data prescription
-  - Bug 505 : [Init][v.1.0.8] PopUp lors de l'appui sur Init indique une erreur
-  - Bug 470 : [WUR] Copy/past into TV messages window PRO
-  - Bug 431 : [Result from Data Recording][v.1.0.5] Bug d'affichage
-  - Bug 449 : [Result from Data Recording][v.1.0.5] Bug d'affichage
+  - Bug 533 : \[WUR\] alert status switched on automatically after reviewing results or adjust data prescription
+  - Bug 505 : \[Init\]\[v.1.0.8\] PopUp lors de l'appui sur Init indique une erreur
+  - Bug 470 : \[WUR\] Copy/past into TV messages window PRO
+  - Bug 431 : \[Result from Data Recording\]\[v.1.0.5\] Bug d'affichage
+  - Bug 449 : \[Result from Data Recording\]\[v.1.0.5\] Bug d'affichage
   - Bug 502 : Physical activity plan history lost
   
 > __Nota :__ Bug 454 : eetscore menu, feedback posted.
