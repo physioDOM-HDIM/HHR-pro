@@ -182,11 +182,13 @@ Services.prototype.pushServicesToQueue = function() {
 							var msg = [];
 							var category = item.category === "HEALTH" ? "healthcare" : "social";
 							var leaf = "hhr[" + that.subject + "]." + category + ".services[" + item._id + "].";
-							msg.push({
-								name : leaf + "new",
-								value: item.new ? 1 : 0,
-								type : "integer"
-							});
+							if( item.new ) {
+								msg.push({
+									name : leaf + "new",
+									value: item.new ? 1 : 0,
+									type : "integer"
+								});
+							}
 							msg.push({
 								name : leaf + "label",
 								value: item.label,
