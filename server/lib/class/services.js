@@ -700,7 +700,7 @@ Services.prototype.pushAgendaToQueue = function( items ) {
 					});
 					msg.push({
 						name : leaf+"description",
-						value: item.detail,
+						value: item.detail || '',
 						type : "string"
 					});
 					msg.push({
