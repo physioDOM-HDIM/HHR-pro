@@ -156,13 +156,13 @@ Services.prototype.pushServicesToQueue = function() {
 						res.forEach(function (item) {
 							var msg = [];
 							var category = item.category === "HEALTH" ? "healthcare" : "social";
-							var leaf = "hhr[" + that.subject + "]." + category + "[" + item._id + "].";
+							var leaf = "hhr[" + that.subject + "]." + category + "[" + item._id + "]";
 							msg.push( {branch: leaf} );
 							queue.delMsg(msg);
 							msgs.push(msg);
 							physioDOM.db.collection("servicesQueue").remove(item, function () {});
 						});
-						resolve();
+						resolve(msgs);
 					});
 				});
 			})
@@ -182,11 +182,13 @@ Services.prototype.pushServicesToQueue = function() {
 							var msg = [];
 							var category = item.category === "HEALTH" ? "healthcare" : "social";
 							var leaf = "hhr[" + that.subject + "]." + category + ".services[" + item._id + "].";
-							msg.push({
-								name : leaf + "new",
-								value: item.new ? 1 : 0,
-								type : "integer"
-							});
+							if( item.new ) {
+								msg.push({
+									name : leaf + "new",
+									value: item.new ? 1 : 0,
+									type : "integer"
+								});
+							}
 							msg.push({
 								name : leaf + "label",
 								value: item.label,
@@ -586,7 +588,7 @@ Services.prototype.getServicesQueueItems = function( startDate, nbDays, lang ) {
 					item.hash = Hash.sha1(item);
 					item.subject = that.subject;
 				});
-				return that.pushAgendaToQueue(items);
+				return that.pushAgendaToQueue(items, startDate);
 			})
 			.then( resolve )
 			.catch( function(err) {
@@ -600,9 +602,10 @@ Services.prototype.getServicesQueueItems = function( startDate, nbDays, lang ) {
  * Push agenda events to queue
  * 
  * @param items
+ * @param startDate 
  * @returns {*}
  */
-Services.prototype.pushAgendaToQueue = function( items ) {
+Services.prototype.pushAgendaToQueue = function( items, startDate ) {
 	var queue = new Queue(this.subject);
 	var that = this;
 	var msgs = [];
@@ -654,14 +657,17 @@ Services.prototype.pushAgendaToQueue = function( items ) {
 			// remove records with del field
 			physioDOM.db.collection("servicesPlan").find( search ).toArray( function( err, res ) {
 				res.forEach( function(item) {
-					var msg = [];
-					var leaf = "hhr[" + that.subject + "].agenda[" + item._id + "].";
-					queue.delMsg([{branch: leaf}]);
-					
-					msgs.push(msg);
+					if(item.startDate >= startDate) {
+						var msg = [];
+						var leaf = "hhr[" + that.subject + "].agenda[" + item._id + "]";
+						msg.push({branch: leaf});
+						queue.delMsg(msg);
+
+						msgs.push(msg);
+					}
 					physioDOM.db.collection("servicesPlan").remove( item , function() {} );
 				});
-				resolve();
+				resolve(msgs);
 			});
 		});
 	}
@@ -697,7 +703,7 @@ Services.prototype.pushAgendaToQueue = function( items ) {
 					});
 					msg.push({
 						name : leaf+"description",
-						value: item.detail,
+						value: item.detail || '',
 						type : "string"
 					});
 					msg.push({
@@ -721,15 +727,16 @@ Services.prototype.pushAgendaToQueue = function( items ) {
 				});
 				
 				// agenda new is global for one beneficiary
-				var newMsg = [];
-				newMsg.push({
-					name : "hhr[" + that.subject + "].agenda.new",
-					value: newAgenda?1:0,
-					type : "integer"
-				});
-				queue.postMsg(newMsg);
-				msgs.push(newMsg);
-				
+				if(newAgenda) {
+					var newMsg = [];
+					newMsg.push({
+						name : "hhr[" + that.subject + "].agenda.new",
+						value: newAgenda ? 1 : 0,
+						type : "integer"
+					});
+					queue.postMsg(newMsg);
+					msgs.push(newMsg);
+				}
 				resolve( msgs );
 			});
 		});
