@@ -588,7 +588,7 @@ Services.prototype.getServicesQueueItems = function( startDate, nbDays, lang ) {
 					item.hash = Hash.sha1(item);
 					item.subject = that.subject;
 				});
-				return that.pushAgendaToQueue(items);
+				return that.pushAgendaToQueue(items, startDate);
 			})
 			.then( resolve )
 			.catch( function(err) {
@@ -602,9 +602,10 @@ Services.prototype.getServicesQueueItems = function( startDate, nbDays, lang ) {
  * Push agenda events to queue
  * 
  * @param items
+ * @param startDate 
  * @returns {*}
  */
-Services.prototype.pushAgendaToQueue = function( items ) {
+Services.prototype.pushAgendaToQueue = function( items, startDate ) {
 	var queue = new Queue(this.subject);
 	var that = this;
 	var msgs = [];
@@ -656,12 +657,14 @@ Services.prototype.pushAgendaToQueue = function( items ) {
 			// remove records with del field
 			physioDOM.db.collection("servicesPlan").find( search ).toArray( function( err, res ) {
 				res.forEach( function(item) {
-					var msg = [];
-					var leaf = "hhr[" + that.subject + "].agenda[" + item._id + "]";
-					msg.push({branch: leaf});
-					queue.delMsg(msg);
-					
-					msgs.push(msg);
+					if(item.startDate >= startDate) {
+						var msg = [];
+						var leaf = "hhr[" + that.subject + "].agenda[" + item._id + "]";
+						msg.push({branch: leaf});
+						queue.delMsg(msg);
+
+						msgs.push(msg);
+					}
 					physioDOM.db.collection("servicesPlan").remove( item , function() {} );
 				});
 				resolve(msgs);
