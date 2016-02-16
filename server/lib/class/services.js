@@ -156,13 +156,13 @@ Services.prototype.pushServicesToQueue = function() {
 						res.forEach(function (item) {
 							var msg = [];
 							var category = item.category === "HEALTH" ? "healthcare" : "social";
-							var leaf = "hhr[" + that.subject + "]." + category + "[" + item._id + "].";
+							var leaf = "hhr[" + that.subject + "]." + category + "[" + item._id + "]";
 							msg.push( {branch: leaf} );
 							queue.delMsg(msg);
 							msgs.push(msg);
 							physioDOM.db.collection("servicesQueue").remove(item, function () {});
 						});
-						resolve();
+						resolve(msgs);
 					});
 				});
 			})
