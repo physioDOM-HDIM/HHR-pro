@@ -762,6 +762,7 @@ server.get( '/specificData', IPage.specificData);
 server.get( '/physiological-data', IPage.physiologicalData);
 server.get( '/message', IPage.messageList);
 server.get( '/message/create', IPage.messageCreate);
+server.get( '/message/list', IPage.messageToList);
 
 // Services
 server.get( '/services/health', IPage.basicHealthServices);

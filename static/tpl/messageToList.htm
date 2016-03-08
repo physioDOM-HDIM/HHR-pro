@@ -1,0 +1,98 @@
+{% extends './page.htm' %}
+
+{% block title %}{{"Message to Home" | i18n}}{% endblock %}
+
+{% block head %}
+{% parent %}
+
+<script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
+
+<link rel="import" href="/bower_components/core-dropdown-menu/core-dropdown-menu.html">
+<link rel="import" href="/bower_components/core-dropdown/core-dropdown.html">
+<link rel="import" href="/bower_components/core-selector/core-selector.html">
+
+{% endblock %}
+
+{% block content %}
+
+<div class="row title">
+	<label class="title">
+		{{ "New message to a list"|i18n }}
+	</label>
+</div>
+
+<div class="row">
+	<label>All the beneficiaries</label> <input type="checkbox" checked>
+</div>
+<button class="small blue">Add filter</button>
+<div>
+	<core-dropdown-menu label="Choose a pastry">
+		<core-dropdown class="dropdown">
+			<core-selector selected="0">
+				<option>Perimeter</option>
+				<option>City</option>
+				<option>Main diagnosis</option>
+				<option>Undernutrition status</option>
+				<option>Start date</option>
+				<option>Age</option>
+				<option>Sex</option>
+				<option>Dependant</option>
+			</core-selector>
+		</core-dropdown>
+	</core-dropdown-menu>
+	
+	<input type="text" name="perimeter">
+	<input type="text" name="city">
+	<select>
+		<option>Main 1</option>
+		<option>Main 2</option>
+		<option>Main 3</option>
+	</select>
+	<select>
+		<option>nutri 1</option>
+		<option>nutri 2</option>
+		<option>nutri 3</option>
+	</select>
+	<input type="text" name="date">
+	<select>
+		<option>Male</option>
+		<option>Female</option>
+	</select>
+	<select>
+		<option>gen status 1</option>
+		<option>gen status 2</option>
+		<option>gen status 3</option>
+	</select>
+</div>
+
+<form name="message">
+	<div class="row spaced-down">
+		<div class="col">
+			<label for="title">{{"Title"|i18n}} : </label>
+			<input type="text" id="title" name="title" maxlength="100">
+		</div>
+		<input type="hidden" name="author" id="author" value="{{session.person.id.toString()}}">
+	</div>
+	<div class="row spaced-side">
+		<label for="content">{{"Content"|i18n}} : </label>
+		<div class="spacer limitInfo"></div>
+	</div>
+	<div class="row spaced-down">
+		<textarea name="content" id="content" rows="10"></textarea>
+	</div>
+</form>
+
+{% include 'errorMessage.htm'%}
+
+<div class="row control actions">
+	<span class="spacer"></span>
+	<a href="/message">
+		<button class="blue red">{{ "Cancel"|i18n }}</button>
+	</a>
+	<button type="button" class="blue big" onclick="sendMessage()">{{ "Send"|i18n }}</button>
+</div>
+
+{% include 'modal.htm' %}
+
+{% endblock %}
