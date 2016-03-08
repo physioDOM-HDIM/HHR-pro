@@ -11,7 +11,43 @@
 <link rel="import" href="/bower_components/core-dropdown-menu/core-dropdown-menu.html">
 <link rel="import" href="/bower_components/core-dropdown/core-dropdown.html">
 <link rel="import" href="/bower_components/core-selector/core-selector.html">
+<link rel="import" href="/bower_components/core-pages/core-pages.html">
 
+<style>
+	core-dropdown-menu {
+		width: 200px;
+		border: 1px solid lightgray;
+		padding: 0px 10px;
+	}
+	
+	core-dropdown {
+		width: 200px;
+		border: 1px solid lightgray;
+	}
+	
+	core-selector div {
+		line-height: 35px;
+		padding: 0px 10px;
+	}
+	
+	core-selector div:hover {
+		background: lightgray;
+	}
+	
+	.core-selected {
+		font-weight: bold;
+	}
+	
+	div.filter {
+		height: 35px;
+		margin-bottom: 10px;
+	}
+	
+	core-pages {
+		align-self: flex-start;
+		margin-left: 20px;
+	}
+</style>
 {% endblock %}
 
 {% block content %}
@@ -26,44 +62,46 @@
 	<label>All the beneficiaries</label> <input type="checkbox" checked>
 </div>
 <button class="small blue">Add filter</button>
-<div>
-	<core-dropdown-menu label="Choose a pastry">
+<div layout horizontal class="filter">
+	<core-dropdown-menu label="Choose a filter">
 		<core-dropdown class="dropdown">
 			<core-selector selected="0">
-				<option>Perimeter</option>
-				<option>City</option>
-				<option>Main diagnosis</option>
-				<option>Undernutrition status</option>
-				<option>Start date</option>
-				<option>Age</option>
-				<option>Sex</option>
-				<option>Dependant</option>
+				<div>Perimeter</div>
+				<div>City</div>
+				<div>Main diagnosis</div>
+				<div>Undernutrition status</div>
+				<div>Start date</div>
+				<div>Age</div>
+				<div>Sex</div>
+				<div>Dependant</div>
 			</core-selector>
 		</core-dropdown>
 	</core-dropdown-menu>
 	
-	<input type="text" name="perimeter">
-	<input type="text" name="city">
-	<select>
-		<option>Main 1</option>
-		<option>Main 2</option>
-		<option>Main 3</option>
-	</select>
-	<select>
-		<option>nutri 1</option>
-		<option>nutri 2</option>
-		<option>nutri 3</option>
-	</select>
-	<input type="text" name="date">
-	<select>
-		<option>Male</option>
-		<option>Female</option>
-	</select>
-	<select>
-		<option>gen status 1</option>
-		<option>gen status 2</option>
-		<option>gen status 3</option>
-	</select>
+	<core-pages selected="0">
+		<div><input type="text" name="perimeter"></div>
+		<div><input type="text" name="city"></div>
+		<div><select>
+			<option>Main 1</option>
+			<option>Main 2</option>
+			<option>Main 3</option>
+		</select></div>
+		<div><select>
+			<option>nutri 1</option>
+			<option>nutri 2</option>
+			<option>nutri 3</option>
+		</select></div>
+		<div><input type="text" name="date"></div>
+		<div><select>
+			<option>Male</option>
+			<option>Female</option>
+		</select></div>
+		<div><select>
+			<option>gen status 1</option>
+			<option>gen status 2</option>
+			<option>gen status 3</option>
+		</select></div>
+	</core-pages>
 </div>
 
 <form name="message">
