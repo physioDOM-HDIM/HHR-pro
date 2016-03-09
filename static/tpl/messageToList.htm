@@ -7,11 +7,14 @@
 
 <script src="/scripts/utils.js"></script>
 <script src="/scripts/modal.js"></script>
+<link rel="stylesheet" href="/styles/message.css">
 
 <link rel="import" href="/bower_components/core-dropdown-menu/core-dropdown-menu.html">
 <link rel="import" href="/bower_components/core-dropdown/core-dropdown.html">
 <link rel="import" href="/bower_components/core-selector/core-selector.html">
 <link rel="import" href="/bower_components/core-pages/core-pages.html">
+<link rel="import" href="/bower_components/core-item/core-item.html">
+<link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
 
 <style>
 	core-dropdown-menu {
@@ -41,11 +44,18 @@
 	div.filter {
 		height: 35px;
 		margin-bottom: 10px;
+		background: tomato;
 	}
 	
 	core-pages {
-		align-self: flex-start;
-		margin-left: 20px;
+		/* align-self: flex-start; */
+		height: 100%;
+		width: 100%;
+		margin: 0px 20px;
+	}
+	
+	select {
+		height: 35px;
 	}
 </style>
 {% endblock %}
@@ -58,79 +68,112 @@
 	</label>
 </div>
 
-<div class="row">
-	<label>All the beneficiaries</label> <input type="checkbox" checked>
-</div>
-<button class="small blue">Add filter</button>
-<div layout horizontal class="filter">
-	<core-dropdown-menu label="Choose a filter">
-		<core-dropdown class="dropdown">
-			<core-selector selected="0">
-				<div>Perimeter</div>
-				<div>City</div>
-				<div>Main diagnosis</div>
-				<div>Undernutrition status</div>
-				<div>Start date</div>
-				<div>Age</div>
-				<div>Sex</div>
-				<div>Dependant</div>
-			</core-selector>
-		</core-dropdown>
-	</core-dropdown-menu>
+<template id="app" is="auto-binding">
+	{%raw%}
+	<p>selected filter : {{filter}}</p>
+	<div class="row">
+		<label>All the beneficiaries</label> <input type="checkbox" checked>
+	</div>
+	<div>number : {{number}}</div>
+	<div layout horizontal class="filter">
+		<core-dropdown-menu label="Choose a filter">
+			<core-dropdown class="dropdown">
+				<core-selector selected="{{filter}}" excludedLocalName="gender">
+					<div name="perimeter">Perimeter</div>
+					<div name="city">City</div>
+					<div name="diagnosis.chronic.main">Main diagnosis</div>
+					<div name="undernitrition">Undernutrition status</div>
+					<div name="start">Start date</div>
+					<div name="gender" >Sex</div>
+					<div name="dependant">Dependant</div>
+				</core-selector>
+			</core-dropdown>
+		</core-dropdown-menu>
+		
+		<core-pages selected="{{filter}}" layout vertical>
+			<div name="perimeter">
+				<select>
+					<template repeat="{{perimeter}}">
+						<option value="{{ref}}">{{label}}</option>
+					</template>
+				</select>
+			</div>
+			<div name="city">
+				<input type="text" style="width:100%">
+			</div>
+			<div name="diagnosis.chronic.main">
+				<select>
+					<template repeat="{{diagnosis}}">
+						<option value="{{ref}}">{{label}}</option>
+					</template>
+				</select>
+			</div>
+			<div name="undernitrition">
+				<select>
+					<template repeat="{{nutritionalStatus}}">
+						<option value="{{ref}}">{{label}}</option>
+					</template>
+			</select>
+			</div>
+			<div name="start">
+				<zdk-input-date></zdk-input-date>
+			</div>
+			<div name="gender">
+				<select>
+				<option value="M">Male</option>
+				<option value="F">Female</option>
+			</select>
+			</div>
+			<div name="dependant">
+				<select>
+					<template repeat="{{generalStatus}}">
+						<option value="{{ref}}">{{label}}</option>
+					</template>
+			</select>
+			</div>
+		</core-pages>
+		<template if="{{filter}}">
+		<button class="small blue" onclick="addFilter()">Add filter</button>
+		</template>
+	</div>
 	
-	<core-pages selected="0">
-		<div><input type="text" name="perimeter"></div>
-		<div><input type="text" name="city"></div>
-		<div><select>
-			<option>Main 1</option>
-			<option>Main 2</option>
-			<option>Main 3</option>
-		</select></div>
-		<div><select>
-			<option>nutri 1</option>
-			<option>nutri 2</option>
-			<option>nutri 3</option>
-		</select></div>
-		<div><input type="text" name="date"></div>
-		<div><select>
-			<option>Male</option>
-			<option>Female</option>
-		</select></div>
-		<div><select>
-			<option>gen status 1</option>
-			<option>gen status 2</option>
-			<option>gen status 3</option>
-		</select></div>
-	</core-pages>
-</div>
-
-<form name="message">
-	<div class="row spaced-down">
-		<div class="col">
-			<label for="title">{{"Title"|i18n}} : </label>
-			<input type="text" id="title" name="title" maxlength="100">
+	<div class="row">Filters</div>
+	<template repeat="{{filter, filterIndex in filters}}">
+		<div class="row">
+			<div class="col" style="width:200px">{{filter.filter}}</div>
+			<div class="col">{{filter.label}}</div>
+			<button class="small red" onclick="rmFilter({{filterIndex}})">remove</button>
 		</div>
-		<input type="hidden" name="author" id="author" value="{{session.person.id.toString()}}">
+	</template>
+	{%endraw%}
+	<form name="message">
+		<div class="row spaced-down">
+			<div class="col">
+				<label for="title">{{"Title"|i18n}} : </label>
+				<input type="text" id="title" name="title" maxlength="100">
+			</div>
+			<input type="hidden" name="author" id="author" value="{{session.person.id.toString()}}">
+		</div>
+		<div class="row spaced-side">
+			<label for="content">{{"Content"|i18n}} : </label>
+			<div class="spacer limitInfo"></div>
+		</div>
+		<div class="row spaced-down">
+			<textarea name="content" id="content" rows="10"></textarea>
+		</div>
+	</form>
+	
+	{% include 'errorMessage.htm'%}
+	
+	<div class="row control actions">
+		<span class="spacer"></span>
+		<a href="/message">
+			<button class="blue red">{{ "Cancel"|i18n }}</button>
+		</a>
+		<button type="button" class="blue big" onclick="sendMessage()">{{ "Send"|i18n }}</button>
 	</div>
-	<div class="row spaced-side">
-		<label for="content">{{"Content"|i18n}} : </label>
-		<div class="spacer limitInfo"></div>
-	</div>
-	<div class="row spaced-down">
-		<textarea name="content" id="content" rows="10"></textarea>
-	</div>
-</form>
 
-{% include 'errorMessage.htm'%}
-
-<div class="row control actions">
-	<span class="spacer"></span>
-	<a href="/message">
-		<button class="blue red">{{ "Cancel"|i18n }}</button>
-	</a>
-	<button type="button" class="blue big" onclick="sendMessage()">{{ "Send"|i18n }}</button>
-</div>
-
+</template>
 {% include 'modal.htm' %}
-
+<script src="/tpl/messageToList.js"></script>
 {% endblock %}
