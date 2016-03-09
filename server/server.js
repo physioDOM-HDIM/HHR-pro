@@ -564,6 +564,7 @@ server.del( '/api/directory/:entryID/cert', IDirectory.revoqCert );
 
 server.get( '/api/beneficiaries', IBeneficiary.getBeneficiaries);   // get beneficiaries list
 server.post('/api/beneficiaries', IBeneficiary.createBeneficiary);
+server.post( '/api/beneficiaries/filter', IBeneficiary.getBeneficiariesFilter);
 server.get( '/api/beneficiaries/:entryID', IBeneficiary.getBeneficiary );
 server.put( '/api/beneficiaries/:entryID', IBeneficiary.updateBeneficiary );
 server.del( '/api/beneficiaries/:entryID', IBeneficiary.deleteBeneficiary );
@@ -878,7 +879,7 @@ physioDOM.connect()
 								});
 						});
 				});
-				agenda.every(config.agenda + ' minutes', 'push plans');
+				// agenda.every(config.agenda + ' minutes', 'push plans');
 			}
 		});
 			
