@@ -89,6 +89,19 @@ function Beneficiaries( ) {
 		return dbPromise.getList(cursor, pg, offset);
 	};
 	
+	this.beneficiariesFilter = function(session, filter) {
+		logger.trace("beneficiariesFilter");
+		if( session.role) {
+			if( ["administrator","coordinator"].indexOf(session.role.toLowerCase())===-1 ) {
+				filter.professionals= { "$elemMatch": {professionalID: session.person.id.toString() }};
+			}
+		} else {
+			throw { code:403, message:"forbidden"};
+		}
+		filter.active = true;
+		return physioDOM.db.collection("beneficiaries").find(filter);
+	};
+	
 	this.getAllActiveHHR = function(pg, offset) {
 		var search = { active:true, biomasterStatus: true };
 		var cursor = physioDOM.db.collection("beneficiaries").find(search);
