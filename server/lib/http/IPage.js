@@ -1435,16 +1435,18 @@ function IPage() {
 		init(req);
 		var data = {
 			admin : ["COORD", "ADMIN"].indexOf(req.session.roleClass) !== -1 ? true : false,
-			rights: {read: false, write: false, url: '/message'}
+			rights: {read: false, write: false, url: '/message/list'}
 		};
 
 		new Menu().rights(req.session.role, data.rights.url)
 			.then(function (_rights) {
 				data.rights = _rights;
 				data.lang = lang;
-
+				return req.session.getPerson();
+			})
+			.then( function(session) {
+				data.session = session;
 				render('/static/tpl/messageToList.htm', data, res, next);
-
 			})
 			.catch(function (err) {
 				logger.error(err);

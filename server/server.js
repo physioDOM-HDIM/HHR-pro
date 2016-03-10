@@ -564,7 +564,7 @@ server.del( '/api/directory/:entryID/cert', IDirectory.revoqCert );
 
 server.get( '/api/beneficiaries', IBeneficiary.getBeneficiaries);   // get beneficiaries list
 server.post('/api/beneficiaries', IBeneficiary.createBeneficiary);
-server.post( '/api/beneficiaries/filter', IBeneficiary.getBeneficiariesFilter);
+server.post('/api/beneficiaries/filter', IBeneficiary.getBeneficiariesFilter);
 server.get( '/api/beneficiaries/:entryID', IBeneficiary.getBeneficiary );
 server.put( '/api/beneficiaries/:entryID', IBeneficiary.updateBeneficiary );
 server.del( '/api/beneficiaries/:entryID', IBeneficiary.deleteBeneficiary );
@@ -600,6 +600,7 @@ server.get( '/api/beneficiary/messages', IBeneficiary.getMessages );
 server.get( '/api/beneficiaries/:entryID/messages', IBeneficiary.getMessages );
 server.post('/api/beneficiary/messages', IBeneficiary.createMessage );
 server.post('/api/beneficiaries/:entryID/messages', IBeneficiary.createMessage );
+server.post('/api/beneficiaries/message',IBeneficiary.postMessageToList);
 
 server.get( '/api/beneficiary/dataprog', IBeneficiary.getDataProg );
 server.get( '/api/beneficiary/dataprog/:category', IBeneficiary.getDataProgCategory );
