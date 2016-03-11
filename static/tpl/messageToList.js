@@ -182,25 +182,34 @@ function checkForm() {
 }
 
 function sendMessage() {
-
+	// if app.number is 0 show a warning dialog box and return
 	var obj = form2js(document.forms.message);
-	var message = {
-		title  : obj.title,
-		author : obj.author,
-		content: obj.content
+	var msg = {
+		message  : {
+			title  : obj.title,
+			author : obj.author,
+			content: obj.content
+		}, 
+		filter: {}
 	};
 
-	console.log(message);
+	app.filters.forEach(function (item) {
+		msg.filter[item.filter] = item.value;
+	});
+
+	console.log(msg);
 	fetch('/api/beneficiaries/message', {
 		method     : 'POST',
 		credentials: 'include',
-		body       : JSON.stringify(message)
+		body       : JSON.stringify(msg)
 	})
 		.then(function (resp) {
 			if (resp.ok) {
 				console.log("Yeah");
+				// on success show a dialog box
 			} else {
 				console.log("booh");
+				// on error show an error dialog box
 			}
 		});
 }
@@ -210,4 +219,14 @@ function toggleBeneficiaries() {
 	div.classList.toggle('hidden');
 	var btn = document.querySelector('#beneficiariesBtn core-icon');
 	btn.icon = div.classList.contains('hidden') ? 'arrow-drop-down' : 'arrow-drop-up';
+}
+
+function resetForm() {
+	app.filters.map( function(filter) {
+		document.querySelector("core-selector [name='" + filter.name + "']").hidden = false;
+	});
+	app.filters = [];
+	app.$.title.value = "";
+	app.$.content.value = "";
+	getBeneficiaries();
 }
