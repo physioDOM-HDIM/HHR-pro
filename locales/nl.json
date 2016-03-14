@@ -432,5 +432,6 @@
   "Health services":"Gezondheidszorg",
   "Social services":"Welzijnszorg",
   "first|second|third|fourth|fifth":"eerste|tweede|derde|vierde|vijfde",
-  "on the ${nb} ${day} of the month":"op de ${ste} ${day} van de maand"
+  "on the ${nb} ${day} of the month":"op de ${ste} ${day} van de maand",
+  "There is no beneficiaries selected":"Er is geen begunstigden geselecteerd"
 }

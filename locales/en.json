@@ -417,5 +417,6 @@
   "Hospitalisation entry":"Hospitalisation entry",
   "In progress":"In progress",
   "first|second|third|fourth|fifth":"first|second|third|fourth|fifth",
-  "on the ${nb} ${day} of the month":"on the ${nb} ${day} of the month"
+  "on the ${nb} ${day} of the month":"on the ${nb} ${day} of the month",
+  "There is no beneficiaries selected":"There is no beneficiaries selected"
 }
