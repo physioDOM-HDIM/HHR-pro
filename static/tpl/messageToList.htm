@@ -1,0 +1,236 @@
+{% extends './page.htm' %}
+
+{% block title %}{{"Message to beneficiaries" | i18n}}{% endblock %}
+
+{% block head %}
+{% parent %}
+
+<script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
+<script src="/bower_components/zdk-calendar/form2js.js"></script>
+<script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
+<link rel="stylesheet" href="/styles/message.css">
+
+<link rel="import" href="/bower_components/core-dropdown-menu/core-dropdown-menu.html">
+<link rel="import" href="/bower_components/core-dropdown/core-dropdown.html">
+<link rel="import" href="/bower_components/core-selector/core-selector.html">
+<link rel="import" href="/bower_components/core-pages/core-pages.html">
+<link rel="import" href="/bower_components/core-item/core-item.html">
+<link rel="import" href="/bower_components/core-icon/core-icon.html">
+<link rel="import" href="/bower_components/core-icons/core-icons.html">
+
+<link rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
+
+<style>
+	core-dropdown-menu {
+		width: 200px;
+		border: 1px solid lightgray;
+		padding: 0px 10px;
+	}
+	
+	core-dropdown {
+		width: 200px;
+		border: 1px solid lightgray;
+	}
+	
+	core-selector div {
+		line-height: 35px;
+		padding: 0px 10px;
+	}
+	
+	core-selector div:hover {
+		background: lightgray;
+	}
+	
+	.core-selected {
+		font-weight: bold;
+	}
+	
+	div.filter {
+		height: 35px;
+		margin-bottom: 10px;
+		/* background: tomato; */
+	}
+	
+	core-pages {
+		height: 100%;
+		width: 100%;
+		margin: 0px 20px;
+	}
+	
+	select {
+		height: 35px;
+	}
+	
+	.beneficiaries {
+		position: absolute;
+		background: white;
+		width: 100%;
+		-webkit-column-count: 3;
+		-webkit-column-rule: 1px solid darkgray;
+		-moz-column-count: 3;
+		-moz-column-rule: 1px solid darkgray;
+		column-count: 3;
+		column-rule: 1px solid darkgray;
+		border: 1px solid black;
+		-webkit-box-shadow: 5px 5px 20px darkgray;
+		-moz-box-shadow: 5px 5px 20px darkgray;
+		box-shadow: 5px 5px 20px darkgray;
+	}
+	
+	.beneficiaries div {
+		line-height: 25px;
+		padding: 0px 5px;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden;
+	}
+	
+	header.panel {
+		color: white;
+		background: rgb(66, 139, 202);
+		height: 40px;
+		padding-left: 10px;
+		font-size: 1.2em;
+		box-sizing: border-box;
+		-webkit-align-items: center;
+		align-items: center;
+		display: -webkit-flex;
+		display: -ms-flexbox;
+		display: flex;
+	}
+	
+	.panel.content {
+		padding: 10px;
+		border: 2px solid rgb(66, 139, 202);
+		margin-bottom: 20px;
+	}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="row title">
+	<label class="title">
+		{{ "Message to beneficiaries"|i18n }}
+	</label>
+</div>
+
+<template id="app" is="auto-binding">
+	<header class="panel">{{'Filter'|i18n}} / {{'Sort'|i18n}}</header>
+	<div class="panel content">
+		{%raw%}
+		<div layout horizontal class="filter">
+			<core-dropdown-menu label="Choose a filter">
+				<core-dropdown class="dropdown">
+					<core-selector selected="{{filter}}">
+						<div name="perimeter">Perimeter</div>
+						<div name="city">City</div>
+						<div name="main">Main diagnosis</div>
+						<div name="undernitrition">Undernutrition status</div>
+						<div name="start">Start date</div>
+						<div name="gender">Gender</div>
+						<div name="dependant">Dependant</div>
+					</core-selector>
+				</core-dropdown>
+			</core-dropdown-menu>
+			
+			<core-pages selected="{{filter}}" layout vertical>
+				<div name="perimeter">
+					<select>
+						<template repeat="{{perimeter}}">
+							<option value="{{ref}}">{{label}}</option>
+						</template>
+					</select>
+				</div>
+				<div name="city">
+					<input type="text" style="width:100%">
+				</div>
+				<div name="main">
+					<select>
+						<template repeat="{{diagnosis}}">
+							<option value="{{ref}}">{{label}}</option>
+						</template>
+					</select>
+				</div>
+				<div name="undernitrition">
+					<select>
+						<template repeat="{{nutritionalStatus}}">
+							<option value="{{ref}}">{{label}}</option>
+						</template>
+					</select>
+				</div>
+				<div name="start">
+					<zdk-input-date i18n="{{lang}}" style="position:relative"></zdk-input-date>
+				</div>
+				<div name="gender">
+					<select>
+						<option value="M">Male</option>
+						<option value="F">Female</option>
+					</select>
+				</div>
+				<div name="dependant">
+					<select>
+						<template repeat="{{generalStatus}}">
+							<option value="{{ref}}">{{label}}</option>
+						</template>
+					</select>
+				</div>
+			</core-pages>
+			<template if="{{filter}}">
+				<button class="small blue" onclick="addFilter()">Add filter</button>
+			</template>
+		</div>
+		
+		<div style="position:relative;margin-bottom:20px">
+			<div class="row">
+				<div class="col"><b>Filters</b></div>
+				<button class="blue" onclick="toggleBeneficiaries()" id="beneficiariesBtn">
+					<span>Beneficiaries ({{number}})</span>
+					<core-icon icon="arrow-drop-down"></core-icon>
+				</button>
+			</div>
+			<div class="beneficiaries hidden">
+				<template repeat="{{beneficiaries}}">
+					<div>{{name.family}} {{name.given}}</div>
+				</template>
+			</div>
+			<template if="{{!filters.length}}">
+				<div class="col">All the beneficiaries</div>
+			</template>
+			<template repeat="{{filter, filterIndex in filters}}">
+				<div class="row">
+					<div style="width:200px">{{filter.label}}</div>
+					<div class="col">{{filter.display}}</div>
+					<button class="small red" onclick="rmFilter({{filterIndex}})">remove</button>
+				</div>
+			</template>
+		</div>
+	</div>
+	{%endraw%}
+	<form name="message" onsubmit="checkForm(); return false;">
+		<div class="row spaced-down">
+			<div class="col">
+				<label for="title">{{"Title"|i18n}} : </label>
+				<input type="text" id="title" name="title" maxlength="100" required>
+			</div>
+			<input type="hidden" name="author" id="author" value="{{session.person.id.toString()}}">
+		</div>
+		<div class="row spaced-side">
+			<label for="content">{{"Content"|i18n}} : </label>
+			<div class="spacer limitInfo"></div>
+		</div>
+		<div class="row spaced-down">
+			<textarea name="content" id="content" rows="10" onkeyup="limitText(event)" required></textarea>
+		</div>
+		
+		<div class="row control actions">
+			<span class="spacer"></span>
+			<button type="button" class="blue red" onclick="resetForm()">{{ "Cancel"|i18n }}</button>
+			<button id="sendBtn" class="blue big">{{ "Send"|i18n }}</button>
+		</div>
+	</form>
+</template>
+{% include 'modal.htm' %}
+<script src="/tpl/messageToList.js"></script>
+{% endblock %}

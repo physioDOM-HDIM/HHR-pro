@@ -434,5 +434,7 @@
   "Hospitalisation exit":"Sortie d'hospitalisation",
   "Hospitalisation entry":"Entrée en hospitalisation",
   "In progress":"En cours",
-  "fifth":"cinquième"
+  "fifth":"cinquième",
+  "There is no beneficiaries selected":"Il n'y a pas des bénéficiaires sélectionnés",
+  "Message to beneficiaries":"Message aux bénéficiaires"
 }

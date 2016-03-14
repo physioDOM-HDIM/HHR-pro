@@ -2,6 +2,17 @@
 % Fabrice Le Coz  
 % January, 2016
 
+__v1.1.8__
+
+Feature : message to beneficiaries
+
+  - Add two new labels :
+    - "Message to beneficiaries"
+    - "There is no beneficiaries selected"
+  - Add a new menu entry
+
+> __Nota :__ to add the new entry in the menu, applied the script `upgrade-1.1.8.js` to the database
+
 __v1.1.7__
 
 Bugs fix :
