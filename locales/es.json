@@ -433,5 +433,6 @@
   "Social services":"Servicios sociales",
   "first|second|third|fourth|fifth":"primero|segundo|tercero|cuarto|quinto",
   "on the ${nb} ${day} of the month":"el ${nb} ${day} del mes",
-  "There is no beneficiaries selected":"No hay beneficiarios seleccionados"
+  "There is no beneficiaries selected":"No hay beneficiarios seleccionados",
+  "Message to beneficiaries":"Mensaje a los beneficiarios"
 }
