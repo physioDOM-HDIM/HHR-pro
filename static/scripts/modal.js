@@ -42,6 +42,20 @@ function Modal (type, callback, log) {
         }]
     };
 
+	content.errorNoBeneficiaries = {
+		title: "trad_warning",
+		content: "trad_error_no_beneficiairies",
+		buttons: [{
+			id: "trad_ok",
+			action: function() {
+				if(callback) {
+					callback();
+				}
+				self.closeModal();
+			}
+		}]
+	};
+	
     content.errorOccured = {
         title: "trad_error",
         content: "trad_error_occured",

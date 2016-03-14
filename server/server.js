@@ -231,7 +231,7 @@ server.pre(restify.pre.userAgentConnection());
 server.use(function checkAcl(req, res, next) {
 	logger.trace("checkAcl",req.url);
 
-	if( req.url === "/" || req.url.match(/^(\/api|\/logout|\/api\/checkpasswd|\/api\/password|\/directory|\/settings|\/questionnaires|\/admin|\/beneficiaries|\/queue|\/version|\/createunit)/) ) {
+	if( req.url === "/" || req.url.match(/^(\/api|\/logout|\/api\/checkpasswd|\/api\/password|\/directory|\/settings|\/questionnaires|\/admin|\/beneficiaries|\/queue|\/version|\/createunit|\/message\/list)/) ) {
 		return next();
 	} else {
 		if (!req.session.beneficiary && req.url !== "/beneficiaries" &&
@@ -564,6 +564,7 @@ server.del( '/api/directory/:entryID/cert', IDirectory.revoqCert );
 
 server.get( '/api/beneficiaries', IBeneficiary.getBeneficiaries);   // get beneficiaries list
 server.post('/api/beneficiaries', IBeneficiary.createBeneficiary);
+server.post('/api/beneficiaries/filter', IBeneficiary.getBeneficiariesFilter);
 server.get( '/api/beneficiaries/:entryID', IBeneficiary.getBeneficiary );
 server.put( '/api/beneficiaries/:entryID', IBeneficiary.updateBeneficiary );
 server.del( '/api/beneficiaries/:entryID', IBeneficiary.deleteBeneficiary );
@@ -599,6 +600,7 @@ server.get( '/api/beneficiary/messages', IBeneficiary.getMessages );
 server.get( '/api/beneficiaries/:entryID/messages', IBeneficiary.getMessages );
 server.post('/api/beneficiary/messages', IBeneficiary.createMessage );
 server.post('/api/beneficiaries/:entryID/messages', IBeneficiary.createMessage );
+server.post('/api/beneficiaries/message',IBeneficiary.postMessageToList);
 
 server.get( '/api/beneficiary/dataprog', IBeneficiary.getDataProg );
 server.get( '/api/beneficiary/dataprog/:category', IBeneficiary.getDataProgCategory );
@@ -762,6 +764,7 @@ server.get( '/specificData', IPage.specificData);
 server.get( '/physiological-data', IPage.physiologicalData);
 server.get( '/message', IPage.messageList);
 server.get( '/message/create', IPage.messageCreate);
+server.get( '/message/list', IPage.messageToList);
 
 // Services
 server.get( '/services/health', IPage.basicHealthServices);
@@ -877,7 +880,7 @@ physioDOM.connect()
 								});
 						});
 				});
-				agenda.every(config.agenda + ' minutes', 'push plans');
+				// agenda.every(config.agenda + ' minutes', 'push plans');
 			}
 		});
 			

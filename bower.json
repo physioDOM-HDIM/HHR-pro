@@ -1,6 +1,6 @@
 {
   "name": "PhysioDOM",
-  "version": "1.1.7",
+  "version": "1.1.8-pre",
   "authors": [
     "fablec <fabrice.lecoz@telecomsante.com>"
   ],
@@ -33,7 +33,11 @@
     "core-style": "Polymer/core-style#~0.5.5",
     "core-toolbar": "Polymer/core-toolbar#~0.5.5",
     "core-item": "Polymer/core-item#~0.5.5",
-    "core-menu": "Polymer/core-menu#~0.5.5"
+    "core-menu": "Polymer/core-menu#~0.5.5",
+    "core-icons": "Polymer/core-icons#~0.5.6",
+    "core-icon": "Polymer/core-icon#~0.5.6",
+    "core-iconset": "Polymer/core-iconset#~0.5.6",
+    "fetch": "~0.11.0"
   },
   "resolutions": {
     "webcomponentsjs": "~0.6.3"
