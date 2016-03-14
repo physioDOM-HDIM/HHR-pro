@@ -910,19 +910,45 @@ var IBeneficiary = {
 	postMessageToList: function(req, res, next) {
 		logger.trace("postMessageToList");
 		var msg = {};
+		var beneficiaries;
 		
 		physioDOM.Beneficiaries()
-			.then( function(beneficiaries) {
+			.then( function(_beneficiaries) {
+				beneficiaries = _beneficiaries;
 				try {
 					msg = JSON.parse(req.body);
 				} catch (err) {
 					throw {code: 405, message: "message is not a JSON object"};
 				}
 				console.log(msg);
-				return beneficiaries.beneficiariesFilter(req.session, {});
+				return beneficiaries.beneficiariesFilter(req.session, msg.filter);
 			})
-			.then( function(beneficiaries) {
-				console.log("send message to "+beneficiaries.length);
+			.then( function(selectedBeneficiaries) {
+				return new Promise(function(resolve, reject) {
+					selectedBeneficiaries.toArray(function(err, result) {
+						resolve(result);
+					});
+				});
+			})
+			.then(function(selectedBeneficiaries) {
+				var promises = selectedBeneficiaries.map(function (beneObj) {
+					return new Promise(function (resolve, reject) {
+						beneficiaries.getHHR(beneObj._id)
+							.then(function (beneficiary) {
+								console.log(beneficiary._id);
+								return beneficiary.createMessage(req.session, msg.message);
+							})
+							.then(resolve)
+							.catch(function(err) {
+								console.log("error ",err);
+								resolve();
+							});
+					});
+				});
+				return Promise.all(promises);
+			})
+			.then( function() {
+				// create an array of promise
 				res.send();
 				next();
 			})

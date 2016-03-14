@@ -6,6 +6,7 @@ var Utils = new Utils();
 app.filter = null;
 app.filters = [];
 app.lang = Cookies.get("lang");
+app.lang = app.lang === "en"?"en-GB":app.lang;
 getBeneficiaries();
 
 
@@ -71,7 +72,7 @@ function addFilter() {
 			filter.value = document.querySelector('core-pages .core-selected input').value;
 			filter.label = 'City';
 			filter.filter = 'city';
-			filter.display = value;
+			filter.display = filter.value;
 			break;
 		case "start":
 			filter.value = document.querySelector('core-pages .core-selected zdk-input-date').value;
@@ -114,6 +115,12 @@ function addFilter() {
 }
 
 function rmFilter(index) {
+	if(app.filters[index].name === "city") {
+		document.querySelector('core-pages div[name="city"] input').value = "";
+	}
+	if(app.filters[index].name === "start") {
+		document.querySelector('core-pages div[name="start"] zdk-input-date').value = null;
+	}
 	document.querySelector("core-selector [name='" + app.filters[index].name + "']").hidden = false;
 	app.filters.splice(index, 1);
 
@@ -183,6 +190,13 @@ function checkForm() {
 
 function sendMessage() {
 	// if app.number is 0 show a warning dialog box and return
+	[].slice.call(document.querySelectorAll("form button"))
+		.map(function(button) { 
+			button.disabled = true; 
+		});
+	if(!app.number) {
+		return new Modal('errorNoBeneficiaries', null);
+	}
 	var obj = form2js(document.forms.message);
 	var msg = {
 		message  : {
@@ -193,11 +207,17 @@ function sendMessage() {
 		filter: {}
 	};
 
+	function enableForm() {
+		[].slice.call(document.querySelectorAll("form button"))
+			.map(function(button) {
+				button.disabled = false;
+			});
+	}
+	
 	app.filters.forEach(function (item) {
 		msg.filter[item.filter] = item.value;
 	});
-
-	console.log(msg);
+	
 	fetch('/api/beneficiaries/message', {
 		method     : 'POST',
 		credentials: 'include',
@@ -205,11 +225,14 @@ function sendMessage() {
 	})
 		.then(function (resp) {
 			if (resp.ok) {
-				console.log("Yeah");
-				// on success show a dialog box
+				new Modal('sendSuccess', function() {
+					resetForm();
+					enableForm();
+				});
 			} else {
-				console.log("booh");
-				// on error show an error dialog box
+				new Modal('errorOccured', function() {
+					enableForm();
+				});
 			}
 		});
 }
