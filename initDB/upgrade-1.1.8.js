@@ -1,5 +1,5 @@
 
-db.menus.update( { label: /directory/i }, { $set: { index:10 } } )
+db.menus.update( { label: /directory/i }, { $set: { index:10 } } );
 
 var menuEntry = {
 	"rights" : {
