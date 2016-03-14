@@ -231,7 +231,7 @@ server.pre(restify.pre.userAgentConnection());
 server.use(function checkAcl(req, res, next) {
 	logger.trace("checkAcl",req.url);
 
-	if( req.url === "/" || req.url.match(/^(\/api|\/logout|\/api\/checkpasswd|\/api\/password|\/directory|\/settings|\/questionnaires|\/admin|\/beneficiaries|\/queue|\/version|\/createunit)/) ) {
+	if( req.url === "/" || req.url.match(/^(\/api|\/logout|\/api\/checkpasswd|\/api\/password|\/directory|\/settings|\/questionnaires|\/admin|\/beneficiaries|\/queue|\/version|\/createunit|\/message\/list)/) ) {
 		return next();
 	} else {
 		if (!req.session.beneficiary && req.url !== "/beneficiaries" &&
