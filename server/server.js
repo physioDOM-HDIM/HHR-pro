@@ -571,6 +571,7 @@ server.del( '/api/beneficiaries/:entryID', IBeneficiary.deleteBeneficiary );
 server.get( '/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryProfessionals );
 server.post('/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryAddProfessional );
 server.del( '/api/beneficiaries/:entryID/professionals/:profID', IBeneficiary.beneficiaryDelProfessional );
+server.get( '/api/beneficiaries/:entryID/select', IBeneficiary.selectBeneficiary );
 
 server.get( '/api/beneficiaries/:entryID/cert', IBeneficiary.createCert );
 server.del( '/api/beneficiaries/:entryID/cert', IBeneficiary.revoqCert );
