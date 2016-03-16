@@ -647,6 +647,7 @@ server.get( '/api/beneficiary/services', IServices.getServices );
 server.get( '/api/beneficiary/services/items', IServices.getServicesItems ); 
 // for agenda on HHR-Home
 server.get( '/api/beneficiary/services/queueitems', IServices.getServicesQueueItems );
+server.del( '/api/beneficiary/services/queueitems', IServices.clearServicesQueueItems );
 server.get( '/api/beneficiary/services/:serviceID', IServices.getServiceByID );
 server.put( '/api/beneficiary/services', IServices.putService );
 server.del( '/api/beneficiary/services/:serviceID', IServices.removeService );

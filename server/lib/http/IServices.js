@@ -114,6 +114,27 @@ var IServices = {
 			.catch( function(err) { errHandler(err, res, next); });
 	},
 
+	clearServicesQueueItems: function(req, res, next) {
+		logger.trace("clearServicesQueueItems");
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				if (req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary);
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+				}
+			})
+			.then( function(_beneficiary) {
+				return _beneficiary.services().clearServicesQueueItems();
+			})
+			.then( function() {
+				res.send(200);
+				next();
+			})
+			.catch( function(err) { errHandler(err, res, next); });
+	},
+	
 	getServicesQueueItems: function( req, res, next ) {
 		logger.trace("getServicesQueueItems");
 
