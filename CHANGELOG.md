@@ -1,6 +1,10 @@
 % CHANGELOG  
 % Fabrice Le Coz  
-% January, 2016
+% March, 2016
+
+__v1.1.9__
+
+  - Bug Fix : Adds forgetten components core-dropdown-menu, core-pages
 
 __v1.1.8__
 
