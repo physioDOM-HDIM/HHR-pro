@@ -37,7 +37,9 @@
     "core-icons": "Polymer/core-icons#~0.5.6",
     "core-icon": "Polymer/core-icon#~0.5.6",
     "core-iconset": "Polymer/core-iconset#~0.5.6",
-    "fetch": "~0.11.0"
+    "fetch": "~0.11.0",
+    "core-dropdown-menu": "Polymer/core-dropdown-menu#~0.5.6",
+    "core-pages": "Polymer/core-pages#~0.5.6"
   },
   "resolutions": {
     "webcomponentsjs": "~0.6.3"
