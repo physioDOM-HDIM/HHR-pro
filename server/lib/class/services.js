@@ -492,6 +492,28 @@ Services.prototype.getServicesItems = function( startDate, nbDays, lang ) {
 	});
 };
 
+/**
+ * Clear the servicesPlan collection for the selected beneficiary
+ * @returns {*}
+ */
+Services.prototype.clearServicesQueueItems = function() {
+	logger.trace("clearServicesQueueItems");
+	
+	var search = { subject  : that.subject };
+	
+	return new Promise( function(resolve, reject) {
+		physioDOM.db.collection("servicesPlan").remove( search, function(err, res) {
+			if(err) {
+				console.error(err);
+				reject(err);
+			} else {
+				console.log(res);
+				resolve();
+			}
+		});
+	});
+};
+
 Services.prototype.getServicesQueueItems = function( startDate, nbDays, lang ) {
 	logger.trace("getServicesQueueItems", startDate, nbDays, lang);
 	var that = this;

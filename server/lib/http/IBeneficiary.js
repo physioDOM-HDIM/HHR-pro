@@ -186,6 +186,43 @@ var IBeneficiary = {
 			});
 	},
 
+	/**
+	 * select a beneficiary and put it into the session
+	 * 
+	 * used for test
+	 * 
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	selectBeneficiary : function(req, res, next) {
+		logger.trace("selectBeneficiary");
+		var beneficiary;
+		
+		if (["administrator", "coordinator"].indexOf(req.session.role) === -1) {
+			res.send(403, {code: 403, message: "you have no write to access this request"});
+			next(false);
+		} else {
+			physioDOM.Beneficiaries()
+				.then(function (beneficiaries) {
+					return beneficiaries.getBeneficiaryByID(req.session, req.params.entryID || req.session.beneficiary);
+				})
+				.then(function (_beneficiary) {
+					req.session.beneficiary = _beneficiary._id;
+					beneficiary = _beneficiary;
+					return req.session.save();
+				})
+				.then(function() {
+					res.send(beneficiary);
+					next();
+				})
+				.catch(function (err) {
+					res.send(err.code || 400, err);
+					next(false);
+				});
+		}
+	},
+	
 	getBeneficiary: function (req, res, next) {
 		logger.trace("getBeneficiary");
 		physioDOM.Beneficiaries()

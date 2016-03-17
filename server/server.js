@@ -571,6 +571,7 @@ server.del( '/api/beneficiaries/:entryID', IBeneficiary.deleteBeneficiary );
 server.get( '/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryProfessionals );
 server.post('/api/beneficiaries/:entryID/professionals', IBeneficiary.beneficiaryAddProfessional );
 server.del( '/api/beneficiaries/:entryID/professionals/:profID', IBeneficiary.beneficiaryDelProfessional );
+server.get( '/api/beneficiaries/:entryID/select', IBeneficiary.selectBeneficiary );
 
 server.get( '/api/beneficiaries/:entryID/cert', IBeneficiary.createCert );
 server.del( '/api/beneficiaries/:entryID/cert', IBeneficiary.revoqCert );
@@ -646,6 +647,7 @@ server.get( '/api/beneficiary/services', IServices.getServices );
 server.get( '/api/beneficiary/services/items', IServices.getServicesItems ); 
 // for agenda on HHR-Home
 server.get( '/api/beneficiary/services/queueitems', IServices.getServicesQueueItems );
+server.del( '/api/beneficiary/services/queueitems', IServices.clearServicesQueueItems );
 server.get( '/api/beneficiary/services/:serviceID', IServices.getServiceByID );
 server.put( '/api/beneficiary/services', IServices.putService );
 server.del( '/api/beneficiary/services/:serviceID', IServices.removeService );

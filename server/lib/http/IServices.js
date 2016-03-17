@@ -114,10 +114,8 @@ var IServices = {
 			.catch( function(err) { errHandler(err, res, next); });
 	},
 
-	getServicesQueueItems: function( req, res, next ) {
-		logger.trace("getServicesQueueItems");
-
-		var startDate = moment().format("YYYY-MM-DD");
+	clearServicesQueueItems: function(req, res, next) {
+		logger.trace("clearServicesQueueItems");
 
 		physioDOM.Beneficiaries()
 			.then(function (beneficiaries) {
@@ -128,7 +126,32 @@ var IServices = {
 				}
 			})
 			.then( function(_beneficiary) {
-				return _beneficiary.services().getServicesQueueItems( startDate, 15, physioDOM.lang );
+				return _beneficiary.services().clearServicesQueueItems();
+			})
+			.then( function() {
+				res.send(200);
+				next();
+			})
+			.catch( function(err) { errHandler(err, res, next); });
+	},
+	
+	getServicesQueueItems: function( req, res, next ) {
+		logger.trace("getServicesQueueItems");
+		
+		var startDate = req.params.startDate || moment().format("YYYY-MM-DD");
+		var nbDays = req.params.nbDays || 15;
+		var lang = req.params.lang || physioDOM.lang;
+
+		physioDOM.Beneficiaries()
+			.then(function (beneficiaries) {
+				if (req.session.role === "beneficiary") {
+					return beneficiaries.getHHR(req.session.beneficiary);
+				} else {
+					return beneficiaries.getBeneficiaryByID(req.session, req.session.beneficiary);
+				}
+			})
+			.then( function(_beneficiary) {
+				return _beneficiary.services().getServicesQueueItems( startDate, nbDays, lang );
 			})
 			.then( function(services) {
 				res.send(services);
