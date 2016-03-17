@@ -499,7 +499,7 @@ Services.prototype.getServicesItems = function( startDate, nbDays, lang ) {
 Services.prototype.clearServicesQueueItems = function() {
 	logger.trace("clearServicesQueueItems");
 	
-	var search = { subject  : that.subject };
+	var search = { subject  : this.subject };
 	
 	return new Promise( function(resolve, reject) {
 		physioDOM.db.collection("servicesPlan").remove( search, function(err, res) {
@@ -543,9 +543,11 @@ Services.prototype.getServicesQueueItems = function( startDate, nbDays, lang ) {
 								return _getItem(service, startDate, endDate);
 							})
 							.then(function (items) {
+								/*
 								items.forEach(function(item) {
 									console.log(item.start, item.label);
 								});
+								*/
 								resolve(items);
 							})
 							.catch(function (err) {
