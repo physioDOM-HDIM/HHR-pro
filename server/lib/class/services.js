@@ -606,6 +606,7 @@ Services.prototype.getServicesQueueItems = function( startDate, nbDays, lang ) {
 				return _getQueueItems();
 			})
 			.then(function(items) {
+				console.log( items.length );
 				items.forEach( function(item) {
 					item.serviceID = item.serviceID.toString();
 					item.label = refServices[item.label][lang];
