@@ -12,7 +12,7 @@ var chai = require("chai");
 chai.should();
 chai.use(require('chai-things'));
 
-var beneficiaryID, msgs;
+var beneficiaryID, msgs, ids;
 
 describe('Agenda', function () {
 	before(function (done) {
@@ -135,6 +135,7 @@ describe('Agenda', function () {
 				agenda = JSON.parse(body);
 				agenda.should.be.an('array');
 				agenda.should.have.length(10);
+				
 				agenda[agenda.length-1].should.be.an('array');
 				msg = agenda[agenda.length-1][0];
 				msg.should.be.an('object');
@@ -142,6 +143,7 @@ describe('Agenda', function () {
 				msg.name.should.equal("hhr[559a3edde137390900e529b0].agenda.new");
 				msg.should.have.property('value');
 				msg.value.should.equal(1);
+				
 				
 				return done();
 			}
@@ -164,9 +166,9 @@ describe('Agenda', function () {
 				agenda.should.be.an('array');
 				agenda.should.have.length(9);
 				agenda[agenda.length-1].should.be.an('array');
-				msgs = agenda;
 				msg = agenda[agenda.length-1];
 				msg.should.be.an('array');
+				
 				var isNew = msg.filter( function(item) { return /\.agenda\.new$/.test(item.name); } );
 				var isNew = /\.agenda\.new$/.test(msg[0].name);
 				isNew.should.be.false();
@@ -175,8 +177,261 @@ describe('Agenda', function () {
 			}
 		);
 	});
+
+	it('clear agenda', function(done) {
+		request(
+			{
+				url   : domain + '/api/beneficiary/services/queueitems',
+				method: "DELETE",
+				jar   : sessionCookies[0]
+			},
+			function (err, resp, body) {
+				resp.statusCode.should.equal(200);
+
+				return done();
+			}
+		);
+	});
+
+	it('get agenda for 2016-01-18', function(done) {
+		request(
+			{
+				url   : domain + '/api/beneficiary/services/queueitems?startDate=2016-01-18',
+				method: "GET",
+				jar   : sessionCookies[0]
+			},
+			function (err, resp, body) {
+				var agenda, msg;
+
+				resp.statusCode.should.equal(200);
+
+				agenda = JSON.parse(body);
+				agenda.should.be.an('array');
+				agenda.should.have.length(0);
+				msgs= [];
+
+				ids = agenda.slice().map( function(item) {
+					return item[0].name.match(/agenda\[(.*)\]/)[1];
+				});
+				
+				return done();
+			}
+		);
+	});
 	
-	['2016-02-02','2016-02-03','2016-02-04','2016-02-05','2016-02-06', '2016-02-07', '2016-02-08'].forEach( function( startDate) {
+	(function() {
+		var startDate = '2016-01-18';
+		var startEvent = '2016-02-08';
+		do {
+			startDate = moment(startDate,'YYYY-MM-DD').add(1,'d').format('YYYY-MM-DD');
+			it('get agenda for '+startDate, function (done) {
+				request(
+					{
+						url   : domain + '/api/beneficiary/services/queueitems?startDate=' + startDate,
+						method: "GET",
+						jar   : sessionCookies[0]
+					},
+					function (err, resp, body) {
+						var agenda, tmp, isNew;
+						var endDate = moment(startDate,"YYYY-MM-DD").add(15,'d').format("YYYY-MM-DD");
+						
+						
+						resp.statusCode.should.equal(200);
+						agenda = JSON.parse(body);
+						agenda.should.be.an('array');
+						console.log('length previous:%d now:%d', msgs.length, agenda.length);
+						
+						if(startDate < moment(startEvent,'YYYY-MM-DD').subtract(15,'d').format('YYYY-MM-DD')) {
+							agenda.should.have.length(0);
+							msgs= [];
+						} else if(endDate <= "2016-02-20") {
+							agenda.should.have.length(msgs.length + 2);
+							isNew = /\.agenda\.new$/.test(agenda[agenda.length - 1][0].name);
+							isNew.should.be.true();
+							tmp = agenda.slice(0,-1);
+							msgs = agenda.slice(0, agenda.length - 1);
+						} else if( startDate <= '2016-02-20') {
+							agenda.should.have.length(msgs.length);
+							isNew = /\.agenda\.new$/.test(agenda[agenda.length - 1][0].name);
+							isNew.should.be.false();
+							tmp = agenda.slice();
+							msgs = agenda.slice();
+						} else {
+							agenda.should.be.an('array');
+							agenda.should.have.length(0);
+							msgs = agenda.slice();
+						}
+						
+						return done();
+					}
+				);
+			});
+		} while(startDate < '2016-02-28');
+	})();
+	
+	['2016-02-02','2016-02-03','2016-02-04','2016-02-05','2016-02-06'].forEach( function( startDate) {
+		it('get agenda for '+startDate, function (done) {
+			request(
+				{
+					url   : domain + '/api/beneficiary/services/queueitems?startDate='+startDate,
+					method: "GET",
+					jar   : sessionCookies[0]
+				},
+				function (err, resp, body) {
+					var agenda, tmp;
+
+					resp.statusCode.should.equal(200);
+
+					agenda = JSON.parse(body);
+					agenda.should.be.an('array');
+					console.log('length previous:%d now:%d', msgs.length, agenda.length);
+					if(moment(startDate,"YYYY-MM-DD").add(15,'d').format("YYYY-MM-DD") <= "2016-02-20") {
+						agenda.should.have.length(msgs.length + 2);
+						var isNew = /\.agenda\.new$/.test(agenda[agenda.length - 1][0].name);
+						isNew.should.be.true();
+						tmp = agenda.slice(0,-1);
+					} else {
+						agenda.should.have.length(msgs.length);
+						tmp = agenda.slice();
+					}
+					msgs.forEach(function (item, indx) {
+						agenda.should.include.something.that.deep.equal(item);
+					});
+					
+					tmp = tmp.map( function(item) {
+						return item[0].name.match(/agenda\[(.*)\]/)[1];
+					});
+					console.log("add :",tmp.filter( function(item) { return ids.indexOf(item) === -1; }));
+					console.log("remove :",ids.filter( function(item) { return tmp.indexOf(item) === -1; }));
+					ids = tmp.slice();
+					
+					msgs = agenda.slice(0, agenda.length - 1);
+					return done();
+				}
+			);
+		});
+	});
+	
+	[ '2016-02-07'].forEach( function( startDate) {
+		it('get agenda for '+startDate, function (done) {
+			request(
+				{
+					url   : domain + '/api/beneficiary/services/queueitems?startDate='+startDate,
+					method: "GET",
+					jar   : sessionCookies[0]
+				},
+				function (err, resp, body) {
+					var agenda, tmp;
+
+					resp.statusCode.should.equal(200);
+
+					agenda = JSON.parse(body);
+					agenda.should.be.an('array');
+					console.log('length previous:%d now:%d', msgs.length, agenda.length);
+					agenda.should.have.length(msgs.length+1);
+					// no new Event
+					var isNew = /\.agenda\.new$/.test(agenda[agenda.length - 1][0].name);
+					isNew.should.be.false();
+					
+					msgs.forEach(function (item, indx) {
+						agenda.should.include.something.that.deep.equal(item);
+					});
+
+					tmp = agenda.slice().map( function(item) {
+						return item[0].name.match(/agenda\[(.*)\]/)[1];
+					});
+					console.log("add :",tmp.filter( function(item) { return ids.indexOf(item) === -1; }));
+					console.log("remove :",ids.filter( function(item) { return tmp.indexOf(item) === -1; }));
+					ids = tmp.slice();
+					
+					// console.log( ids );
+					
+					msgs = agenda.slice();
+					return done();
+				}
+			);
+		});
+	});
+	
+	['2016-02-08'].forEach( function( startDate) {
+		it('get agenda for '+startDate, function (done) {
+			request(
+				{
+					url   : domain + '/api/beneficiary/services/queueitems?startDate='+startDate,
+					method: "GET",
+					jar   : sessionCookies[0]
+				},
+				function (err, resp, body) {
+					var agenda, tmp;
+
+					resp.statusCode.should.equal(200);
+
+					agenda = JSON.parse(body);
+					agenda.should.be.an('array');
+					agenda.should.have.length(msgs.length);
+					console.log('length previous:%d now:%d', msgs.length, agenda.length);
+					
+					// no new Event
+					var isNew = /\.agenda\.new$/.test(agenda[agenda.length - 1][0].name);
+					isNew.should.be.false();
+					
+					agenda.forEach(function (item) {
+						msgs.should.include.something.that.deep.equal(item);
+					});
+
+					tmp = agenda.slice().map( function(item) {
+						return item[0].name.match(/agenda\[(.*)\]/)[1];
+					});
+					console.log("add :",tmp.filter( function(item) { return ids.indexOf(item) === -1; }));
+					console.log("remove :",ids.filter( function(item) { return tmp.indexOf(item) === -1; }));
+					ids = tmp.slice();
+					
+					
+					msgs = agenda.slice();
+					return done();
+				}
+			);
+		});
+	});
+	
+	['2016-02-09','2016-02-10','2016-02-11','2016-02-12',
+	 '2016-02-13','2016-02-14','2016-02-15', '2016-02-16',
+	 '2016-02-17','2016-02-18','2016-02-19', '2016-02-20'].forEach( function( startDate) {
+		it('get agenda for '+startDate, function (done) {
+			request(
+				{
+					url   : domain + '/api/beneficiary/services/queueitems?startDate='+startDate,
+					method: "GET",
+					jar   : sessionCookies[0]
+				},
+				function (err, resp, body) {
+					var agenda, tmp;
+
+					resp.statusCode.should.equal(200);
+
+					agenda = JSON.parse(body);
+					agenda.should.be.an('array');
+					console.log('length previous:%d now:%d',msgs.length, agenda.length);
+					agenda.should.have.length(msgs.length-1);
+					agenda.forEach(function (item) {
+						msgs.should.include.something.that.deep.equal(item);
+					});
+
+					tmp = agenda.slice().map( function(item) {
+						return item[0].name.match(/agenda\[(.*)\]/)[1];
+					});
+					console.log("remove :",ids.filter( function(item) { return tmp.indexOf(item) === -1; }));
+					ids = tmp.slice();
+					
+					msgs = agenda.slice();
+					return done();
+				}
+			);
+		});
+	});
+	
+	['2016-02-21','2016-02-22','2016-02-23', '2016-02-24', 
+	 '2016-02-25','2016-02-26','2016-02-27', '2016-02-28'].forEach( function( startDate) {
 		it('get agenda for '+startDate, function (done) {
 			request(
 				{
@@ -191,17 +446,9 @@ describe('Agenda', function () {
 
 					agenda = JSON.parse(body);
 					agenda.should.be.an('array');
-					if(moment(startDate,"YYYY-MM-DD").add(15,'d').format("YYYY-MM-DD") <= "2016-02-20") {
-						agenda.should.have.length(msgs.length + 2);
-						var isNew = /\.agenda\.new$/.test(agenda[agenda.length - 1][0].name);
-						isNew.should.be.true();
-					} else {
-						agenda.should.have.length(msgs.length);
-					}
-					msgs.forEach(function (item, indx) {
-						agenda.should.include.something.that.deep.equal(item);
-					});
-					msgs = agenda.slice(0, agenda.length - 1);
+					console.log('length previous:%d now:%d', msgs.length, agenda.length);
+					agenda.should.have.length(0);
+					msgs = [];
 					return done();
 				}
 			);
