@@ -756,7 +756,7 @@ Services.prototype.pushAgendaToQueue = function( items, startDate ) {
 					var newMsg = [];
 					newMsg.push({
 						name : "hhr[" + that.subject + "].agenda.new",
-						value: newAgenda ? 1 : 0,
+						value: 1,
 						type : "integer"
 					});
 					queue.postMsg(newMsg);
