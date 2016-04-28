@@ -728,17 +728,17 @@ Services.prototype.pushAgendaToQueue = function( items, startDate ) {
 					});
 					msg.push({
 						name : leaf+"description",
-						value: item.detail || '',
+						value: item.detail || ' ',
 						type : "string"
 					});
 					msg.push({
 						name : leaf+"proLastName",
-						value: item.provider.family,
+						value: item.provider.family || ' ',
 						type : "string"
 					});
 					msg.push({
 						name : leaf+"proFirstName",
-						value: item.provider.given,
+						value: item.provider.given || ' ',
 						type : "string"
 					});
 					msg.push({
