@@ -882,7 +882,7 @@ physioDOM.connect()
 								});
 						});
 				});
-				// agenda.every(config.agenda + ' minutes', 'push plans');
+				agenda.every(config.agenda + ' minutes', 'push plans');
 			}
 		});
 			
