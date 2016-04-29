@@ -673,6 +673,7 @@ Services.prototype.pushAgendaToQueue = function( items, startDate ) {
 	});
 	
 	function _delMsgs() {
+		logger.trace("pushAgendaToQueue - _delMsgs");
 		return new Promise( function(resolve) {
 			// create del message for the queue
 			var search = {
@@ -682,7 +683,7 @@ Services.prototype.pushAgendaToQueue = function( items, startDate ) {
 			// remove records with del field
 			physioDOM.db.collection("servicesPlan").find( search ).toArray( function( err, res ) {
 				res.forEach( function(item) {
-					if(item.startDate >= startDate) {
+					if(item.start >= startDate) {
 						var msg = [];
 						var leaf = "hhr[" + that.subject + "].agenda[" + item._id + "]";
 						msg.push({branch: leaf});
