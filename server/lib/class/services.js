@@ -521,6 +521,7 @@ Services.prototype.getServicesQueueItems = function( startDate, nbDays, lang ) {
 	var refServices = {};
 	
 	function _getQueueItems() {
+		logger.trace("getServicesQueueItems -> _getQueueItems");
 		return new Promise(function (resolve) {
 			var servicesItems = [];
 
