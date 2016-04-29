@@ -237,11 +237,13 @@ Service.prototype.pushToQueue = function() {
 					value: moment(that.startDate+"T"+that.time).add(that.duration,"m").unix(),
 					type : "string"
 				});
-				msg.push({
-					name : leaf + ".new",
-					value: that.create,
-					type : "string"
-				});
+				if( that.create ) {
+					msg.push({
+						name : leaf + ".new",
+						value: 1,
+						type : "string"
+					});
+				}
 
 				queue.postMsg(msg)
 					.then(function () {
