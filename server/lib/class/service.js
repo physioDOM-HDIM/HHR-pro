@@ -176,8 +176,8 @@ Service.prototype.save = function( ) {
 Service.prototype.pushToQueue = function() {
 	logger.trace("pushToQueue");
 	var queue = new Queue(this.subject);
-
-	var leaf = "hhr[" + this._id + "]";
+	
+	var leaf = "hhr[" + this.subject + "]";
 	switch( this.category ) {
 		case "HEALTH":
 			leaf+=".healthcare.services["+this._id+"]";
