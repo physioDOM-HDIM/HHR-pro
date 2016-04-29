@@ -499,7 +499,7 @@ Services.prototype.getServicesItems = function( startDate, nbDays, lang ) {
 Services.prototype.clearServicesQueueItems = function() {
 	logger.trace("clearServicesQueueItems");
 	
-	var search = { subject  : that.subject };
+	var search = { subject  : this.subject };
 	
 	return new Promise( function(resolve, reject) {
 		physioDOM.db.collection("servicesPlan").remove( search, function(err, res) {
@@ -521,6 +521,7 @@ Services.prototype.getServicesQueueItems = function( startDate, nbDays, lang ) {
 	var refServices = {};
 	
 	function _getQueueItems() {
+		logger.trace("getServicesQueueItems -> _getQueueItems");
 		return new Promise(function (resolve) {
 			var servicesItems = [];
 
@@ -543,9 +544,11 @@ Services.prototype.getServicesQueueItems = function( startDate, nbDays, lang ) {
 								return _getItem(service, startDate, endDate);
 							})
 							.then(function (items) {
+								/*
 								items.forEach(function(item) {
 									console.log(item.start, item.label);
 								});
+								*/
 								resolve(items);
 							})
 							.catch(function (err) {
@@ -604,11 +607,12 @@ Services.prototype.getServicesQueueItems = function( startDate, nbDays, lang ) {
 				return _getQueueItems();
 			})
 			.then(function(items) {
+				logger.debug( "found "+items.length+" items" );
 				items.forEach( function(item) {
 					item.serviceID = item.serviceID.toString();
-					item.label = refServices[item.label][lang];
 					item.hash = Hash.sha1(item);
 					item.subject = that.subject;
+					item.label = refServices[item.label][lang];
 				});
 				return that.pushAgendaToQueue(items, startDate);
 			})
@@ -670,6 +674,7 @@ Services.prototype.pushAgendaToQueue = function( items, startDate ) {
 	});
 	
 	function _delMsgs() {
+		logger.trace("pushAgendaToQueue - _delMsgs");
 		return new Promise( function(resolve) {
 			// create del message for the queue
 			var search = {
@@ -679,7 +684,7 @@ Services.prototype.pushAgendaToQueue = function( items, startDate ) {
 			// remove records with del field
 			physioDOM.db.collection("servicesPlan").find( search ).toArray( function( err, res ) {
 				res.forEach( function(item) {
-					if(item.startDate >= startDate) {
+					if(item.start >= startDate) {
 						var msg = [];
 						var leaf = "hhr[" + that.subject + "].agenda[" + item._id + "]";
 						msg.push({branch: leaf});
@@ -725,17 +730,17 @@ Services.prototype.pushAgendaToQueue = function( items, startDate ) {
 					});
 					msg.push({
 						name : leaf+"description",
-						value: item.detail || '',
+						value: item.detail || ' ',
 						type : "string"
 					});
 					msg.push({
 						name : leaf+"proLastName",
-						value: item.provider.family,
+						value: item.provider.family || ' ',
 						type : "string"
 					});
 					msg.push({
 						name : leaf+"proFirstName",
-						value: item.provider.given,
+						value: item.provider.given || ' ',
 						type : "string"
 					});
 					msg.push({
@@ -753,7 +758,7 @@ Services.prototype.pushAgendaToQueue = function( items, startDate ) {
 					var newMsg = [];
 					newMsg.push({
 						name : "hhr[" + that.subject + "].agenda.new",
-						value: newAgenda ? 1 : 0,
+						value: 1,
 						type : "integer"
 					});
 					queue.postMsg(newMsg);

@@ -176,8 +176,8 @@ Service.prototype.save = function( ) {
 Service.prototype.pushToQueue = function() {
 	logger.trace("pushToQueue");
 	var queue = new Queue(this.subject);
-
-	var leaf = "hhr[" + this._id + "]";
+	
+	var leaf = "hhr[" + this.subject + "]";
 	switch( this.category ) {
 		case "HEALTH":
 			leaf+=".healthcare.services["+this._id+"]";
@@ -237,11 +237,13 @@ Service.prototype.pushToQueue = function() {
 					value: moment(that.startDate+"T"+that.time).add(that.duration,"m").unix(),
 					type : "string"
 				});
-				msg.push({
-					name : leaf + ".new",
-					value: that.create,
-					type : "string"
-				});
+				if( that.create ) {
+					msg.push({
+						name : leaf + ".new",
+						value: 1,
+						type : "string"
+					});
+				}
 
 				queue.postMsg(msg)
 					.then(function () {

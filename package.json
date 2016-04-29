@@ -1,7 +1,7 @@
 {
   "name": "PhysioDOM-server",
   "preferGlobal": false,
-  "version": "1.1.9",
+  "version": "1.1.10",
   "author": "Telecom Sante <tech@telecomsante.com>",
   "contributors": [
     {
@@ -12,7 +12,7 @@
   "description": "A web portal for professionnal",
   "scripts": {
     "postinstall": "bower --allow-root install",
-    "start": "supervisor -w package.json,/config/config.json,locales/,server/ -- server/server.js -c /config/config.json 2>&1 > /logs/app.log",
+    "start": "supervisor -w package.json,/config/config.json,locales/,server/ -i server/test/ -- server/server.js -c /config/config.json 2>&1 > /logs/app.log",
     "test": "node ./test/index.js"
   },
   "main": "./server/server.js",
@@ -41,6 +41,7 @@
   },
   "devDependencies": {
     "chai": "^1.9.2",
+    "chai-things": "^0.2.0",
     "grunt": "^0.4.5",
     "grunt-mocha": "^0.4.11",
     "grunt-mocha-test": "^0.12.1",

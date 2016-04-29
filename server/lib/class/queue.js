@@ -194,7 +194,7 @@ function Queue ( beneficiaryID ) {
 								return beneficiary.getSymptomsPlan(true);
 							})
 							.then( function() {
-								return beneficiary.physicalPlanToQueue();
+								return beneficiary.physicalPlanToQueue(true);
 							})
 							.then( function() {
 								return beneficiary.dietaryPlanToQueue();
