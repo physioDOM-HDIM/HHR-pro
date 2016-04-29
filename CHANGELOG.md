@@ -2,6 +2,13 @@
 % Fabrice Le Coz  
 % March, 2016
 
+__v1.1.10__ :
+
+  - Bug 631 : \[v.1.1.9\]\[Physical Plan\] Pas d'envoi
+  - Bug 624 : \[v.1.1.9\]\[Agenda\] Pas de transmission d'agenda à Home
+  - Bug 585 : \[v.1.1.6\]\[Agenda\] Même rendez-vous envoyé plusieurs fois
+  - Bug 607 : \[v.1.1.6\]\[Services\] Pas de notifications
+
 __v1.1.9__
 
   - Bug Fix : Adds forgetten components core-dropdown-menu, core-pages
