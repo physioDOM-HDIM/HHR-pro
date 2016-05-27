@@ -105,7 +105,7 @@ var IServices = {
 				}
 			})
 			.then( function(_beneficiary) {
-				return _beneficiary.services().getServicesItems( startDate, 40, req.session.person.item.communication || physioDOM.lang );
+				return _beneficiary.services().getServicesItems( startDate, 80, req.session.person.item.communication || physioDOM.lang );
 			})
 			.then( function(services) {
 				res.send(services);
