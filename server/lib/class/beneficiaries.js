@@ -91,6 +91,7 @@ function Beneficiaries( ) {
 	
 	this.beneficiariesFilter = function(session, filter) {
 		logger.trace("beneficiariesFilter");
+		
 		if( session.role) {
 			if( ["administrator","coordinator"].indexOf(session.role.toLowerCase())===-1 ) {
 				filter.professionals= { "$elemMatch": {professionalID: session.person.id.toString() }};
@@ -98,6 +99,9 @@ function Beneficiaries( ) {
 		} else {
 			throw { code:403, message:"forbidden"};
 		}
+		if(filter['address.city']) {
+			filter['address.city'] = new RegExp(filter['address.city'],'i');
+		} 
 		filter.active = true;
 		return physioDOM.db.collection("beneficiaries").find(filter);
 	};

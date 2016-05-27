@@ -1,7 +1,13 @@
 % CHANGELOG  
 % Fabrice Le Coz  
-% March, 2016
+% May, 2016
 
+
+__v1.1.11__ :
+
+  - Bug \#636 : Sometimes the calander leaves a week empty
+  - Bug \#639 : Messages to beneficiaries
+  
 __v1.1.10__ :
 
   - Bug 631 : \[v.1.1.9\]\[Physical Plan\] Pas d'envoi

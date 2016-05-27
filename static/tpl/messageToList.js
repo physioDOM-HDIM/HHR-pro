@@ -71,7 +71,7 @@ function addFilter() {
 		case 'city' :
 			filter.value = document.querySelector('core-pages .core-selected input').value;
 			filter.label = 'City';
-			filter.filter = 'city';
+			filter.filter = 'address.city';
 			filter.display = filter.value;
 			break;
 		case "start":
