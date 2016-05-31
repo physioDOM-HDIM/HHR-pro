@@ -3,6 +3,10 @@
  * 
  * issue #301 : (Bug 636) Sunday was coded as 0 instead of 7
  */
+Math.sign = function sign(x) {
+    return !(x= parseFloat(x)) ? x : x >= 0 ? 1 : -1;
+};
+
 db.measurePlan.find({"frequency":"monthly"}).forEach(
 		function(item) {
 			var done = false;
