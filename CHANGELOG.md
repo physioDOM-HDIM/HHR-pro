@@ -2,6 +2,13 @@
 % Fabrice Le Coz  
 % May, 2016
 
+__v1.1.12__ :
+
+  - Bug \#635 [Weekly agenda] Mauvais dimanche
+  - Bug \#634 : beneficiary bouton de regénération de certif
+
+> Nota : to fix the issue \#636, the script upgrade-1.1.12.js must be played to update the database.
+> Please, backup the database before. 
 
 __v1.1.11__ :
 
