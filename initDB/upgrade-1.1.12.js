@@ -23,9 +23,9 @@ db.measurePlan.find({"frequency":"monthly"}).forEach(
 db.measurePlan.find({"frequency":"weekly"}).forEach(
 		function(item) {
 			var done = false;
-			item.when.forEach( function(day, i) {
+			item.when.days.forEach( function(day, i) {
 				if(day === 0) {
-					item.when[i]+=7;
+					item.when.days[i]+=7;
 					done = true;
 				}
 			} );
@@ -39,9 +39,9 @@ db.measurePlan.find({"frequency":"weekly"}).forEach(
 db.services.find({"frequency":"monthly"}).forEach(
 		function(item) {
 			var done = false; 
-			item.when.forEach( function(day, i) {
+			item.when.days.forEach( function(day, i) {
 				if(day % 10 === 0) {
-					item.when[i]+=Math.sign(day)*7;
+					item.when.days[i]+=Math.sign(day)*7;
 					done = true; 
 				} 
 			} );
@@ -56,9 +56,9 @@ db.services.find({"frequency":"monthly"}).forEach(
 db.services.find({"frequency":"weekly"}).forEach(
 		function(item) {
 			var done = false; 
-			item.when.forEach( function(day, i) { 
+			item.when.days.forEach( function(day, i) { 
 				if(day === 0) { 
-					item.when[i]+=7; 
+					item.when.days[i]+=7; 
 					done = true; 
 				} 
 			} ); 
