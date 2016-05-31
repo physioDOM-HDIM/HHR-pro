@@ -204,7 +204,7 @@
 	PolymerExpressions.prototype.weekday = function(value) {
 		if( value !== undefined ) {
 			moment.locale( lang );
-			return moment.weekdays()[value];
+			return moment.weekdays()[value % 7];
 		}
 	};
 	

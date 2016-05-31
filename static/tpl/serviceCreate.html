@@ -153,7 +153,7 @@
 				<div class="row h2" id="weekly" style="margin-top:10px">
 					<div class="col05"></div>
 					<div layout horizontal>
-						<template repeat="{{ day in [1,2,3,4,5,6,0] }}">
+						<template repeat="{{ day in [1,2,3,4,5,6,7] }}">
 							<div flex style="line-height: normal;">
 								<input id="weekdays{{day}}"
 								       type="checkbox"
@@ -223,7 +223,7 @@
 				{%raw%}
 				<div class="week">
 					<div></div>
-					<template repeat="{{ day in [1,2,3,4,5,6,0] }}">
+					<template repeat="{{ day in [1,2,3,4,5,6,7] }}">
 						<div>{{ day | weekdayShort }}</div>
 					</template>
 				</div>
@@ -232,7 +232,7 @@
 					<div class="week">
 						<div>{{"week"|i18n}} {%raw%}{{week}}{%endraw%}</div>
 						{%raw%}
-						<template repeat="{{ day in [1,2,3,4,5,6,0]}}">
+						<template repeat="{{ day in [1,2,3,4,5,6,7]}}">
 							<div class="day" data-day="{{week}}{{day}}"></div>
 						</template>
 						{%endraw%}

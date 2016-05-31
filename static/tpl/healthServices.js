@@ -86,7 +86,7 @@ window.addEventListener("polymer-ready", function() {
 	Utils.promiseXHR("GET", "/api/lists/healthServices", 200)
 		.then( function( _services ) {
 			var services = JSON.parse(_services);
-			console.log( services );
+			// console.log( services );
 			var typeInp = document.querySelector("#input-type");
 			var options;
 			services.items.forEach( function(service) {

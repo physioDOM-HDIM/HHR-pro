@@ -260,7 +260,7 @@
 	PolymerExpressions.prototype.weekday = function(value) {
 		if( value !== undefined ) {
 			moment.locale( lang );
-			return moment.weekdays()[value];
+			return moment.weekdays()[value % 7];
 		}
 	};
 	
@@ -275,7 +275,7 @@
 	PolymerExpressions.prototype.weekdayShort = function(value) {
 		if( value !== undefined ) {
 			moment.locale( lang );
-			return moment.weekdaysShort()[value];
+			return moment.weekdaysShort()[value % 7];
 		}
 	};
 	
