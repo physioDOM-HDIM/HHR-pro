@@ -374,7 +374,7 @@ function closeForm() {
 }
 
 function changeThreshold() {
-	var formContainer = document.querySelector("#dataprog-form")
+	var formContainer = document.querySelector("#dataprog-form");
 	var min = formContainer.querySelector("[name='threshold.min']");
 	var max = formContainer.querySelector("[name='threshold.max']");
 	
