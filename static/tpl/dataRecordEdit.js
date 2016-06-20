@@ -26,7 +26,7 @@ window.addEventListener("DOMContentLoaded", function () {
 			var tmp = item.split("=");
 			filter[tmp[0]] = isNaN(tmp[1]) || !tmp[1].length ? tmp[1] : parseInt(tmp[1], 10);
 		});
-		console.log(filter);
+		// console.log(filter);
 		var url = '/api/beneficiary/datarecords?pg=1&offset=1000';
 		if(filter.indx) {
 			[].slice.call(navs).forEach( function(elt) {
@@ -48,18 +48,15 @@ window.addEventListener("DOMContentLoaded", function () {
 			xhrItems.onload = function (e) {
 				var list = JSON.parse(this.responseText);
 				if (filter.indx > 1) {
-					[].slice.call(document.querySelectorAll("button.previous")).forEach(function (elt) {
-						elt.disabled = false;
-						prev = list.items[filter.indx - 2]._id;
-					});
-
-				} else {
-					//prev = list.items[filter.indx - 2]._id;
-				}
-				if (list.nb > filter.indx) {
 					[].slice.call(document.querySelectorAll("button.next")).forEach(function (elt) {
 						elt.disabled = false;
-						next = list.items[filter.indx]._id;
+						next = list.items[filter.indx - 2]._id;
+					});
+				}
+				if (list.nb > filter.indx) {
+					[].slice.call(document.querySelectorAll("button.previous")).forEach(function (elt) {
+						elt.disabled = false;
+						prev = list.items[filter.indx]._id;
 					});
 				} else {
 					// next = list.items[filter.indx]._id;
@@ -110,24 +107,24 @@ function disableNav() {
 	});
 }
 
-function previousItem() {
+function nextItem() {
 	disableNav();
 	filter.indx--;
 	var tmp = "";
 	for( var prop in filter ) {
 		tmp += (tmp.length?"&":"")+prop+"="+filter[prop];
 	}
-	window.location.href = "/datarecord/"+prev+"?"+tmp;
+	window.location.href = "/datarecord/"+next+"?"+tmp;
 }
 
-function nextItem() {
+function previousItem() {
 	disableNav();
 	filter.indx++;
 	var tmp = "";
 	for( var prop in filter ) {
 		tmp += (tmp.length?"&":"")+prop+"="+filter[prop];
 	}
-	window.location.href = "/datarecord/"+next+"?"+tmp;
+	window.location.href = "/datarecord/"+prev+"?"+tmp;
 }
 
 function backDatarecord() {

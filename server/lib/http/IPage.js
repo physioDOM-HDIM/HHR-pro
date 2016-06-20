@@ -1107,7 +1107,6 @@ function IPage() {
 	 */
 	this.dataRecord = function (req, res, next) {
 		logger.trace("DataRecording");
-		var html;
 
 		init(req);
 		var data = {
