@@ -1740,7 +1740,7 @@ var IBeneficiary = {
 				if (req.headers["ids-user"]) {
 					data.idsUser = true;
 				}
-				require("./ISendmail").passwordMail(data);
+				require("./ISendmail").passwordMail(data, physioDOM.config.mailTpl || "" );
 				return account;
 			})
 			.then(function (account) {
