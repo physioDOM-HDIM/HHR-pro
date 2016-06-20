@@ -2,6 +2,19 @@
 % Fabrice Le Coz  
 % May, 2016
 
+__v1.1.13__ :
+
+  - Bug \#676 : Sundays are never displayed in Request for Measurement
+  - Bug \#647 : Results from Data recording - Button function
+  - Feature \#679 : Update of the e-mail sent to participants
+  
+> Nota : for the feature \#679, a new prperty should be added to the config file : mailTpl indicating the path to the 
+> custom mail templates. For example : `/config/mailtobeneficiary`
+>
+> then the two mail templates ( `mailtobeneficiary.txt` & `mailtobeneficiary.htm` ) should be present, otherwise the default
+> template will be used.
+
+
 __v1.1.12__ :
 
   - Bug \#635 [Weekly agenda] Mauvais dimanche
