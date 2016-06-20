@@ -126,7 +126,7 @@ var init = function () {
 			getDay: function () {
 				return function (val, render) {
 					var dayNumber = Number(String(Math.abs(render(val))) % 10);
-					return utils.getDayName(dayNumber);
+					return utils.getDayName(dayNumber%7);
 				};
 			},
 		};
