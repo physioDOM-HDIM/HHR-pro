@@ -135,7 +135,7 @@ var ISendmail  = {
 	/**
 	 * certificateMail
 	 *
-	 * Send a email with the urk to retrieve the certificate
+	 * Send a email with the url to retrieve the certificate
 	 *
 	 * @param data
 	 * @returns {RSVP.Promise}
