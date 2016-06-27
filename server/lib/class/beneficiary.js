@@ -385,6 +385,7 @@ function Beneficiary() {
 						role      : "beneficiary",
 						email     : that.getEmail(),
 						firstlogin: true,
+						firstpasswd: accountData.password !== account.password ? accountData.password : account.firstpasswd,
 						person    : {
 							id        : that._id,
 							collection: "beneficiaries"
@@ -525,6 +526,7 @@ function Beneficiary() {
 				.then(function (account) {
 					account.password = md5(newPasswd);
 					account.firstlogin = false;
+					account.firstpasswd = null;
 					physioDOM.db.collection("account").save(account, function (err, result) {
 						if (err) {
 							throw err;
