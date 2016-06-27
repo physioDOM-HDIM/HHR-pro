@@ -1,7 +1,12 @@
 % CHANGELOG  
 % Fabrice Le Coz  
-% May, 2016
+% June, 2016
 
+__v1.1.14__ :
+
+  - Feature \#679 : Update of the e-mail sent to participants
+  - Bug \#704 : [v.1.1.13][Withdrawal Code] Pas d'affichage du code de retrait pour l'accès bénéficiaires
+  
 __v1.1.13__ :
 
   - Bug \#676 : Sundays are never displayed in Request for Measurement
