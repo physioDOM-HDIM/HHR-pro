@@ -84,6 +84,10 @@ if( program.config ) {
 		if( tmp.smtp) {
 			config.smtp = tmp.smtp;
 		}
+		
+		if( tmp.mailTpl ) {
+			config.mailTpl = tmp.mailTpl;
+		}
 	}
 } else {
 	logger.error("you must provide a config file");

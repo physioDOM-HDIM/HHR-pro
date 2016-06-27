@@ -1,0 +1,25 @@
+Dear PhysioDom participant
+
+To access your account details on the PhysioDom HHR-Pro system, you will first need to download a security certificate 
+to allow your computer to access the data.
+
+To retrieve the Security Certificate (you can retrieve this for one device) :
+
+  1. You will need to use Google Chrome as your browser 
+  2. The URL of website to retrieve the certificate = https://cert.idshost.fr 
+  3. Login : {{account.email}} 
+  4. Withdrawal code : [{{account.OTP}}]
+
+Once your certificate is downloaded and installed, you can connect to your HHR-Pro system using Google Chrome:
+  1. The URL of website to access your PhysioDom data record = https://uk-cyb.physiodom.eu 
+  2. Login : {{account.email}} 
+  {% if account.firstlogin %}
+  3. Password : {{account.firstpasswd}} (The 3 digit code will be your unique participant number. You will be asked to reset the 
+  password the first time you use the system to a password of your choosing)
+  {% else %}
+  3. Password : unchanged
+  {% endif %}
+
+If you are setting up on a tablet, go to settings in Google Chrome and tick the box “Request Desktop Site”.
+
+If you have any problems with setting this up, please contact the support office on 01434 382808.

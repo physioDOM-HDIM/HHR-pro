@@ -59,7 +59,8 @@ var configSchema = {
 				appName : {type: "string", required: true}
 			}
 		},
-		"country": { type:"string" }
+		"country": { type:"string" },
+		"mailTpl": { type:"string" }
 	}
 };
 
