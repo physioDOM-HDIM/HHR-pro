@@ -264,7 +264,7 @@ server.use(function checkAcl(req, res, next) {
  */
 function checkPasswd(req, res, next ) {
 	logger.trace("checkPasswd");
-	console.log( req.body );
+	// console.log( req.body );
 	var body = req.body?req.body.toString():"";
 	if( !body ) {
 		res.send(200, { valid: false } );
@@ -353,7 +353,7 @@ function apiPassword(req, res, next) {
 	cookies = new Cookies(req, res);
 
 	try {
-		console.log( req.body );
+		// console.log( req.body );
 		var passwd = JSON.parse(req.body.toString());
 		if( !passwd.passwd || !passwd.confirmpasswd ) {
 			res.send(400, {code:400, message:"needs two passwords"});
@@ -493,7 +493,7 @@ function readFile(filepath,req,res,next) {
 	var stats = fs.statSync(filepath);
 
 	if(stats.isDirectory()) {
-		console.log("this is a directory");
+		// console.log("this is a directory");
 		res.send(405);
 		return next(false);
 	}
