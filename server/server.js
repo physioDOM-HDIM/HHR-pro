@@ -14,7 +14,8 @@ var restify = require("restify"),
 	moment = require("moment"),
 	RSVP = require("rsvp"),
 	Promise = require("rsvp").Promise,
-	PhysioDOM = require("./lib/class/physiodom");
+	PhysioDOM = require("./lib/class/physiodom"),
+  fork = require('child_process').fork;
 
 var IDirectory = require('./lib/http/IDirectory'),
 	ICSV = require('./lib/http/ICSV'),
@@ -129,6 +130,49 @@ function responseLog(req, res) {
 var physioDOM = new PhysioDOM( config );   // PhysioDOM object is global and so shared to all modules
 global.physioDOM = physioDOM;              // set the object global
 var agenda = new Agenda({db: { address: config.mongouri }});
+
+logger.trace('server initialization started');
+try {
+  var QueueWorker = fork(path.join(__dirname,'./agendaQueue.js'));
+
+  QueueWorker.on('message', function (m) {
+    switch(m.event) {
+      case 'started':
+        logger.trace('initialize worker');
+        QueueWorker.send( { event: 'config', config: config });
+        break;
+      case 'ready':
+        logger.trace('schedule pushToQueue');
+        agenda.purge( function(err, numRemoved) {
+          if( config.queue ) {
+            // if no queue is defined then no jobs need to be defined
+            agenda.define('push plans', function (job, done) {
+             logger.trace('do pushToQueue');
+             QueueWorker.send({event:'doPush', force: false });
+             done();
+            });
+            agenda.define('force push plans', function(job,done) {
+              logger.trace('do pushToQueue force');
+              QueueWorker.send({event:'doPush', force: true });
+              done();
+             });
+             agenda.every(config.agenda + ' minutes', 'push plans');
+             agenda.every('0 2 * * *', 'force push plans');
+          }
+        });
+        agenda.start();
+        // QueueWorker.send({event:'doPush', force: true });
+        break;
+      case 'error':
+        process.exit(1);
+        break;
+      default:
+        console.log('main : get message', m);
+    }
+  });
+} catch(err) {
+  console.log(err);
+}
 
 var server = restify.createServer({
 	name:    pkg.name,
@@ -264,7 +308,7 @@ server.use(function checkAcl(req, res, next) {
  */
 function checkPasswd(req, res, next ) {
 	logger.trace("checkPasswd");
-	console.log( req.body );
+	// console.log( req.body );
 	var body = req.body?req.body.toString():"";
 	if( !body ) {
 		res.send(200, { valid: false } );
@@ -353,7 +397,7 @@ function apiPassword(req, res, next) {
 	cookies = new Cookies(req, res);
 
 	try {
-		console.log( req.body );
+		// console.log( req.body );
 		var passwd = JSON.parse(req.body.toString());
 		if( !passwd.passwd || !passwd.confirmpasswd ) {
 			res.send(400, {code:400, message:"needs two passwords"});
@@ -493,7 +537,7 @@ function readFile(filepath,req,res,next) {
 	var stats = fs.statSync(filepath);
 
 	if(stats.isDirectory()) {
-		console.log("this is a directory");
+		// console.log("this is a directory");
 		res.send(405);
 		return next(false);
 	}
@@ -845,52 +889,6 @@ physioDOM.connect()
 			logger.info("config\n", JSON.stringify(config,"",4) );
 			logger.info('------------------------------------------------------------------');
 		});
-	})
-	.then( function() {
-		agenda.purge( function(err, numRemoved) {
-			if( config.queue ) {
-				// if no queue is defined then no jobs need to be defined
-				agenda.define('push plans', function (job, done) {
-					// push measures plan and symptoms plan for all active beneficiary
-					var beneficiaries;
-					physioDOM.Beneficiaries()
-						.then(function (res) {
-							beneficiaries = res;
-							return beneficiaries.getAllActiveHHR();
-						})
-						.then(function (activeBeneficiaries) {
-							var promises = activeBeneficiaries.map(function (beneficiary) {
-								return new Promise(function (resolve, reject) {
-									beneficiaries.getHHR(beneficiary._id)
-										.then(function (beneficiary) {
-											beneficiary.getSymptomsPlan(false)
-												.then(function () {
-													return beneficiary.getMeasurePlan(false);
-												})
-												.then(function() {
-													var startDate = moment().format("YYYY-MM-DD");
-													return beneficiary.services().getServicesQueueItems( startDate, 15, physioDOM.lang );
-												})
-												.then(function() {
-													return beneficiary.services().pushServicesToQueue( );
-												})
-												.then(resolve);
-										});
-								});
-							});
-            	
-							RSVP.all(promises)
-								.then(function () {
-									logger.info("push plans end");
-									done();
-								});
-						});
-				});
-				agenda.every(config.agenda + ' minutes', 'push plans');
-			}
-		});
-			
-		agenda.start();
 	})
 	.catch(function() {
 		logger.emergency('==================================================================');
