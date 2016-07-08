@@ -30,7 +30,7 @@ function Services( beneficiary ) {
  * @returns {*}
  */
 Services.prototype.getServices = function( category, active ) {
-	logger.trace("getServices", category + " " + (active===true?"active":"all"));
+	logger.trace("getServices", this.subject, category + " " + (active===true?"active":"all"));
 	
 	var that = this;
 	

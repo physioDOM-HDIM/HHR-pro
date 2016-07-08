@@ -1,7 +1,15 @@
 % CHANGELOG  
 % Fabrice Le Coz  
-% June, 2016
+% July, 2016
 
+__v1.1.15__ :
+
+  - Fix push Plans
+  
+On production, it appears that some boxes loose their schedules. In previous release, a schedule is sent once and is 
+never resent, so if a problems occurs the schedule is lost. To prevent this behavior, a forced push will be done every 
+day at 02:00.
+  
 __v1.1.14__ :
 
   - Feature \#679 : Update of the e-mail sent to participants
