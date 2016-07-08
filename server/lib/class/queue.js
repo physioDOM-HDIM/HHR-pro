@@ -61,7 +61,7 @@ function Queue ( beneficiaryID ) {
 				logger.info("no queue is available");
 				resolve( msg );
 			} else {
-				logger.trace("send to queue");
+				logger.trace("send to queue", msg.gateway);
 				request({
 					url    : physioDOM.config.queue + "/msg",
 					method : "POST",

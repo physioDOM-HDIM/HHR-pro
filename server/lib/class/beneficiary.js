@@ -2024,7 +2024,7 @@ function Beneficiary() {
 								if (nextDate.unix() <= closeDate.unix()) {
 									do {
 										if (nextDate.unix() <= closeDate.unix() && nextDate.unix() > today.unix()) {
-											logger.debug("daily prog", {ref: prog.ref, date: nextDate.unix()});
+											// logger.debug("daily prog", {ref: prog.ref, date: nextDate.unix()});
 											msgs.push({ref: prog.ref, date: nextDate.unix()});
 										}
 										nextDate.add(prog.repeat, 'd');
@@ -2045,7 +2045,7 @@ function Beneficiary() {
 										prog.when.days.forEach(function (day) {
 											firstDay.day(day);
 											if (firstDay.unix() <= closeDate.unix() && firstDay.unix() > today.unix()) {
-												logger.debug("weekly prog", {ref: prog.ref, date: nextDate.unix()});
+												// logger.debug("weekly prog", {ref: prog.ref, date: nextDate.unix()});
 												msgs.push({ref: prog.ref, date: firstDay.unix()});
 											}
 										}); // jshint ignore:line
@@ -2068,9 +2068,9 @@ function Beneficiary() {
 								// logger.debug( "nextDate",  nextDate.toISOString());
 								if (nextDate.unix() <= closeDate.unix()) {
 									do {
-										logger.debug("nextDate", nextDate.toISOString());
+										// logger.debug("nextDate", nextDate.toISOString());
 										prog.when.days.forEach(function (day) {
-											logger.debug("-> day", day);
+											// logger.debug("-> day", day);
 											if (day > 0) {
 												dat = moment.unix(nextDate.unix());
 												dat = dat.startOf('month').startOf('week');
@@ -2087,7 +2087,7 @@ function Beneficiary() {
 											}
 											// logger.debug("dates", dat.toISOString(), closeDate.toISOString(), today.toISOString());
 											if (dat.unix() <= closeDate.unix() && dat.unix() > today.unix()) {
-												logger.debug("monthly prog", {ref: prog.ref, date: nextDate.unix()});
+												// logger.debug("monthly prog", {ref: prog.ref, date: nextDate.unix()});
 												dat = dat.hour(12).minute(0).second(0);
 												msgs.push({ref: prog.ref, date: dat.unix()});
 											}
@@ -2223,7 +2223,7 @@ function Beneficiary() {
 	};
 
 	function pushSymptom(queue, hhr, symptoms, measures, force) {
-		logger.trace("pushSymptom");
+		// logger.trace("pushSymptom");
 		force = force ? force : false;
 
 		return new Promise(function (resolve, reject) {
