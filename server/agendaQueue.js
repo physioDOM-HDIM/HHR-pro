@@ -57,37 +57,52 @@ function doPush(force) {
     })
     .then(function (activeBeneficiaries) {
       logger.debug('get active beneficiaries', activeBeneficiaries.length );
-      var promises = activeBeneficiaries.map(function (beneficiary) {
-        return new Promise(function (resolve, reject) {
-          beneficiaries.getHHR(beneficiary._id)
-            .then(function (beneficiary) {
-              beneficiary.getSymptomsPlan(force)
-                .then(function () {
-                  return beneficiary.getMeasurePlan(force);
-                })
-                .then(function () {
-                  var startDate = moment().format("YYYY-MM-DD");
-                  return beneficiary.services().getServicesQueueItems(startDate, 15, physioDOM.lang);
-                })
-                .then(function () {
-                  return beneficiary.services().pushServicesToQueue();
-                })
-                .then(resolve);
-            })
-            .catch( function(err) {
-              logger.error('catch an error');
-              console.log(err);
-            });
-        });
+      
+      var promises = activeBeneficiaries.map(function (record) {
+        return function() {
+          return new Promise(function (resolve, reject) {
+            var beneficiary = null;
+
+            beneficiaries.getHHR(record._id)
+              .then(function (res) {
+                beneficiary = res;
+                return beneficiary.getSymptomsPlan(force);
+              })
+              .then(function () {
+                return beneficiary.getMeasurePlan(force);
+              })
+              .then(function () {
+                var startDate = moment().format("YYYY-MM-DD");
+                return beneficiary.services().getServicesQueueItems(startDate, 15, physioDOM.lang);
+              })
+              .then(function () {
+                return beneficiary.services().pushServicesToQueue();
+              })
+              .then(resolve)
+              .catch( function(err) {
+                logger.error('catch an error');
+                console.log(err);
+              });
+          });
+        };
       });
 
-      RSVP.all(promises)
-        .then(function () {
-          logger.info("push plans end");
-        })
-        .catch( function(err) {
-          console.log('error catched', err);
+      function runSerial(tasks) {
+        var result = Promise.resolve();
+        tasks.forEach( function(task) {
+          result = result.then( function() { task() });
         });
+        return result;
+      }
+      
+      Promise.resolve()
+        .then( function() {
+          return runSerial( promises );
+        })
+        .then( function() {
+          logger.info("push plans end");
+        });
+      
     });
 }
 
