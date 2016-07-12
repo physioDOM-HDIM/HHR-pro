@@ -70,6 +70,7 @@ if( program.config ) {
 		config.languages = tmp.languages;
 		config.server = tmp.server;
 		config.agenda = tmp.agenda;
+    config.agendaForce = tmp.agendaForce;
 		config.healthStatusValidation = tmp.healthStatusValidation;
 		config.country = tmp.country || '';
 		config.timezone = tmp.timezone || 'Europe/Paris';
@@ -156,8 +157,8 @@ try {
               QueueWorker.send({event:'doPush', force: true });
               done();
              });
-             agenda.every(config.agenda + ' minutes', 'push plans');
-             agenda.every('0 2 * * *', 'force push plans');
+             agenda.every(config.agenda, 'push plans');
+             agenda.every(config.agendaForce, 'force push plans');
           }
         });
         agenda.start();
