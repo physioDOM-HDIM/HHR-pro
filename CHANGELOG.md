@@ -2,6 +2,32 @@
 % Fabrice Le Coz  
 % July, 2016
 
+__v1.1.16__ :
+
+  - Fix recurrent push plans
+  - Fix Push Services : some services wasn't push to queue due to some empty string set as '' instead of ' '
+
+> __Nota :__ the format of the agenda property in the config file has changed to a cron format,  
+> for example :
+>
+>       "agenda":"0 0,6,10,14,18 * * *"
+> 
+> this means that the agenda is running at 0,6,10,14 and 18 hour GMT each days
+>
+> a new property "agendaForce" has been added to the config file, and is defined as cron format, for example :
+>
+>       "agendaForce":"0 2 * * *"
+>
+> This means that a forced push is done every day at 02:00 GMT
+>
+> The forced push is quite long about 6 minutes, and we recommend to choose a different time per instances to avoid some 
+> congestions, for example :
+>
+>  - uk-cyb :  `"agendaForce":"0 2 * * *"`
+>  - nl-wur :  `"agendaForce":"30 2 * * *"`
+>  - es-cst :  `"agendaForce":"0 3 * * *"`
+>
+
 __v1.1.15__ :
 
   - Fix push Plans
