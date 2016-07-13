@@ -1,7 +1,7 @@
 {
   "name": "PhysioDOM-server",
   "preferGlobal": false,
-  "version": "1.1.16",
+  "version": "1.1.17",
   "author": "Telecom Sante <tech@telecomsante.com>",
   "contributors": [
     {
