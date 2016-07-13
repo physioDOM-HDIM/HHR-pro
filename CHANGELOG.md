@@ -2,6 +2,11 @@
 % Fabrice Le Coz  
 % July, 2016
 
+__v1.1.17__ :
+
+  - Fix Push Services : some services wasn't push to queue due to some empty string set as '' instead of ' '  
+  Forget a file; my fault !
+  
 __v1.1.16__ :
 
   - Fix recurrent push plans
