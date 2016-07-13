@@ -209,12 +209,12 @@ Service.prototype.pushToQueue = function() {
 				});
 				msg.push({
 					name : leaf + ".proLastName",
-					value: that.providerName.family,
+					value: that.providerName.family || ' ',
 					type : "string"
 				});
 				msg.push({
 					name : leaf + ".proFirstName",
-					value: that.providerName.given,
+					value: that.providerName.given || ' ',
 					type : "string"
 				});
 				msg.push({
@@ -224,7 +224,7 @@ Service.prototype.pushToQueue = function() {
 				});
 				msg.push({
 					name : leaf + ".description",
-					value: that.detail,
+					value: that.detail || ' ',
 					type : "string"
 				});
 				msg.push({
