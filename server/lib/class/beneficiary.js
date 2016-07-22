@@ -1823,7 +1823,7 @@ function Beneficiary() {
   };
 
   function pushMeasure(queue, hhr, units, parameters, measures, force) {
-    force = force ? force : false;
+    force = force || false;
     logger.trace('pushMeasure force:', force, hhr);
     return new Promise(function (resolve, reject) {
       // logger.trace("pushMeasure", force, measures);
@@ -1838,11 +1838,13 @@ function Beneficiary() {
           value: measures.datetime,
           type : "integer"
         });
-        msg.push({
-          name : leaf + ".new",
-          value: 1,
-          type : "integer"
-        });
+        if( !force ) {
+          msg.push({
+            name : leaf + ".new",
+            value: 1,
+            type : "integer"
+          });
+        }
         var hasMeasure = false;
         measures.measure.forEach(function (measure) {
           // logger.debug("measure : "+measure +" rank : "+parameters[measure].rank );
@@ -2238,7 +2240,7 @@ function Beneficiary() {
 
   function pushSymptom(queue, hhr, symptoms, measures, force) {
     // logger.trace("pushSymptom");
-    force = force ? force : false;
+    force = force || false;
 
     return new Promise(function (resolve, reject) {
       var leaf = "hhr[" + hhr + "].symptoms[" + measures.datetime + "]";
@@ -2285,11 +2287,13 @@ function Beneficiary() {
           value: measures.datetime,
           type : "integer"
         });
-        msg.push({
-          name : leaf + ".new",
-          value: 1,
-          type : "integer"
-        });
+        if( !force ) {
+          msg.push({
+            name : leaf + ".new",
+            value: 1,
+            type : "integer"
+          });
+        }
         var hasMeasure = false;
         measures.measure.forEach(function (measure) {
           if (symptoms[measure].rank) {

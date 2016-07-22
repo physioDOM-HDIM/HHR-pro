@@ -76,10 +76,11 @@ Services.prototype.getServices = function (category, active) {
   });
 };
 
-Services.prototype.pushServicesToQueue = function () {
+Services.prototype.pushServicesToQueue = function (force) {
   var queue = new Queue(this.subject);
   var that = this;
   var msgs = [];
+  force = force || false;
 
   function _markDelete() {
     return new Promise(function (resolve, reject) {
@@ -190,7 +191,7 @@ Services.prototype.pushServicesToQueue = function () {
               var msg = [];
               var category = item.category === "HEALTH" ? "healthcare" : "social";
               var leaf = "hhr[" + that.subject + "]." + category + ".services[" + item._id + "].";
-              if (item.new) {
+              if (item.new && !force) {
                 msg.push({
                   name : leaf + "new",
                   value: item.new ? 1 : 0,
