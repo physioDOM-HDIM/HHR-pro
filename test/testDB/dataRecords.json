@@ -1,2 +1,0 @@
-{ "_id" : { "$oid" : "547f31210d7ed2b5ad7bb671" }, "subject" : { "$oid" : "545516ebf39cfb150625df02" }, "datetime" : "2014-11-30T16:40:00Z", "home" : true, "source" : null }
-{ "_id" : { "$oid" : "547f44290d7ed2b5ad7bb673" }, "subject" : { "$oid" : "545516ebf39cfb150625df02" }, "datetime" : "2014-12-02T14:00:00Z", "home" : false, "source" : { "$oid" : "53fb2763b3371800000d42cd" } }
