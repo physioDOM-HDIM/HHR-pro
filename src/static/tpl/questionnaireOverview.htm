@@ -1,0 +1,159 @@
+<!--
+@license
+Copyright (c) 2016 Telecom Sante
+This code may only be used under the CC BY-NC 4.0 style license found at https://creativecommons.org/licenses/by-nc/4.0/legalcode
+
+You are free to:
+
+  Share — copy and redistribute the material in any medium or format
+  Adapt — remix, transform, and build upon the material
+  The licensor cannot revoke these freedoms as long as you follow the license terms.
+
+Under the following terms:
+
+  Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. 
+  You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+  
+  NonCommercial — You may not use the material for commercial purposes.
+  
+  No additional restrictions — You may not apply legal terms or technological measures that legally restrict others 
+  from doing anything the license permits.
+-->
+
+{% extends './page.htm' %}
+
+{% block title %}{{"Questionnaire overview" | i18n}}{% endblock %}
+
+{% block head %}
+{% parent %}
+<script src="/bower_components/rsvp/rsvp.min.js"></script>
+<script src="/bower_components/form2js/src/form2js.js"></script>
+<script src="/tpl/questionnaireOverview.js"></script>
+<script src="/scripts/modal.js"></script>
+{% endblock %}
+{% block content %}
+
+<style>
+	.answers {
+		margin: 0px 20px;
+		padding:0px 10px;
+		min-height: 40px !important;
+		display: -webkit-flex;
+		display: -ms-flexbox;
+		display: flex;
+	}
+	.answers:hover {
+		background:lightgray;
+	}
+	div.row label {
+		flex:1;
+		white-space: normal;
+		margin:10px 0px;
+		/* width: 350px; */
+	}
+	.space {
+		/* width: 20%; */
+		margin: 30px auto;
+		border-color: black;
+	}
+	.nestedQuestionnaire {
+		margin-left: 20px;
+	}
+	.preview {
+		font-size: 1.2em;
+		color: Tomato;
+		border: 2px solid tomato;
+		text-align: center;
+		line-height: 50px;
+	}
+	span.warn {
+		color:Tomato;
+	}
+	input[type=radio] {
+		transform: scale(2, 2);
+	}
+</style>
+
+{% macro tpl(q, idx) %}
+	{% set name = "questions" %}
+	{% for key, val in idx %}
+		{% set name += "["+val+"]" %}
+		{% if !loop.last %}
+			{% set name += ".questions" %}
+		{% endif %}
+	{% endfor %}
+
+	{% if q.headerRef %}
+		<div class="bold">{{idx|join("-")}} - {{q.headerLabel[lang] || q.headerLabel["en"] }} {% if !q.headerLabel[lang] %}<span class="warn">( en )</span>{% endif %}</div>
+		<input type="hidden" name="{{name}}.subscore" value="{{q.subscore}}" />
+		<hr>
+		{% for subQ in q.questions %}
+			{% set idx = idx|push(loop.index) %}
+			<div class="nestedQuestionnaire">
+				{{tpl(subQ, idx)}}
+			</div>
+			{% set idx = idx|pop() %}
+		{% endfor %}
+	{% else %}
+		<div class="row">
+			<div>{{idx|join("-")}} - {{q.label[lang] || q.label["en"] }} {% if !q.label[lang] %}<span class="warn">( en )</span>{% endif %}</div>
+		</div>
+		<br/>
+	{% endif %}
+	{% for c in q.choice %}
+		<div class="row answers">
+			{% if !c.label[lang] && !c.label["en"] %}
+				{% if c.system && c.system === 'decimal' %}
+					<input type="number" step="0.1" name="{{name}}.choice" required />
+				{% else %}
+					<input type="number" step="1" name="{{name}}.choice" required />
+				{% endif %}
+			{% else %}
+				<label for="{{name}}.choice">{{c.label[lang] || c.label["en"] }} {% if !c.label[lang] %}<span class="warn">( en )</span>{% endif %}</label>
+				<input type="radio" name="{{name}}.choice" value="{{c.value}}" required />
+			{% endif %}
+		</div>
+		{% if loop.last %}
+			<br/>
+		{% endif %}
+	{% endfor %}
+{% endmacro %}
+
+<div class="mainContainer">
+	{% if preview %}
+	<div class="preview">{{"Preview display"|i18n}}</div>
+	{% endif %}
+	<h2>{{questionnaire.label[lang] || questionnaire.label["en"] }} {% if !questionnaire.label[lang] %}<span class="warn">( en )</span>{% endif %}</h2>
+	<form autocomplete="off" name="questionnaire" onsubmit="checkForm(); return false;">
+		<input type="hidden" name="ref" value="{{questionnaire._id.toString()}}" />
+		<input type="hidden" name="score" value="{{questionnaire.score}}" />
+		{% for q in questionnaire.questions %}
+			<div class="itemContainer">
+				{% set number = "" %}
+				{{tpl(q, [loop.index])}}
+			</div>
+			{% if !loop.last %}
+				<hr class="space">
+			{% endif %}
+		{% endfor%}
+		{% if preview %}
+		<div class="row control">
+			<span class="spacer"></span>
+			<button type="button" class="blue" onclick="window.history.back()">{{"Back" | i18n}}</button>
+		</div>
+		{% else %}
+		<div class="row control">
+			<span class="spacer"></span>
+			<button type="button" class="red" onclick="window.parent.closeQuestionnaire()">{{"Cancel"|i18n}}</button>
+			<button class="green">{{"Ok" | i18n}}</button>
+		</div>
+		{% endif %}
+	</form>
+
+<div id="questionnaireName" class="hidden">{{questionnaire.name}}</div>
+
+<div class="hidden">
+	<div id="trad_info_result_score_questionnaire">{{"The score is" |i18n}} :<span id="score">{{score}}</span></div>
+</div>
+{% include "./modal.htm" %}
+{% endblock %}

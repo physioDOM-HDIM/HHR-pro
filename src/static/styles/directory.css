@@ -1,0 +1,107 @@
+/**
+@license
+Copyright (c) 2016 Telecom Sante
+This code may only be used under the CC BY-NC 4.0 style license found at https://creativecommons.org/licenses/by-nc/4.0/legalcode
+
+You are free to:
+
+Share — copy and redistribute the material in any medium or format
+Adapt — remix, transform, and build upon the material
+The licensor cannot revoke these freedoms as long as you follow the license terms.
+
+Under the following terms:
+
+Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made.
+You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+
+NonCommercial — You may not use the material for commercial purposes.
+
+No additional restrictions — You may not apply legal terms or technological measures that legally restrict others
+from doing anything the license permits.
+*/
+.filter .row{
+    margin-bottom: 5px;
+}
+.filter .row input, .filter .row select{
+    margin-right: 10px;
+}
+.filter hr {
+    margin: 20px 0 10px 0;
+}
+.filter .buttonContainer{
+    float: right;
+    margin-top: 10px;
+}
+#tsanteList {
+    margin-top: 20px;
+}
+.item {
+    font-size: 18px;
+    line-height: 35px;
+    display: table;
+    width: 100%;
+}
+.item:first-of-type {
+    border-top: 2px solid black;
+}
+.item:last-of-type {
+    border-bottom: 2px solid black;
+    margin-bottom: 10px;
+}
+.item:nth-child(odd) {
+    background: #DFDFDF;
+}
+.item.disabled > *:not(.rightContent) {
+    opacity: 0.4;
+}
+.name {
+    font-weight: bold;
+}
+.job, .role {
+    text-align: right;
+    padding-right: 10px;
+}
+.communication > span, .communication > a {
+    padding-right: 5px;
+    display: inline-block;
+}
+.phone {
+    background: url("../img/icons/phone.svg") no-repeat;
+    background-size: 20px;
+    background-position: 0 6px;
+    padding-left: 25px;
+}
+.mobile {
+    background: url("../img/icons/mobile.svg") no-repeat;
+    background-size: 16px 21px;
+    background-position: 0 4px;
+    padding-left: 21px;
+}
+.email {
+    background: url("../img/icons/email.svg") no-repeat;
+    background-size: 18px 14px;
+    background-position: 0 10px;
+    padding-left: 23px;
+}
+.address {
+    background: url("../img/icons/home.svg") no-repeat;
+    background-size: 16px 16px;
+    background-position: 0 7px;
+    padding-left: 25px;
+    margin-left: 2px;
+}
+.leftContent {
+    display: table-cell;
+    padding-left: 10px;
+}
+.middleContent, .rightContent {
+    display: table-cell;
+    text-align: right;
+    padding-right: 10px;
+}
+.rightContent {
+    width: 70px;
+}
+#addEntry {
+    float: right;
+}

@@ -1,0 +1,73 @@
+<!--
+@license
+Copyright (c) 2016 Telecom Sante
+This code may only be used under the CC BY-NC 4.0 style license found at https://creativecommons.org/licenses/by-nc/4.0/legalcode
+
+You are free to:
+
+  Share — copy and redistribute the material in any medium or format
+  Adapt — remix, transform, and build upon the material
+  The licensor cannot revoke these freedoms as long as you follow the license terms.
+
+Under the following terms:
+
+  Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. 
+  You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+  
+  NonCommercial — You may not use the material for commercial purposes.
+  
+  No additional restrictions — You may not apply legal terms or technological measures that legally restrict others 
+  from doing anything the license permits.
+-->
+
+{% extends './page.htm' %}
+
+{% block title %}{{"Result Synthesis"|i18n}}{% endblock %}
+
+{% block head %}
+{% parent %}
+
+<script src="/scripts/utils.js"></script>
+<script src="/tpl/dataRecordSynthesis.js"></script>
+<link rel="stylesheet" href="/styles/dataRecordSynthesis.css">
+
+<script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
+<style>
+	div.result {
+		min-width: 50px;
+		text-align: right;
+	}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="row title">
+	<label class="title">
+		{{ "Result synthesis"|i18n }}
+	</label>
+</div>
+
+<div id="synthesis">
+	<div class="row">
+		<div class="col"></div>
+		<div class="col bold"><span class="spacer"></span>{{"Unit"|i18n}}<span class="spacer"></span></div>
+		<div class="col bold"><span class="spacer"></span>{{"First Measure"|i18n}}<span class="spacer"></span></div>
+		<div class="col bold"><span class="spacer"></span><span>{{"Last Measure"|i18n}}</span><span class="spacer"></span></div>
+		<div class="col bold"><span class="spacer"></span>{{"Delta"|i18n}}<span class="spacer"></span></div>
+	</div>
+</div>
+
+{% raw %}
+<script type="template" id="tpl-line">
+{{#parameter}}
+	<div class="col">{{name}}</div>
+	<div class="col"><span class="spacer"></span><div class="bold spacing-around">{{unit}}</div><span class="spacer"></span></div>
+	<div class="col"><div class="bold spacing-around result">{{firstValue}}</div> ({{firstMeasureDatetime}})</div>
+	<div class="col"><div class="bold spacing-around result">{{lastValue}}</div> ({{lastMeasureDatetime}})</div>
+	<div class="col"><span class="spacer"></span><div class="bold spacing-around">{{delta}}</div></div>
+{{/parameter}}
+</script>
+{% endraw %}
+
+{% endblock %}

@@ -1,0 +1,455 @@
+<!--
+@license
+Copyright (c) 2016 Telecom Sante
+This code may only be used under the CC BY-NC 4.0 style license found at https://creativecommons.org/licenses/by-nc/4.0/legalcode
+
+You are free to:
+
+  Share — copy and redistribute the material in any medium or format
+  Adapt — remix, transform, and build upon the material
+  The licensor cannot revoke these freedoms as long as you follow the license terms.
+
+Under the following terms:
+
+  Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. 
+  You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+  
+  NonCommercial — You may not use the material for commercial purposes.
+  
+  No additional restrictions — You may not apply legal terms or technological measures that legally restrict others 
+  from doing anything the license permits.
+-->
+
+{% extends './page.htm' %}
+{% block title %}{{"Data Recording"|i18n}}{% endblock %}
+{% block head %}
+{% parent %}
+<script src="/bower_components/mustache/mustache.js"></script>
+<script src="/bower_components/rsvp/rsvp.min.js"></script>
+<script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
+<script src="/bower_components/zdk-calendar/form2js.js"></script>
+
+<script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
+
+<script src="/scripts/questionnaireButton.js"></script>
+<script src="/tpl/dataRecordEdit.js"></script>
+<style>
+	select {
+		min-width:100px;
+		max-width:200px;
+	}
+	input[type=text][type=number] {
+		width: 100%;
+	}
+	h2 {
+		margin: 0;
+		color: white;
+		background: gray;
+		padding: 5px;
+		font-size: 1em;
+		margin-top: 7px;
+	}
+
+	#questionnaireIframe {
+		display: none;
+	}
+
+	#questionnaireIframe.visible {
+		display: block;
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		margin: 0;
+		background: white;
+	}
+	
+	input.questionnaire-score {
+		width: 100px;
+	}
+	
+	input[type=number] {
+		width:80px;
+	}
+</style>
+{% endblock %}
+
+{% block content %}
+
+{#
+	Macro for :
+	-select threshold
+	-value threshold
+	-line repeating (for existing items)
+	-line adding (for new items)
+#}
+
+<div class="hidden" id="unsave">{{"You have unsaved data"|i18n}}</div>
+<div class="hidden" id="changelang">{{"Are you sure to cancel your changes ?"|i18n}}</div>
+
+<script type="html/text" id="selectParam">
+	{% if view === 'create'%}
+	<select onchange="updateParam(this)" name="items[{% raw %}{{ idx }}{% endraw %}].text" required>
+	{% else%}
+	<select onchange="updateParam(this)" name="items[{% raw %}{{id}}{% endraw %}].text" required>
+	{% endif%}
+		<option></option>
+	{% raw %}
+		{{#lists}}
+			<option value="{{ref}}" {% endraw %}{% if view !== 'create'%}{% raw %}{{#selection}}{{ref}}{{/selection}}{% endraw %}{% endif%}{% raw %} id="option-{{ref}}">{{labelLang}}</option>
+		{{/lists}}
+	{% endraw %}
+
+	</select>
+</script>
+
+<div class="hidden no-validation alert-info-error">{{ "You cannot create a data record before validating all Health Statuses"|i18n}}</div>
+<input type="hidden" id="view" value="{{view}}">
+
+<div id="content">
+	{% macro line(cat) %}
+	<div id="ID{{item._id.toString()}}" class="line">
+		<div class="type hidden">{{ item.text }}</div>
+		<div class="category hidden">{{cat}}</div>
+		<div class="readMode">
+			<div class="row">
+
+				<div class="col" vertical layout>
+					<div class="row">
+						{% raw %}{{#item}}{% endraw %}
+						<div class="col" style="min-width:220px;max-width:220px;flex-direction: column;">
+							<div class="bold">{% raw %}{{ labelLang }}{% endraw %} {% if item.automatic %}({{"Auto"|i18n}}){% endif %}</div>
+							<div style="color:gray"><tsante-time datetime="{{ item.measureDate }}" format="LT"></tsante-time></div>
+						</div>
+						<div class="col item-value" style="max-width:150px">{{ item.value }}</div>
+						{% if cat !== 'questionnaire' %}
+						<div class="col" style="max-width:150px">{% raw %}{{ unitsLabel }}{% endraw %}</div>
+						{% else %}
+						<div class="col" style="max-width:150px">
+						<button type="button" class="blue small answer not-disabled" data-answer="{{item.ref}}" onclick="showAnswer('{{item.ref}}')">{{"Questionnaire"|i18n}}</button>
+						</div>
+						{% endif %}
+						
+						{% if cat !== 'questionnaire' %}
+						{% raw %}
+						<div class="col" style="max-width:150px">
+							<div class="min-treshold spacing-around">{{#threshold}}{{min}}{{/threshold}}</div>
+						</div>
+						<div class="col" style="max-width:150px">
+							<div class="max-treshold spacing-around">{{#threshold}}{{max}}{{/threshold}}</div>
+						</div>
+						{% endraw %}
+						{% else %}
+						<div class="col" style="max-width:150px"></div>
+						<div class="col" style="max-width:150px"></div>
+						{% endif %}
+						
+						{% raw %}{{/item}}{% endraw %}
+					</div>
+				
+					<div class="row marged" >
+						<pre class="item-comment hidden">{{ item.comment }}</pre>
+						{% if cat !== 'questionnaire' %}
+						{{ item.comment }}
+						{% else %}
+						<pre>{{ item.comment }}</pre>
+						{% endif %}
+					</div>
+				</div>
+
+				<div>
+					{% if rights.write && beneficiary.active && !dataRecordItems.healthStatus %}
+					<div style="width:100px; text-align:right">
+						<div>
+							<button type="button" class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">{{"Edit"|i18n}}</button>
+						</div>
+						<div>
+							<button type="button" class="red small" onclick="confirmDeleteItem('{{item._id.toString()}}')">{{"Delete"|i18n}}</button>
+						</div>
+					</div>
+					{% else %}
+					<div style="width:70px"></div>
+					{% endif %}
+				</div>
+
+			</div>
+		</div>
+		<div class="updateMode hidden">
+			<div class="row">
+
+				{% if cat !== 'questionnaire' %}
+
+					{% raw %}{{#item}}{% endraw %}
+						<div class="col item-text" style="min-width:220px;max-width:220px"></div>
+						<div class="col item-value" style="max-width:150px">
+						   <input type="number" step="any" value="{{ item.value }}" name="items[{{item._id.toString()}}].value"/></div>
+						   {% raw %}
+								<div class="col units" style="max-width:150px">{{ unitsLabel }}</div>
+								<div class="col" style="max-width:150px">
+								<div class="min-treshold spacing-around">{{#threshold}}{{min}}{{/threshold}}</div>
+								</div>
+								<div class="col" style="max-width:150px">
+									<div class="max-treshold spacing-around">{{#threshold}}{{max}}{{/threshold}}</div>
+								</div>
+							{% endraw %}
+					{% raw %}{{/item}}{% endraw %}
+
+				{% else %}
+
+					{% raw %}{{#item}}{% endraw %}
+						<div class="col bold" style="min-width:220px;max-width:220px">{% raw %}{{ labelLang }}{% endraw %} {% if item.automatic %}({{"Auto"|i18n}}){% endif %}{% raw %}{{ measureDate }}{% endraw %}</div>
+						<div class="col item-value" style="max-width:150px">{{ item.value }}</div>
+						<div class="col" style="max-width:150px">
+						<button type="button" class="blue small answer not-disabled" data-answer="{{item.ref}}" onclick="showAnswer('{{item.ref}}')">{{"Questionnaire"|i18n}}</button>
+						</div>
+
+						<div class="col" style="max-width:150px"></div>
+						<div class="col" style="max-width:150px"></div>
+						
+						<input type="hidden" class="questionnaire-answer" name="items[{{item._id.toString()}}].ref" value="{{ item.ref }}" />
+						<input type="hidden" class="questionnaire-score" name="items[{{item._id.toString()}}].value" value="{{ item.value }}" />
+						<input type="hidden" class="questionnaire-text" name="items[{{item._id.toString()}}].text" value="{{ item.text }}" />
+
+					{% raw %}{{/item}}{% endraw %}
+
+				{% endif %}
+
+
+				<input name="items[{{item._id.toString()}}].category" class="item-category" type="hidden" value="{{item.category}}">
+				<input name="items[{{item._id.toString()}}]._id" type="hidden" value="{{item._id.toString()}}">
+				<input name="items[{{item._id.toString()}}].automatic" type="hidden" value="{{item.automatic}}">
+				<input name="items[{{item._id.toString()}}].dataRecordID" type="hidden" value="{{item.dataRecordID.toString()}}">
+				
+				<div style="width:100px; text-align:right">
+					{% if rights.write && !dataRecordItems.healthStatus %}
+					<div>
+						<button type="button" class="blue small" onclick="toggleEditMode('{{item._id.toString()}}')">{{"Back"|i18n}}</button>
+					</div>
+					<div>
+						<button type="button" class="red small" onclick="confirmDeleteItem('{{item._id.toString()}}')">{{"Delete"|i18n}}</button>
+					</div>
+					{% endif %}
+				</div>
+			</div>
+			{% if cat !== 'questionnaire' %}
+			<div class="row">
+				<div class="col" style="max-width:200px"><span class="spacer"></span><span>{{"Comment"|i18n}} : </span></div>
+				<div class="col">
+					<input type="text" name="items[{{item._id.toString()}}].comment" value="{{ item.comment }}">
+				</div>
+				<div style="width:100px"></div>
+			</div>
+			{% else %}
+			<div class="row">
+				<textarea name="items[{{item._id.toString()}}].comment" class="questionnaire-comment" rows="10">{{ item.comment }}</textarea>
+			</div>
+			{% endif %}
+
+		</div>
+	</div>
+	{% endmacro %}
+
+
+	{% macro addItem(category) %}
+	<div id="add{{category}}">
+		<div class="category hidden">{{category}}</div>
+		<div id="newItems-{{category}}">
+
+		</div>
+		<div class="row control">
+			<span class="spacer"></span>
+			{% if rights.write && beneficiary.active %}
+			<button type="button" class="blue small" onclick="addLine('{{category}}')">{{"Add"|i18n}}</button>
+			{% endif %}
+		</div>
+	</div>
+	{% endmacro %}
+
+
+	<script type="template" id="newItem">
+	<div class="row questionnaire-row">
+		<div class="col item-text" style="min-width:220px;max-width:220px"></div>
+		{% raw %}{{#questionnaire}}{% endraw %}
+			<input type="hidden" class="questionnaire-text" name="items[{% raw %}{{idx}}{% endraw %}].text" value="" />
+			<div class="col" style="max-width:150px">
+				<input  type="number" class="questionnaire-score" name="items[{% raw %}{{idx}}{% endraw %}].value" value="" disabled />
+				<input type="hidden" class="questionnaire-score" name="items[{% raw %}{{idx}}{% endraw %}].value" value="" />
+			</div>
+			<input type="hidden" class="questionnaire-answer" name="items[{% raw %}{{idx}}{% endraw %}].ref" value="" />
+			<div class="col questionnaire-button-container" style="max-width:150px">
+				<span></span>
+				<a class="button small blue disabled" href="">{{"Questionnaire"|i18n}}</a>
+			</div>
+			<div class="col" style="max-width:150px"></div>
+			<div class="col" style="max-width:150px"></div>
+		{% raw %}{{/questionnaire}}{% endraw %}
+		
+		{% raw %}{{^questionnaire}}{% endraw %}
+			<div class="col" style="max-width:150px"><input type="number" step="any"  name="items[{% raw %}{{idx}}{% endraw %}].value" required/></div>
+			<div class="col" style="max-width:150px"><span class="units"></span></div>
+			<div class="col" style="max-width:150px">
+				<div class="min-treshold spacing-around"></div>
+			</div>
+			<div class="col" style="max-width:150px">
+				<div class="max-treshold spacing-around"></div>
+			</div>
+		{% raw %}{{/questionnaire}}{% endraw %}
+
+		<input name="items[{% raw %}{{idx}}{% endraw %}].category" id="new-item-category" type="hidden">
+		<div style="width:100px; text-align:right">
+			<button type="button" class="red small" onclick="removeLine(this)">{{"Cancel"|i18n}}</button>
+		</div>
+	</div>
+	{% raw %}{{#questionnaire}}{% endraw %}
+		<div class="row">
+			<textarea name="items[{% raw %}{{idx}}{% endraw %}].comment" class="questionnaire-comment" rows="10"></textarea>
+		</div>
+	{% raw %}{{/questionnaire}}{% endraw %}
+	{% raw %}{{^questionnaire}}{% endraw %}
+		<div class="row">
+			<div class="col" style="max-width:220px;min-width:220px"><span class="spacer"></span><span>{{"Comment"|i18n}} :&nbsp;</span></div>
+			<div class="col" style="margin-left:0px;">
+				<input type="text" name="items[{% raw %}{{idx}}{% endraw %}].comment">
+			</div>
+			<div style="width:100px"></div>
+		</div>
+	{% raw %}{{/questionnaire}}{% endraw %}
+	</script>
+
+
+	{#
+		The Page
+		-create and update actions
+	#}
+
+	<div class="hidden health-status">{{dataRecordItems.healthStatus}}</div>
+	
+	<div class="nav row hidden" style="margin-bottom:20px">
+		<button class="previous blue not-disabled" disabled onclick="previousItem()">{{"Previous"|i18n}}</button>
+		<span class="spacer"></span>
+		<button class="next blue not-disabled" disabled onclick="nextItem()">{{"Next"|i18n}}</button>
+	</div>
+	
+	<div class="row title">
+		<label class="title">
+			<span id="datetime">
+				{{dataRecordItems.datetime}}
+			</span>
+			{% if dataRecordItems.healthStatus %}
+				{{ "From Health Status"|i18n }}&nbsp;:&nbsp;{{dataRecordItems.source.name.family}} {{dataRecordItems.source.name.given}}
+			{% else %}
+			{% if dataRecordItems.home %}
+				{{ "From Home"|i18n }}
+			{% else %}
+				{% if (dataRecordItems.subject && dataRecordItems.source._id === dataRecordItems.subject) || role === "beneficiary"  %}
+				{{ "From Beneficiary"|i18n }}&nbsp;:&nbsp;{{dataRecordItems.source.name.family}} {{dataRecordItems.source.name.given}}
+				{% else %}
+				{{ "From Consultation"|i18n }}&nbsp;:&nbsp;{{dataRecordItems.source.name.family}} {{dataRecordItems.source.name.given}}
+				{% endif %}
+			{% endif %}
+			{% endif %}
+		</label>
+		{% if !dataRecordItems.home && view === 'create' %}
+			<label class="title">{{source.name.family}} {{source.name.given}}</label>
+			<input type="hidden" name="sourceID" id="sourceID" value="{{source._id.toString()}}">
+		{% endif %}
+		<input type="hidden" id="createdDataRecordID" value="{{dataRecordItems._id}}">
+	</div>
+
+	<form name="dataRecord" id="dataRecord" onsubmit="create('{{view}}'); return false;">
+		<zdk-panel heading="{{'Physiological parameters' |i18n}}" collapsable="false" collapsed="false">
+			<div class="row row-legend">
+				<div class="col bold" style="min-width:220px;max-width:220px">{{ "Parameter"|i18n }}</div>
+				<div class="col bold" style="max-width:150px">{{ "Value"|i18n }}</div>
+				<div class="col bold" style="max-width:150px">{{ "Unit"|i18n }}</div>
+				<div class="col bold" style="max-width:150px">{{ "Threshold min" | i18n }}</div>
+				<div class="col bold" style="max-width:150px">{{ "Threshold max" | i18n }}</div>
+			</div>
+			{% if view === 'create'%}
+				{{ addItem('General') }}
+			{% else %}
+				<h2 class="bold">{{"General"|i18n}}</h1>
+				{% for item in dataRecordItems.items.items %}
+					{% if item.category === 'General' %}
+						{{ line('General') }}
+					{% endif %}
+				{% endfor %}
+				<h2 class="bold">{{"HDIM"|i18n}}</h1>
+				{% for item in dataRecordItems.items.items %}
+					{% if item.category === 'HDIM' %}
+						{{ line('HDIM') }}
+					{% endif %}
+				{% endfor %}
+			{% endif %}
+
+		</zdk-panel>
+		<zdk-panel heading="{{'Symptoms assessments' |i18n}}" collapsable="false" collapsed="false">
+			<div class="row row-legend">
+				<div class="col bold" style="min-width:220px;max-width:220px">{{ "Assessment"|i18n }}</div>
+				<div class="col bold" style="max-width:150px">{{ "Value"|i18n }}</div>
+				<div class="col bold" style="max-width:150px"></div>
+				<div class="col bold" style="max-width:150px"></div>
+				<div class="col bold" style="max-width:150px"></div>
+			</div>
+			{% if view === 'create'%}
+				{{ addItem('symptom') }}
+			{% else %}
+				{% for item in dataRecordItems.items.items %}
+					{% if item.category === 'symptom' %}
+						{{ line('symptom') }}
+					{% endif %}
+				{% endfor %}
+			{% endif %}
+
+		</zdk-panel>
+		<zdk-panel heading="{{'Questionnaires' |i18n}}" collapsable="false" collapsed="false">
+			<div class="row row-legend">
+				<div class="col bold" style="min-width:220px;max-width:220px">{{ "Questionnaire"|i18n }}</div>
+				<div class="col bold" style="max-width:150px">{{ "Value"|i18n }}</div>
+				<div class="col bold" style="max-width:150px"></div>
+				<div class="col bold" style="max-width:150px"></div>
+				<div class="col bold" style="max-width:150px"></div>
+			</div>
+			{% if view === 'create'%}
+				{{ addItem('questionnaire') }}
+			{% else %}
+				{% for item in dataRecordItems.items.items %}
+					{% if item.category === 'questionnaire' %}
+						{{ line('questionnaire') }}
+					{% endif %}
+				{% endfor %}
+			{% endif %}
+
+		</zdk-panel>
+		
+		<div class="row control" style="height:60px; align-content: center">
+			<span class="spacer"></span>
+			{% if view === 'create'%}
+			{% if rights.write && beneficiary.active && !dataRecordItems.healthStatus %}
+			<button id="saveBtn" class="green">{{"Save"|i18n}}</button>
+			{% endif %}
+			{% else %}
+			<button type="button" class="red big not-disabled" onclick="backDatarecord()">{{"Cancel"|i18n}}</button>
+			{% if rights.write && beneficiary.active && !dataRecordItems.healthStatus %}
+			<button id="saveBtn" class="green">{{"Save"|i18n}}</button>
+			{% endif %}
+			{% endif %}
+		</div>
+	</form>
+	
+</div>
+<div class="nav row hidden">
+	<button class="previous blue not-disabled" disabled onclick="previousItem()">{{"Previous"|i18n}}</button>
+	<span class="spacer"></span>
+	<button class="next blue not-disabled" disabled onclick="nextItem()">{{"Next"|i18n}}</button>
+</div>
+
+<div id="questionnaireContainer"></div>
+
+{% include "./modal.htm" %}
+{% endblock %}
+
+
+

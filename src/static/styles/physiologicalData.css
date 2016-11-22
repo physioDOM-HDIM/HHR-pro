@@ -1,0 +1,96 @@
+/**
+@license
+Copyright (c) 2016 Telecom Sante
+This code may only be used under the CC BY-NC 4.0 style license found at https://creativecommons.org/licenses/by-nc/4.0/legalcode
+
+You are free to:
+
+Share — copy and redistribute the material in any medium or format
+Adapt — remix, transform, and build upon the material
+The licensor cannot revoke these freedoms as long as you follow the license terms.
+
+Under the following terms:
+
+Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made.
+You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+
+NonCommercial — You may not use the material for commercial purposes.
+
+No additional restrictions — You may not apply legal terms or technological measures that legally restrict others
+from doing anything the license permits.
+*/
+
+div.row {
+	min-height: 23px;
+}
+
+input[type=checkbox].css-checkbox {
+	position:absolute;
+	z-index:-1000;
+	left:-1000px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	height:1px;
+	width:1px;
+	margin:-1px;
+	padding:0;
+	border:0;
+}
+
+input[type=checkbox].css-checkbox + label.css-label {
+	height:21px;
+	display:inline-block;
+	line-height:21px;
+	background-repeat:no-repeat;
+	background-position: 0 0;
+	font-size:21px;
+	vertical-align:middle;
+	cursor:pointer;
+}
+
+input[type=checkbox].css-checkbox:checked + label.css-label {
+	background-position: 0 -21px;
+}
+
+div.mode-update input[type=text],div.mode-update input[type=number] {
+	max-width: 100px;
+}
+
+div.mode-update .error {
+	border:2px solid red;
+}
+
+div.row label.css-label {
+	margin-right: 5px;
+	width: 21px;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+div.row label.css-label.color-blue {
+	background-image:url(/img/icons/checkbox-blue.png);
+}
+
+div.row label.css-label.color-yellow {
+	background-image:url(/img/icons/checkbox-yellow.png);
+}
+
+div.empty-graph {
+	text-align: center;
+	position: absolute;
+	width: 100%;
+	height: 80px;
+	left: 0;
+	top: 250px;
+	z-index: 999;
+	font-size: 30px;
+	color: #313131;
+}
+
+body {
+	position: relative;
+}

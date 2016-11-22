@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<!--
+@license
+Copyright (c) 2016 Telecom Sante
+This code may only be used under the CC BY-NC 4.0 style license found at https://creativecommons.org/licenses/by-nc/4.0/legalcode
+
+You are free to:
+
+  Share — copy and redistribute the material in any medium or format
+  Adapt — remix, transform, and build upon the material
+  The licensor cannot revoke these freedoms as long as you follow the license terms.
+
+Under the following terms:
+
+  Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. 
+  You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+  
+  NonCommercial — You may not use the material for commercial purposes.
+  
+  No additional restrictions — You may not apply legal terms or technological measures that legally restrict others 
+  from doing anything the license permits.
+-->
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>PhysioDom professionnal platform</title>
+
+	<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<meta name="apple-touch-fullscreen" content="yes">
+	<meta name="mobile-web-app-capable" content="yes">
+
+	<link rel="shortcut icon" sizes="196x196" href="/img/physiodom_favico.png">
+	<link rel="icon" href="/img/physiodom_favico.png">
+	<link rel="apple-touch-icon" href="/img/physiodom_favico.png">
+	
+	<link rel="stylesheet" href="/styles/ui.css">
+	<link rel="stylesheet" type="text/css" href="/styles/login.css">
+	
+	<script>
+		if(window.location !== window.parent.location ) {
+			console.info("load in iframe");
+			window.parent.location = window.location;
+		}
+	</script>
+	
+</head>
+<body>
+	<div style="text-align: center; margin-top:50px">
+		<img src="/img/physiodom_logo.png" id="logo" style="height:150px;">
+	</div>
+	<div class="error">{{"Bad login or password"|i18n}}</div>
+	<div class="notactivate">{{"Your account is not activated"|i18n}}</div>
+	<div class="container" style="width:300px; background:#d6d6d6; margin-top:25px">
+		<div class="row">&nbsp;</div>
+		<div class="row">
+			<input class="col-xs-12 col-sm-12" type="text" name="login" id="login" placeholder="{{'Login'|i18n}}" autofocus autocomplete="off"/>
+		</div>
+		<div class="row">&nbsp;</div>
+		<div class="row">
+			<input class="col-xs-12 col-sm-12" type="password" name="passwd" id="passwd" placeholder="{{'Password'|i18n}}" autocomplete="off"/>
+		</div>
+		<div class="row">&nbsp;</div>
+		<div class="row">
+			<button class="blue" style="flex:1" onclick="login()" >{{"Sign in"|i18n}}</button>
+		</div>
+		<div class="row">&nbsp;</div>
+	</div>
+	<div class="container" style="width:300px; background:#d6d6d6; margin-top:25px">
+		<div class="row">&nbsp;</div>
+		<div class="row">{{ "Version"|i18n }} : {{version}}</div>
+		<div class="row">{{"Default language"|i18n}}: {{lang}}</div>
+		<div class="row">&nbsp;</div>
+	</div>
+	<script>
+		document.querySelector("#passwd").addEventListener("keypress", function(evt) { 
+			if(evt.charCode === 13) { 
+				login();
+			}
+		}, false);
+		function login() {
+			document.querySelector(".error").style.display = "none";
+			document.querySelector(".notactivate").style.display = "none";
+			var xhr = new XMLHttpRequest();
+			xhr.open("POST","/api/login",false);
+			xhr.send( JSON.stringify({ login:document.querySelector("#login").value, password:document.querySelector("#passwd").value}));
+			switch( xhr.status ) {
+				case 403 :
+					document.querySelector(".error").style.display = "block";
+					break;
+				case 405 :
+					document.querySelector(".notactivate").style.display = "block";
+					break;
+				case 200:
+					window.location.reload();
+			}
+		}
+	</script>
+</body>
+</html>

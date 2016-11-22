@@ -1,0 +1,321 @@
+<!--
+@license
+Copyright (c) 2016 Telecom Sante
+This code may only be used under the CC BY-NC 4.0 style license found at https://creativecommons.org/licenses/by-nc/4.0/legalcode
+
+You are free to:
+
+  Share — copy and redistribute the material in any medium or format
+  Adapt — remix, transform, and build upon the material
+  The licensor cannot revoke these freedoms as long as you follow the license terms.
+
+Under the following terms:
+
+  Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. 
+  You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+  
+  NonCommercial — You may not use the material for commercial purposes.
+  
+  No additional restrictions — You may not apply legal terms or technological measures that legally restrict others 
+  from doing anything the license permits.
+-->
+
+{% extends './page.htm' %}
+
+{% block title %}{{ "Create/Update a questionnaire"|i18n }}{% endblock %}
+
+{% block head %}
+{% parent %}
+<script src="/bower_components/mustache/mustache.js"></script>
+<script src="/bower_components/rsvp/rsvp.min.js"></script>
+<script src="/bower_components/form2js/src/form2js.js"></script>
+
+<script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
+<script src="/tpl/questionnaireCreation.js"></script>
+
+<link rel="stylesheet" href="/styles/questionnaireCreation.css">
+
+{% endblock %}
+
+{% block content %}
+<div class="hidden" id="unsave">{{"You have unsaved data"|i18n}}</div>
+
+<script type="text/template" id="tplHeaderQuestion">
+	<div class="row control spaced">
+		<span class="spacer"></span>
+		<button type="button" class="small red deleteQuestion">{{"Delete header question" | i18n}}</button>
+	</div>
+
+	<div class="row">
+		<label class="bold">{{"Header ref"|i18n}} : </label>
+		<input type="text" name="{%raw%}{{name}}.headerRef{%endraw%}" />
+	</div>
+
+	<div class="row">
+		<label class="bold">{{"Header" | i18n}} (<span class="lang-info"></span>): </label>
+		{% for item in communication.items %}
+			<input type="text" name="{%raw%}{{name}}{%endraw%}.headerLabel.{{item.value}}" id="{{item.value}}" class="trad-input hidden" />
+		{% endfor %}
+	</div>
+
+	<div class="row">
+		<label class="bold">{{"Subscore" | i18n}} : </label>
+		<input type="text" name="{%raw%}{{name}}.subscore{%endraw%}" />
+	</div>
+
+	<div class="row control btnContainer">
+		<span class="spacer"></span>
+		<button type="button" class="small blue addHeaderQuestion" data-obj="{%raw%}{{name}}.questions;{%endraw%}">{{"Add header question"|i18n}}</button>
+		<button type="button" class="small blue addQuestion" data-obj="{%raw%}{{name}}.questions;{%endraw%}">{{"Add question"|i18n}}</button>
+	</div>
+</script>
+
+<script type="text/template" id="tplQuestion">
+
+	<div class="row control spaced">
+		<span class="spacer"></span>
+		<button type="button" class="small red deleteQuestion">{{"Delete question"|i18n}}</button>
+	</div>
+
+	<div class="row">
+		<label class="bold">{{"Question ref"|i18n}} : </label>
+		<input type="text" name="{%raw%}{{name}}.ref{%endraw%}" />
+	</div>
+	<div class="row">
+		<label class="bold">{{"Translation"|i18n}} : (<span class="lang-info"></span>)</label>
+		{% for item in communication.items %}
+			<input type="text" name="{%raw%}{{name}}{%endraw%}.label.{{item.value}}" id="{{item.value}}" class="trad-input hidden" />
+		{% endfor %}
+	</div>
+
+	<div class="row control btnContainer">
+		<span class="spacer"></span>
+		<button type="button" class="small blue addChoice" data-obj="{%raw%}{{name}}.choice;{%endraw%}">{{"Add choice"|i18n}}</button>
+	</div>
+
+</script>
+
+<script type="text/template" id="tplChoice">
+
+	<div class="row">
+		<div class="col">
+			<label>{{"Choice ref"|i18n}}</label>
+			<input type="text" name="{%raw%}{{name}}.ref{%endraw%}" />
+		</div>
+		<div class="col">
+			<label>{{"Translation"|i18n}} (<span class="lang-info"></span>): </label>
+			{% for item in communication.items %}
+			<input type="text" name="{%raw%}{{name}}{%endraw%}.label.{{item.value}}" id="{{item.value}}" class="trad-input hidden" />
+			{% endfor %}
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col">
+			<label>{{"Choice Value"|i18n}}</label>
+			<input type="text" name="{%raw%}{{name}}.value{%endraw%}" />
+		</div>
+		<div class="col">
+			<label>{{"Choice System"|i18n}}/label>
+			<select name="{%raw%}{{name}}.system{%endraw%}">
+	    		<option value="integer">{{"integer"|i18n}}</option>
+	    		<option value="boolean">{{"boolean"|i18n}}</option>
+	    		<option value="decimal">{{"decimal"|i18n}}</option>
+	    		<option value="string">{{"string"|i18n}}</option>
+	    	</select>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col btnContainer">
+			<div class="spacer"></div>
+			<button type="button" class="small red deleteChoice">{{"Delete"|i18n}}</button>
+		</div>
+	</div>
+
+</script>
+
+{% macro tpl(q, idx) %}
+	{% set name = "questions" %}
+	{% for key, val in idx %}
+		{% set name += "["+val+"]" %}
+		{% if !loop.last %}
+			{% set name += ".questions" %}
+		{% endif %}
+	{% endfor %}
+
+	<div class="row control spaced">
+		<span class="spacer"></span>
+		<button type="button" class="small red deleteQuestion">
+		{% if q.headerRef %}
+			{{"Delete header question"|i18n}}
+		{% else %}
+			{{"Delete question"|i18n}}
+		{% endif %}
+		</button>
+	</div>
+
+	{% if q.headerRef %}
+		<div class="row">
+			<label class="bold">{{"Header ref"|i18n}}: </label>
+			<input type="text" name="{{name}}.headerRef" value="{{q.headerRef}}" />
+		</div>
+		<div class="row">
+			<label class="bold">{{"Translate"|i18n}}: (<span class="lang-info"></span>) </label>
+			{% for item in communication.items %}
+				<input type="text" name="{{name}}.headerLabel.{{item.value}}" value="{% if q.headerLabel[item.value] %}{{ q.headerLabel[item.value] }}{% endif %}" id="{{item.value}}" class="trad-input hidden" />
+			{% endfor %}
+		</div>
+		<div class="row">
+			<label class="bold">{{"Subscore"|i18n}}: </label>
+			<input type="text" name="{{name}}.subscore" value="{{q.subscore}}" />
+		</div>
+		<hr class="nested-space">
+		{% for subQ in q.questions %}
+			{% set idx = idx|push(loop.index) %}
+			<div class="nestedQuestionnaire">
+				{{tpl(subQ, idx)}}
+			</div>
+			{% set idx = idx|pop() %}
+
+			{% if loop.last %}
+				<div class="row control btnContainer">
+					<span class="spacer"></span>
+					<button type="button" class="small blue addHeaderQuestion" data-obj="{{name}}.questions;">{{"Add header question"|i18n}}</button>
+					<button type="button" class="small blue addQuestion" data-obj="{{name}}.questions;">{{"Add question"|i18n}}</button>
+				</div>
+			{% endif %}
+		{% endfor %}
+	{% else %}
+		<div class="row">
+			<label class="bold">{{"Question ref"|i18n}} : </label>
+			<input type="text" name="{{name}}.ref" value="{{q.ref}}" />
+		</div>
+
+		<div class="row">
+			<label class="bold">{{"Question"|i18n}} (<span class="lang-info"></span>): </label>
+			{% for item in communication.items %}
+				<input type="text" name="{{name}}.label.{{item.value}}" value="{% if q.label[item.value] %}{{ q.label[item.value] }}{% endif %}" id="{{item.value}}" class="trad-input hidden" />
+			{% endfor %}
+		</div>
+	{% endif %}
+
+	<div class="answer-list">
+	{% for c in q.choice %}
+		<div class="answer">
+
+			<div class="row spaced">
+
+				<div class="bold label-question">
+					{{c.label[lang]}}
+				</div>
+				<div class="spacer"></div>
+
+				<button type="button" class="small blue mode-read" onclick="showQuestion(this, true)">{{"Show"|i18n}}</button>
+				<button type="button" class="small blue mode-edit hidden" onclick="showQuestion(this, false)">{{"Hide"|i18n}}</button>
+
+			</div>
+
+			<div class="row mode-edit hidden">
+
+				<div class="col">
+					<label>{{"Choice ref"|i18n}}</label>
+					<input type="text" name="{{name}}.choice[{{loop.index}}].ref" value="{{c.ref}}" />
+				</div>
+				<div class="col input-label-update">
+					<label>{{"Translate"|i18n}}: (<span class="lang-info"></span>)</label>
+					{% set idx = loop.index;%}
+					{% for item in communication.items %}
+						<input type="text" name="{{name}}.choice[{{idx}}].label.{{item.value}}" value="{% if c.label[item.value] %}{{ c.label[item.value] }}{% endif %}" id="{{item.value}}" class="trad-input hidden" onkeyup="updateLabel(this)" />
+					{% endfor %}
+				</div>
+			</div>
+			<div class="row mode-edit hidden">
+
+				<div class="col">
+					<label>{{"Choice Value"|i18n}}</label>
+					<input type="text" name="{{name}}.choice[{{loop.index}}].value" value="{{c.value}}" />
+				</div>
+				<div class="col">
+					<label>{{"Choice System"|i18n}}</label>
+					<select name="{{name}}.choice[{{loop.index}}].system">
+			    		<option value="integer" {% if c.system === "integer" %}selected{% endif %}>{{"integer"|i18n}}</option>
+			    		<option value="boolean" {% if c.system === "boolean" %}selected{% endif %}>{{"boolean"|i18n}}</option>
+			    		<option value="decimal" {% if c.system === "decimal" %}selected{% endif %}>{{"decimal"|i18n}}</option>
+			    		<option value="string" {% if c.system === "string" %}selected{% endif %}>{{"string"|i18n}}</option>
+			    	</select>
+				</div>
+
+			</div>
+
+			<div class="row mode-edit hidden">
+
+				<div class="col btnContainer">
+					<div class="spacer"></div>
+					<button type="button" class="small red deleteChoice">{{"Delete"|i18n}}</button>
+				</div>
+
+			</div>
+		</div>
+
+		{% if loop.last %}
+			<div class="row control btnContainer">
+				<span class="spacer"></span>
+				<button type="button" class="small blue addChoice" data-obj="{{name}}.choice;">{{"Add choice"|i18n}}</button>
+			</div>
+		{% endif %}
+
+	{% endfor %}
+	</div>
+
+{% endmacro %}
+
+<div class="mainContainer">
+	<form name="newQ" autocomplete="off" onsubmit="saveForm(); return false;">
+		<input id="questionnaireID" type="hidden" name="_id" value="{{questionnaire._id.toString()}}"/>
+		<div class="row">
+			<div class="spacer"></div>
+			<label>{{ "Language"| i18n }} :</label>
+			<select name="lang" id="lang" onchange="changeLang(this.value);">
+				{% for item in communication.items %}
+				<option value="{{item.value}}">{{item.label}}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<div class="row">
+				<label class="bold">{{"Questionnaire ref"|i18n}}</label>
+				<input type="text" name="name" value="{{questionnaire.name}}" {% if questionnaire._id %}disabled{% endif %}/>
+				{% if questionnaire._id %}
+				<input type="hidden" name="name" value="{{questionnaire.name}}"/> 
+				{% endif %}
+		</div>
+		<div class="row">
+			<label class="bold">{{"Questionnaire label"|i18n}}</label>
+			<br/>
+			{% for item in communication.items %}
+			<input type="text" name="label.{{item.value}}" value="{% if questionnaire.label[item.value] %}{{ questionnaire.label[item.value] }}{% endif %}" id="{{item.value}}" class="trad-input hidden" />
+			{% endfor %}
+		</div>
+		{% for q in questionnaire.questions %}
+			<div class="itemContainer">
+				{% set number = "" %}
+				{{tpl(q, [loop.index])}}
+			</div>
+		{% endfor %}
+		<div class="row control btnContainer">
+			<span class="spacer"></span>
+			<button id="addHeader" type="button" class="blue addHeaderQuestion" data-obj="questions;">{{"New Header Question"|i18n}}</button>
+			<button id="addSimple" type="button" class="blue addQuestion" data-obj="questions;">{{"New Simple Question"|i18n}}</button>
+		</div>
+		<div class="row control">
+			<span class="spacer"></span>
+			<button type="button" class="red" onclick="window.history.back()">{{"Cancel"|i18n}}</button>
+			<button class="green">{{"Save"|i18n}}</button>
+		</div>
+	</form>
+</div>
+
+{% include 'modal.htm' %}
+
+{% endblock %}

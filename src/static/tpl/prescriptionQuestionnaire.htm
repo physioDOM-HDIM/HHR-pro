@@ -1,0 +1,142 @@
+<!--
+@license
+Copyright (c) 2016 Telecom Sante
+This code may only be used under the CC BY-NC 4.0 style license found at https://creativecommons.org/licenses/by-nc/4.0/legalcode
+
+You are free to:
+
+  Share — copy and redistribute the material in any medium or format
+  Adapt — remix, transform, and build upon the material
+  The licensor cannot revoke these freedoms as long as you follow the license terms.
+
+Under the following terms:
+
+  Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. 
+  You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+  
+  NonCommercial — You may not use the material for commercial purposes.
+  
+  No additional restrictions — You may not apply legal terms or technological measures that legally restrict others 
+  from doing anything the license permits.
+-->
+
+{% extends './page.htm' %}
+{% block title %}{{title|i18n}}{% endblock %}
+{% block head %}
+{% parent %}
+<script src="/bower_components/mustache/mustache.js"></script>
+<script src="/bower_components/rsvp/rsvp.min.js"></script>
+<script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
+<script src="/bower_components/zdk-calendar/form2js.js"></script>
+<link   rel="import" href="/bower_components/zdk-calendar/zdk-input-date.html">
+<script src="/scripts/utils.js"></script>
+<script src="/scripts/modal.js"></script>
+<script src="/tpl/prescriptionQuestionnaire.js"></script>
+
+<link rel="stylesheet" href="/styles/icons.css">
+<link rel="stylesheet" href="/styles/prescriptionData.css">
+
+{% endblock %}
+
+{% block content %}
+
+
+<div class="hidden" id="lang">{{ lang }}</div>
+<div class="hidden" id="unsave">{{"You have unsaved data"|i18n}}</div>
+<div class="row title">
+    <label class="title">
+        {{title|i18n}}
+    </label>
+</div>
+
+<form name="questionnaire">
+	<div class="questionnaire-prog-list"></div>
+</form>
+
+<div class="row control">
+	<span class="spacer"></span>
+	{% if rights.write && beneficiary.active %}
+	<button type="button" class="green" onclick="saveData()">{{"Save"|i18n}}</button>
+	{% endif %}
+</div>
+
+<script type="template" id="tpl-questionnaire-prog">
+	{% raw %}{{#data}}{% endraw %}
+	<div data-index="{% raw %}{{idx}}{% endraw %}" id="{% raw %}{{ref}}{% endraw %}">
+		{% raw %}
+		<input type="hidden" name="questionnaire[{{idx}}].ref" value="{{ref}}">
+		{% endraw %}
+		<div class="row">
+			<div class="col bold data-text">{% raw %}{{labelLang}}{% endraw %}</div>
+		</div>
+		<div class="row">
+			<div class="col" style="padding-left:50px">
+				<label>{{"Frequency"|i18n}}</label>
+				<input type="text" class="data-frequency" name="questionnaire[{% raw %}{{idx}}{% endraw %}].frequency" value="{% raw %}{{frequency}}{% endraw %}" {% if !rights.write %}disabled{% endif %}/>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col" style="padding-left:50px">
+				<label>{{"Comment"|i18n}}</label>
+				<input type="text" class="data-comment" name="questionnaire[{% raw %}{{idx}}{% endraw %}].comment" value="{% raw %}{{comment}}{% endraw %}" {% if !rights.write %}disabled{% endif %}>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col" style="padding-left:50px">
+				<label>{{"Dates"|i18n}}</label>
+				<ul class="dates-list" id="{% raw %}{{idx}}{% endraw %}">
+					{% raw %}
+					{{#date}}
+						{{#setAddedDate}}{{.}}{{/setAddedDate}}
+					{{/date}}
+					{% endraw %}
+				</ul>
+			</div>
+		</div>
+		{% if rights.write && beneficiary.active %}
+		<div class="row">
+			<div class="col vert" style="padding-left:50px">
+				<label></label>
+				{% raw %}
+				<zdk-input-date id="{{ref}}" name="newDate" value="" style="z-index:100" i18n="{{lang}}"></zdk-input-date>
+				{% endraw %}
+				<button type="button" class="small blue" onclick="addDate('{% raw %}{{ref}}{% endraw %}', {% raw %}{{idx}}{% endraw %})">{{"Add"|i18n}}</button>
+			</div>
+		</div>
+	{% endif %}
+	</div>
+	{% if beneficiary.active && rights.write %}
+	<div class="row control right">
+		<span class="spacer"></span>
+		<label class="spacing-around">{{"Copy datas from"|i18n}}</label>
+		<select onchange="copySelection('{% raw %}{{ref}}{% endraw %}', this)">
+			<option></option>
+			{% raw %}
+				{{#dataList}}
+					<option value="{{ref}}" {{#disable}}{{ref}}{{/disable}}>{{labelLang}}</option>
+				{{/dataList}}
+			{% endraw %}
+		</select>
+	</div>	
+	{% endif %}
+	<hr>
+	{% raw %}{{/data}}{% endraw %}
+</script>
+
+<script type="template" id="dateAddedTpl">
+	<li data-date="{% raw %}{{dateValue}}{% endraw %}">
+		{% if rights.write && beneficiary.active %}
+		<button type="button" class="btn btn-delete" onclick="removeDate(this)">
+			<i class="icon icon-delete-circle"></i>
+		</button>
+		{% endif %}
+		{% raw %}
+		<span>{{dateDisplay}}</span>
+		<input type="hidden" class="date-added" name="questionnaire[{{idx}}].date[{{dateIdx}}]" value="{{dateValue}}">
+		{% endraw %}
+	</li>
+</script>
+
+{% include "./modal.htm" %}
+{% endblock %}
+

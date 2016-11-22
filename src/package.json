@@ -1,0 +1,85 @@
+{
+  "name": "PhysioDOM-server",
+  "preferGlobal": false,
+  "version": "1.1.19",
+  "author": "Telecom Sante <dev@telecomsante.com>",
+  "contributors": [
+    {
+      "name": "Fabrice Le Coz",
+      "email": "fabrice.lecoz@telecomsante.com"
+    }
+  ],
+  "description": "A web portal for professionnal",
+  "scripts": {
+    "postinstall": "bower --allow-root install",
+    "start": "supervisor -w package.json,/config/config.json,locales/,server/ -i server/test/ -- server/server.js -c /config/config.json 2>&1 > /logs/app.log",
+    "test": "node ./test/index.js"
+  },
+  "main": "./server/server.js",
+  "repository": {
+    "type": "git",
+    "url": "http://git.telecomsante.com/physiodom-hdim/physiodom"
+  },
+  "dependencies": {
+    "md5": "~2.0.0",
+    "agenda": "^0.6.28",
+    "commander": "~2.1.0",
+    "cookies": "~0.5.0",
+    "emailjs": "^0.3.16",
+    "i18n-2": "~0.4.6",
+    "jsonschema": "^1.0.0",
+    "logger": "file:install/logger-v1.1.0.tar.gz",
+    "moment": "~2.8.4",
+    "moment-timezone": "^0.4.1",
+    "mongodb": "~1.4.7",
+    "object-hash": "^0.9.1",
+    "restify": "2.6.3",
+    "rsvp": "~3.0.9",
+    "soap": "^0.8.0",
+    "swig": "~1.4.2",
+    "tar.gz": "~0.1.1"
+  },
+  "devDependencies": {
+    "chai": "^1.9.2",
+    "chai-things": "^0.2.0",
+    "grunt": "^0.4.5",
+    "grunt-mocha": "^0.4.11",
+    "grunt-mocha-test": "^0.12.1",
+    "intern": "^2.2.2",
+    "mocha": "^1.21.5",
+    "request": "^2.45.0",
+    "supervisor": "^0.10.0"
+  },
+  "engines": {
+    "node": ">=0.10.3 <0.12",
+    "npm": ">=2.10.0"
+  },
+  "jshintConfig": {
+    "predef": [
+      "before",
+      "after",
+      "it",
+      "describe",
+      "beforeEach",
+      "afterEach",
+      "-Promise"
+    ],
+    "nonew": true,
+    "validthis": true,
+    "curly": true,
+    "latedef": true,
+    "unused": "vars",
+    "noarg": true,
+    "forin": true,
+    "noempty": true,
+    "node": true,
+    "eqeqeq": true,
+    "strict": true,
+    "undef": true,
+    "bitwise": false,
+    "newcap": true,
+    "browser": true,
+    "camelcase": true,
+    "expr": true
+  }
+}

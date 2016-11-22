@@ -1,0 +1,193 @@
+<!--
+@license
+Copyright (c) 2016 Telecom Sante
+This code may only be used under the CC BY-NC 4.0 style license found at https://creativecommons.org/licenses/by-nc/4.0/legalcode
+
+You are free to:
+
+  Share — copy and redistribute the material in any medium or format
+  Adapt — remix, transform, and build upon the material
+  The licensor cannot revoke these freedoms as long as you follow the license terms.
+
+Under the following terms:
+
+  Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. 
+  You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+  
+  NonCommercial — You may not use the material for commercial purposes.
+  
+  No additional restrictions — You may not apply legal terms or technological measures that legally restrict others 
+  from doing anything the license permits.
+-->
+
+<form name="form" id="form-add-service" autocomplete="off" onsubmit="checkServiceForm(); return false;">
+	<input type="hidden" name="_id" value="{{beneficiary._id.toString()}}">
+	<div class="row h2">
+		<div class="col">
+			<label for="input-type">{{"Type of service" | i18n}}</label>
+			<select id="input-type" name="type">
+				{% for service in services %}
+				<option value="{{service.ref}}" >{{service.label.en}}</option>
+				{% endfor %}
+			</select>
+		</div>
+	</div>
+	<div class="row h2">
+		<div class="col">
+			<label for="input-provider">{{"Provider" | i18n}}</label>
+			<select id="input-provider" name="provider">
+				{% for provider in providers %}
+				<option value="{{provider._id+''}}" >{{provider.name.family}} {{provider.name.given}} ( {{provider.job}} )</option>
+				{% endfor %}
+			</select>
+		</div>
+	</div>
+	<div class="row" style="align-items: initial;">
+		<label>{{"Detail of the service" | i18n}}</label>
+		<textarea rows="5" cols="60" wrap="hard" name="detail"></textarea>
+	</div>
+
+	<div class="row h2" id="dates-block">
+		<label for="input-start">{{"Start date" | i18n}}</label>
+		<zdk-input-date id="input-start" name="startDate" staticpos="true"></zdk-input-date>
+		<label for="input-end" style="padding-left:5px">{{"End date" | i18n}}</label>
+		<zdk-input-date id="input-end" name="endDate" staticpos="true"></zdk-input-date>
+	</div>
+
+	<div class="row h2">
+		<label>{{"Frequency" | i18n}}</label>
+		<input type="radio" name="frequency" value="monthly"> {{"Monthly" | i18n}}
+		<input type="radio" name="frequency" value="weekly" checked="true"> {{"Weekly" | i18n}}
+		<input type="radio" name="frequency" value="daily"> {{"Daily" | i18n}}
+		<input type="radio" name="frequency" value="punctual"> {{"Punctual" | i18n}}
+	</div>
+
+	<div id="special-inputs"></div>
+	
+	<div class="row control">
+		<span class="spacer"></span>
+		<button type="button" class="red" onclick="cancelForm()">{{"Cancel"|i18n}}</button>
+		<button class="green">{{"Save"|i18n}}</button>
+	</div>
+</form>
+
+<zdk-modal id="dialog-warning-frequency" closebutton="false">
+	<div class="modalContainer">
+		<div class="modalTitleContainer">{{"Warning"|i18n}}</div>
+		<div class="modalContentContainer">
+			<p>
+				<strong>Nota:</strong>&nbsp;{{"Changing the frequency will delete all occurrences already programmed"|i18n}}
+			</p>
+		</div>
+		<div class="modalButtonContainer">
+			<button id="btn-warning-cancel" class="red">{{"Cancel"|i18n}}</button>
+			<button id="btn-warning-confirm" class="blue">{{"Confirm"|i18n}}</button>
+		</div>
+	</div>
+</zdk-modal>
+
+<zdk-modal id="dialog-agenda" closebutton="false">
+	<div class="modalContainer" fit>
+		<div class="modalButtonContainer top">
+			<button id="btn-cal-add" class="green">{{"Add"|i18n}}</button>
+		</div>
+		<div class="modalContentContainer" fit>
+			<zdk-agenda id="agenda" lang="en-gb" hourHeight="40" hourShow="8" view="week" deleteButtons="true" fit></zdk-agenda>
+		</div>
+		<div class="modalButtonContainer bottom">
+			<button id="btn-cal-cancel" class="red">{{"Cancel"|i18n}}</button>
+			<button id="btn-cal-confirm" class="blue">{{"Save"|i18n}}</button>
+		</div>
+	</div>
+	
+</zdk-modal>
+
+<script id="special-inputs-template" type="x-tmpl-mustache">
+	<div class="row h2">
+
+		{% raw %}{{#punctual}}{% endraw %}
+		<div class="col" id="date-group">
+			<label for="input-date">{{"Date" | i18n}}</label>
+			<zdk-input-date id="input-date" name="date"></zdk-input-date>
+		</div>
+		{% raw %}{{/punctual}}{% endraw %}
+
+		{% raw %}{{^punctual}}{% endraw %}
+		<div id="repeat-group" class="col">
+			<label for="input-repeat" style="width:auto" >{{"Every" | i18n}}</label>
+			<input type="number" id="input-repeat" name="repeat" value="1" style="width: 50px;margin:0px 5px">&nbsp;
+			<span id="repeat-label">{% raw %}{{repeatLabel}}{% endraw %}</span>
+		</div>
+		{% raw %}{{/punctual}}{% endraw %}
+
+		<div class="col" style="align-items: center;">
+				<label for="input-duration" style="width:auto">{{"Duration" | i18n}}</label>
+				<select id="input-duration" name="duration" style="min-width: 100px;margin: 0px 5px;">
+					<option value="30">0:30</option>
+					<option value="60" selected="true">1:00</option>
+					<option value="90">1:30</option>
+					<option value="120">2:00</option>
+				</select>
+				<label style="width:auto">{{"hour(s)" | i18n}}</label>
+		</div>
+
+		{% raw %}{{#weekly}}{% endraw %}
+			<button id="btn-cal-week" class="blue calendar-button" type="button" onclick="onBtnCalWeekClick()"><core-icon icon="today"></core-icon></button>
+		{% raw %}{{/weekly}}{% endraw %}
+
+		{% raw %}{{#monthly}}{% endraw %}
+			<button id="btn-cal-month" class="blue calendar-button" type="button" onclick="onBtnCalMonthClick()"><core-icon icon="today"></core-icon></button>
+		{% raw %}{{/monthly}}{% endraw %}
+
+	</div>
+	
+	{% raw %}{{^weekly}}{% endraw %}
+	<div class="row h2">
+		<label for="input-start-time">{{"Start at" | i18n}}</label>
+		<select id="input-start-time" name="start-time">
+			{% raw %}
+			{{#hours}}
+			<option value="{{.}}">{{.}}</option> 
+			{{/hours}}
+			{% endraw %}
+		</select>
+	</div>
+	{% raw %}{{/weekly}}{% endraw %}
+
+	{% raw %}{{#monthly}}{% endraw %}
+	<div id="days-month"></div>
+	{% raw %}{{/monthly}}{% endraw %}
+
+	{% raw %}{{#weekly}}{% endraw %}
+	<div id="days-week"></div>
+	{% raw %}{{/weekly}}{% endraw %}
+</script>
+
+<script id="days-month-template" type="x-tmpl-mustache">
+	<ul>
+	{% raw %}{{#days}}{% endraw %}
+		<li class="day">{% raw %}{{.}}{% endraw %} {{"of the month" | i18n}}</li>
+	{% raw %}{{/days}}{% endraw %}
+	</ul>
+</script>
+
+<script id="days-week-template" type="x-tmpl-mustache">
+	<ul>
+	{% raw %}{{#days}}{% endraw %}
+		<li class="day">{% raw %}{{day}}{% endraw %} {{"at" | i18n}} {% raw %} {{time}}{% endraw %}</li>
+	{% raw %}{{/days}}{% endraw %}
+	</ul>
+</script>
+<script>
+	function cancelForm() {
+		var form = document.querySelector("form");
+		console.log(form);
+		document.querySelector("form").reset();
+		document.querySelector("zdk-input-date#input-start").value = null;
+		document.querySelector("zdk-input-date#input-end").value = null;
+		document.querySelector("zdk-modal#form").hide();
+	}
+</script>
+<script src="/bower_components/momentjs/min/moment.min.js"></script>
+<script src="/bower_components/momentjs/min/moment-with-locales.min.js"></script>
+<script src="/tpl/healthServiceCreate.js"></script>
