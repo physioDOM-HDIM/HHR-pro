@@ -1,8 +1,8 @@
 {
   "name": "PhysioDOM-server",
   "preferGlobal": false,
-  "version": "1.1.19-pre",
-  "author": "Telecom Sante <tech@telecomsante.com>",
+  "version": "1.1.19",
+  "author": "Telecom Sante <dev@telecomsante.com>",
   "contributors": [
     {
       "name": "Fabrice Le Coz",

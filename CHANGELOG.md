@@ -1,6 +1,17 @@
 % CHANGELOG  
 % Fabrice Le Coz  
-% July, 2016
+% November, 2016
+
+__v1.1.19__ :
+
+  - licensed to CC BY-NC 4.0
+  - integrate the Dockerfile to build the image
+
+__v1.1.18__ :
+
+  - Fix check password pattern
+  - When send forced data, don’t send the new flag
+  - Fix prog.repeat default value
 
 __v1.1.17__ :
 
