@@ -402,7 +402,7 @@ function DataRecord( beneficiaryID ) {
 						}
 						if( modified !== null ) {
 							var dataRecordItem = new DataRecordItem( that._id );
-							console.log( "dataRecordItem", dataRecordItem);
+							// console.log( "dataRecordItem", dataRecordItem);
 							// check if value change
 							if( items[modified].comment === undefined ) { items[modified].comment = ""; }
 							// console.log(items[modified]);

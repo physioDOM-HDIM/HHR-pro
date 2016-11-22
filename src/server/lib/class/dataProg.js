@@ -70,7 +70,7 @@ function DataProg( beneficiaryID ) {
 				reject( { err:500, message:"no beneficiaryID defined"});
 			} else {
 				var search = { subject: that.subject, _id: new ObjectID(dataProgItemID) };
-				console.log( search );
+				// console.log( search );
 				physioDOM.db.collection("measurePlan").remove( search, function(err, nb) {
 					if(err) {
 						reject(err);

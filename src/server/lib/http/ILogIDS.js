@@ -125,7 +125,7 @@ var ILogIDS = {
 			if( !maxDate ) {
 				maxDate = moment();
 			}
-			console.log( maxDate.toISOString() );
+			// console.log( maxDate.toISOString() );
 			
 			if( !minDate ) {
 				minDate = moment(maxDate).date(1);

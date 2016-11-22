@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!--
+@license
+Copyright (c) 2016 Telecom Sante
+This code may only be used under the CC BY-NC 4.0 style license found at https://creativecommons.org/licenses/by-nc/4.0/legalcode
+
+You are free to:
+
+  Share — copy and redistribute the material in any medium or format
+  Adapt — remix, transform, and build upon the material
+  The licensor cannot revoke these freedoms as long as you follow the license terms.
+
+Under the following terms:
+
+  Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. 
+  You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+  
+  NonCommercial — You may not use the material for commercial purposes.
+  
+  No additional restrictions — You may not apply legal terms or technological measures that legally restrict others 
+  from doing anything the license permits.
+-->
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>IDS login</title>
+	
+	<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<meta name="apple-touch-fullscreen" content="yes">
+	<meta name="mobile-web-app-capable" content="yes">
+	
+	<script src="bower_components/form2js/src/form2js.js"></script>
+</head>
+<body>
+<h1>Create unit</h1>
+<form name="unitForm">
+	<div>
+		<label>unit</label>
+		<input type="text" name="unit" />
+	</div>
+	<button type="button" id="createBtn">create</button>
+</form>
+<div id="response"></div>
+<div id="error" style="color:red"></div>
+<script>
+	var createBtn = document.querySelector("#createBtn");
+	createBtn.addEventListener("click", createUnit, false );
+	
+	function createUnit() {
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", "/createUnit", true);
+		xhr.setRequestHeader('Content-Type', 'application/json');
+		xhr.onload = function() {
+			console.log(xhr.responseText);
+			switch( xhr.status ) {
+				case 200 :
+					document.querySelector("#error").innerHTML = "";
+					document.querySelector("#response").innerHTML = xhr.responseText;
+					break;
+				default:
+					document.querySelector("#response").innerHTML = "";
+					document.querySelector("#error").innerHTML = xhr.responseText;
+					break;
+			}
+		}
+		var obj = form2js( document.querySelector("form[name=unitForm]") );
+		console.log( obj );
+		xhr.send( JSON.stringify(obj) );
+	}
+</script>
+</body>
+</html>

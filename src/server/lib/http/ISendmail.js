@@ -148,7 +148,7 @@ var ISendmail = {
                 if (err) {
                   console.log("Error ", err);
                 } else {
-                  console.log(message);
+                  // console.log(message);
                 }
                 resolve();
               }
@@ -216,7 +216,7 @@ var ISendmail = {
               if (err) {
                 console.log("Error ", err);
               } else {
-                console.log(message);
+                // console.log(message);
               }
               resolve();
             });
@@ -283,7 +283,7 @@ var ISendmail = {
               if (err) {
                 console.log("Error ", err);
               } else {
-                console.log(message);
+                // console.log(message);
               }
               resolve();
             });

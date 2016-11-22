@@ -46,7 +46,7 @@ var logger = new Logger("Messages");
  */
 function Messages( beneficiaryID ) {
 	this.subject = beneficiaryID;
-	console.log( "Messages", beneficiaryID );
+	// console.log( "Messages", beneficiaryID );
 	/**
 	 * Create a new messages
 	 *
@@ -388,7 +388,7 @@ function Messages( beneficiaryID ) {
 					return RSVP.all(promises);
 				})
 				.then( function( results ) {
-					console.log( results );
+					// console.log( results );
 					resolve(results);
 				});
 		});

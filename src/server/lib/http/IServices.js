@@ -237,7 +237,7 @@ var IServices = {
 					return _beneficiary.services().putService(serviceObj, req.session.person.id);
 				})
 				.then( function( obj ) {
-					console.log("service put ", obj);
+					// console.log("service put ", obj);
 
 					var log = {
 						subject   : beneficiary._id,
