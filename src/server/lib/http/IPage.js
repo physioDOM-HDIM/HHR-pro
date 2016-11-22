@@ -143,7 +143,7 @@ function IPage() {
 		swig.renderFile(DOCUMENTROOT + '/static/tpl/noaccess.htm', null, function (err, output) {
 			if (err) {
 				console.log("error", err);
-				console.log("output", output);
+				// console.log("output", output);
 				res.write(err);
 				res.end();
 				next();
@@ -214,7 +214,7 @@ function IPage() {
 						html = swig.renderFile(DOCUMENTROOT + '/static/tpl/ui.htm', data, function (err, output) {
 							if (err) {
 								console.log("error", err);
-								console.log("output", output);
+								// console.log("output", output);
 								res.write(err);
 								res.end();
 								next();
@@ -269,7 +269,7 @@ function IPage() {
 						if (err) {
 							console.log("error", err);
 							console.log(err.stack);
-							console.log("output", output);
+							// console.log("output", output);
 							res.write(err);
 							res.end();
 							next();
@@ -343,7 +343,7 @@ function IPage() {
 					html = swig.renderFile(DOCUMENTROOT + '/static/tpl/directoryUpdate.htm', data, function (err, output) {
 						if (err) {
 							console.log("error", err);
-							console.log("output", output);
+							// console.log("output", output);
 							res.write(err);
 							res.end();
 							next();
@@ -566,7 +566,7 @@ function IPage() {
 		var html;
 		var that = this;
 
-		console.log(req.session.roleClass);
+		// console.log(req.session.roleClass);
 		if (req.session.role === "beneficiary") {
 			logger.warning("beneficiary connected redirect to overview");
 			res.header('Location', '/beneficiary/' + req.session.beneficiary.toString());
@@ -618,7 +618,7 @@ function IPage() {
 				html = swig.renderFile(DOCUMENTROOT + '/static/tpl/noaccess.htm', null, function (err, output) {
 					if (err) {
 						console.log("error", err);
-						console.log("output", output);
+						// console.log("output", output);
 						res.write(err);
 						res.end();
 						next();
@@ -684,7 +684,7 @@ function IPage() {
 				return new SpecialRights().rights(req.session.role, "Alert");
 			}).then(function (_rights) {
 				data.alert = _rights;
-				console.log(data);
+				// console.log(data);
 				return RSVP.all(promisesArray);
 			})
 			.then(function (lists) {
@@ -1226,7 +1226,7 @@ function IPage() {
 			res.send(302);
 			return next();
 		} else {
-			console.log(req.session.role);
+			// console.log(req.session.role);
 			new Menu().rights(req.session.role, data.rights.url)
 				.then(function (_rights) {
 					console.log(_rights);
@@ -1947,7 +1947,7 @@ function IPage() {
 						data.roles.push(item);
 					}
 				});
-				console.log(data.roles);
+				// console.log(data.roles);
 				return new Menu().getAll();
 			})
 			.then(function (menu) {
@@ -2102,7 +2102,7 @@ function IPage() {
 				if (err) {
 					console.log('error', err);
 					console.log(err.stack);
-					console.log('output', output);
+					// console.log('output', output);
 					res.write(err);
 					res.end();
 					next();

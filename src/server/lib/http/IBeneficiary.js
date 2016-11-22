@@ -50,7 +50,6 @@ function jsonParse(json) {
 			resolve({});
 		} else {
 			try {
-				console.log("hello");
 				resolve(JSON.parse(json));
 			} catch (err) {
 				reject();
@@ -678,11 +677,11 @@ var IBeneficiary = {
 				completeDataRecord.items.items.forEach(function (item) {
 					if (thresholds[item.text]) {
 						if (thresholds[item.text].min && item.value < thresholds[item.text].min) {
-							console.log("overtake min", item.text);
+							// console.log("overtake min", item.text);
 							outOfRange = true;
 						}
 						if (thresholds[item.text].max && item.value > thresholds[item.text].max) {
-							console.log("overtake max", item.text);
+							// console.log("overtake max", item.text);
 							outOfRange = true;
 						}
 					}
@@ -994,7 +993,7 @@ var IBeneficiary = {
 					return new Promise(function (resolve, reject) {
 						beneficiaries.getHHR(beneObj._id)
 							.then(function (beneficiary) {
-								console.log(beneficiary._id);
+								// console.log(beneficiary._id);
 								return beneficiary.createMessage(req.session, msg.message);
 							})
 							.then(resolve)
