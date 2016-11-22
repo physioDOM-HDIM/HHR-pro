@@ -23,7 +23,16 @@ For more information about the PhysioDOM HDIM project consult the [web site][4]
 
 For more documentation about the PhysioDOM platform consult the project [Physiodom-doc][5]
 
+The Portal is delivered as a docker image named physiodom:x.y.z
 
+# Build the image
+
+check out the project, then build the image :
+
+    docker build -t physiodom:x.y.z .
+
+To run the image, refer to the [docs project][5]
+    
 [1]: https://creativecommons.org/licenses/by-nc/4.0/legalcode
 [2]: http://cordis.europa.eu/project/rcn/191789_en.html
 [3]: http://www.telecomsante.fr/wordpress/en
