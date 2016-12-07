@@ -36,7 +36,7 @@ VOLUME  ["/config","/logs"]
 
 USER    root
 
-LABEL	version="1.1.19-pre"
+LABEL	version="1.1.20-pre"
 LABEL	name="physiodom-HHRPro"
 LABEL	description="Physiodom HHRPro application"
 
