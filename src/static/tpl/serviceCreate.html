@@ -298,6 +298,12 @@ Under the following terms:
 
 <script>
 	document.addEventListener('polymer-ready', function () {
+		PolymerExpressions.prototype.isInWhen = function (value) {
+			if (value !== undefined) {
+				return editedService.when.indexOf(value) !== -1
+			}
+		};
+		
 		document.querySelector("#putService")
 			.addEventListener("core-response", function (evt) {
 				console.log("response", evt.detail.response);
@@ -305,12 +311,7 @@ Under the following terms:
 			});
 	});
 	
-	PolymerExpressions.prototype.isInWhen = function (value) {
-		if (value !== undefined) {
-			return editedService.when.indexOf(value) !== -1
-		}
-	};
-	
+
 	function changeStart() {
 		var endDate = document.querySelector("zdk-input-date[name=endDate]");
 		var startDate = document.querySelector("zdk-input-date[name=startDate]");

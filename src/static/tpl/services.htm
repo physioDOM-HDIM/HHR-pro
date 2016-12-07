@@ -275,44 +275,46 @@ Under the following terms:
 	
 	moment.locale( lang );
 	
-	PolymerExpressions.prototype.time = function(value) {
-		if( value ) return moment("2015-01-01").add(moment.duration( { "minutes": value }) ).format("HH:mm");
-	};
-	
-	PolymerExpressions.prototype.weekday = function(value) {
-		if( value !== undefined ) {
-			moment.locale( lang );
-			return moment.weekdays()[value % 7];
-		}
-	};
-	
-	PolymerExpressions.prototype.fulldate = function(value) {
-		if( value ) {
-			console.log( value );
-			moment.locale(lang);
-			return moment(value).format("LLL");
-		}
-	};
-	
-	PolymerExpressions.prototype.weekdayShort = function(value) {
-		if( value !== undefined ) {
-			moment.locale( lang );
-			return moment.weekdaysShort()[value % 7];
-		}
-	};
-	
-	PolymerExpressions.prototype.monthDay = function(value) {
-		if( value ) {
-			moment.locale(lang);
-			var str = document.querySelector("div.monthDay").innerHTML;
-			var nb = document.querySelector("div.WeekNb").innerHTML.split("|");
-			var day = moment.weekdays()[value % 10];
-			var week = parseInt(value / 10, 10)-1;
-			str = str.replace("${nb}",nb[week]);
-			str = str.replace("${day}",day);
-			return str;
-		}
-	};
+	document.addEventListener('polymer-ready', function () {
+		PolymerExpressions.prototype.time = function (value) {
+			if (value) return moment("2015-01-01").add(moment.duration({"minutes": value})).format("HH:mm");
+		};
+		
+		PolymerExpressions.prototype.weekday = function (value) {
+			if (value !== undefined) {
+				moment.locale(lang);
+				return moment.weekdays()[value % 7];
+			}
+		};
+		
+		PolymerExpressions.prototype.fulldate = function (value) {
+			if (value) {
+				console.log(value);
+				moment.locale(lang);
+				return moment(value).format("LLL");
+			}
+		};
+		
+		PolymerExpressions.prototype.weekdayShort = function (value) {
+			if (value !== undefined) {
+				moment.locale(lang);
+				return moment.weekdaysShort()[value % 7];
+			}
+		};
+		
+		PolymerExpressions.prototype.monthDay = function (value) {
+			if (value) {
+				moment.locale(lang);
+				var str = document.querySelector("div.monthDay").innerHTML;
+				var nb = document.querySelector("div.WeekNb").innerHTML.split("|");
+				var day = moment.weekdays()[value % 10];
+				var week = parseInt(value / 10, 10) - 1;
+				str = str.replace("${nb}", nb[week]);
+				str = str.replace("${day}", day);
+				return str;
+			}
+		};
+	});
 	
 	function init() {
 		tplServices = document.querySelector("#services");

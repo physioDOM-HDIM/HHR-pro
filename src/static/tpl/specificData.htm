@@ -192,18 +192,20 @@ Under the following terms:
 	var tplSummary, tplEvents, pending = false;
 	lang = Cookies.get("lang");
 	
-	PolymerExpressions.prototype.fulldate = function (value) {
-		if (value) {
-			moment.locale(lang);
-			return moment(value).format("LL");
-		}
-	};
-	
-	PolymerExpressions.prototype.itemlabel = function (value) {
-		if (value) {
-			return eventLabels[value];
-		}
-	};
+	document.addEventListener('polymer-ready', function () {
+		PolymerExpressions.prototype.fulldate = function (value) {
+			if (value) {
+				moment.locale(lang);
+				return moment(value).format("LL");
+			}
+		};
+		
+		PolymerExpressions.prototype.itemlabel = function (value) {
+			if (value) {
+				return eventLabels[value];
+			}
+		};
+	});
 	
 	function init() {
 		tplSummary = document.querySelector("#summary");

@@ -153,13 +153,15 @@ Under the following terms:
 		equipments, report,
 		data;
 	
-	PolymerExpressions.prototype.fulldate = function(value) {
-		if( value ) {
-			console.log( value );
-			moment.locale(lang);
-			return moment(value).format("LLL");
-		}
-	};
+	document.addEventListener('polymer-ready', function () {
+		PolymerExpressions.prototype.fulldate = function (value) {
+			if (value) {
+				console.log(value);
+				moment.locale(lang);
+				return moment(value).format("LLL");
+			}
+		};
+	});
 	
 	function init() {
 		tplReport = document.querySelector("#report");
