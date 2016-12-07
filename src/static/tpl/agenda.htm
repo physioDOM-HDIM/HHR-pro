@@ -214,52 +214,54 @@ Under the following terms:
 		lang = Cookies.get("lang"),
 		data = { lang    : lang, serviceID:'',  refServices:[] };
 	
-	PolymerExpressions.prototype.date = function(value) {
-		if( value ) {
-			// console.log( value );
-			moment.locale(lang);
-			return moment(value).format("LL");
-		}
-	};
-	
-	PolymerExpressions.prototype.weekday = function(value) {
-		if( value !== undefined ) {
-			moment.locale( lang );
-			return moment.weekdays()[value % 7];
-		}
-	};
-	
-	PolymerExpressions.prototype.monthDay = function(value) {
-		if( value ) {
-			moment.locale(lang);
-			var str = document.querySelector("div.monthDay").innerHTML;
-			var nb = document.querySelector("div.WeekNb").innerHTML.split("|");
-			var day = moment.weekdays()[value % 10];
-			var week = parseInt(value / 10, 10)-1;
-			str = str.replace("${nb}",nb[week]);
-			str = str.replace("${day}",day);
-			return str;
-		}
-	};
-	
-	PolymerExpressions.prototype.fulldate = function(value) {
-		if( value ) {
-			// console.log( value );
-			moment.locale(lang);
-			return moment(value).format("LLL");
-		}
-	};
-	
-	PolymerExpressions.prototype.weekdayShort = function(value) {
-		if( value !== undefined ) {
-			moment.locale( lang );
-			return moment.weekdaysShort()[value];
-		}
-	};
-	
-	PolymerExpressions.prototype.time = function(value) {
-		if( value ) return moment("2015-01-01").add(moment.duration( { "minutes": value }) ).format("HH:mm");
-	};
+	document.addEventListener('polymer-ready', function () {
+		PolymerExpressions.prototype.date = function (value) {
+			if (value) {
+				// console.log( value );
+				moment.locale(lang);
+				return moment(value).format("LL");
+			}
+		};
+		
+		PolymerExpressions.prototype.weekday = function (value) {
+			if (value !== undefined) {
+				moment.locale(lang);
+				return moment.weekdays()[value % 7];
+			}
+		};
+		
+		PolymerExpressions.prototype.monthDay = function (value) {
+			if (value) {
+				moment.locale(lang);
+				var str = document.querySelector("div.monthDay").innerHTML;
+				var nb = document.querySelector("div.WeekNb").innerHTML.split("|");
+				var day = moment.weekdays()[value % 10];
+				var week = parseInt(value / 10, 10) - 1;
+				str = str.replace("${nb}", nb[week]);
+				str = str.replace("${day}", day);
+				return str;
+			}
+		};
+		
+		PolymerExpressions.prototype.fulldate = function (value) {
+			if (value) {
+				// console.log( value );
+				moment.locale(lang);
+				return moment(value).format("LLL");
+			}
+		};
+		
+		PolymerExpressions.prototype.weekdayShort = function (value) {
+			if (value !== undefined) {
+				moment.locale(lang);
+				return moment.weekdaysShort()[value];
+			}
+		};
+		
+		PolymerExpressions.prototype.time = function (value) {
+			if (value) return moment("2015-01-01").add(moment.duration({"minutes": value})).format("HH:mm");
+		};
+	});
 	
 	function init() {
 		// tplAgenda = document.querySelector("#agendaTpl");

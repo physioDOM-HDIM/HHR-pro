@@ -2,6 +2,10 @@
 % Fabrice Le Coz  
 % November, 2016
 
+__v1.1.20__ :
+
+  - Fix definition of PolymerExpressions
+
 __v1.1.19__ :
 
   - licensed to CC BY-NC 4.0
