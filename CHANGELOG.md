@@ -4,7 +4,7 @@
 
 __v1.1.20__ :
 
-  - Fix PolymerExpressions
+  - Fix definition of PolymerExpressions
 
 __v1.1.19__ :
 
